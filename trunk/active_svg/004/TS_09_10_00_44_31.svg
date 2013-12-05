@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1672,21 +1672,22 @@
      inkscape:window-height="706"
      id="namedview31570"
      showgrid="false"
-     inkscape:zoom="0.72519036"
-     inkscape:cx="273.8308"
-     inkscape:cy="703.56972"
+     inkscape:zoom="0.26991426"
+     inkscape:cx="2355.9322"
+     inkscape:cy="265.35992"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg31568" />
   <image
-     width="2586"
-     height="1938"
-     xlink:href="file:///C:/Andruxa/PSXCPU/active_rows/004/TS_09_10_00_44_31.jpg"
-     id="image31576"
-     x="-10.737052"
+     sodipodi:absref="C:\Andruxa\PSXCPU\active_rows\004\TS_09_10_00_44_31.jpg"
+     xlink:href="TS_09_10_00_44_31.jpg"
+     transform="matrix(0.9999395,-0.01099982,0.01099982,0.9999395,0,0)"
      y="14.164144"
-     transform="matrix(0.9999395,-0.01099982,0.01099982,0.9999395,0,0)" />
+     x="-10.737052"
+     id="image31576"
+     height="1938"
+     width="2586" />
   <g
      transform="matrix(-1,0,0,-1,3443.146,2884.1994)"
      style="display:inline"
