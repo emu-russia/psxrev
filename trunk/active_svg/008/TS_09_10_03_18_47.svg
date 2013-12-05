@@ -15,7 +15,7 @@
    inkscape:version="0.48.4 r9939"
    width="2586"
    height="1938"
-   sodipodi:docname="TS_09_10_03_18_47.jpg">
+   sodipodi:docname="TS_09_10_03_18_47.svg">
   <metadata
      id="metadata75278">
     <rdf:RDF>
@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -588,21 +588,22 @@
      inkscape:window-height="706"
      id="namedview75274"
      showgrid="false"
-     inkscape:zoom="0.68886357"
-     inkscape:cx="642.72017"
-     inkscape:cy="565.768"
+     inkscape:zoom="0.51278702"
+     inkscape:cx="826.89146"
+     inkscape:cy="2.9036508"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg75272" />
   <image
-     width="2586"
-     height="1938"
-     xlink:href="file:///D:/Andruxa/PSXCPU/active/008/TS_09_10_03_18_47.jpg"
-     id="image75280"
-     x="-10.737052"
+     sodipodi:absref="C:\Andruxa\PSXCPU\active_rows\008\TS_09_10_03_18_47.jpg"
+     xlink:href="TS_09_10_03_18_47.jpg"
+     transform="matrix(0.9999395,-0.01099982,0.01099982,0.9999395,0,0)"
      y="14.164144"
-     transform="matrix(0.9999395,-0.01099982,0.01099982,0.9999395,0,0)" />
+     x="-10.737052"
+     id="image75280"
+     height="1938"
+     width="2586" />
   <g
      transform="matrix(-1,0,0,-1,1349.6114,417.6813)"
      style="display:inline"
