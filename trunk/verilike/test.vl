@@ -1,2 +1,35 @@
 // Тестовый скрипт для проверки лексического анализатора.
 
+[ ] ) ( } {
+
+, ; . # = > <= < =
+
+
+foo bar   block  module module2  __badabada3   Module
+
+/*
+
+
+module sum_1 (input wire a_1, input wire b_1, input wire cin_1, output wire sum_1, output wire cout_1);
+    block (*) 
+    nand / nor ...
+endmodule
+
+module sum_2 (input wire a_2, input wire b_2, input wire cin_2, output wire sum_2, output wire cout_2);
+    block (*) 
+    nand / nor ...
+endmodule
+
+module some (input wire in1, input wire in2, input wire CLK);
+    wire z1, z2;
+    wire sum, cout;
+    wire res[2];
+
+    block (CLK) begin
+        z1 = nor (in1, in2);
+        z2 = nand (in1, in2);
+    end
+
+endmodule
+
+*/

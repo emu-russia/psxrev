@@ -1,5 +1,5 @@
-set PATH=c:\lcc\bin
+set PATH=c:\tcc
 
-lc -nw main.c lexer.c parser.c context.c runtime.c -o verilike.exe
+tcc main.c lexer.c parser.c context.c runtime.c -o verilike.exe
 
 verilike.exe > out.txt

@@ -4,5 +4,6 @@
 
 int main ()
 {
-    printf ( "XXX\n" );
+    vm_init ();
+    vm_load ( "test.vl" );
 }
