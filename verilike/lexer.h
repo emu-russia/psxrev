@@ -12,10 +12,10 @@ enum {
 // Операции
 enum {
     OP_NOP = 0,
-    OP_EQ, OP_POST_EQ,            // =, <=
+    OP_EQ, OP_POSTEQ,            // =, <=
     OP_LBRACKET, OP_RBRACKET,     // { }
     OP_LPAREN, OP_RPAREN,         // ( )
-    OP_LSQAURE, OP_RSQUARE,       // [ ]
+    OP_LSQUARE, OP_RSQUARE,       // [ ]
     OP_SEMICOLON, OP_COMMA,       // ; ,
 };
 
@@ -35,15 +35,19 @@ enum {
 typedef struct token_t 
 {
     int     type;
-    char    string[256];
-    var_t   *var;               // Если токен - идентификатор, тут содержится ссылка на контекст
-    var_t   num;                // Если токен - число, тут содержится значение
+    char    string[256];        // Если токен - идентификатор, тут содержится имя. В остальных случаях тут содержится текст токена.
+    char    num[32];            // Если токен - число, тут содержится значение,
+    int     numbits;            //      а тут его длина.
     int     op;                 // Если токен - операция, тут содержится тип операции
     int     keyword;            // Если токен - ключевое слово, тут содержится его тип
 } token_t;
 
 // API.
 
+extern char * keywords[];
+
+char * opstr (int type);
+char * token_type (int type);
 void tokenize_file ( unsigned char * content, int filesize );
 void push_parser ( void (*parser)(token_t * token) );
 void pop_parser (void);
