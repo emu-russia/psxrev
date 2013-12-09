@@ -1,0 +1,14 @@
+x = MUX (in5, NOT(in4), in4);
+
+if (x == 0)
+{
+    out1 = IMUX (in1, in2, in3);
+    out2 = NOT(in3);
+    out3 = NOT(in2);
+}
+
+if (x == 1)
+{
+    out1 = MUX (in1, in2, in3); 
+    out2 = out3 = NOT(in5);
+}
