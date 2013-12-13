@@ -34,6 +34,262 @@ char * token_type (int type)
     }
 }
 
+static int allowed_char (char c, char *allowed)
+{
+    char *ptr = allowed;
+    while (*ptr) {
+        if ( *ptr == c ) return 1;
+        ptr++;
+    }
+    return 0;
+}
+
+void convertnum ( char *string, int base, token_t * token )
+{
+    char *ptr = string, ch, * allowed, temp[64];
+    int len = strlen (string), bit = 31, i;
+    unsigned long hex;
+
+    memset ( token->num, '0', 32 );
+    token->num[32] = 0;
+
+    if (base == 2) {
+        while (--len >= 0) {
+            ch = string[len];
+            if ( isdigit (ch) ) token->num[bit--] = ch;
+            else if ( ch == 'x' || ch == 'X' || ch == '?' ) token->num[bit--] = 'x';
+            else if ( ch == 'z' || ch == 'Z' ) token->num[bit--] = 'z';
+            else if ( ch == '/' ) token->num[bit--] = '/';
+            else if ( ch == '\\' ) token->num[bit--] = '\\';
+        }
+    }
+
+    else if (base == 8) {
+        allowed = "01234567xXzZ?/\\_";
+        while (--len >= 0) {
+            ch = string[len];
+            if ( allowed_char (ch, allowed) ) {
+                switch (ch)
+                {
+                    case '0':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '1':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '2':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '3':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '4':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case '5':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case '6':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+                    case '7':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'x':
+                    case 'X':
+                    case '?':
+                        token->num[bit--] = 'x';
+                        token->num[bit--] = 'x';
+                        token->num[bit--] = 'x';
+                        break;
+                    case 'z':
+                    case 'Z':
+                        token->num[bit--] = 'z';
+                        token->num[bit--] = 'z';
+                        token->num[bit--] = 'z';
+                        break;
+                    case '/':
+                        token->num[bit--] = '/';
+                        token->num[bit--] = '/';
+                        token->num[bit--] = '/';
+                        break;
+                    case '\\':
+                        token->num[bit--] = '\\';
+                        token->num[bit--] = '\\';
+                        token->num[bit--] = '\\';
+                        break;
+                }
+            }
+        }
+    }
+
+    else if (base == 16) {
+        allowed = "0123456789abcdefABCDEFxXzZ?/\\_";
+        while (--len >= 0) {
+            ch = string[len];
+            if ( allowed_char (ch, allowed) ) {
+                switch (ch)
+                {
+                    case '0':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '1':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '2':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '3':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        break;
+                    case '4':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '5':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '6':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '7':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        break;
+                    case '8':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case '9':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'a':
+                    case 'A':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'b':
+                    case 'B':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'c':
+                    case 'C':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'd':
+                    case 'D':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'e':
+                    case 'E':
+                        token->num[bit--] = '0';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+                    case 'f':
+                    case 'F':
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        token->num[bit--] = '1';
+                        break;
+
+                    case 'x':
+                    case 'X':
+                    case '?':
+                        token->num[bit--] = 'x';
+                        token->num[bit--] = 'x';
+                        token->num[bit--] = 'x';
+                        token->num[bit--] = 'x';
+                        break;
+                    case 'z':
+                    case 'Z':
+                        token->num[bit--] = 'z';
+                        token->num[bit--] = 'z';
+                        token->num[bit--] = 'z';
+                        token->num[bit--] = 'z';
+                        break;
+                    case '/':
+                        token->num[bit--] = '/';
+                        token->num[bit--] = '/';
+                        token->num[bit--] = '/';
+                        token->num[bit--] = '/';
+                        break;
+                    case '\\':
+                        token->num[bit--] = '\\';
+                        token->num[bit--] = '\\';
+                        token->num[bit--] = '\\';
+                        token->num[bit--] = '\\';
+                        break;
+                }
+            }
+        }
+    }
+
+    else if (base == 10) {
+        hex = strtoul ( string, 0, 10);
+        sprintf ( temp, "%08X", hex );
+        convertnum ( temp, 16, token );
+    }
+
+//    printf ( "Number : %s\n", token->num );
+}
+
 void tokenize_file ( unsigned char * content, int filesize )   // подключить загруженный файл 
 {
     tokenization_started = 0;
@@ -73,21 +329,11 @@ static void putback (void)   // положить назад где взяли
     if ( token_source_pointer > 0 ) token_source_pointer--;
 }
 
-static int allowed_char (char c, char *allowed)
-{
-    char *ptr = allowed;
-    while (*ptr) {
-        if ( *ptr == c ) return 1;
-        ptr++;
-    }
-    return 0;
-}
-
 static void setop (int op)
 {
     current_token.type = TOKEN_OP;
     current_token.op = op;
-    strcpy ( current_token.string, opstr[op] );
+    strcpy ( current_token.string, opstr(op) );
 }
 
 static void setopback (int op)
@@ -95,7 +341,7 @@ static void setopback (int op)
     putback ();
     current_token.type = TOKEN_OP;
     current_token.op = op;
-    strcpy ( current_token.string, opstr[op] );
+    strcpy ( current_token.string, opstr(op) );
 }
 
 token_t * next_token (void)  // получить следующий токен или вернуть NULL, если конец файла
@@ -127,11 +373,24 @@ token_t * next_token (void)  // получить следующий токен �
         if (empty) return NULL;
     }
 
-    // пропускаем однострочные комментарии
+    // пропускаем комментарии
     if (ch == '/') {
         ch = nextch (&empty);
-        if (empty || ch != '/') {    // если дальше ничего нет или второй символ не / - вернуть
+        if (empty || (ch != '/' && ch != '*') ) {    // если дальше ничего нет или второй символ не / и не * - вернуть
             if (!empty) putback ();   // вернуть если не пусто
+        }
+        else if (ch == '*') {   // пропустим все символы до комбинации */  или до конца файла
+            while (!empty) {
+                ch = nextch (&empty);
+                if (empty) break;
+                if (ch == '*') {
+                    ch = nextch (&empty);
+                    if (empty || ch == '/') break;
+                    else if (ch == '\n') VM_LINE++;
+                }
+                else if (ch == '\n') VM_LINE++;
+            }
+            if (empty) return NULL;
         }
         else {   // пропустим все символы до конца строка '\n' или конца файла
             while (!empty) {
@@ -142,10 +401,6 @@ token_t * next_token (void)  // получить следующий токен �
         }
     }
     // .... если после пропуска однострочных комментариев в строке остались пробелы или табуляции, то дальнейшее исполнение ни к чему не приведёт и вернется TOKEN_NULL.
-
-    // пропускаем многострочные комментарии
-
-    // .... если после пропуска многострочных комментариев в строке остались пробелы или табуляции, то дальнейшее исполнение ни к чему не приведёт и вернется TOKEN_NULL.
 
     // идентификаторы / ключевые слова
     if ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch == '_') )
@@ -186,92 +441,47 @@ token_t * next_token (void)  // получить следующий токен �
     // числа
     if (current_token.type == TOKEN_NULL) 
     {
-/*
-        if (isdigit(ch) || ch == '\'' ) {
-            number[0] = 0;
-            base = 0;
+        if (isdigit(ch))
+        {
+            ptr = number;
+            *ptr++ = ch;   // если за цифрой ничего нет - то вернуть цифру как 10-ное число
+            base = 10;
 
-            // получить размер числа. если за размером не идёт уточняющий префикс, то вернуть размер как 10-чное число.
-            allowed = "0123456789_";
-            if ( allowed_char(ch, allowed) ) {
-                ptr = size;
-                *ptr++ = ch;
-                while ( !empty && allowed_char(ch, allowed) ) {
-                    ch = nextch (&empty);
-                    if (ch != '_' && allowed_char(ch, allowed) ) *ptr++ = ch;
-                }
-                *ptr++ = 0;
-            }
-            else strcpy (size, "32");
+            // выбрать число в указанной сс
+            ch = nextch (&empty);
+            if (!empty) {   // выбрать знаки за цифрой
+                if ( ch == 'b' || ch == 'B' ) base = 2;
+                else if ( ch == 'o' || ch == 'O' ) base = 8;
+                else if ( ch == 'x' || ch == 'X' ) base = 16;
+                else if ( !isdigit(ch) ) putback ();
 
-            // пропустить пробелы.
-            if ( ch <= ' ' ) {
-                while (!empty) {
-                    ch = nextch (&empty);
-                    if (ch == '\n') VM_LINE++;
-                    if (ch <= ' ') continue;
-                    else break;
-                }
-                if (empty) {        // вернуть размер как число.
-                    current_token.type = TOKEN_NUMBER;
-                }
-            }
-
-            // получить основание числа
-            if (ch == '\'' && current_token.type == TOKEN_NULL ) {
-                ch = nextch (&empty);
-                if (!empty) {
-                    if ( ch == 'b' || ch == 'B' ) base = 2;
-                    else if ( ch == 'o' || ch == 'O' ) base = 8;
-                    else if ( ch == 'd' || ch == 'D' ) base = 10;
-                    else if ( ch == 'h' || ch == 'H' ) base = 16;
-                }
-                if (base == 0) warning ("Unknown base : [%c]", ch);
-                if (base == 2) allowed = "01xXzZ?_";
-                else if (base == 8) allowed = "01234567xXzZ?_";
+                if (base == 2) allowed = "0123456789xXzZ?/\\_";
+                else if (base == 8) allowed = "01234567xXzZ?/\\_";
                 else if (base == 10) allowed = "0123456789_";
-                else if (base == 16) allowed = "0123456789abcdefABCDEFxXzZ?_";
-                ch = nextch (&empty);
-            }
-            else {      // вернуть размер как число.
-                putback ();
-                current_token.type = TOKEN_NUMBER;
-            }
+                else if (base == 16) allowed = "0123456789abcdefABCDEFxXzZ?/\\_";
 
-            // пропустить пробелы.
-            if ( ch <= ' ' && current_token.type == TOKEN_NULL ) {
-                while (!empty) {
-                    ch = nextch (&empty);
-                    if (ch == '\n') VM_LINE++;
-                    if (ch <= ' ') continue;
-                    else break;
-                }
-                if (empty) {        // вернуть число 0, если за указанием основания числа ничего нет
-                    current_token.type = TOKEN_NUMBER;
-                    strcpy (size, "0");
+                // выбрать цифры с указанной системой счисления.
+                if (base != 10) ch = nextch (&empty);
+                if ( allowed_char(ch, allowed) && !empty ) {
+                    if (base != 10) ptr = number;
+                    *ptr++ = ch;
+                    while ( !empty && allowed_char(ch, allowed) ) {
+                        ch = nextch (&empty);
+                        if (ch != '_' && allowed_char(ch, allowed) ) *ptr++ = ch;
+                    }
+                    if (!empty) putback ();
                 }
             }
-
-            // выбрать цифры с указанной системой счисления.
-            if ( allowed_char(ch, allowed) && current_token.type == TOKEN_NULL ) {
-                ptr = number;
-                *ptr++ = ch;
-                while ( !empty && allowed_char(ch, allowed) ) {
-                    ch = nextch (&empty);
-                    if (ch != '_' && allowed_char(ch, allowed) ) *ptr++ = ch;
-                }
-                if (!empty) putback ();
-                *ptr++ = 0;
-                current_token.type = TOKEN_NUMBER;
-            }
-
-            // конвертировать число и выполнить популяцию 
-            if ( current_token.type == TOKEN_NUMBER ) {
-                if (base) convertnum (number, &current_token.num, base, 0, atoi(size) - 1);
-                else convertnum (size, &current_token.num, 10, 0, 31);
-            }
+            current_token.type = TOKEN_NUMBER;
+            *ptr++ = 0;
+            if (base == 2) sprintf (current_token.string, "0b%s", number);
+            else if (base == 8) sprintf (current_token.string, "0o%s", number);
+            else if (base == 16) sprintf (current_token.string, "0x%s", number);
+            else if (base == 10) sprintf (current_token.string, "%s", number);
         }
-*/
+
+        // конвертировать строку в двоичное представление
+        if (current_token.type == TOKEN_NUMBER) convertnum ( number, base, &current_token );
     }
 
     // однознаковые операции
