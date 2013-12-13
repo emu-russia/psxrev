@@ -26,6 +26,7 @@ typedef struct var_t        // контекст переменной
 
 typedef struct ref_t        // ссылка на разряд переменной
 {
+    char    name[256];      // debug
     var_t   *ptr;
     int     bit;
 } ref_t;

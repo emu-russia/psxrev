@@ -61,7 +61,7 @@ int vm_load (char *filename)
     VM_LINE = 1;
 
     tokenize_file ( content, filesize);
-    push_parser ( root_parser );
+    push_parser ( rt_parser );
 
     do {    // запустить лексический анализ.
         token = next_token ();
