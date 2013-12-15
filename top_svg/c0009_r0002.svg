@@ -2023,9 +2023,9 @@
      inkscape:window-height="706"
      id="namedview4679"
      showgrid="false"
-     inkscape:zoom="1.5424836"
-     inkscape:cx="1035.468"
-     inkscape:cy="362.02946"
+     inkscape:zoom="2.1814012"
+     inkscape:cx="1457.1892"
+     inkscape:cy="702.24223"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -6989,7 +6989,7 @@
     <g
        style="display:inline"
        id="g4801-6"
-       transform="matrix(0.3,0,0,0.3,1141.9347,1175.6901)">
+       transform="matrix(0.3,0,0,0.3,1140.638,1172.4486)">
       <g
          id="g3716-5"
          style="display:inline"
@@ -8114,7 +8114,7 @@
          style="fill:#ff00ff;fill-opacity:1;stroke:#ff00ff;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
     <g
-       transform="matrix(-0.3,0,0,-0.3,1828.3937,1485.9069)"
+       transform="matrix(-0.3,0,0,-0.3,1827.7454,1481.0446)"
        style="display:inline"
        id="g6685-7">
       <rect
@@ -9435,7 +9435,7 @@
          id="rect46259"
          style="fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
       <path
-         d="m 1794.549,1579.7574 a 6.1588984,6.4155192 0 1 1 -12.3178,0 6.1588984,6.4155192 0 1 1 12.3178,0 z"
+         d="m 1794.549,1579.7574 c 0,3.5432 -2.7574,6.4156 -6.1589,6.4156 -3.4014,0 -6.1589,-2.8724 -6.1589,-6.4156 0,-3.5431 2.7575,-6.4155 6.1589,-6.4155 3.4015,0 6.1589,2.8724 6.1589,6.4155 z"
          sodipodi:ry="6.4155192"
          sodipodi:rx="6.1588984"
          sodipodi:cy="1579.7574"
@@ -10752,7 +10752,7 @@
          id="rect46259-9"
          style="fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
       <path
-         d="m 1794.549,1579.7574 a 6.1588984,6.4155192 0 1 1 -12.3178,0 6.1588984,6.4155192 0 1 1 12.3178,0 z"
+         d="m 1794.549,1579.7574 c 0,3.5432 -2.7574,6.4156 -6.1589,6.4156 -3.4014,0 -6.1589,-2.8724 -6.1589,-6.4156 0,-3.5431 2.7575,-6.4155 6.1589,-6.4155 3.4015,0 6.1589,2.8724 6.1589,6.4155 z"
          sodipodi:ry="6.4155192"
          sodipodi:rx="6.1588984"
          sodipodi:cy="1579.7574"
@@ -12885,7 +12885,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(-0.3,0,0,-0.3,1935.8633,977.15352)"
+       transform="matrix(-0.3,0,0,-0.3,1936.5509,977.84115)"
        id="g51278-5">
       <rect
          y="973.00488"
@@ -13073,7 +13073,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,657.65,257.1338)"
+       transform="matrix(0.3,0,0,0.3,658.56684,256.21696)"
        id="g72999-5-4-2">
       <rect
          y="1232.1273"
@@ -13169,7 +13169,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,626.72399,272.92835)"
+       transform="matrix(0.3,0,0,0.3,625.57794,272.24072)"
        id="g58054-8-3">
       <rect
          y="1111.1678"
@@ -13263,7 +13263,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,947.53327,192.26107)"
+       transform="matrix(0.3,0,0,0.3,947.99169,189.73975)"
        id="g53805-7">
       <rect
          rx="3.1851151"
@@ -13412,7 +13412,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,1033.1555,132.45155)"
+       transform="matrix(0.3,0,0,0.3,1034.3016,131.3055)"
        id="g48733-3">
       <rect
          y="1433.9968"
@@ -13482,7 +13482,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,950.93211,147.72222)"
+       transform="matrix(0.3,0,0,0.3,947.72317,143.36722)"
        id="g53805-3-6">
       <rect
          rx="3.1851151"
@@ -13631,7 +13631,7 @@
     </g>
     <g
        style="display:inline"
-       transform="matrix(0.3,0,0,0.3,1035.0006,89.165086)"
+       transform="matrix(0.3,0,0,0.3,1031.104,85.95614)"
        id="g48733-3-0">
       <rect
          y="1433.9968"
@@ -15623,7 +15623,7 @@
          style="fill:#ff00ff;fill-opacity:1;stroke:#ff00ff;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
     <g
-       transform="matrix(0.3,0,0,0.3,817.39683,168.43799)"
+       transform="matrix(0.3,0,0,0.3,817.39683,167.75036)"
        style="display:inline"
        id="g46897">
       <rect
