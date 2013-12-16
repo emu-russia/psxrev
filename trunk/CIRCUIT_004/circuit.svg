@@ -9924,9 +9924,9 @@
      inkscape:window-height="706"
      id="namedview2987"
      showgrid="false"
-     inkscape:zoom="0.37629146"
-     inkscape:cx="1963.9001"
-     inkscape:cy="3128.868"
+     inkscape:zoom="3.0103317"
+     inkscape:cx="1016.4891"
+     inkscape:cy="2231.4896"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -9938,12 +9938,12 @@
   <image
      sodipodi:absref="C:\Andruxa\psxdev\CIRCUIT_004\m1.jpg"
      xlink:href="m1.jpg"
-     width="4229"
-     height="5517"
-     id="image2993"
-     x="-2.7595658"
+     transform="matrix(0.9999995,-0.001,0.001,0.9999995,0,0)"
      y="2.1131287"
-     transform="matrix(0.9999995,-0.001,0.001,0.9999995,0,0)" />
+     x="-2.7595658"
+     id="image2993"
+     height="5517"
+     width="4229" />
   <g
      inkscape:groupmode="layer"
      id="layer1"
@@ -9952,12 +9952,12 @@
     <image
        sodipodi:absref="C:\Andruxa\psxdev\CIRCUIT_004\m2.jpg"
        xlink:href="m2.jpg"
-       y="235.2489"
-       x="-950.61285"
-       id="image3006"
-       height="6562.3198"
+       transform="matrix(0.999998,0.00200001,-0.00200001,0.999998,0,0)"
        width="5151.7539"
-       transform="matrix(0.999998,0.00200001,-0.00200001,0.999998,0,0)" />
+       height="6562.3198"
+       id="image3006"
+       x="-950.61285"
+       y="235.2489" />
   </g>
   <g
      inkscape:groupmode="layer"
