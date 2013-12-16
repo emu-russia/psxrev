@@ -15,7 +15,10 @@
    inkscape:version="0.48.4 r9939"
    width="4229"
    height="5517"
-   sodipodi:docname="circuit.svg">
+   sodipodi:docname="circuit.svg"
+   inkscape:export-filename="C:\Andruxa\psxdev\CIRCUIT_004\circuit_004_topo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <metadata
      id="metadata2991">
     <rdf:RDF>
@@ -24,7 +27,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -9924,9 +9927,9 @@
      inkscape:window-height="706"
      id="namedview2987"
      showgrid="false"
-     inkscape:zoom="3.0103317"
-     inkscape:cx="1016.4891"
-     inkscape:cy="2231.4896"
+     inkscape:zoom="0.094072865"
+     inkscape:cx="2307.3153"
+     inkscape:cy="2290.8521"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
