@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2985"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   width="4229"
+   height="5517"
+   sodipodi:docname="m1.svg">
+  <metadata
+     id="metadata2991">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2989" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="706"
+     id="namedview2987"
+     showgrid="false"
+     inkscape:zoom="0.094072866"
+     inkscape:cx="1792.0957"
+     inkscape:cy="3874.8024"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2985">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2995" />
+  </sodipodi:namedview>
+  <image
+     sodipodi:absref="C:\Andruxa\psxdev\CIRCUIT_004\m1.jpg"
+     xlink:href="m1.jpg"
+     transform="matrix(0.9999995,-0.001,0.001,0.9999995,0,0)"
+     y="2.1131287"
+     x="-2.7595658"
+     id="image2993"
+     height="5517"
+     width="4229" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="m2_img"
+     style="opacity:1;display:inline">
+    <image
+       sodipodi:absref="C:\Andruxa\psxdev\CIRCUIT_004\m2.jpg"
+       xlink:href="m2.jpg"
+       transform="matrix(0.999998,0.00200001,-0.00200001,0.999998,0,0)"
+       width="5151.7539"
+       height="6562.3198"
+       id="image3006"
+       x="-950.61285"
+       y="235.2489" />
+  </g>
+</svg>
