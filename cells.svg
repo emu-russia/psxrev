@@ -33,22 +33,6 @@
          offset="1"
          id="stop70941" />
     </linearGradient>
-    <pattern
-       inkscape:stockid="Stripes 1:1"
-       id="Strips1_1"
-       patternTransform="translate(0,0) scale(10,10)"
-       height="1"
-       width="2"
-       patternUnits="userSpaceOnUse"
-       inkscape:collect="always">
-      <rect
-         id="rect70222"
-         height="2"
-         width="1"
-         y="-0.5"
-         x="0"
-         style="fill:black;stroke:none" />
-    </pattern>
     <inkscape:path-effect
        effect="spiro"
        id="path-effect12945"
@@ -10106,9 +10090,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.78431373"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.48762335"
-     inkscape:cx="302.8428"
-     inkscape:cy="2249.7891"
+     inkscape:zoom="2.9038775"
+     inkscape:cx="509.79832"
+     inkscape:cy="1864.5553"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -53749,6 +53733,116 @@
            x="-1807.0486"
            id="tspan70999"
            sodipodi:role="line">NOT</tspan></text>
+    </g>
+    <g
+       id="g40451">
+      <rect
+         ry="2.5170844"
+         y="373.19986"
+         x="1293.1311"
+         height="121.15237"
+         width="202.07864"
+         id="rect39818"
+         style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:3.06487346;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.5170844"
+         transform="translate(0,-200)"
+         y="653.40497"
+         x="1382.2897"
+         height="15.152155"
+         width="16.185255"
+         id="rect40328"
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.5170844"
+         transform="translate(0,-200)"
+         y="671.65643"
+         x="1405.0179"
+         height="12.741585"
+         width="13.774686"
+         id="rect40330"
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.5170844"
+         transform="translate(0,-200)"
+         y="627.23303"
+         x="1403.6405"
+         height="13.430319"
+         width="13.430319"
+         id="rect40332"
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.5170844"
+         transform="translate(0,-200)"
+         y="577.98853"
+         x="1424.3025"
+         height="15.840889"
+         width="16.529623"
+         id="rect40334"
+         style="fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text40336"
+         y="1326.3513"
+         x="-467.47797"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="1326.3513"
+           x="-467.47797"
+           id="tspan40338"
+           sodipodi:role="line">3-NAND4X</tspan></text>
+    </g>
+    <g
+       id="g40999">
+      <rect
+         ry="2.6331832"
+         transform="translate(0,-200)"
+         y="1278.7507"
+         x="406.16525"
+         height="80.356438"
+         width="201.13458"
+         id="rect40985"
+         style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.6331832"
+         transform="translate(0,-200)"
+         y="1314.5898"
+         x="495.8887"
+         height="14.46342"
+         width="16.185255"
+         id="rect40987"
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.6331832"
+         transform="translate(0,-200)"
+         y="1311.4906"
+         x="518.9613"
+         height="17.218357"
+         width="16.185255"
+         id="rect40991"
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="2.6331832"
+         transform="translate(0,-200)"
+         y="1280.4976"
+         x="537.90149"
+         height="16.529623"
+         width="17.907091"
+         id="rect40993"
+         style="fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text40995"
+         y="431.73486"
+         x="-1154.5398"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="431.73486"
+           x="-1154.5398"
+           id="tspan40997"
+           sodipodi:role="line">NAND3X</tspan></text>
     </g>
   </g>
 </svg>
