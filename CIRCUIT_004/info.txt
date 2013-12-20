@@ -1,7 +1,11 @@
+Register Select (?)
+
 inputs: 13
 outputs: 7
 
-0x1F801000-0x1F80???? - регистры аппаратуры
+-------------------------------------------------------------
+
+0x1F801000-0x1F80???? - hardware registers
 
 Bus Unit control
 0x1f801000
@@ -92,3 +96,26 @@ SPU
 DEBUG
 0x1f802030	- int_2000
 0x1f802040	- dip_switches
+
+
+-------------------------------------------------------------
+
+
+DFF=out8
+	6-NOR:
+		1: not, 3-or
+			1: in6
+			2: in5
+			3: in4 or in13
+		2: 3-NAND:
+			1: 3-AND:
+				1: 3-OR:
+					1: NOT,NOT, in3
+
+NAND	4
+OR/NOR	2
+OR	8
+3-OR	5
+3-AND	1
+3-NAND	1
+3-NOR	2
