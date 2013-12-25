@@ -1,14 +1,16 @@
-x = MUX (in5, NOT(in4), in4);
 
-if (x == 0)
-{
-    out1 = IMUX (in1, in2, in3);
-    out2 = NOT(in3);
-    out3 = NOT(in2);
-}
+in4 : sum
+in5 : carry
 
-if (x == 1)
-{
-    out1 = MUX (in1, in2, in3); 
-    out2 = out3 = NOT(in5);
-}
+------------------------------------------------
+
+x = XNOR (in4, in5)
+
+x = 0: sum != carry
+out1 = !MUX (in1, in2, in3);
+out2 = !in3;
+out3 = !in2;
+
+x = 1: sum == carry
+out1 = MUX (in1, in2, in3);
+out2 = out3 = !in5;
