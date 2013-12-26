@@ -1,0 +1,11 @@
+x = XNOR (in4, in5)
+
+if (x = 0):
+out1 = !MUX (in1, in2, in3);
+out2 = !in2;
+out3 = !in3;
+
+if (x = 1):
+out1 = MUX (in1, in2, in3);
+out2 = out3 = !in5;
+
