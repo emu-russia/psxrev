@@ -1,0 +1,132 @@
+
+Font:
+	REMOVED- the fonts fall back to using GLUT when no font is loaded. In that case,
+	the output of the positions of the rendered fonts (std::vector< Rect<int> > *char_pos_out)
+	doesnt work.
+		solve: probably remove GLUT fallback alltogether.
+	FIXED in renderStringMultiline(): handle tabs, enter
+	FIXED-take care of other non-printable characters
+	OK-test:are non-printable characters working for renderString()???
+	FIXED: REGISTER THE POSITIONS OF NON-PRINTABLE CHARACTERS
+	- support for non-cached font rendering with FreeType
+		(for when a large number of very different fonts is needed)
+
+RadioButtons:
+	FIXED: when inactive, the radiobutton image appears 1px to the left
+	FIXED: grouping
+	
+Container:
+	FIXED: in mouse methods, correct the coordinates passed to the mouse*Ex methods
+			to be local (subtract m_left, m_top)
+	FIXED: correct the AWFUL AND ABSOLUTELY STUPID AND DISGUSTING code in mouseDown
+			method, to correctly handle component z-order, without special cases
+			for always-on-top - keep m_children list z-ordered!
+	FIXED?(check) Wrong coordinates on click in nested containers!!!
+			
+Menu:
+	FIXED: click works on menuitems only if it is on the item text
+	FIXED: fix general structure
+	fix nested submenus
+	provide pop-up menus
+	FIXED: provide check-able menu items
+	active/inactive menu items
+	
+Slider:
+	FIXED: HARDCODED labels!!
+	-if bindValue() is called with an invalid value in the live variable,
+		rendering of the Slider fails explosively. Fix!
+	
+Dialog:
+	general structure for modal dialogs (needs revision!)
+	make a dialog assembler, to easily create label-field assemblies for dialogs (most of
+		the time, dialogs just have labels on the left and corresponding fields on the right)
+		-SEE DialogFactory class
+	
+General:
+	use functors instead of callbacks
+	create a central class to store position of the widget images in the files
+		to avoid hardcoded texture coordinates
+	combine the above with a general texture manager
+	add a central rendering unit to minimize texture/state changes. Keep
+		dirty flags for geometry and maintain display lists
+		
+Component/Container:
+	FIXED: ReleaseFocus does not work (it's not triggered)
+	
+BaseApp_Win:
+	FIXED hardcoded font path!! (D:\\Windows\\Fonts\\tahoma.ttf)
+	-check if tahoma.ttf can be redistributed. Find free tahoma font otherwise
+	-cannot distringuish between left and right shift/ctrl, the key code is the same
+	-key translation from windows codes works ok but can cause problems in the future
+	-ctrl+[char] gives different key codes
+
+TimeSeries:
+	-Updater::update_all is now called from BaseApp_Win. There should be a mechanism
+	for asynchronous updates, so that the new value of a variable is calculated when
+	it's needed. This will get rid of a lot of redundant computations that now take place.
+	
+ResourceManager:
+	loads resources relative to APPLICATION working dir (like ../bgui/resources/)
+	
+TextBox:
+	-scrolling not implemented
+	
+EditableText:
+	-create(x,y,...) takes y as the TOP coordinate??? SHOULD BE BOTTOM
+	FIXED:-there are dead zones between the lines - a click there sets the cursor to the beginning of the text
+	FIXED:-putting the mouse beyond the end of the line sometimes takes the cursor to the beginning
+	FIXED: the cursor is not blinking - it's now FADING in and out :D
+	FIXED:program crashes on enter
+	-other special keys not recognised
+		FIXED: home/end, ctrl+home/end
+		page up/page down
+	FIXED: shift+arrows etc not implemented
+	-drag n drop not implemented
+	-copy/paste not implemented
+	-right click not implemented
+	-problem with up/down in single-letter columns
+	-TODO: test single-line editableText
+	-create event hooks
+		FIXED:-make m_text a live variable
+	-make sure it's COPY-SAFE (As well as LiveVar) - SEEMS OK
+	-ctrl+a not implemented
+	-if user presses UP arrow when cursor is somewhere in the first line, cursor disappears (and it stays in the same place)
+	-text gets selected when dragging around a window that contains a textbox (and the cursor is somewhere other 
+	than the beginning of the text)
+	
+ListBox:
+	FIXED:-when shift-selecting, the start of the selection always changes to the last clicked item
+	FIXED:-in single-click multi-select, shift doesnt work
+	-page up/page down dont work
+	-current item not visible for key selection
+	-window doesnt scroll as selection moves with arrows
+	FIXED:-shift doesnt work with key selection (with space)
+	-support for non-cached fonts, different for each item
+		-example of use:make a font selection list
+	-Ctrl+A not working, problem with key codes
+	-create event hooks
+	-editableText not used when rendering
+	-no option to edit item text
+	-shift-selection is a bit weird in multi-select-singleclick
+	-deselecting after shift-selection can be troublesome in multi-select-singleclick (no way for mass-deselect of items)
+	
+	features:
+		3 different visual styles (flat, striped, button-like)
+		3 different selection modes (single selection, multiple, and multiple with single click (instead of control))
+		a vertical scroller appears automatically when contents are more than the vertical size of the window
+		arrows, home, end, ctrl and shift can be used to make selections using the keyboard
+		disabled items appear grayed
+		
+ScrollBar:
+	-appearance not satisfying. Redesign
+	
+ImageBox:
+	-m_bResizeImg has an ill-defined role: it actually only stretches smaller images to fill the component's
+	area, if true. There should be modes to stretch smaller-only, larger-only, all or none, and keep aspect ratio
+	or not.
+	
+ComboBox:
+	-z-order of the ListBox sub-component
+	
+***************URGENT!!!
+	-coordinates work differently for mouseDown and mouseMove, when isPtInside is called (example: Button)!!!!!

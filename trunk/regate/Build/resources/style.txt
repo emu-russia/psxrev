@@ -1,0 +1,260 @@
+#
+# This is the default stylesheet for beGUI
+#
+
+class Button {
+	style std_old {
+		image face_up = 410,32,505,58, widgets.bmp
+		color main_color = 255,255,255
+		rect resizable_area = 13,13,69,13
+		int default_height = 26
+	}
+	style std {
+		image face_up = 1,209,92,232, gui2_widgets.png
+		#image face_hover = 1,63,100,98, widgets2.png
+		rect active_area = 0, 0, 90, 22
+		color main_color = 255,255,255
+		rect resizable_area = 5,5,85,17
+		int default_height = 23
+	}
+	
+	style scroller_btn_down {
+		image face_up = 144,76,163,96, gui2_widgets.png
+		rect active_area = 2,2,16,18
+		rect resizable_area = 10,10,11,11
+	}
+	style scroller_btn_up {
+		image face_up = 144,53,163,73, gui2_widgets.png
+		rect active_area = 2,2,16,18
+		rect resizable_area = 10,10,11,11
+	}
+	style scroller_btn_left {
+		image face_up = 30,198,61,230, widgets2.png
+		rect resizable_area = 0,0,0,0
+	}
+	style scroller_btn_right {
+		image face_up = 30,231,61,263, widgets2.png
+		rect resizable_area = 0,0,0,0
+	}
+	style scroller_slider {
+		image face_up = 144,1,163,51, gui2_widgets.png
+		rect active_area = 3,1,16,42
+		rect resizable_area = 5,5,12,39
+	}
+	
+	# Styles of the standard buttons for a main window caption
+	style std_wnd_close_btn {
+		image face_up = 60,1,81,22, gui2_wnd_texture.png
+		rect active_area = 3, 3, 18, 18
+		color main_color = 255,255,255
+		rect resizable_area = 10,10,11,11
+		int default_width = 21
+		int default_height = 21
+	}
+	style std_wnd_max_btn {
+		image face_up = 82,1,103,22, gui2_wnd_texture.png
+		rect active_area = 3, 3, 18, 18
+		color main_color = 255,255,255
+		rect resizable_area = 10,10,11,11
+		int default_width = 21
+		int default_height = 21
+	}
+	style std_wnd_min_btn {
+		image face_up = 104,1,125,22, gui2_wnd_texture.png
+		rect active_area = 3, 3, 18, 18
+		color main_color = 255,255,255
+		rect resizable_area = 10,10,11,11
+		int default_width = 21
+		int default_height = 21
+	}
+}
+
+##############################################################
+class ScrollBar {
+	style std_old {
+	}
+	style std {
+		image bg = 168,2,181,129, gui2_widgets.png
+	}
+}
+
+##############################################################
+class Window {
+	style std {
+		image window_bg = 0,74,423,511, gui2_wnd_texture.png
+		rect window_active_area = 18,12,402,412			#active area relative to the top left corner of the face
+		rect window_resizable_area = 26,20,393,404		#resizable area relative to the top left corner of the face
+		
+		image caption = 0,25,438,74, gui2_wnd_texture.png
+		rect caption_resizable_area = 23,30,412,30
+		rect caption_active_area = 17,12,419,35
+		int caption_y_pos = 16
+		color caption_text_color = 220,220,220
+		
+		rect border_size = 2,2,2,2	#width of the window border for each of the 4 sides
+	}
+	
+	style std_framewnd {
+		image window_bg = 0,74,423,511, gui2_wnd_texture.png
+		rect window_active_area = 18,12,402,412			#active area relative to the top left corner of the face
+		rect window_resizable_area = 26,20,393,404		#resizable area relative to the top left corner of the face
+		
+		image caption = 0,25,438,74, gui2_wnd_texture.png
+		rect caption_resizable_area = 23,30,412,30
+		rect caption_active_area = 17,12,419,35
+		int caption_y_pos = 16
+		color caption_text_color = 220,220,220
+		
+		rect border_size = 2,2,2,2	#width of the window border for each of the 4 sides
+	}
+	
+	style std_transparent {
+		image window_bg = 481,5,507,23, gui2_wnd_texture.png
+		rect window_active_area = 0,0,26,18			#active area relative to the top left corner of the face
+		rect window_resizable_area = 8,8,17,9		#resizable area relative to the top left corner of the face
+		
+		image caption = 0,25,438,74, gui2_wnd_texture.png
+		rect caption_resizable_area = 23,30,412,30
+		rect caption_active_area = 17,12,419,35
+		int caption_y_pos = 16
+		color caption_text_color = 220,220,220
+		
+		rect border_size = 2,2,2,2	#width of the window border for each of the 4 sides
+	}
+}
+
+##############################################################
+class Menu {
+	style std {
+		image menubar_face = 1,1,56,26, gui2_wnd_texture.png
+		rect resizable_area = 4,0,51,0
+		rect active_area = 0,0,56,17
+		color mainmenu_text_color = 230,230,230
+	}
+}
+
+##############################################################
+class ListBox {
+	style std_simple {
+	}
+	style std {
+		image face = 1,1,119,159, gui2_widgets.png
+		rect active_area = 0,0,118,158
+		rect resizable_area = 8,8,109,149
+		rect padding = 15,4,15,4
+		rect scrollbar_padding = 0, 14, 14, 14	#padding between the edges of the scrollbar and the edges of the listbox. Left is not used
+	}
+	style std_shadow {
+		image face = 184,0,311,169, gui2_widgets.png
+		rect active_area = 4,1,122,159
+		rect resizable_area = 12,9,113,150
+		rect padding = 5,4,5,4
+		rect scrollbar_padding = 0, 10, 10, 10	#padding between the edges of the scrollbar and the edges of the listbox. Left is not used
+	}
+}
+
+class TextBox {
+	style std {
+		image face = 312,0,425,165, gui2_widgets.png
+		rect active_area = 2,1,111,162
+		rect resizable_area = 10,11,104,158
+		rect text_padding = 7,5,7,5
+		color text_color = 50,50,50
+	}
+}
+
+class ComboBox {
+	style std {
+		image face = 1,181, 134,204, gui2_widgets.png
+		image expand_icon = 127,141,140,156, gui2_widgets.png
+		rect active_area = 4,2,130,19
+		rect resizable_area = 7,7,123,14
+		color text_color = 240,240,240
+		int text_pos_x = 5
+		int text_pos_y = 12
+	}
+	style std_small {
+	}
+}
+
+class RadioButton {
+	style std {
+		image face_up = 162,138,181,157, gui2_widgets.png
+		image face_down = 162,158,181,177, gui2_widgets.png
+		rect active_area = 2, 2, 16, 16
+	}
+}
+
+class Slider {
+	style std_old {
+	}
+	style std {
+		image slider_bg = 145,183,333,205, gui2_widgets.png
+		rect slider_active_area = 3,2,181,15
+		rect slider_resizable_area = 8,7,176,8
+		color slider_text_color = 255,255,255
+		color label_text_color = 80,80,80
+		image label_bg = 344,183,407,198, gui2_widgets.png
+		rect label_active_area = 19,0,63,15
+		rect label_resizable_area = 25,3,54,12
+	}
+}
+
+class GroupBox {
+	style std_neat {
+		image bg = 1,342,152,510, gui2_widgets.png
+		rect resizable_area = 7,7,137,155
+		rect active_area = 0,0,151,161
+	}
+	style std_3d {
+		image bg = 309,332,466,511, gui2_widgets.png
+		rect resizable_area = 10,9,146,162
+		rect active_area = 3,2,154,170
+	}
+	style std {
+		image bg = 154,341,307,511, gui2_widgets.png
+		rect resizable_area = 8,8,138,156
+		rect active_area = 0,0,153,163
+	}
+}
+
+class TabContainer {
+	style std {
+		image client_area_bg = 1,342,152,510, gui2_widgets.png
+		rect resizable_area = 7,7,137,155
+		rect active_area = 0,0,151,161
+		image tab_active = 1,233,77,258, gui2_widgets.png
+		image tab_inactive = 78,233,154,252, gui2_widgets.png
+		rect tab_active_area = 0,0,75,18
+		rect tab_resizable_area = 5,5,70,12
+		color active_tab_text = 30,30,30
+		color inactive_tab_text = 225,225,225
+		int tab_min_width = 10
+		int tab_text_padding = 12
+		image active_bottom_img = 156,236,171,249, gui2_widgets.png
+	}
+}
+
+class CheckBox {
+	style std {
+		image checked_face = 96,210,114,228, gui2_widgets.png
+		image unchecked_face = 117,210,135,228, gui2_widgets.png
+		rect active_area = 2,2,14,14
+	}
+}
+
+class Component {
+	style std {
+		image active_frame = 448,1,498,45, gui2_widgets.png
+		rect frame_resizable_area = 11,12,38,33
+		rect frame_offs = 7,7,8,9
+	}
+}
+
+##############################################################
+
+class Vias {
+	style std {
+		int radius = 2;
+	}
+}
