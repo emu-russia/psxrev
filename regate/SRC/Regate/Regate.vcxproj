@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Libs\bcore\BaseTextFile.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\BaseTexture.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\BBox.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\bitmap.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Console.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\CubeTexture.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\edgedetection.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Image.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\lodepng\lodepng.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\memory.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\misc.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\PBuffer.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\RenderPass.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Resampling.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\RNL\rgbe.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Texture.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Texture3D.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\TextureManager.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Thread.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Trackball.cpp" />
+    <ClCompile Include="..\..\Libs\bcore\Viewport.cpp" />
+    <ClCompile Include="..\..\Libs\begui\BaseApp_Win.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Button.cpp" />
+    <ClCompile Include="..\..\Libs\begui\CheckBox.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ComboBox.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Component.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Container.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Dialog.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Display.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Dockable.cpp" />
+    <ClCompile Include="..\..\Libs\begui\EditableText.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Font.cpp" />
+    <ClCompile Include="..\..\Libs\begui\FontManager.cpp" />
+    <ClCompile Include="..\..\Libs\begui\FrameWindow.cpp" />
+    <ClCompile Include="..\..\Libs\begui\FrameWindow_Win32.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Group.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ImageBox.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Input.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Label.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ListBox.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Menu.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ProgressManager.cpp" />
+    <ClCompile Include="..\..\Libs\begui\RadioButton.cpp" />
+    <ClCompile Include="..\..\Libs\begui\RegionSelectGizmo.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ResourceManager.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Roller.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ScrollBar.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Slider.cpp" />
+    <ClCompile Include="..\..\Libs\begui\System.cpp" />
+    <ClCompile Include="..\..\Libs\begui\TabContainer.cpp" />
+    <ClCompile Include="..\..\Libs\begui\TextBox.cpp" />
+    <ClCompile Include="..\..\Libs\begui\timeseries.cpp" />
+    <ClCompile Include="..\..\Libs\begui\ViewportComponent.cpp" />
+    <ClCompile Include="..\..\Libs\begui\Window.cpp" />
+    <ClCompile Include="..\..\Libs\begui\WindowBuffered.cpp" />
+    <ClCompile Include="..\Application.cpp" />
+    <ClCompile Include="..\Vias.cpp" />
+    <ClCompile Include="..\Wire.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Libs\bcore\BaseTextFile.h" />
+    <ClInclude Include="..\..\Libs\bcore\BaseTexture.h" />
+    <ClInclude Include="..\..\Libs\bcore\BBox.h" />
+    <ClInclude Include="..\..\Libs\bcore\Color.h" />
+    <ClInclude Include="..\..\Libs\bcore\common.h" />
+    <ClInclude Include="..\..\Libs\bcore\Console.h" />
+    <ClInclude Include="..\..\Libs\bcore\drawline.h" />
+    <ClInclude Include="..\..\Libs\bcore\drawtriangle.h" />
+    <ClInclude Include="..\..\Libs\bcore\draw_line_hermite.h" />
+    <ClInclude Include="..\..\Libs\bcore\draw_triangle_hermite.h" />
+    <ClInclude Include="..\..\Libs\bcore\fillpoly2d.h" />
+    <ClInclude Include="..\..\Libs\bcore\histogram.h" />
+    <ClInclude Include="..\..\Libs\bcore\Image.h" />
+    <ClInclude Include="..\..\Libs\bcore\interpolation.h" />
+    <ClInclude Include="..\..\Libs\bcore\LineLineIntersect.h" />
+    <ClInclude Include="..\..\Libs\bcore\lodepng\lodepng.h" />
+    <ClInclude Include="..\..\Libs\bcore\Matrix.h" />
+    <ClInclude Include="..\..\Libs\bcore\Matrix3.h" />
+    <ClInclude Include="..\..\Libs\bcore\Matrix4.h" />
+    <ClInclude Include="..\..\Libs\bcore\memory.h" />
+    <ClInclude Include="..\..\Libs\bcore\misc.h" />
+    <ClInclude Include="..\..\Libs\bcore\PBuffer.h" />
+    <ClInclude Include="..\..\Libs\bcore\Rect.h" />
+    <ClInclude Include="..\..\Libs\bcore\RenderPass.h" />
+    <ClInclude Include="..\..\Libs\bcore\RNL\rgbe.h" />
+    <ClInclude Include="..\..\Libs\bcore\sequence.h" />
+    <ClInclude Include="..\..\Libs\bcore\Texture.h" />
+    <ClInclude Include="..\..\Libs\bcore\TextureManager.h" />
+    <ClInclude Include="..\..\Libs\bcore\Thread.h" />
+    <ClInclude Include="..\..\Libs\bcore\Trackball.h" />
+    <ClInclude Include="..\..\Libs\bcore\Vector2.h" />
+    <ClInclude Include="..\..\Libs\bcore\Vector2i.h" />
+    <ClInclude Include="..\..\Libs\bcore\Vector3.h" />
+    <ClInclude Include="..\..\Libs\bcore\Vector4.h" />
+    <ClInclude Include="..\..\Libs\bcore\Viewport.h" />
+    <ClInclude Include="..\..\Libs\begui\BaseApp_Win.h" />
+    <ClInclude Include="..\..\Libs\begui\bgui.h" />
+    <ClInclude Include="..\..\Libs\begui\Button.h" />
+    <ClInclude Include="..\..\Libs\begui\callback.h" />
+    <ClInclude Include="..\..\Libs\begui\CheckBox.h" />
+    <ClInclude Include="..\..\Libs\begui\ComboBox.h" />
+    <ClInclude Include="..\..\Libs\begui\common.h" />
+    <ClInclude Include="..\..\Libs\begui\Component.h" />
+    <ClInclude Include="..\..\Libs\begui\Container.h" />
+    <ClInclude Include="..\..\Libs\begui\Dialog.h" />
+    <ClInclude Include="..\..\Libs\begui\Display.h" />
+    <ClInclude Include="..\..\Libs\begui\Dockable.h" />
+    <ClInclude Include="..\..\Libs\begui\EditableText.h" />
+    <ClInclude Include="..\..\Libs\begui\Font.h" />
+    <ClInclude Include="..\..\Libs\begui\FrameWindow.h" />
+    <ClInclude Include="..\..\Libs\begui\FrameWindow_Win32.h" />
+    <ClInclude Include="..\..\Libs\begui\Group.h" />
+    <ClInclude Include="..\..\Libs\begui\ImageBox.h" />
+    <ClInclude Include="..\..\Libs\begui\Input.h" />
+    <ClInclude Include="..\..\Libs\begui\Label.h" />
+    <ClInclude Include="..\..\Libs\begui\ListBox.h" />
+    <ClInclude Include="..\..\Libs\begui\LiveVar.h" />
+    <ClInclude Include="..\..\Libs\begui\Menu.h" />
+    <ClInclude Include="..\..\Libs\begui\ProgressManager.h" />
+    <ClInclude Include="..\..\Libs\begui\PropertySheet.h" />
+    <ClInclude Include="..\..\Libs\begui\RadioButton.h" />
+    <ClInclude Include="..\..\Libs\begui\RegionSelectGizmo.h" />
+    <ClInclude Include="..\..\Libs\begui\ResourceManager.h" />
+    <ClInclude Include="..\..\Libs\begui\Roller.h" />
+    <ClInclude Include="..\..\Libs\begui\ScrollBar.h" />
+    <ClInclude Include="..\..\Libs\begui\Slider.h" />
+    <ClInclude Include="..\..\Libs\begui\System.h" />
+    <ClInclude Include="..\..\Libs\begui\TabContainer.h" />
+    <ClInclude Include="..\..\Libs\begui\TextBox.h" />
+    <ClInclude Include="..\..\Libs\begui\timeseries.h" />
+    <ClInclude Include="..\..\Libs\begui\util.h" />
+    <ClInclude Include="..\..\Libs\begui\ViewportComponent.h" />
+    <ClInclude Include="..\..\Libs\begui\Window.h" />
+    <ClInclude Include="..\..\Libs\begui\WindowBuffered.h" />
+    <ClInclude Include="..\..\Libs\begui\WindowResourceManager.h" />
+    <ClInclude Include="..\Application.h" />
+    <ClInclude Include="..\bgui.h" />
+    <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\Vias.h" />
+    <ClInclude Include="..\Wire.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\Libs\begui\buglist.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{01162999-CCC5-469A-9092-A861FEF1B616}</ProjectGuid>
+    <RootNamespace>Regate</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../../Libs/GLEW; ../../Libs/freetype</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../Libs/GLEW;../../Libs/freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;glu32.lib;glew32.lib;freetype252.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
+      <OutputFile>../../Build/$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../Libs/GLEW; ../../Libs/freetype</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <OutputFile>../../Build/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>../../Libs/GLEW;../../Libs/freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;glu32.lib;glew32.lib;freetype252.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
