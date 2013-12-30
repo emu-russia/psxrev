@@ -186,7 +186,7 @@ int WINAPI WinMain(HINSTANCE hInstance, // Instance
 	ResourceManager::inst()->setResourceDir("resources/");
 
 	FrameWindow::Options opt;
-	opt.bOwnDraw = true;
+	opt.bOwnDraw = false;   // чтобы сделать полупрозрачный заголовок главного окна - установить в true.
 	opt.bFullScreen = false;
 	opt.nColorBits = 24;
 	opt.nDepthBits = 8;
