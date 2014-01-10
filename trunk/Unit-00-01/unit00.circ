@@ -4102,6 +4102,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="size" val="30"/>
       <a name="inputs" val="2"/>
     </comp>
+    <comp lib="6" loc="(1945,4437)" name="Text">
+      <a name="text" val="row_29"/>
+    </comp>
     <comp lib="1" loc="(1260,2440)" name="AND Gate">
       <a name="facing" val="north"/>
       <a name="size" val="30"/>
@@ -4151,7 +4154,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(200,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_1"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1980,1910)" name="3-AND"/>
@@ -4173,6 +4176,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     </comp>
     <comp loc="(1980,740)" name="3-AND"/>
     <comp loc="(1980,2850)" name="3-AND"/>
+    <comp lib="6" loc="(1949,3915)" name="Text">
+      <a name="text" val="row_25"/>
+    </comp>
     <comp lib="1" loc="(1230,2730)" name="AND Gate">
       <a name="facing" val="south"/>
       <a name="size" val="30"/>
@@ -4187,6 +4193,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp loc="(1510,170)" name="IOBUF">
       <a name="facing" val="west"/>
     </comp>
+    <comp lib="6" loc="(1948,4046)" name="Text">
+      <a name="text" val="row_26"/>
+    </comp>
     <comp loc="(720,4610)" name="ROW">
       <a name="facing" val="south"/>
     </comp>
@@ -4195,6 +4204,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     </comp>
     <comp loc="(1550,4610)" name="ROW">
       <a name="facing" val="south"/>
+    </comp>
+    <comp lib="6" loc="(1949,2876)" name="Text">
+      <a name="text" val="row_17"/>
     </comp>
     <comp loc="(740,170)" name="IOBUF">
       <a name="facing" val="west"/>
@@ -4210,13 +4222,13 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(740,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_10"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="0" loc="(260,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_2"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="1" loc="(1410,2730)" name="AND Gate">
@@ -4237,6 +4249,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="tristate" val="false"/>
       <a name="label" val="3"/>
     </comp>
+    <comp lib="6" loc="(1947,3524)" name="Text">
+      <a name="text" val="row_22"/>
+    </comp>
     <comp lib="0" loc="(2340,180)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
@@ -4252,7 +4267,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(380,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_4"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(720,1450)" name="ROW">
@@ -4286,7 +4301,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(140,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_0"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1450,170)" name="IOBUF">
@@ -4303,17 +4318,20 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1330,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_19"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="0" loc="(1630,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_24"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1550,930)" name="ROW">
       <a name="facing" val="south"/>
+    </comp>
+    <comp lib="6" loc="(1949,3655)" name="Text">
+      <a name="text" val="row_23"/>
     </comp>
     <comp lib="0" loc="(260,80)" name="Pin">
       <a name="facing" val="south"/>
@@ -4386,6 +4404,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp loc="(1550,1320)" name="ROW">
       <a name="facing" val="south"/>
     </comp>
+    <comp lib="6" loc="(1947,3394)" name="Text">
+      <a name="text" val="row_21"/>
+    </comp>
     <comp loc="(720,2360)" name="ROW">
       <a name="facing" val="south"/>
     </comp>
@@ -4408,7 +4429,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1150,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_16"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1980,480)" name="3-AND"/>
@@ -4442,6 +4463,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp loc="(720,3050)" name="ROW">
       <a name="facing" val="south"/>
     </comp>
+    <comp lib="6" loc="(1946,4567)" name="Text">
+      <a name="text" val="row_30"/>
+    </comp>
     <comp loc="(1980,3110)" name="3-AND"/>
     <comp loc="(720,400)" name="ROW">
       <a name="facing" val="south"/>
@@ -4450,7 +4474,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1450,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_21"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1550,1450)" name="ROW">
@@ -4485,6 +4509,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="size" val="30"/>
       <a name="inputs" val="2"/>
     </comp>
+    <comp lib="6" loc="(1946,4696)" name="Text">
+      <a name="text" val="row_31"/>
+    </comp>
     <comp lib="0" loc="(2380,180)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
@@ -4498,7 +4525,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(970,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_13"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1550,2230)" name="ROW">
@@ -4513,7 +4540,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1090,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_15"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="1" loc="(640,2440)" name="AND Gate">
@@ -4524,7 +4551,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(860,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_12"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1980,3890)" name="3-AND"/>
@@ -4562,6 +4589,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="inputs" val="2"/>
     </comp>
     <comp loc="(1980,1780)" name="3-AND"/>
+    <comp lib="6" loc="(1946,4177)" name="Text">
+      <a name="text" val="row_27"/>
+    </comp>
     <comp loc="(1980,3630)" name="3-AND"/>
     <comp loc="(1550,4480)" name="ROW">
       <a name="facing" val="south"/>
@@ -4578,7 +4608,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(500,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_6"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="1" loc="(1200,2730)" name="AND Gate">
@@ -4732,7 +4762,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(620,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_8"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="6" loc="(1952,900)" name="Text">
@@ -4772,13 +4802,16 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(2190,200)" name="DECODER 2-to-4"/>
+    <comp lib="6" loc="(1945,4309)" name="Text">
+      <a name="text" val="row_28"/>
+    </comp>
     <comp loc="(1550,3440)" name="ROW">
       <a name="facing" val="south"/>
     </comp>
     <comp lib="0" loc="(1570,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_23"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(720,1970)" name="ROW">
@@ -4802,6 +4835,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     </comp>
     <comp loc="(800,170)" name="IOBUF">
       <a name="facing" val="west"/>
+    </comp>
+    <comp lib="6" loc="(1947,3784)" name="Text">
+      <a name="text" val="row_24"/>
     </comp>
     <comp loc="(720,2780)" name="ROW">
       <a name="facing" val="south"/>
@@ -4830,7 +4866,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(800,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_11"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1090,170)" name="IOBUF">
@@ -4851,7 +4887,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1690,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_25"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1030,170)" name="IOBUF">
@@ -4904,10 +4940,13 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1210,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_17"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1980,2300)" name="3-AND"/>
+    <comp lib="6" loc="(1952,3137)" name="Text">
+      <a name="text" val="row_19"/>
+    </comp>
     <comp loc="(1150,170)" name="IOBUF">
       <a name="facing" val="west"/>
     </comp>
@@ -4919,8 +4958,11 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1030,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_14"/>
       <a name="labelloc" val="east"/>
+    </comp>
+    <comp lib="6" loc="(1952,3008)" name="Text">
+      <a name="text" val="row_18"/>
     </comp>
     <comp lib="0" loc="(1270,80)" name="Pin">
       <a name="facing" val="south"/>
@@ -4975,7 +5017,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1510,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_22"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="1" loc="(520,2440)" name="AND Gate">
@@ -4989,7 +5031,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(320,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_3"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(1550,3830)" name="ROW">
@@ -4999,7 +5041,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1390,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_20"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="1" loc="(1530,2440)" name="AND Gate">
@@ -5018,7 +5060,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(1270,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_18"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(720,1190)" name="ROW">
@@ -5054,6 +5096,9 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="inputs" val="2"/>
     </comp>
     <comp loc="(1980,4540)" name="3-AND"/>
+    <comp lib="6" loc="(1950,3266)" name="Text">
+      <a name="text" val="row_20"/>
+    </comp>
     <comp loc="(1630,170)" name="IOBUF">
       <a name="facing" val="west"/>
     </comp>
@@ -5070,7 +5115,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(680,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_9"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(720,1840)" name="ROW">
@@ -5088,7 +5133,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(440,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_5"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(500,170)" name="IOBUF">
@@ -5097,7 +5142,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="0" loc="(560,120)" name="Pin">
       <a name="facing" val="south"/>
       <a name="tristate" val="false"/>
-      <a name="label" val="/in"/>
+      <a name="label" val="in_7"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="0" loc="(2220,180)" name="Pin">
