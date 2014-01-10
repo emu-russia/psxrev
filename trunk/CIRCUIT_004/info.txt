@@ -73,9 +73,6 @@ ROOT COUNTERS
 0x1f801120	- t2_count
 0x1f801124	- t2_mode
 0x1f801128	- t2_target
-0x1f801130	- t3_count
-0x1f801134	- t3_mode
-0x1f801138	- t3_target
 
 CDROM
 0x1f801800	- cdrom_reg0
