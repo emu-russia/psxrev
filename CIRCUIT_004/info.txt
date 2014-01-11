@@ -1,7 +1,7 @@
 Register Select (?)
 
-inputs: 13
-outputs: 7
+inputs: 9
+outputs: 10
 cells: 419
 
 -------------------------------------------------------------
