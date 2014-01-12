@@ -2,7 +2,7 @@ Register Select (?)
 
 inputs: 9
 outputs: 10
-cells: 419
+cells: around 419
 
 -------------------------------------------------------------
 
@@ -74,13 +74,13 @@ ROOT COUNTERS
 0x1f801124	- t2_mode
 0x1f801128	- t2_target
 
-CDROM
+CDROM (external)
 0x1f801800	- cdrom_reg0
 0x1f801801	- cdrom_reg1
 0x1f801802	- cdrom_reg2
 0x1f801803	- cdrom_reg3
 
-GPU
+GPU (external)
 0x1f801810	- gpu_reg0
 0x1f801814	- gpu_reg1
 
@@ -88,10 +88,10 @@ MDEC
 0x1f801820	- mdec_reg0
 0x1f801824	- mdec_reg1
 
-SPU 
+SPU (external) 
 (0x1f801c00-0x1f801dff)
 
-DEBUG
+DEBUG(?)
 0x1f802030	- int_2000
 0x1f802040	- dip_switches
 
