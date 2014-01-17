@@ -79,5 +79,12 @@ module some (input wire in1, input wire in2, input wire CLK);
 
 endmodule
 
+
+wire a, b, c;
+
+a = trans ( b, c );
+
+
+
 */
 
