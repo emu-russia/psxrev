@@ -1,0 +1,46 @@
+// MDEC IDCT result signed division by 2, with clamping.
+//
+//
+
+module ClampedSignedDivisionBy2 (input wire IDCTResult[17], output wire IDCTResultDiv2[8] );
+
+    wire    wnors;
+    wire    res[8], ands[8];
+
+    block (IDCTResult)
+
+        wnors = or ( 
+                    nand_3 ( IDCTResult[7], IDCTResult[8], IDCTResult[9] ), 
+                    nand_3 ( IDCTResult[10], IDCTResult[11], IDCTResult[12] ), 
+                    nand_3 ( IDCTResult[13], IDCTResult[14], IDCTResult[15] ), 
+                );
+
+        IDCTResultDiv2[7] = and ( wnors, IDCTResult[16] );
+
+        ands[0] = and ( IDCTResult[7], or (wnors,IDCTResult[16]) ) ;
+
+        ands[1] = and ( IDCTResult[8], ands[0] );
+        res[1] = oai_12 ( not (ands[1]), IDCTResult[8], IDCTResult[7] );
+
+        ands[2] = and ( IDCTResult[9], ands[1] );
+        res[2] = oai_12 ( not (ands[2]), IDCTResult[9], ands[1] );
+
+        //...
+        
+
+    end 
+
+endmodule
+
+module CHIP_7408 (
+    input wire pin1,input wire pin2,input wire pin4, input wire pin5, input wire pin9, input wire pin10, input wire pin12, input wire pin13,
+    output wire pin3, output wire pin6, output wire pin8, output wire pin11 );
+
+    block ( pin1, pin2, pin4, pin5, pin9, pin10, pin12, pin13)
+	    pin3 <= and ( pin1, pin2);
+	    pin6 <= and ( pin4, pin5);
+	    pin8 <= and ( pin9, pin10);
+	    pin11 <= and ( pin12, pin13);        
+    end
+endmodule
+
