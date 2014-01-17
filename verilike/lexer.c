@@ -10,7 +10,7 @@ static int token_source_pointer, token_source_length;
 
 // Ключевые слова.
 char * keywords[] = {
-    "module", "endmodule", "block", "begin", "end", "reg", "wire", "input", "output", NULL,
+    "module", "endmodule", "block", "begin", "end", "wire", "input", "output", NULL,
 };
 
 char * opstr (int type)
