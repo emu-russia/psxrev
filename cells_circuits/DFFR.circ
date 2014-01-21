@@ -806,13 +806,16 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="tristate" val="false"/>
       <a name="labelloc" val="east"/>
     </comp>
-    <comp loc="(320,600)" name="NOR|AND"/>
+    <comp loc="(320,600)" name="NOR|AND">
+      <a name="label" val="4"/>
+      <a name="labelloc" val="south"/>
+    </comp>
     <comp lib="1" loc="(170,770)" name="OR Gate">
       <a name="size" val="30"/>
       <a name="inputs" val="2"/>
     </comp>
     <comp loc="(320,330)" name="NOR|AND">
-      <a name="label" val="0"/>
+      <a name="label" val="1"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="0" loc="(530,400)" name="Pin">
@@ -822,7 +825,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(320,690)" name="NOR|AND">
-      <a name="label" val="4"/>
+      <a name="label" val="5"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp loc="(480,310)" name="DFFR_logic"/>
@@ -842,7 +845,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     </comp>
     <comp loc="(480,400)" name="DFFR_logic"/>
     <comp loc="(320,510)" name="NOR|AND">
-      <a name="label" val="2"/>
+      <a name="label" val="3"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp loc="(480,490)" name="DFFR_logic"/>
@@ -852,7 +855,10 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="tristate" val="false"/>
       <a name="labelloc" val="east"/>
     </comp>
-    <comp loc="(320,420)" name="NOR|AND"/>
+    <comp loc="(320,420)" name="NOR|AND">
+      <a name="label" val="2"/>
+      <a name="labelloc" val="south"/>
+    </comp>
     <comp loc="(480,130)" name="DFFR_logic"/>
     <comp lib="0" loc="(530,490)" name="Pin">
       <a name="facing" val="west"/>
@@ -881,14 +887,17 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="labelloc" val="east"/>
     </comp>
     <comp loc="(320,860)" name="NOR|AND">
-      <a name="label" val="6"/>
+      <a name="label" val="7"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="1" loc="(170,690)" name="OR Gate">
       <a name="size" val="30"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp loc="(320,770)" name="NOR|AND"/>
+    <comp loc="(320,770)" name="NOR|AND">
+      <a name="label" val="6"/>
+      <a name="labelloc" val="south"/>
+    </comp>
     <comp loc="(480,850)" name="DFFR_logic"/>
     <comp loc="(480,670)" name="DFFR_logic"/>
     <comp lib="0" loc="(530,760)" name="Pin">
