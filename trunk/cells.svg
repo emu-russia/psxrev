@@ -11530,9 +11530,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.78431373"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.68058576"
-     inkscape:cx="1591.6072"
-     inkscape:cy="1183.7602"
+     inkscape:zoom="0.96249361"
+     inkscape:cx="672.70458"
+     inkscape:cy="2617.6028"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -16814,7 +16814,7 @@
          style="fill:#ff00ff;fill-opacity:1;stroke:#ff00ff;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
     <g
-       id="g28025">
+       id="g13636">
       <g
          id="g3716"
          style="display:inline"
@@ -16965,7 +16965,7 @@
              height="70.454536"
              width="96.962189"
              id="rect4797" /></flowRegion><flowPara
-           id="flowPara4799">OR_NOR</flowPara></flowRoot>    </g>
+           id="flowPara4799">OR2X</flowPara></flowRoot>    </g>
     <g
        id="g11742"
        transform="translate(257.92648,-371.6452)">
@@ -42819,7 +42819,7 @@
              height="70.454536"
              width="96.962189"
              id="rect4797-3" /></flowRegion><flowPara
-           id="flowPara4799-9">OR_NOR2X</flowPara></flowRoot>    </g>
+           id="flowPara13632">OR3X</flowPara></flowRoot>    </g>
     <g
        id="g28216">
       <g
@@ -45094,7 +45094,7 @@
        sodipodi:linespacing="125%"
        transform="translate(0,-2147.6378)"><tspan
          sodipodi:role="line"
-         id="tspan28816"></tspan></text>
+         id="tspan28816" /></text>
     <g
        id="g28831">
       <g
