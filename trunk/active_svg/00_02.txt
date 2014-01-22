@@ -1,0 +1,57 @@
+035		036		037		038		039		040
+
+===========================================================================================================================================================================
+		
+DFFR		DFFR		DFFR		12-OAI		12-OAI		???
+NOR|AND		3-NAND2X	NOT1		12-OAI		12-OAI		NAND3X
+NOT3		OR2X		DFFR		BUS_KEEPER	12-OAI		OR3X
+NOT1		OR2X		XNOR				BUS_KEEPER	OR3X
+AND		NOR|AND		OR4X		XOR		DFF		IMUX
+3-OR2X		DFFR				NOT1		DFF		IMUX
+3-NAND2X			AND		DFF		NAND2X		OR2X
+AND		AND		AND		OR				IMUX
+		NOT1		3-AND2X				DFF
+3-NAND2X	BUS_KEEPER	3-OR2X		OR2X		NOT1		XOR
+AND		NOT1		3-OR2X		AND		AND		DFF
+OR2X		NOT1		NOT1		3-NAND2X	NOT1		DFF
+NAND2X		3-AND2X		3-NAND2X	NAND2X		12-OAI		BUF4X
+3-NAND2X	NOT1		3-NAND2X	OR2X		NAND2X		DFFR
+12-OAI		NOR2X		3-NAND2X	NAND2X		OR
+12-OAI		NAND2X		AND		NOT1		AND		NOR2X
+NOT1		NOT1		OR2X		NOR2X		OR2X		3-OR2X
+AND		NOT1		4-MUX		NOT1		AND		3-OR2X
+OR2X		3-NAND2X			DFF		3-NAND2X	XNOR
+AND		NAND2X		4-MUX		DFF				NOT1
+NOT1		OR2X		DFFR				3-NAND2X	NOT3
+3-OR2X		3-OR2X		NOR|AND		DFF		3-NAND2X	NOT2
+3-NAND2X	NOT1		OR2X		NOT1		AND		???
+3-AND2X		AND		DFFR		OR2X		NOT1		???
+				NOR|AND		NOR|AND		AND		IMUX2X
+AND		NOT1		DFFR		OR2X		NOT1		AND2X
+AND		DFFR		???		OR2X		3-NAND2X	IMUX2X
+DFFR		NOR|AND		???		DFFR		3-NAND2X	IMUX2X
+NOT1		OR2X		???						NOT2
+3-NAND2X	NOT1		DFF		NOT2		NOT2		AND2X
+3-NAND2X	OR2X		DFFR		???		???		DFF3X
+3-NAND2X	NOR|AND		IMUX2X		NOT2		NOT2		DFFR
+3-AND2X		OR2X		XOR2		???		NOT2		BUF3X
+NOT1		OR2X		DFF		???		IMUX2X		???
+NOT1		NOR|AND		???		BUF4X		IMUX2X		NOT1
+OR2X		DFFR		???				IMUX2X		BUF3X
+DFFR		BUF4X				???		AND2X		NOT1
+NOR|AND		DFF				OR4X		DFF3X		???
+???		NOT3				???		NOT2		NOT3
+BUF4X		???				???		AND3X		NOT1
+???		DFF				OR2X		NOT2
+???		NAND3X						AND2X
+DFFR		NAND3X						DFFR
+XOR2		IMUX2X						BUF3X
+NAND3X		DFFR						???
+???		???						???
+???		NOT3						BUF4X
+NOT2		???						DFF
+???		NOT3
+3-NAND4X
+???
+
+===========================================================================================================================================================================
