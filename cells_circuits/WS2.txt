@@ -1,4 +1,4 @@
-x = XOR(in4, in5);
+x = XNOR(in4, in5);
 
 if (x = 0):
 out1 = MUX (in1, in2, in3);
