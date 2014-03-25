@@ -1,5 +1,4 @@
-set PATH=c:\tcc
+set PATH=c:\lcc\bin
 
-tcc main.c -o reorder.exe
 
-reorder.exe > out.txt
+lc main.c -o reorder.exe
