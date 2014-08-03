@@ -52,27 +52,38 @@
         записать nnull_s в триггер 2/3.
         записать результат работы SUMMATOR1 на стартовые триггеры SUMMATOR2.
 
-ЭТАП 2
+STAGE 2
 
-Такт XXX0_X1XX:
-    для числа SUMMATOR2 используется ac4_q_n0_s.
+sub XXX0_X1XX:
+    if "ac4_q_n0_s" equals zero (this is DCT) then
+        use 0 as 1st addition.
+    else
+        use normal multiplication algorithm.
     clk18 - считать результат суммы SUMMATOR2 в триггеры результата.
     clk21 - сделать 1 тик Q_SCALE_DIVIDER.
     если qsc_n0_s == 0 (q_scale == 0) то clk32 - считать данные в третьи триггеры прямого значения.
 
-Такт XX1X_X1XX:
-    что-то 1 делает с суммой для SUMMATOR2.
-    для числа SUMMATOR2 используется ac4_q_n0_s.
+sub XX1X_X1XX:
+    if "ac4_q_n0_s" equals zero (this is DCT) then
+        use -2*value as 2nd addition.
+    else
+        use normal multiplication algorithm.
     clk18 - считать результат суммы SUMMATOR2 в триггеры результата.
     clk21 - сделать 1 тик Q_SCALE_DIVIDER.
 
-Такт X1XX_X1XX:
-    что-то 2 делает с суммой для SUMMATOR2.
-    для числа SUMMATOR2 используется ac4_q_n0_s.
+sub X1XX_X1XX:
+    if "ac4_q_n0_s" equals zero (this is DCT) then
+        use value as 3rd addition.
+    else
+        use normal multiplication algorithm.
     clk18 - считать результат суммы SUMMATOR2 в триггеры результата.
     clk21 - сделать 1 тик Q_SCALE_DIVIDER.
 
-Такт 1XXX_X1XX:
+sub 1XXX_X1XX:
+    if "ac4_q_n0_s" equals zero (this is DCT) then
+        use 0 as 4th addition.
+    else
+        use normal multiplication algorithm.
     clk27:
         записать lc_0_s в триггер 3/3.
         записать nnull_s в триггер 3/3.
