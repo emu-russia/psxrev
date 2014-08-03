@@ -2,20 +2,20 @@
 
 #include <windows.h>
 
-char * input_path = "C:\\Andruxa\\PSXCPU\\m1_lap2";
-char * output_path = "C:\\Andruxa\\PSXCPU\\m1_lap2_reorder";
+char * input_path = "C:\\Andruxa\\PSXCPU\\m1_lap1";
+char * output_path = "C:\\Andruxa\\PSXCPU\\m1_lap1_reorder";
 
 main ()
 {
     int     column, row;    
     char    input[1000], output[1000];
 
-	for (row = 35; row <= 62; row++)
+	for (column = 0; column <= 30; column++)
 	{
-		for (column = 0; column <= 28; column++)
+		for (row = 0; row <= 68; row++)
 		{
-			sprintf(input, "%s/r%04i_c%04i.jpg", input_path, row, column);
-			sprintf(output, "%s/r%04i_c%04i.jpg", output_path, column, row-35);
+			sprintf(input, "%s/c%04i_r%04i.jpg", input_path, column, 68-row);
+			sprintf(output, "%s/c%04i_r%04i.jpg", output_path, column, row);
 
 			CopyFile(input, output, FALSE);
 		}
