@@ -1,0 +1,4 @@
+VIAS M2->M1: black 100% solid, 7px brush
+VIAS M1->Poly: orange 100% solid, 7px brush
+M1 layer transp: 70%
+M1 traces: blue 100% solid, 7px brush
