@@ -63,3 +63,5 @@ void	DebugSetStatusText(HDEBUGSTATUS StatusColumn, TCHAR *Text);
 
 HDEBUGHOTKEY DebugRegisterHotkey(int VKey, DEBUGHOTKEYPROC HotkeyProc);
 void	DebugDestroyHotkey(HDEBUGHOTKEY HotKey);
+
+// Data Input
