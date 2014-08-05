@@ -12,6 +12,8 @@ void	DebugSetSubtitle(TCHAR *SubTitle);
 
 // Menu
 
+/*
+
 bool	DebugCreateMenu();
 void	DebugDestroyMenu();
 HDEBUGMENUITEM DebugAddMenuItem(TCHAR *Caption);
@@ -65,3 +67,5 @@ HDEBUGHOTKEY DebugRegisterHotkey(int VKey, DEBUGHOTKEYPROC HotkeyProc);
 void	DebugDestroyHotkey(HDEBUGHOTKEY HotKey);
 
 // Data Input
+
+*/
