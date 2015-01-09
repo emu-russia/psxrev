@@ -1,0 +1,6 @@
+# Patterns database
+
+# Pattern Syntax:
+# pattern name, source_lamda, image_path
+
+pattern NOT1, 8, “patterns_db/not1.jpg”
