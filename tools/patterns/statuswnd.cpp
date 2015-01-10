@@ -73,5 +73,9 @@ void ResizeStatusBar(int Width, int Height)
     int StatusBarHeight = GetStatusBarHeight();
 
     if (IsWindow(StatusWnd))
+    {
         MoveWindow(StatusWnd, 0, Height - StatusBarHeight, Width, StatusBarHeight, TRUE);
+        InvalidateRect(StatusWnd, NULL, TRUE);
+        UpdateWindow(StatusWnd);
+    }
 }

@@ -1,12 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <Windows.h>
+#include <windowsx.h>
+#include "resource.h"
 
 #include <stdio.h>
+#include <math.h>
 
 #include "jpegload.h"
 #include "patternwnd.h"
 #include "statuswnd.h"
+#include "jpegwnd.h"
 
 /*
 Controls:
@@ -15,11 +19,15 @@ LMB на плоскости Jpeg : создание фильтрующей рамки
 Esc : отмена рамки
 Home : ScrollX = ScrollY = 0
 LMB на плоскости Patterns : перетаскивание паттернов
+RMB на плоскости Patterns : Flip паттерна
 RMB : скроллинг всех плоскостей
 
 */
 
+extern HWND FlipWnd;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
+
+LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static HWND ParentWnd;
 static HWND JpegWnd;
@@ -38,6 +46,228 @@ static int SavedScrollX, SavedScrollY;
 static bool SelectionBegin, RegionSelected;
 static int SelectionStartX, SelectionStartY;
 static int SelectionEndX, SelectionEndY;
+
+// Added Patterns Layer.
+
+typedef struct PatternEntry
+{
+    int     PatternIndex;
+    int     PosX;           // Относительно верхнего левого угла родительского окна.
+    int     PosY;
+    int     SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
+    int     SavedPosY;
+    int     PlaneX;         // Относительно верхнего левого угла исходной картинки.
+    int     PlaneY;
+    int     Width;
+    int     Height;
+    HWND    Hwnd;
+    bool    Flipped;
+    float   BlendLevel;     // UpdateLayeredWindow
+} PatternEntry;
+
+static PatternEntry * PatternLayer;
+static int NumPatterns;
+
+HBITMAP RemoveBitmap;
+#define REMOVE_BITMAP_WIDTH 12
+
+static int GetPatternEntryIndexByHwnd(HWND Hwnd)
+{
+    unsigned n;
+    for (n = 0; n < NumPatterns; n++)
+    {
+        if (PatternLayer[n].Hwnd == Hwnd) return n;
+    }
+    return -1;
+}
+
+static void SaveEntryPositions(void)
+{
+    unsigned n;
+    for (n = 0; n < NumPatterns; n++)
+    {
+        PatternLayer[n].SavedPosX = PatternLayer[n].PosX;
+        PatternLayer[n].SavedPosY = PatternLayer[n].PosY;
+    }
+}
+
+static void UpdateEntryPositions(int OffsetX, int OffsetY)
+{
+    unsigned n;
+    for (n = 0; n < NumPatterns; n++)
+    {
+        PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
+        PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
+        MoveWindow(PatternLayer[n].Hwnd, PatternLayer[n].PosX, PatternLayer[n].PosY, PatternLayer[n].Width, PatternLayer[n].Height, FALSE);
+    }
+}
+
+static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+    HDC hdc;
+    HDC hdcMem;
+    HGDIOBJ oldBitmap;
+    BITMAP bitmap;
+    RECT Rect;
+    int EntryIndex;
+    PatternEntry * Entry;
+    PatternItem * Item;
+    LRESULT hit;
+
+    switch (msg)
+    {
+    case WM_CREATE:
+        break;
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+    case WM_DESTROY:
+        break;
+
+    case WM_MOVE:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            Entry->PosX = (int)(short)LOWORD(lParam);
+            Entry->PosY = (int)(short)HIWORD(lParam);
+        }
+        break;
+
+    case WM_NCHITTEST:
+        hit = DefWindowProc(hwnd, msg, wParam, lParam);
+        if (hit == HTCLIENT) hit = HTCAPTION;
+        return hit;
+
+    case WM_PAINT:
+        hdc = BeginPaint(hwnd, &ps);
+
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            Item = PatternGetItem(Entry->PatternIndex);
+            Rect.left = 0;
+            Rect.top = 0;
+            Rect.right = Entry->Width;
+            Rect.bottom = Entry->Height;
+            DrawPattern(Item, hdc, &Rect, Entry->Flipped);
+
+            //
+            // Кнопка удаления паттерна.
+            //
+
+            if (RemoveBitmap)
+            {
+                hdcMem = CreateCompatibleDC(hdc);
+                oldBitmap = SelectObject(hdcMem, RemoveBitmap);
+
+                GetObject(RemoveBitmap, sizeof(bitmap), &bitmap);
+                BitBlt(hdc, Entry->Width - REMOVE_BITMAP_WIDTH, 0, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, hdcMem, 0, 0, SRCCOPY);
+
+                SelectObject(hdcMem, oldBitmap);
+                DeleteDC(hdcMem);
+            }
+        }
+
+        EndPaint(hwnd, &ps);
+        break;
+
+    default:
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+    return 0;
+}
+
+void AddPatternEntry(int PatternIndex)
+{
+    WNDCLASSEX wc;
+    char ClassName[256];
+    PatternItem * Item = PatternGetItem(PatternIndex);
+    PatternEntry Entry;
+    RECT Region;
+    bool Selected = JpegGetSelectRegion(&Region);
+    float LamdaWidth, LamdaHeight;
+    char Text[0x100];
+
+    if (Selected)
+    {
+        Entry.BlendLevel = 1.0f;
+        Entry.Flipped = (Button_GetCheck(FlipWnd) == BST_CHECKED);
+        Entry.PatternIndex = PatternIndex;
+
+        //
+        // Width / Height
+        //
+
+        LamdaWidth = (float)Item->PatternWidth / Item->Lamda;
+        LamdaHeight = (float)Item->PatternHeight / Item->Lamda;
+        Entry.Width = LamdaWidth * WorkspaceLamda;
+        Entry.Height = LamdaHeight * WorkspaceLamda;
+
+        //
+        // Position
+        //
+
+        //Entry.PosX = SelectionStartX + ScrollX;
+        //Entry.PosY = SelectionStartY + ScrollY;
+
+        Entry.PosX = SelectionStartX;
+        Entry.PosY = SelectionStartY;
+
+        //
+        // Create Window
+        //
+
+        sprintf(ClassName, "PatternEntry%i", NumPatterns);
+
+        wc.cbSize = sizeof(WNDCLASSEX);
+        wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = PatternEntryProc;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = 0;
+        wc.hInstance = GetModuleHandle(NULL);
+        wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+        wc.hCursor = LoadCursor(NULL, IDC_HAND);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+        wc.lpszMenuName = NULL;
+        wc.lpszClassName = ClassName;
+        wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+        if (!RegisterClassEx(&wc))
+        {
+            MessageBox(0, "Cannot register Pattern EntryWnd Class", "Error", 0);
+        }
+
+        Entry.Hwnd = CreateWindowEx(
+            0,
+            ClassName,
+            "PatternEntryPopup",
+            WS_OVERLAPPED | WS_CHILDWINDOW | WS_EX_LAYERED | WS_EX_NOPARENTNOTIFY,
+            Entry.PosX,
+            Entry.PosY,
+            Entry.Width,
+            Entry.Height,
+            JpegWnd,
+            NULL,
+            GetModuleHandle(NULL),
+            NULL);
+
+        ShowWindow(Entry.Hwnd, SW_NORMAL);
+        UpdateWindow(Entry.Hwnd);
+
+        //
+        // Add Entry in List.
+        //
+
+        PatternLayer = (PatternEntry *)realloc(PatternLayer, sizeof(PatternEntry)* (NumPatterns + 1));
+        PatternLayer[NumPatterns++] = Entry;
+
+        sprintf(Text, "Patterns Added : %i", NumPatterns);
+        SetStatusText(STATUS_ADDED, Text);
+    }
+}
 
 static void UpdateSelectionStatus(void)
 {
@@ -126,6 +356,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         SavedMouseY = HIWORD(lParam);
         SavedScrollX = ScrollX;
         SavedScrollY = ScrollY;
+        SaveEntryPositions();
         break;
 
     case WM_MOUSEMOVE:
@@ -135,6 +366,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             ScrollY = SavedScrollY + HIWORD(lParam) - SavedMouseY;
             InvalidateRect(JpegWnd, NULL, FALSE);
             UpdateWindow(JpegWnd);
+
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
 
             sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
             SetStatusText(STATUS_SCROLL, Text);
@@ -160,6 +393,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         ScrollingBegin = false;
         //InvalidateRect(JpegWnd, NULL, TRUE);
         //UpdateWindow(JpegWnd);
+
+        UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
 
         sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY );
         SetStatusText(STATUS_SCROLL, Text);
@@ -225,6 +460,12 @@ void JpegInit(HWND Parent)
 
     ShowWindow(JpegWnd, SW_NORMAL);
     UpdateWindow(JpegWnd);
+
+    //
+    // Загрузить картинку удаления паттерна
+    //
+
+    RemoveBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_REMOVE));
 }
 
 static void JpegAddScanline(unsigned char *buffer, int stride, void *Param)
@@ -262,8 +503,7 @@ void JpegLoadImage(char *filename)
 
     ScrollX = ScrollY = 0;
 
-    InvalidateRect(JpegWnd, NULL, TRUE);
-    UpdateWindow(JpegWnd);
+    JpegRedraw();
 }
 
 // Возвращает true и выбранный регион, если рамка есть
@@ -295,8 +535,7 @@ void JpegResize(int Width, int Height)
     MoveWindow(JpegWnd, 2, 2, max(100, Width - 300), max(100, Height - 5), TRUE);
 
     // Сбросить регион выделения при изменении размеров окна.
-    RegionSelected = false;
-    SetStatusText(STATUS_SELECTED, "Selected: ---");
+    JpegRemoveSelection();
 }
 
 // Вернуть ширину окна.
@@ -305,4 +544,17 @@ int JpegWindowWidth(void)
     RECT Rect;
     GetClientRect(JpegWnd, &Rect);
     return Rect.right;
+}
+
+void JpegRemoveSelection(void)
+{
+    RegionSelected = false;
+    SetStatusText(STATUS_SELECTED, "Selected: ---");
+    JpegRedraw();
+}
+
+void JpegRedraw(void)
+{
+    InvalidateRect(JpegWnd, NULL, TRUE);
+    UpdateWindow(JpegWnd);
 }

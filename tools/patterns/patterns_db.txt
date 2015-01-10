@@ -3,19 +3,22 @@
 # Pattern Syntax:
 # pattern name, source_lamda, image_path
 
-pattern NOT1, 8, "patterns_db/not1.jpg"
+# Inverters and Buffers
 
-pattern nDFF, 4, "patterns_db/nDFF.jpg"
+pattern NOT1, 8.0, "patterns_db/NOT1.jpg"
 
-pattern NOT2, 8, "patterns_db/not1.jpg"
-pattern NOT3, 8, "patterns_db/not1.jpg"
-pattern NOT4, 8, "patterns_db/not1.jpg"
-pattern NOT5, 8, "patterns_db/not1.jpg"
+# Logic Operations
 
-pattern NOT1, 8, "patterns_db/not1.jpg"
-pattern NOT2, 8, "patterns_db/not1.jpg"
-pattern NOT3, 8, "patterns_db/not1.jpg"
-pattern NOT4, 8, "patterns_db/not1.jpg"
-pattern NOT5, 8, "patterns_db/not1.jpg"
+# Multiplexers
+
+pattern IMUX, 6.5, "patterns_db/IMUX.jpg"
+
+# With Clock
+
+pattern nDFF, 4.0, "patterns_db/nDFF.jpg"
+
+# Adder / Multiplier
+
+# Misc
 
 # EOF
