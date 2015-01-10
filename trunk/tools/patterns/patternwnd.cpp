@@ -11,20 +11,9 @@
 #include "jpegwnd.h"
 #include "jpegload.h"
 #include "statuswnd.h"
+#include "patternwnd.h"
 
 #define FLIP_BUTTON_HEIGHT  30
-
-typedef struct PatternItem
-{
-    char    Name[128];
-    float   Lamda;
-    unsigned char * PatternRawImage;
-    int     PatternBufferSize;
-    int     PatternWidth;
-    int     PatternHeight;
-    HBITMAP PatternBitmap;
-    bool    Hidden;
-} PatternItem;
 
 static HWND ParentWnd;
 static HWND PatternWnd;
@@ -37,6 +26,20 @@ static int NumPatterns;
 
 static HWND *PatternTiles;
 
+// DEBUG
+static void DumpPatterns(void)
+{
+    char Buffer[0x10000], *ptr = Buffer;
+    unsigned n;
+
+    for (n = 0; n < NumPatterns; n++)
+    {
+        ptr += sprintf(ptr, "pattern %i: %s, lamda:%.1f\n", n, Patterns[n].Name, Patterns[n].Lamda );
+    }
+
+    MessageBox(0, Buffer, "Patterns Dump", MB_OK);
+}
+
 int GetPatternIndexByHwnd(HWND hwnd)
 {
     unsigned n;
@@ -47,7 +50,7 @@ int GetPatternIndexByHwnd(HWND hwnd)
     return -1;
 }
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect)
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped)
 {
     HGDIOBJ oldBitmap;
     HDC hdcMem;
@@ -59,7 +62,7 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect)
     GetObject(Item->PatternBitmap, sizeof(bitmap), &bitmap);
 
     SetStretchBltMode(hdc, HALFTONE);
-    if (Button_GetCheck(FlipWnd) == BST_CHECKED)
+    if (Flipped)
     {
         StretchBlt(hdc, Rect->right, Rect->bottom, -Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
     }
@@ -79,6 +82,7 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
     RECT Rect;
     int PatternIndex;
     PatternItem *Item;
+    bool Flipped;
 
     switch (msg)
     {
@@ -96,7 +100,11 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         if (PatternIndex != -1)
         {
             Item = &Patterns[PatternIndex];
-            MessageBox(0, Item->Name, "Clicked", 0);
+            //MessageBox(0, Item->Name, "Clicked", 0);
+            AddPatternEntry(PatternIndex);
+            JpegRemoveSelection();
+            RearrangePatternTiles();
+            PatternRedraw();
         }
         break;
 
@@ -109,7 +117,8 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         if (PatternIndex != -1)
         {
             Item = &Patterns[PatternIndex];
-            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect);
+            Flipped = Button_GetCheck(FlipWnd) == BST_CHECKED;
+            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped);
         }
 
         EndPaint(hwnd, &ps);
@@ -155,8 +164,10 @@ bool CheckHidden(int PatternIndex)
         //
 
         Fit = false;
-        if (PLamdaWidth >= (LamdaWidth - WorkspaceLamda) && PLamdaWidth < (LamdaWidth + WorkspaceLamdaDelta)) Fit = true;
-        if (PLamdaHeight >= (LamdaHeight - WorkspaceLamda) && PLamdaHeight < (LamdaHeight + WorkspaceLamdaDelta)) Fit = true;
+        if (PLamdaWidth >= (LamdaWidth - 2 * WorkspaceLamdaDelta) && PLamdaWidth < (LamdaWidth + 2 * WorkspaceLamdaDelta))
+        {
+            if (PLamdaHeight >= (LamdaHeight - 2 * WorkspaceLamdaDelta) && PLamdaHeight < (LamdaHeight + 2 * WorkspaceLamdaDelta)) Fit = true;
+        }
         return !Fit;
     }
     else return false;
@@ -281,7 +292,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     wc.cbWndExtra = 0;
     wc.hInstance = GetModuleHandle(NULL);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursor(NULL, IDC_HAND);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
@@ -402,8 +413,6 @@ void ParseDatabase(char *text)
 
 LRESULT CALLBACK PatternProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    TRACKMOUSEEVENT Tme;
-
     switch (msg)
     {
     case WM_CREATE:
@@ -413,14 +422,6 @@ LRESULT CALLBACK PatternProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         break;
-
-    //case WM_MOUSEHOVER:
-    //    SetCursor(LoadCursor(NULL, IDC_HAND));
-    //    break;
-
-    //case WM_MOUSELEAVE:
-    //    SetCursor(LoadCursor(NULL, IDC_HAND));
-    //    break;
 
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -499,6 +500,9 @@ void PatternInit(HWND Parent, char * dbfile)
         buffer[filesize] = 0;
         fclose(f);
         ParseDatabase(buffer);
+
+        // DEBUG.
+        //DumpPatterns();
     }
     else MessageBox(0, "Cannot load patterns database info.", "Error", MB_OK);
 }
@@ -518,4 +522,9 @@ void PatternRedraw(void)
 {
     InvalidateRect(PatternWnd, NULL, TRUE);
     UpdateWindow(PatternWnd);
+}
+
+PatternItem * PatternGetItem(int PatternIndex)
+{
+    return &Patterns[PatternIndex];
 }

@@ -39,3 +39,5 @@ BEGIN
     LTEXT       "Lambda Delta:" 0, 2, 3+20, 66, 16
     EDITTEXT    ID_LAMDA_DELTA, 66, 2+20, 50, 11, WS_TABSTOP, WS_EX_WINDOWEDGE
 END
+
+IDB_REMOVE BITMAP "remove.bmp"
