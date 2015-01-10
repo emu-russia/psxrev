@@ -1,11 +1,22 @@
 // Утилита для нахождения паттернов в исходной картинке.
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
 #include <windows.h>
+#include <Windowsx.h>
+#include <CommCtrl.h>
 #include "resource.h"
-#include "jpegload.h"
+#include "jpegwnd.h"
 #include "patternwnd.h"
+#include "statuswnd.h"
 
 const char g_szClassName[] = "myWindowClass";
+
+HWND MainWnd;
+HWND FlipWnd;
+
+float WorkspaceLamda = 1.0f, WorkspaceLamdaDelta = 1.0f;
 
 void LoadSourceImage(HWND Parent)
 {
@@ -32,15 +43,39 @@ void LoadSourceImage(HWND Parent)
 
 BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
+    char Text[1024];
+
     switch (Message)
     {
     case WM_INITDIALOG:
+
+        // 
+        // Set Lamda
+        //
+
+        sprintf(Text, "%.1f", WorkspaceLamda);
+        SetDlgItemText(hwnd, ID_LAMDA, Text);
+        sprintf(Text, "%.1f", WorkspaceLamdaDelta);
+        SetDlgItemText(hwnd, ID_LAMDA_DELTA, Text);
 
         return TRUE;
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case IDOK:
+
+            // 
+            // Get Lamda
+            //
+
+            GetDlgItemText(hwnd, ID_LAMDA, Text, sizeof(Text));
+            WorkspaceLamda = atof(Text);
+            GetDlgItemText(hwnd, ID_LAMDA_DELTA, Text, sizeof(Text));
+            WorkspaceLamdaDelta = atof(Text);
+
+            sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
+            SetStatusText(STATUS_LAMDA_DELTA, Text);
+
             EndDialog(hwnd, IDOK);
             break;
         case IDCANCEL:
@@ -62,8 +97,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_CREATE:
+        CreateStatusBar(hwnd);
         JpegInit(hwnd);
-        PatternInit(hwnd);
+        PatternInit(hwnd, "patterns_db.txt");
 
         GetClientRect(hwnd, &Rect);
         JpegResize(Rect.right, Rect.bottom);
@@ -72,7 +108,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         DestroyWindow(hwnd);
         break;
     case WM_SIZE:
-        JpegResize(LOWORD(lParam), HIWORD(lParam));
+        JpegResize(LOWORD(lParam), HIWORD(lParam) - GetStatusBarHeight());
+        PatternResize(LOWORD(lParam), HIWORD(lParam) - GetStatusBarHeight());
+        ResizeStatusBar(LOWORD(lParam), HIWORD(lParam));
         break;
     case WM_COMMAND:
         switch (LOWORD(wParam))
@@ -88,7 +126,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 MAKEINTRESOURCE(IDD_SETTINGS), hwnd, SettingsDlgProc);
             break;
         }
+        if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == FlipWnd)
+        {
+            if (Button_GetCheck(FlipWnd) == BST_CHECKED)
+            {
+                Button_SetCheck(FlipWnd, BST_UNCHECKED);
+            }
+            else
+            {
+                Button_SetCheck(FlipWnd, BST_CHECKED);
+            }
+            RearrangePatternTiles();
+            PatternRedraw();
+        }
         break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -102,8 +154,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, int nCmdShow)
 {
     WNDCLASSEX wc;
-    HWND hwnd;
     MSG Msg;
+
+    InitCommonControls();
 
     //Step 1: Registering the Window Class
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -114,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MYICON));
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 5);
     wc.lpszMenuName = MAKEINTRESOURCE(IDR_MYMENU);
     wc.lpszClassName = g_szClassName;
     wc.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MYICON), IMAGE_ICON, 16, 16, 0);
@@ -127,7 +180,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     // Step 2: Creating the Window
-    hwnd = CreateWindowEx(
+    MainWnd = CreateWindowEx(
         WS_EX_CLIENTEDGE,
         g_szClassName,
         "patterns",
@@ -135,15 +188,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         NULL, NULL, hInstance, NULL);
 
-    if (hwnd == NULL)
+    if (MainWnd == NULL)
     {
         MessageBox(NULL, "Window Creation Failed!", "Error!",
             MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);
-    UpdateWindow(hwnd);
+    ShowWindow(MainWnd, nCmdShow);
+    UpdateWindow(MainWnd);
 
     // Step 3: The Message Loop
     while (GetMessage(&Msg, NULL, 0, 0) > 0)

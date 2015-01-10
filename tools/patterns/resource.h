@@ -14,5 +14,7 @@
 #define ID_LAMDA 9010
 #define ID_LAMDA_DELTA 9011
 
+#define ID_STATUS_BAR 9020
+
 #define IDD_SETTINGS 101
 
