@@ -1,8 +1,11 @@
 
-void JpegInit(HWND Parent);
+int JpegLoad(
+    char *filename,
+    void(*AddScanlineData) (unsigned char *buffer, int stride, void *Param),
+    unsigned char **DecodeBuffer,
+    int *DecodeBufferSize,
+    int *DecodeWidth,
+    int *DecodeHegith,
+    void *Param);
 
-void JpegLoadImage(char *filename);
-
-bool JpegGetSelectRegion(LPRECT Region);
-
-void JpegResize(int Width, int Height);
+HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, PBYTE pBits);
