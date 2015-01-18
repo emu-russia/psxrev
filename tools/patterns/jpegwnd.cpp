@@ -19,7 +19,7 @@ LMB на плоскости Jpeg : создание фильтрующей рамки
 Esc : отмена рамки
 Home : ScrollX = ScrollY = 0
 LMB на плоскости Patterns : перетаскивание паттернов
-RMB на плоскости Patterns : Flip паттерна
+Double click на плоскости Patterns : Flip паттерна
 RMB : скроллинг всех плоскостей
 
 */
@@ -71,6 +71,8 @@ static int NumPatterns;
 HBITMAP RemoveBitmap;
 #define REMOVE_BITMAP_WIDTH 12
 
+#define PATTERN_ENTRY_CLASS "PatternEntry"
+
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 {
     unsigned n;
@@ -102,6 +104,36 @@ static void UpdateEntryPositions(int OffsetX, int OffsetY)
     }
 }
 
+// Удалить ячейку с плоскости паттернов.
+//  - Удаляем окно
+//  - Перегруппируем массив паттернов без учета удаленной ячейки
+static void RemovePatternEntry(int EntryIndex)
+{
+    PatternEntry * Entry = &PatternLayer[EntryIndex];
+    PatternEntry * TempList;
+    unsigned Count, Index;
+    char Text[0x100];
+
+    DestroyWindow(Entry->Hwnd);
+
+    TempList = (PatternEntry *)malloc(sizeof(PatternEntry)* (NumPatterns - 1));
+
+    for (Count = 0, Index = 0; Count < NumPatterns; Count++)
+    {
+        if (Count != EntryIndex) TempList[Index++] = PatternLayer[Count];
+    }
+
+    free(PatternLayer);
+    PatternLayer = TempList;
+    NumPatterns--;
+
+    //
+    // Обновим строку состояния.
+    //
+    sprintf(Text, "Patterns Added : %i", NumPatterns);
+    SetStatusText(STATUS_ADDED, Text);
+}
+
 static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
@@ -114,6 +146,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
     PatternEntry * Entry;
     PatternItem * Item;
     LRESULT hit;
+    int CursorX, CursorY;
 
     switch (msg)
     {
@@ -123,6 +156,37 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
+        break;
+
+    case WM_LBUTTONUP:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            CursorX = LOWORD(lParam);
+            CursorY = HIWORD(lParam);
+            if (CursorY < REMOVE_BITMAP_WIDTH && CursorX >= (Entry->Width - REMOVE_BITMAP_WIDTH))
+            {
+                if (MessageBox(NULL, "Are you sure?", "User confirm", MB_ICONQUESTION | MB_YESNO) == IDYES)
+                {
+                    RemovePatternEntry(EntryIndex);
+                }
+            }
+        }
+        break;
+
+    //
+    // Flip entry
+    //
+    case WM_LBUTTONDBLCLK:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            Entry->Flipped ^= 1;
+            InvalidateRect(Entry->Hwnd, NULL, TRUE);
+            UpdateWindow(Entry->Hwnd);
+        }
         break;
 
     case WM_MOVE:
@@ -135,10 +199,10 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         }
         break;
 
-    case WM_NCHITTEST:
-        hit = DefWindowProc(hwnd, msg, wParam, lParam);
-        if (hit == HTCLIENT) hit = HTCAPTION;
-        return hit;
+    //case WM_NCHITTEST:
+    //    hit = DefWindowProc(hwnd, msg, wParam, lParam);
+    //    if (hit == HTCLIENT) hit = HTCAPTION;
+    //    return hit;
 
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
@@ -182,8 +246,6 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
 
 void AddPatternEntry(int PatternIndex)
 {
-    WNDCLASSEX wc;
-    char ClassName[256];
     PatternItem * Item = PatternGetItem(PatternIndex);
     PatternEntry Entry;
     RECT Region;
@@ -220,29 +282,9 @@ void AddPatternEntry(int PatternIndex)
         // Create Window
         //
 
-        sprintf(ClassName, "PatternEntry%i", NumPatterns);
-
-        wc.cbSize = sizeof(WNDCLASSEX);
-        wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-        wc.lpfnWndProc = PatternEntryProc;
-        wc.cbClsExtra = 0;
-        wc.cbWndExtra = 0;
-        wc.hInstance = GetModuleHandle(NULL);
-        wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        wc.hCursor = LoadCursor(NULL, IDC_HAND);
-        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
-        wc.lpszMenuName = NULL;
-        wc.lpszClassName = ClassName;
-        wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-        if (!RegisterClassEx(&wc))
-        {
-            MessageBox(0, "Cannot register Pattern EntryWnd Class", "Error", 0);
-        }
-
         Entry.Hwnd = CreateWindowEx(
             0,
-            ClassName,
+            PATTERN_ENTRY_CLASS,
             "PatternEntryPopup",
             WS_OVERLAPPED | WS_CHILDWINDOW | WS_EX_LAYERED | WS_EX_NOPARENTNOTIFY,
             Entry.PosX,
@@ -425,6 +467,7 @@ void JpegInit(HWND Parent)
 
     ParentWnd = Parent;
 
+    memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = JpegProc;
@@ -460,6 +503,29 @@ void JpegInit(HWND Parent)
 
     ShowWindow(JpegWnd, SW_NORMAL);
     UpdateWindow(JpegWnd);
+
+    //
+    // Регистрируем класс окна паттернов.
+    //
+
+    memset(&wc, 0, sizeof(wc));
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+    wc.lpfnWndProc = PatternEntryProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hCursor = LoadCursor(NULL, IDC_HAND);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = PATTERN_ENTRY_CLASS;
+    wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    if (!RegisterClassEx(&wc))
+    {
+        MessageBox(0, "Cannot register Pattern EntryWnd Class", "Error", 0);
+    }
 
     //
     // Загрузить картинку удаления паттерна
