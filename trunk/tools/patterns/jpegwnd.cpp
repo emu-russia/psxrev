@@ -49,22 +49,6 @@ static int SelectionEndX, SelectionEndY;
 
 // Added Patterns Layer.
 
-typedef struct PatternEntry
-{
-    int     PatternIndex;
-    int     PosX;           // Относительно верхнего левого угла родительского окна.
-    int     PosY;
-    int     SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
-    int     SavedPosY;
-    int     PlaneX;         // Относительно верхнего левого угла исходной картинки.
-    int     PlaneY;
-    int     Width;
-    int     Height;
-    HWND    Hwnd;
-    bool    Flipped;
-    float   BlendLevel;     // UpdateLayeredWindow
-} PatternEntry;
-
 static PatternEntry * PatternLayer;
 static int NumPatterns;
 
@@ -72,6 +56,8 @@ HBITMAP RemoveBitmap;
 #define REMOVE_BITMAP_WIDTH 12
 
 #define PATTERN_ENTRY_CLASS "PatternEntry"
+
+static char * SavedImageName = NULL;
 
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 {
@@ -220,6 +206,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         {
             Entry = &PatternLayer[EntryIndex];
             Entry->Flipped ^= 1;
+            Entry->Flipped &= 1;
             InvalidateRect(Entry->Hwnd, NULL, TRUE);
             UpdateWindow(Entry->Hwnd);
         }
@@ -330,6 +317,25 @@ void AddPatternEntry(int PatternIndex)
         sprintf(Text, "Patterns Added : %i", NumPatterns);
         SetStatusText(STATUS_ADDED, Text);
     }
+}
+
+// Обновить добавленный паттерн некоторыми свойствами (положение на экране / плоскости, Flip итп.)
+void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
+{
+    PatternEntry * Orig = GetPatternEntry(EntryIndex);
+
+    Orig->BlendLevel = Entry->BlendLevel;
+    Orig->Flipped = Entry->Flipped;
+
+    Orig->PosX = Entry->PosX;
+    Orig->PosY = Entry->PosY;
+    Orig->PlaneX = Entry->PlaneX;
+    Orig->PlaneY = Entry->PlaneY;
+
+    MoveWindow(Orig->Hwnd, Orig->PosX, Orig->PosY, Orig->Width, Orig->Height, TRUE);
+
+    //InvalidateRect(Orig->Hwnd, NULL, TRUE);
+    //UpdateWindow(Orig->Hwnd);
 }
 
 static void UpdateSelectionStatus(void)
@@ -562,9 +568,11 @@ static void JpegAddScanline(unsigned char *buffer, int stride, void *Param)
 }
 
 // Пример декодирования взят из example.c
-void JpegLoadImage(char *filename)
+void JpegLoadImage(char *filename, bool Silent)
 {
     char Text[1024];
+
+    SetCursor(LoadCursor(NULL, IDC_WAIT));
 
     JpegLoad(
         filename,
@@ -583,12 +591,23 @@ void JpegLoadImage(char *filename)
     if (JpegBuffer)
         JpegBitmap = CreateBitmapFromPixels(GetWindowDC(JpegWnd), JpegWidth, JpegHeight, 24, JpegBuffer);
 
-    MessageBox(0, "Loaded", "Loaded", MB_OK);
+    if (!Silent) MessageBox(0, "Loaded", "Loaded", MB_OK);
 
     sprintf(Text, "Source Image : %s", filename);
     SetStatusText(STATUS_SOURCE_IMAGE, Text);
 
     ScrollX = ScrollY = 0;
+
+    if (SavedImageName)
+    {
+        free(SavedImageName);
+        SavedImageName = NULL;
+    }
+    SavedImageName = (char *)malloc(strlen(filename) + 1);
+    strcpy(SavedImageName, filename);
+    SavedImageName[strlen(filename)] = 0;
+
+    SetCursor(LoadCursor(NULL, IDC_ARROW));
 
     JpegRedraw();
 }
@@ -614,6 +633,16 @@ bool JpegGetSelectRegion(LPRECT Region)
         return true;
     }
     else return false;
+}
+
+void JpegSetSelectRegion(LPRECT Region)
+{
+    SelectionStartX = Region->left;
+    SelectionStartY = Region->top;
+    SelectionEndX = Region->right;
+    SelectionEndY = Region->bottom;
+
+    RegionSelected = true;
 }
 
 // Изменить размер окна Jpeg в соответствии с размерами родительского окна.
@@ -644,4 +673,78 @@ void JpegRedraw(void)
 {
     InvalidateRect(JpegWnd, NULL, TRUE);
     UpdateWindow(JpegWnd);
+}
+
+PatternEntry * GetPatternEntry(int EntryIndex)
+{
+    return &PatternLayer[EntryIndex];
+}
+
+int GetPatternEntryNum(void)
+{
+    return NumPatterns;
+}
+
+// Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
+void JpegDestroy(void)
+{
+    unsigned Count;
+    PatternEntry *Entry;
+
+    JpegRemoveSelection();
+
+    ScrollX = ScrollY = 0;
+
+    //
+    // Плоскость исходной картинки.
+    //
+
+    if (JpegBitmap)
+    {
+        DeleteObject(JpegBitmap);
+        JpegBitmap = NULL;
+    }
+
+    //
+    // Плоскость паттернов.
+    //
+
+    for (Count = 0; Count < NumPatterns; Count++)
+    {
+        Entry = GetPatternEntry(Count);
+        DestroyWindow(Entry->Hwnd);
+    }
+
+    if (PatternLayer)
+    {
+        free(PatternLayer);
+        PatternLayer = NULL;
+    }
+    NumPatterns = 0;
+
+    JpegRedraw();
+}
+
+char * JpegGetImageName(void)
+{
+    return SavedImageName;
+}
+
+void JpegGetScroll(LPPOINT Offset)
+{
+    Offset->x = ScrollX;
+    Offset->y = ScrollY;
+}
+
+void JpegSetScroll(LPPOINT Offset)
+{
+    char Text[0x100];
+
+    ScrollX = Offset->x;
+    ScrollY = Offset->y;
+
+    JpegRedraw();
+
+    sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
+    SetStatusText(STATUS_SCROLL, Text);
 }

@@ -20,6 +20,8 @@ enum {
 
 void CreateStatusBar(HWND Parent);
 
+void ResetStatusBar(void);
+
 void SetStatusText(int sbPart, char *text);
 
 int GetStatusBarHeight(void);
