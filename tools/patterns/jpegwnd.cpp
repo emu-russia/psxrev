@@ -158,6 +158,41 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
     case WM_DESTROY:
         break;
 
+    case WM_ERASEBKGND:
+        break;
+
+    //
+    // Перетаскивание окна
+    //
+
+    case WM_MOVE:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            Entry->PosX = (int)(short)LOWORD(lParam);
+            Entry->PosY = (int)(short)HIWORD(lParam);
+        }
+        break;
+
+    case WM_MOUSEMOVE:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (wParam == MK_LBUTTON && EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            CursorX = (int)(short)LOWORD(lParam);
+            CursorY = (int)(short)LOWORD(lParam);
+            if (!(CursorY < REMOVE_BITMAP_WIDTH && CursorX >= (Entry->Width - REMOVE_BITMAP_WIDTH)))
+            {
+                SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, NULL);
+            }
+        }
+        return FALSE;
+
+    //
+    // Нажатие на кнопку удаления паттерна.
+    //
+
     case WM_LBUTTONUP:
         EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
         if (EntryIndex != -1)
@@ -165,6 +200,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             Entry = &PatternLayer[EntryIndex];
             CursorX = LOWORD(lParam);
             CursorY = HIWORD(lParam);
+
             if (CursorY < REMOVE_BITMAP_WIDTH && CursorX >= (Entry->Width - REMOVE_BITMAP_WIDTH))
             {
                 if (MessageBox(NULL, "Are you sure?", "User confirm", MB_ICONQUESTION | MB_YESNO) == IDYES)
@@ -188,21 +224,6 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             UpdateWindow(Entry->Hwnd);
         }
         break;
-
-    case WM_MOVE:
-        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
-        if (EntryIndex != -1)
-        {
-            Entry = &PatternLayer[EntryIndex];
-            Entry->PosX = (int)(short)LOWORD(lParam);
-            Entry->PosY = (int)(short)HIWORD(lParam);
-        }
-        break;
-
-    //case WM_NCHITTEST:
-    //    hit = DefWindowProc(hwnd, msg, wParam, lParam);
-    //    if (hit == HTCLIENT) hit = HTCAPTION;
-    //    return hit;
 
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
