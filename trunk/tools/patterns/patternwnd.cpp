@@ -26,6 +26,8 @@ static int NumPatterns;
 
 static HWND *PatternTiles;
 
+#define PATTERN_TILE_CLASS "PatternTile"
+
 // DEBUG
 static void DumpPatterns(void)
 {
@@ -245,8 +247,6 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
 // Декодирование JPEG основано на примере example.c из libjpeg.
 void AddNewPattern(char *name, char *jpeg_path, float lamda)
 {
-    WNDCLASSEX wc;
-    char ClassName[256];
     PatternItem Item;
     char buffer[1024];
     int DecodeResult;
@@ -283,29 +283,9 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
 
     PatternTiles = (HWND *)realloc(PatternTiles, sizeof(HWND)* (NumPatterns + 1));
 
-    sprintf(ClassName, "PatternTile%i", NumPatterns);
-
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = PatternTileProc;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wc.hCursor = LoadCursor(NULL, IDC_HAND);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
-    wc.lpszMenuName = NULL;
-    wc.lpszClassName = ClassName;
-    wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-    if (!RegisterClassEx(&wc))
-    {
-        MessageBox(0, "Cannot register Pattern TileWnd Class", "Error", 0);
-    }
-
     PatternTiles[NumPatterns] = CreateWindowEx(
         0,
-        ClassName,
+        PATTERN_TILE_CLASS,
         "PatternTilePopup",
         WS_OVERLAPPED | WS_CHILDWINDOW,
         2,
@@ -438,6 +418,7 @@ void PatternInit(HWND Parent, char * dbfile)
 
     ParentWnd = Parent;
 
+    memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = PatternProc;
@@ -487,6 +468,29 @@ void PatternInit(HWND Parent, char * dbfile)
 
     ShowWindow(FlipWnd, SW_NORMAL);
     UpdateWindow(FlipWnd);
+
+    //
+    // Регистрирум класс окна паттерна.
+    //
+
+    memset(&wc, 0, sizeof(wc));
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = PatternTileProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hCursor = LoadCursor(NULL, IDC_HAND);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = PATTERN_TILE_CLASS;
+    wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    if (!RegisterClassEx(&wc))
+    {
+        MessageBox(0, "Cannot register Pattern TileWnd Class", "Error", 0);
+    }
 
     // Загрузить и распарсить базу данных паттернов.
     f = fopen(dbfile, "rb");
