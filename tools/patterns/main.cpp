@@ -11,6 +11,8 @@
 #include "patternwnd.h"
 #include "statuswnd.h"
 #include "workspace.h"
+#include "textsaver.h"
+#include "text_psxcpu.h"
 
 const char g_szClassName[] = "myWindowClass";
 
@@ -187,6 +189,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
     WNDCLASSEX wc;
     MSG Msg;
+
+    TextsAddPlugin("PsxcpuText", PsxcpuTextSaver);
 
     GetCurrentDirectory(sizeof(CurrentWorkingDir), CurrentWorkingDir);
 
