@@ -22,3 +22,9 @@ void PatternRedraw(void);
 PatternItem * PatternGetItem(int PatternIndex);
 
 void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped);
+
+void PatternDestroy(void);
+
+void ParseDatabase(char *text);
+
+char * GetSavedDatabase(void);

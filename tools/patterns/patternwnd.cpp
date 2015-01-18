@@ -20,6 +20,7 @@ static HWND PatternWnd;
 
 extern HWND FlipWnd;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
+extern char CurrentWorkingDir[MAX_PATH];
 
 static PatternItem * Patterns = NULL;
 static int NumPatterns;
@@ -27,6 +28,8 @@ static int NumPatterns;
 static HWND *PatternTiles;
 
 #define PATTERN_TILE_CLASS "PatternTile"
+
+static char * SavedDatabase = NULL;
 
 // DEBUG
 static void DumpPatterns(void)
@@ -250,6 +253,8 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     PatternItem Item;
     char buffer[1024];
     int DecodeResult;
+    char Text[1024];
+    char FullPath[MAX_PATH];
 
     memset(&Item, 0, sizeof(PatternItem));
 
@@ -257,8 +262,10 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     Item.Lamda = lamda;
     Item.Hidden = false;
 
+    sprintf(FullPath, "%s\\%s", CurrentWorkingDir, jpeg_path);
+
     DecodeResult = JpegLoad(
-        jpeg_path,
+        FullPath,
         PatternAddScanline,
         &Item.PatternRawImage,
         &Item.PatternBufferSize,
@@ -268,7 +275,8 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
 
     if (DecodeResult == 0)
     {
-        MessageBox(0, "Error, decoding pattern JPEG", "Error", 0);
+        sprintf(Text, "Error, decoding pattern JPEG %s", FullPath);
+        MessageBox(0, Text, "Error", 0);
         return;
     }
 
@@ -373,6 +381,16 @@ void ParseDatabase(char *text)
     char Text[0x100];
     char linebuffer[0x10000], *ptr = text;
     char *lineptr = linebuffer, c = *ptr;
+    
+    // Сохраним базу данных текущей рабочей среды.
+    if (SavedDatabase)
+    {
+        free(SavedDatabase);
+        SavedDatabase = NULL;
+    }
+    SavedDatabase = (char *)malloc(strlen(text) + 1);
+    strcpy(SavedDatabase, text);
+    SavedDatabase[strlen(text)] = 0;
 
     // Загружаем по строкам.
     while (c)
@@ -531,4 +549,43 @@ void PatternRedraw(void)
 PatternItem * PatternGetItem(int PatternIndex)
 {
     return &Patterns[PatternIndex];
+}
+
+// Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
+void PatternDestroy(void)
+{
+    unsigned Count;
+
+    //
+    // Галочка "flip"
+    //
+
+    Button_SetCheck(FlipWnd, BST_UNCHECKED);
+
+    //
+    // Окна
+    //
+
+    for (Count = 0; Count < NumPatterns; Count++)
+    {
+        DestroyWindow(PatternTiles[Count]);
+    }
+
+    //
+    // Шаблоны
+    //
+
+    if (Patterns)
+    {
+        free(Patterns);
+        Patterns = NULL;
+    }
+    NumPatterns = 0;
+
+    PatternRedraw();
+}
+
+char * GetSavedDatabase(void)
+{
+    return SavedDatabase;
 }

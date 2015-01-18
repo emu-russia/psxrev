@@ -10,6 +10,7 @@
 #include "jpegwnd.h"
 #include "patternwnd.h"
 #include "statuswnd.h"
+#include "workspace.h"
 
 const char g_szClassName[] = "myWindowClass";
 
@@ -17,6 +18,8 @@ HWND MainWnd;
 HWND FlipWnd;
 
 float WorkspaceLamda = 1.0f, WorkspaceLamdaDelta = 1.0f;
+
+char CurrentWorkingDir[MAX_PATH];
 
 void LoadSourceImage(HWND Parent)
 {
@@ -37,7 +40,30 @@ void LoadSourceImage(HWND Parent)
     {
         // Do something usefull with the filename stored in szFileName 
 
-        JpegLoadImage(szFileName);
+        JpegLoadImage(szFileName, false);
+    }
+}
+
+void WorkspaceHandler(HWND Parent, void (*Callback)(char *filename))
+{
+    OPENFILENAME ofn;
+    char szFileName[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+    ofn.hwndOwner = Parent;
+    ofn.lpstrFilter = "Workspace Files (*.wrk)\0*.wrk\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = "wrk";
+
+    if (GetOpenFileName(&ofn))
+    {
+        // Do something usefull with the filename stored in szFileName 
+
+        Callback(szFileName);
     }
 }
 
@@ -125,6 +151,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             DialogBox(GetModuleHandle(NULL),
                 MAKEINTRESOURCE(IDD_SETTINGS), hwnd, SettingsDlgProc);
             break;
+        case ID_WORKSPACE_LOAD:
+            WorkspaceHandler(hwnd, LoadWorkspace);
+            break;
+        case ID_WORKSPACE_SAVE:
+            WorkspaceHandler(hwnd, SaveWorkspace);
+            break;
         }
         if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == FlipWnd)
         {
@@ -155,6 +187,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
     WNDCLASSEX wc;
     MSG Msg;
+
+    GetCurrentDirectory(sizeof(CurrentWorkingDir), CurrentWorkingDir);
 
     InitCommonControls();
 

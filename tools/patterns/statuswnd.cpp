@@ -11,7 +11,7 @@ HWND StatusWnd = NULL;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
 
 // set default values of statusbar parts
-static void ResetStatusBar()
+void ResetStatusBar(void)
 {
     char LamdaDelta[256];
     
