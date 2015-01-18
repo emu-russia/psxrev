@@ -8,6 +8,8 @@ typedef struct TextPlugin
 
 int     TextsGetPluginNum(void);
 
+TextPlugin * TextsGetPlugin(int Index);
+
 void    TextsAddPlugin(char *Name, void(*Saver)(PatternEntry *List, int Count));
 
 void    TextsSelectPlugin(int Index);
