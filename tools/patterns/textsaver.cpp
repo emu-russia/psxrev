@@ -14,6 +14,11 @@ int TextsGetPluginNum(void)
     return NumPlugins;
 }
 
+TextPlugin * TextsGetPlugin(int Index)
+{
+    return &Plugins[Index];
+}
+
 void TextsAddPlugin(char *Name, void(*Saver)(PatternEntry *List, int Count))
 {
     TextPlugin Plugin;
