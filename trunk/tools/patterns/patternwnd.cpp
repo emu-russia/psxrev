@@ -60,6 +60,7 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped)
     HGDIOBJ oldBitmap;
     HDC hdcMem;
     BITMAP bitmap;
+    BLENDFUNCTION Blend;
 
     hdcMem = CreateCompatibleDC(hdc);
     oldBitmap = SelectObject(hdcMem, Item->PatternBitmap);
@@ -74,6 +75,12 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped)
     else
     {
         StretchBlt(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+
+        //memset(&Blend, 0, sizeof(BLENDFUNCTION));
+        //Blend.BlendOp = AC_SRC_OVER;
+        //Blend.SourceConstantAlpha = 55;
+        //Blend.AlphaFormat = AC_SRC_ALPHA
+        //AlphaBlend(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, Blend);
     }
 
     SelectObject(hdcMem, oldBitmap);
@@ -237,6 +244,8 @@ void RearrangePatternTiles(void)
 
     sprintf(Text, "Patterns : %i / %i", ShownPatterns, NumPatterns);
     SetStatusText(STATUS_PATTERNS, Text);
+
+    SetScrollPos(PatternWnd, SB_VERT, 0, TRUE);
 }
 
 static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
@@ -411,14 +420,88 @@ void ParseDatabase(char *text)
 
 LRESULT CALLBACK PatternProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    RECT Rect;
+    RECT ScrollRect;
+    int ScrollBarWidth;
+    SCROLLINFO si;
+    int yChar;
+    int yPos;
+
+    yChar = 1;
+
     switch (msg)
     {
     case WM_CREATE:
+        SetScrollRange(hwnd, SB_VERT, 0, 10000, TRUE);
         break;
     case WM_CLOSE:
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
+        break;
+
+    case WM_VSCROLL:
+        // Get all the vertial scroll bar information.
+        si.cbSize = sizeof(si);
+        si.fMask = SIF_ALL;
+        GetScrollInfo(hwnd, SB_VERT, &si);
+
+        // Save the position for comparison later on.
+        yPos = si.nPos;
+        switch (LOWORD(wParam))
+        {
+
+            // User clicked the HOME keyboard key.
+        case SB_TOP:
+            si.nPos = si.nMin;
+            break;
+
+            // User clicked the END keyboard key.
+        case SB_BOTTOM:
+            si.nPos = si.nMax;
+            break;
+
+            // User clicked the top arrow.
+        case SB_LINEUP:
+            si.nPos -= 1;
+            break;
+
+            // User clicked the bottom arrow.
+        case SB_LINEDOWN:
+            si.nPos += 1;
+            break;
+
+            // User clicked the scroll bar shaft above the scroll box.
+        case SB_PAGEUP:
+            si.nPos -= si.nPage;
+            break;
+
+            // User clicked the scroll bar shaft below the scroll box.
+        case SB_PAGEDOWN:
+            si.nPos += si.nPage;
+            break;
+
+            // User dragged the scroll box.
+        case SB_THUMBTRACK:
+            si.nPos = si.nTrackPos;
+            break;
+
+        default:
+            break;
+        }
+
+        // Set the position and then retrieve it.  Due to adjustments
+        // by Windows it may not be the same as the value set.
+        si.fMask = SIF_POS;
+        SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+        GetScrollInfo(hwnd, SB_VERT, &si);
+
+        // If the position has changed, scroll window and update it.
+        if (si.nPos != yPos)
+        {
+            ScrollWindow(hwnd, 0, yChar * (yPos - si.nPos), NULL, NULL);
+            UpdateWindow(hwnd);
+        }
         break;
 
     default:
@@ -433,6 +516,8 @@ void PatternInit(HWND Parent, char * dbfile)
     WNDCLASSEX wc;
     char *buffer;
     int filesize;
+    RECT Rect;
+    int ScrollBarWidth;
 
     ParentWnd = Parent;
 
@@ -456,6 +541,8 @@ void PatternInit(HWND Parent, char * dbfile)
         return;
     }
 
+    GetClientRect(ParentWnd, &Rect);
+
     PatternWnd = CreateWindowEx(
         0,
         "PatternWnd",
@@ -463,8 +550,8 @@ void PatternInit(HWND Parent, char * dbfile)
         WS_OVERLAPPED | WS_CHILDWINDOW | WS_VSCROLL,
         2,
         2,
-        100,
-        100,
+        Rect.right,
+        Rect.bottom,
         ParentWnd,
         NULL,
         GetModuleHandle(NULL),
@@ -480,12 +567,9 @@ void PatternInit(HWND Parent, char * dbfile)
     FlipWnd = CreateWindow(
         "BUTTON", 
         "flip", 
-        BS_CHECKBOX | WS_CHILDWINDOW, 
+        BS_CHECKBOX | WS_CHILDWINDOW | WS_VISIBLE, 
         0, 0, 100, FLIP_BUTTON_HEIGHT - 3, 
         ParentWnd, NULL, GetModuleHandle(NULL), NULL);
-
-    ShowWindow(FlipWnd, SW_NORMAL);
-    UpdateWindow(FlipWnd);
 
     //
     // Регистрирум класс окна паттерна.
@@ -533,9 +617,9 @@ void PatternResize(int Width, int Height)
 {
     int NewWidth = max(100, Width - JpegWindowWidth() - 15);
 
-    MoveWindow(PatternWnd, JpegWindowWidth() + 10, FLIP_BUTTON_HEIGHT + 2, NewWidth, max(100, Height - FLIP_BUTTON_HEIGHT - 5), TRUE);
-
     MoveWindow(FlipWnd, JpegWindowWidth() + 10, 2, NewWidth, FLIP_BUTTON_HEIGHT - 3, TRUE);
+
+    MoveWindow(PatternWnd, JpegWindowWidth() + 10, FLIP_BUTTON_HEIGHT + 2, NewWidth, max(100, Height - FLIP_BUTTON_HEIGHT - 5), TRUE);
 
     RearrangePatternTiles();
 }

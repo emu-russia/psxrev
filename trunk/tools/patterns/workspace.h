@@ -1,28 +1,31 @@
-// Имя файла для автосохранения.
+// Autosave filename.
 #define WORKSPACE_AUTOSAVE "Autosave.wrk"
 
-// Образ состояния рабочей среды.
+//
+// Workspace image state
+//
+
 typedef struct WorkspaceImage
 {
     char Signature[4];          // "WRK\0"
 
     //
-    // Глобальные переменные
+    // Global settings
     //
 
     float   Lamda;
     float   LamdaDelta;
-    bool    Flipped;            // Галочка "flip"
+    bool    Flipped;            // "flip" checkbox state
 
     //
-    // База паттернов
+    // Pattern Database
     //
 
     long DatabaseOffset;
     long DatabaseLength;
 
     //
-    // Плоскость исходной картинки
+    // Source mathing image layer
     //
 
     bool SourceImagePresent;
@@ -32,7 +35,7 @@ typedef struct WorkspaceImage
     int ScrollY;
 
     //
-    // Плоскость добавленных паттернов
+    // Added patterns layer
     //
 
     long PatternsAdded;

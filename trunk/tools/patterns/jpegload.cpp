@@ -1,4 +1,4 @@
-// Загрузка JPG.
+// JPG Loading.
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -28,7 +28,7 @@ my_error_exit(j_common_ptr cinfo)
     longjmp(myerr->setjmp_buffer, 1);
 }
 
-// Пример декодирования взят из example.c
+// Jpeg decoding example borrowed from example.c
 int JpegLoad(
     char *filename,
     void(*AddScanlineData) (unsigned char *buffer, int stride, void * Param),
@@ -158,7 +158,7 @@ HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPer
         return NULL;
     }
 
-    // Правильное заполнение DIB Section.
+    // Correct DIB section setup, without artifacts
     // http://stackoverflow.com/questions/21144690/createdibsection-graphical-artifacts-or-how-to-access-bitmap-bits-correctly
 
     int BytesPerLine = uWidth * 3;
