@@ -19,7 +19,7 @@ TextPlugin * TextsGetPlugin(int Index)
     return &Plugins[Index];
 }
 
-void TextsAddPlugin(char *Name, void(*Saver)(PatternEntry *List, int Count))
+void TextsAddPlugin(char *Name, TEXT_SAVER Saver)
 {
     TextPlugin Plugin;
 
@@ -41,10 +41,30 @@ void TextsSelectPlugin(int Index)
     SelectedPlugin = Index;
 }
 
-void TextSave(PatternEntry *List, int Count)
+void TextSave(char *Filename)
 {
+    PatternEntry * List;
+    PatternEntry * Temp;
+    int n, Count;
+
     if (SelectedPlugin != -1)
     {
-        Plugins[SelectedPlugin].Saver(List, Count);
+        //
+        // Copy out added pattern entries
+        //
+
+        Count = GetPatternEntryNum();
+
+        List = (PatternEntry *)malloc(sizeof(PatternEntry) * Count);
+
+        for (n = 0; n < Count; n++)
+        {
+            Temp = GetPatternEntry(n);
+            memcpy(&List[n], Temp, sizeof(PatternEntry));
+        }
+
+        Plugins[SelectedPlugin].Saver(List, Count, Filename);
+
+        free(List);
     }
 }

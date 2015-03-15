@@ -293,8 +293,8 @@ void AddPatternEntry(char * PatternName)
         // Position
         //
 
-        //Entry.PosX = SelectionStartX + ScrollX;
-        //Entry.PosY = SelectionStartY + ScrollY;
+        Entry.PlaneX = SelectionStartX - ScrollX;
+        Entry.PlaneY = SelectionStartY - ScrollY;
 
         Entry.PosX = SelectionStartX;
         Entry.PosY = SelectionStartY;

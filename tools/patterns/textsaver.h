@@ -1,17 +1,19 @@
 // Pattern layer text saving manager.
 
+typedef void(*TEXT_SAVER)(PatternEntry *List, int Count, char *Filename);
+
 typedef struct TextPlugin
 {
     char    Name[0x100];
-    void    (*Saver)(PatternEntry *List, int Count);
+    TEXT_SAVER Saver;
 } TextPlugin;
 
 int     TextsGetPluginNum(void);
 
 TextPlugin * TextsGetPlugin(int Index);
 
-void    TextsAddPlugin(char *Name, void(*Saver)(PatternEntry *List, int Count));
+void    TextsAddPlugin(char *Name, TEXT_SAVER Saver);
 
 void    TextsSelectPlugin(int Index);
 
-void    TextSave(PatternEntry *List, int Count);
+void    TextSave(char *Filename);

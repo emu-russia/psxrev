@@ -15,7 +15,7 @@
 #include "statuswnd.h"
 #include "workspace.h"
 #include "textsaver.h"
-#include "text_psxcpu.h"
+#include "text_vertical.h"
 
 const char g_szClassName[] = "myWindowClass";
 
@@ -25,6 +25,8 @@ HWND FlipWnd;
 float WorkspaceLamda = 1.0f, WorkspaceLamdaDelta = 1.0f;
 
 char CurrentWorkingDir[MAX_PATH];
+
+int SelectedTextSaver;
 
 void LoadSourceImage(HWND Parent)
 {
@@ -86,6 +88,30 @@ void LoadPatternsDB(HWND Parent)
             ParseDatabase(buffer);
             free(buffer);
         }
+    }
+}
+
+void SavePatternsTxt(HWND Parent)
+{
+    OPENFILENAME ofn;
+    char szFileName[MAX_PATH] = "";
+    TextPlugin TextSaver;
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+    ofn.hwndOwner = Parent;
+    ofn.lpstrFilter = "Txt Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = "txt";
+
+    if (GetOpenFileName(&ofn))
+    {
+        // Do something usefull with the filename stored in szFileName 
+
+        TextSave(szFileName);
     }
 }
 
@@ -195,6 +221,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_FILE_LOAD_PATTERNS_DB:
             LoadPatternsDB(hwnd);
             break;
+        case ID_SAVE_PATTXT:
+            SavePatternsTxt(hwnd);
+            break;
         case ID_SETTINGS:
             DialogBox(GetModuleHandle(NULL),
                 MAKEINTRESOURCE(IDD_SETTINGS), hwnd, SettingsDlgProc);
@@ -235,19 +264,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
     WNDCLASSEX wc;
     MSG Msg;
+    HACCEL haccel;
 
     //
     // Add available Text Savers
     // Idea: make all text savers as pattern handler scripts ???
     //
 
-    TextsAddPlugin("PsxcpuText", PsxcpuTextSaver);
+    TextsAddPlugin("VerticalText", TextSaverVertical);
 
     //
     // FIXME: Add Text Plugin saver select box in Options.
     //
 
-    TextsSelectPlugin(0);
+    SelectedTextSaver = 0;
+    TextsSelectPlugin(SelectedTextSaver);
 
     GetCurrentDirectory(sizeof(CurrentWorkingDir), CurrentWorkingDir);
 
@@ -293,11 +324,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ShowWindow(MainWnd, nCmdShow);
     UpdateWindow(MainWnd);
 
+    haccel = LoadAccelerators(hInstance, "PatternsAccel");
+
     // Step 3: The Message Loop
     while (GetMessage(&Msg, NULL, 0, 0) > 0)
     {
-        TranslateMessage(&Msg);
-        DispatchMessage(&Msg);
+        if (!TranslateAccelerator(
+            MainWnd,  // handle to receiving window 
+            haccel,    // handle to active accelerator table 
+            &Msg))         // message data 
+        {
+            TranslateMessage(&Msg);
+            DispatchMessage(&Msg);
+        }
     }
     return Msg.wParam;
 }
