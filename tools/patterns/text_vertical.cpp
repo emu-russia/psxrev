@@ -64,8 +64,25 @@ static void DebugEnum(PatternEntry *List, int Count, FILE *f)
     }
 }
 
+// Check if PatternEntry is already in columns list
+static BOOLEAN AlreadyInList(PatternEntry *Pattern, PTEXT_ENTRY ListHead)
+{
+    PTEXT_ENTRY TextEntry;
+
+    TextEntry = (PTEXT_ENTRY)ListHead->ListEntry.Flink;
+
+    while (TextEntry != (PTEXT_ENTRY)ListHead)
+    {
+        if (TextEntry->Pattern == Pattern) return TRUE;
+
+        TextEntry = (PTEXT_ENTRY)TextEntry->ListEntry.Flink;
+    }
+
+    return FALSE;
+}
+
 // Locate pattern within rect(posx,posy,AvgWidth,MinHeight)
-PatternEntry * Locate(PatternEntry *List, int Count, int PosX, int PosY, int Width, int Height, FILE *f)
+static PatternEntry * Locate(PatternEntry *List, int Count, int PosX, int PosY, int Width, int Height, FILE *f)
 {
     int n;
     bool FitWidth;
@@ -203,15 +220,18 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
 
                 if (Pattern)
                 {
-                    //fprintf(f, "%s: posx=%i, posy=%i\n", Pattern->PatternName, Pattern->PlaneX, Pattern->PlaneY);
+                    if (!AlreadyInList(Pattern, CurrentHead))
+                    {
+                        //fprintf(f, "%s: posx=%i, posy=%i\n", Pattern->PatternName, Pattern->PlaneX, Pattern->PlaneY);
 
-                    TextEntry = (PTEXT_ENTRY)malloc(sizeof(TEXT_ENTRY));
+                        TextEntry = (PTEXT_ENTRY)malloc(sizeof(TEXT_ENTRY));
 
-                    TextEntry->Pattern = Pattern;
+                        TextEntry->Pattern = Pattern;
 
-                    InsertTailList(&CurrentHead->ListEntry, (PLIST_ENTRY)&TextEntry->ListEntry);
+                        InsertTailList(&CurrentHead->ListEntry, (PLIST_ENTRY)&TextEntry->ListEntry);
 
-                    PatternsFound++;
+                        PatternsFound++;
+                    }
                 }
 
                 //
