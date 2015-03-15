@@ -49,6 +49,46 @@ void LoadSourceImage(HWND Parent)
     }
 }
 
+void LoadPatternsDB(HWND Parent)
+{
+    FILE *f;
+    int filesize;
+    char *buffer;
+    OPENFILENAME ofn;
+    char szFileName[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+    ofn.hwndOwner = Parent;
+    ofn.lpstrFilter = "Txt Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = "txt";
+
+    if (GetOpenFileName(&ofn))
+    {
+        // Do something usefull with the filename stored in szFileName 
+
+        f = fopen(szFileName, "rt");
+
+        if (f)
+        {
+            fseek(f, 0, SEEK_END);
+            filesize = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            buffer = (char *)malloc(filesize + 1);
+            fread(buffer, 1, filesize, f);
+            buffer[filesize] = 0;
+            fclose(f);
+            PatternDestroy();
+            ParseDatabase(buffer);
+            free(buffer);
+        }
+    }
+}
+
 void WorkspaceHandler(HWND Parent, void (*Callback)(char *filename))
 {
     OPENFILENAME ofn;
@@ -152,6 +192,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_FILE_LOAD:
             LoadSourceImage(hwnd);
             break;
+        case ID_FILE_LOAD_PATTERNS_DB:
+            LoadPatternsDB(hwnd);
+            break;
         case ID_SETTINGS:
             DialogBox(GetModuleHandle(NULL),
                 MAKEINTRESOURCE(IDD_SETTINGS), hwnd, SettingsDlgProc);
@@ -193,7 +236,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     WNDCLASSEX wc;
     MSG Msg;
 
+    //
+    // Add available Text Savers
+    // Idea: make all text savers as pattern handler scripts ???
+    //
+
     TextsAddPlugin("PsxcpuText", PsxcpuTextSaver);
+
+    //
+    // FIXME: Add Text Plugin saver select box in Options.
+    //
+
+    TextsSelectPlugin(0);
 
     GetCurrentDirectory(sizeof(CurrentWorkingDir), CurrentWorkingDir);
 

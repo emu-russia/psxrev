@@ -1,7 +1,7 @@
 
 typedef struct PatternEntry
 {
-    int     PatternIndex;
+    char    PatternName[128];
     int     PosX;           // Относительно верхнего левого угла родительского окна.
     int     PosY;
     int     SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
@@ -27,7 +27,7 @@ void JpegResize(int Width, int Height);
 
 int JpegWindowWidth(void);
 
-void AddPatternEntry(int PatternIndex);
+void AddPatternEntry(char * PatternName);
 
 void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry);
 

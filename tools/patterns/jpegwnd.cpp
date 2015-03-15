@@ -232,12 +232,12 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         if (EntryIndex != -1)
         {
             Entry = &PatternLayer[EntryIndex];
-            Item = PatternGetItem(Entry->PatternIndex);
+            Item = PatternGetItem(Entry->PatternName);
             Rect.left = 0;
             Rect.top = 0;
             Rect.right = Entry->Width;
             Rect.bottom = Entry->Height;
-            DrawPattern(Item, hdc, &Rect, Entry->Flipped);
+            DrawPattern(Item, hdc, &Rect, Entry->Flipped, TRUE, TRUE);
 
             //
             // Pattern remove button.
@@ -265,20 +265,20 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
     return 0;
 }
 
-void AddPatternEntry(int PatternIndex)
+void AddPatternEntry(char * PatternName)
 {
-    PatternItem * Item = PatternGetItem(PatternIndex);
+    PatternItem * Item = PatternGetItem(PatternName);
     PatternEntry Entry;
     RECT Region;
     bool Selected = JpegGetSelectRegion(&Region);
     float LamdaWidth, LamdaHeight;
     char Text[0x100];
 
-    if (Selected)
+    if (Selected && Item)
     {
         Entry.BlendLevel = 1.0f;
         Entry.Flipped = (Button_GetCheck(FlipWnd) == BST_CHECKED);
-        Entry.PatternIndex = PatternIndex;
+        strcpy(Entry.PatternName, PatternName);
 
         //
         // Width / Height

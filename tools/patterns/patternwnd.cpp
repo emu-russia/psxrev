@@ -31,6 +31,8 @@ static HWND *PatternTiles;
 
 static char * SavedDatabase = NULL;
 
+static HGDIOBJ PatternFont;
+
 // DEBUG
 static void DumpPatterns(void)
 {
@@ -55,36 +57,79 @@ int GetPatternIndexByHwnd(HWND hwnd)
     return -1;
 }
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped)
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box, bool Label)
 {
     HGDIOBJ oldBitmap;
     HDC hdcMem;
     BITMAP bitmap;
     BLENDFUNCTION Blend;
+    HPEN Pen;
+    HGDIOBJ OldPen;
 
-    hdcMem = CreateCompatibleDC(hdc);
-    oldBitmap = SelectObject(hdcMem, Item->PatternBitmap);
-
-    GetObject(Item->PatternBitmap, sizeof(bitmap), &bitmap);
-
-    SetStretchBltMode(hdc, HALFTONE);
-    if (Flipped)
+    if (Item)
     {
-        StretchBlt(hdc, Rect->right, Rect->bottom, -Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+        //
+        // Draw pattern's images
+        //
+
+        hdcMem = CreateCompatibleDC(hdc);
+        oldBitmap = SelectObject(hdcMem, Item->PatternBitmap);
+        GetObject(Item->PatternBitmap, sizeof(bitmap), &bitmap);
+
+        SetStretchBltMode(hdc, HALFTONE);
+        if (Flipped)
+        {
+            StretchBlt(hdc, Rect->right, Rect->bottom, -Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+        }
+        else
+        {
+            StretchBlt(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+        }
+
+        SelectObject(hdcMem, oldBitmap);
+        DeleteDC(hdcMem);
+
+        //
+        // Bounding box
+        //
+
+        if (Box)
+        {
+            #define LINE_WIDTH 2
+
+            Pen = CreatePen(PS_SOLID, LINE_WIDTH, RGB(0xff, 0, 0));
+            OldPen = SelectObject(hdc, Pen);
+            SetPolyFillMode(hdc, TRANSPARENT);
+
+            //
+            // Fuck it....
+            //
+
+            MoveToEx(hdc, LINE_WIDTH, LINE_WIDTH, NULL);
+            LineTo(hdc, Item->PatternWidth, 0);
+            LineTo(hdc, Item->PatternWidth, Item->PatternHeight);
+            LineTo(hdc, 0, Item->PatternHeight);
+            LineTo(hdc, 0, 0);
+
+            SelectObject(hdc, OldPen);
+            DeleteObject(Pen);
+        }
+
+        //
+        // Draw pattern label
+        //
+
+        if (Label)
+        {
+            SelectObject(hdc, PatternFont);
+            TextOut(hdc, 0, 0, Item->Name, strlen(Item->Name));
+        }
     }
     else
     {
-        StretchBlt(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
-
-        //memset(&Blend, 0, sizeof(BLENDFUNCTION));
-        //Blend.BlendOp = AC_SRC_OVER;
-        //Blend.SourceConstantAlpha = 55;
-        //Blend.AlphaFormat = AC_SRC_ALPHA
-        //AlphaBlend(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, Blend);
+        SelectObject(hdc, PatternFont);
+        TextOut(hdc, 0, 0, "UNKNOWN", strlen("UNKNOWN"));
     }
-
-    SelectObject(hdcMem, oldBitmap);
-    DeleteDC(hdcMem);
 }
 
 LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -113,7 +158,7 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         {
             Item = &Patterns[PatternIndex];
             //MessageBox(0, Item->Name, "Clicked", 0);
-            AddPatternEntry(PatternIndex);
+            AddPatternEntry(Item->Name);
             JpegRemoveSelection();
             RearrangePatternTiles();
             PatternRedraw();
@@ -130,7 +175,7 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         {
             Item = &Patterns[PatternIndex];
             Flipped = Button_GetCheck(FlipWnd) == BST_CHECKED;
-            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped);
+            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, FALSE, FALSE);
         }
 
         EndPaint(hwnd, &ps);
@@ -156,7 +201,7 @@ bool CheckHidden(int PatternIndex)
     if (RegionSelected)
     {
         //
-        // Вычислим ширину и высоту рамки выделения в lamda
+        // Calculate select box width and height in lamdas
         //
 
         RegionWidth = (float)abs(Region.right - Region.left);
@@ -165,14 +210,14 @@ bool CheckHidden(int PatternIndex)
         LamdaHeight = RegionHeight / WorkspaceLamda;
 
         //
-        // Вычислим ширину и высоту паттерна в lamda
+        // Calculate pattern width and height in lamdas
         //
 
         PLamdaWidth = (float)Item->PatternWidth / Item->Lamda;
         PLamdaHeight = (float)Item->PatternHeight / Item->Lamda;
 
         //
-        // Проверяем границы с учётом lamda delta
+        // Match dimensions according to lamda delta
         //
 
         Fit = false;
@@ -255,8 +300,7 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
     Item->PatternBufferSize += stride;
 }
 
-// Добавляем новый паттерн.
-// Декодирование JPEG основано на примере example.c из libjpeg.
+// Add new pattern.
 void AddNewPattern(char *name, char *jpeg_path, float lamda)
 {
     PatternItem Item;
@@ -295,7 +339,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     Patterns[NumPatterns] = Item;
 
     //
-    // Создадим новое окно паттерна
+    // Create new pattern window
     //
 
     PatternTiles = (HWND *)realloc(PatternTiles, sizeof(HWND)* (NumPatterns + 1));
@@ -326,7 +370,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     //MessageBox(0, buffer, "New Pattern", 0);
 }
 
-// Удалить начальные и конечные пробелы и кавычки в строке.
+// Trim leading and trailing whitespaces and quotes in given string.
 char *TrimString(char *str)
 {
     int length, n;
@@ -359,7 +403,7 @@ void ParseLine(char *line)
     char path[256];
     char buffer[1024];
 
-    // Пропускаем пробелы.
+    // Skip whitespaces.
     while (*line)
     {
         c = *line;
@@ -367,10 +411,10 @@ void ParseLine(char *line)
         else break;
     }
 
-    // Если пустая строка - выходим.
+    // Check empty string.
     if (strlen(line) == 0) return;
 
-    // Проверяем комментарии
+    // Check comments
     if (*line == '#') return;
 
     sscanf(line, "%s %[^','],%[^','],%s", command, name, lamda, path);
@@ -518,6 +562,7 @@ void PatternInit(HWND Parent, char * dbfile)
     int filesize;
     RECT Rect;
     int ScrollBarWidth;
+    LOGFONT LogFont;
 
     ParentWnd = Parent;
 
@@ -594,6 +639,18 @@ void PatternInit(HWND Parent, char * dbfile)
         MessageBox(0, "Cannot register Pattern TileWnd Class", "Error", 0);
     }
 
+    //
+    // Create pattern label font
+    //
+
+    memset(&LogFont, 0, sizeof(LogFont));
+
+    strcpy(LogFont.lfFaceName, "Calibri");
+    LogFont.lfWeight = FW_NORMAL;
+    LogFont.lfEscapement = 0;
+
+    PatternFont = CreateFontIndirect(&LogFont);
+
     // Загрузить и распарсить базу данных паттернов.
     f = fopen(dbfile, "rb");
     if (f)
@@ -630,9 +687,16 @@ void PatternRedraw(void)
     UpdateWindow(PatternWnd);
 }
 
-PatternItem * PatternGetItem(int PatternIndex)
+PatternItem * PatternGetItem(char * PatternName)
 {
-    return &Patterns[PatternIndex];
+    LONG Count;
+
+    for (Count = 0; Count < NumPatterns; Count++)
+    {
+        if (!_stricmp(Patterns[Count].Name, PatternName)) return &Patterns[Count];
+    }
+
+    return NULL;
 }
 
 // Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
