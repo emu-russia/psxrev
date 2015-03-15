@@ -1,5 +1,4 @@
-// Added patterns text saver.
-// Vertical rows of patterns layout.
+// Vertical patterns text saver.
 
 #define _CRT_SECURE_NO_WARNINGS
 
