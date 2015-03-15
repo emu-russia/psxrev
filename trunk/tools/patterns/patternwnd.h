@@ -19,9 +19,9 @@ void RearrangePatternTiles(void);
 
 void PatternRedraw(void);
 
-PatternItem * PatternGetItem(int PatternIndex);
+PatternItem * PatternGetItem(char * PatternName);
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped);
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box, bool Label);
 
 void PatternDestroy(void);
 

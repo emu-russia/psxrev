@@ -6,6 +6,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "Load Source Image", ID_FILE_LOAD
+        MENUITEM "Load Pattern Database", ID_FILE_LOAD_PATTERNS_DB
         MENUITEM "Save Patterns as Image", ID_SAVE_PATIMG
         MENUITEM "Save Patterns as Text", ID_SAVE_PATTXT
         MENUITEM "E&xit", ID_FILE_EXIT

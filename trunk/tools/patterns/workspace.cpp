@@ -218,7 +218,7 @@ void LoadWorkspace(char *filename)
 
             JpegSetSelectRegion(&Region);
 
-            AddPatternEntry(PatternLayer[Count].PatternIndex);
+            AddPatternEntry(PatternLayer[Count].PatternName);
             UpdatePatternEntry(Count, &PatternLayer[Count]);
 
             JpegRemoveSelection();
