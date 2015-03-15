@@ -1,4 +1,7 @@
-// Утилита для нахождения паттернов в исходной картинке.
+// Standard Cells matching utility.
+// Copyright (c) 2015, psxdev.ru
+
+// Code is crappy look away :-)
 
 #define _CRT_SECURE_NO_WARNINGS
 

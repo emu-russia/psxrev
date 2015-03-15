@@ -46,6 +46,7 @@ static int SavedScrollX, SavedScrollY;
 static bool SelectionBegin, RegionSelected;
 static int SelectionStartX, SelectionStartY;
 static int SelectionEndX, SelectionEndY;
+static BOOL DragOccureInPattern;
 
 // Added Patterns Layer.
 
@@ -90,9 +91,9 @@ static void UpdateEntryPositions(int OffsetX, int OffsetY)
     }
 }
 
-// Удалить ячейку с плоскости паттернов.
-//  - Удаляем окно
-//  - Перегруппируем массив паттернов без учета удаленной ячейки
+// Delete cell from patterns layer.
+//  - Delete pattern window
+//  - Rearrange patterns array without counting removed cell
 static void RemovePatternEntry(int EntryIndex)
 {
     PatternEntry * Entry = &PatternLayer[EntryIndex];
@@ -114,7 +115,7 @@ static void RemovePatternEntry(int EntryIndex)
     NumPatterns--;
 
     //
-    // Обновим строку состояния.
+    // Update status line.
     //
     sprintf(Text, "Patterns Added : %i", NumPatterns);
     SetStatusText(STATUS_ADDED, Text);
@@ -148,7 +149,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         break;
 
     //
-    // Перетаскивание окна
+    // Drag window
     //
 
     case WM_MOVE:
@@ -176,7 +177,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         return FALSE;
 
     //
-    // Нажатие на кнопку удаления паттерна.
+    // Pattern remove button press handler.
     //
 
     case WM_LBUTTONUP:
@@ -195,6 +196,18 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
                 }
             }
         }
+        break;
+
+    //
+    // Блокировать скроллинг плоскости исходной картинки, если нажатие на RMB произошло внутри плоскости паттернов.
+    //
+
+    case WM_RBUTTONDOWN:
+        DragOccureInPattern = true;
+        break;
+
+    case WM_RBUTTONUP:
+        DragOccureInPattern = false;
         break;
 
     //
@@ -227,7 +240,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             DrawPattern(Item, hdc, &Rect, Entry->Flipped);
 
             //
-            // Кнопка удаления паттерна.
+            // Pattern remove button.
             //
 
             if (RemoveBitmap)
@@ -393,7 +406,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             DeleteDC(hdcMem);
         }
 
-        // Рамка выделения.
+        // Select box.
         if (RegionSelected)
         {
             oldColor = SelectObject(hdc, GetStockObject(DC_PEN));
@@ -419,13 +432,16 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_RBUTTONDOWN:
-        ScrollingBegin = true;
-        RegionSelected = false;
-        SavedMouseX = LOWORD(lParam);
-        SavedMouseY = HIWORD(lParam);
-        SavedScrollX = ScrollX;
-        SavedScrollY = ScrollY;
-        SaveEntryPositions();
+        if (DragOccureInPattern == false)
+        {
+            ScrollingBegin = true;
+            RegionSelected = false;
+            SavedMouseX = LOWORD(lParam);
+            SavedMouseY = HIWORD(lParam);
+            SavedScrollX = ScrollX;
+            SavedScrollY = ScrollY;
+            SaveEntryPositions();
+        }
         break;
 
     case WM_MOUSEMOVE:
@@ -459,14 +475,18 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_RBUTTONUP:
-        ScrollingBegin = false;
-        //InvalidateRect(JpegWnd, NULL, TRUE);
-        //UpdateWindow(JpegWnd);
+        if (DragOccureInPattern == false)
+        {
+            ScrollingBegin = false;
+            //InvalidateRect(JpegWnd, NULL, TRUE);
+            //UpdateWindow(JpegWnd);
 
-        UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
 
-        sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY );
-        SetStatusText(STATUS_SCROLL, Text);
+            sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
+            SetStatusText(STATUS_SCROLL, Text);
+        }
+        DragOccureInPattern = false;
         break;
 
     case WM_LBUTTONUP:
@@ -532,7 +552,7 @@ void JpegInit(HWND Parent)
     UpdateWindow(JpegWnd);
 
     //
-    // Регистрируем класс окна паттернов.
+    // Register pattern window class.
     //
 
     memset(&wc, 0, sizeof(wc));
@@ -555,7 +575,7 @@ void JpegInit(HWND Parent)
     }
 
     //
-    // Загрузить картинку удаления паттерна
+    // Load pattern remove button picture
     //
 
     RemoveBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_REMOVE));
@@ -567,7 +587,7 @@ static void JpegAddScanline(unsigned char *buffer, int stride, void *Param)
     JpegBufferSize += stride;
 }
 
-// Пример декодирования взят из example.c
+// Load source Jpeg image
 void JpegLoadImage(char *filename, bool Silent)
 {
     char Text[1024];

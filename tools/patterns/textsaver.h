@@ -1,4 +1,4 @@
-// Менеджер плагинов для сохранения паттернов в текстовой файл.
+// Pattern layer text saving manager.
 
 typedef struct TextPlugin
 {
