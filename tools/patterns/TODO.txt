@@ -1,0 +1,16 @@
+Patterns tool TODO List:
+
+- Preview window for quick navigation
+- Zoom in / zoom out (? is it compatible with Lamda)
+- Save as Jpeg
+- Fix annoying flickering / speed-up / OpenGL renderer
+- Find next Garbage / Unknown cell controls
+- Text Saver plugin selector
+- Implement horizontal patterns text saver
+- Add PNG Loader / transparency / alpha mask for patterns
+
+Remember, this is pre-alpha version :-)
+
+All source code commits send to ogamespec@gmail.com
+
+http://psxdev.ru
