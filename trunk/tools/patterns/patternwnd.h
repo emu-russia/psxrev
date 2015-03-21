@@ -4,11 +4,11 @@ typedef struct PatternItem
     char    Name[128];
     float   Lamda;
     unsigned char * PatternRawImage;
-    int     PatternBufferSize;
-    int     PatternWidth;
-    int     PatternHeight;
+    long    PatternBufferSize;
+    long    PatternWidth;
+    long    PatternHeight;
     HBITMAP PatternBitmap;
-    bool    Hidden;
+    long    Hidden;
 } PatternItem;
 
 void PatternInit(HWND Parent, char * dbfile);

@@ -183,7 +183,7 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
 
             if (List[n].Height < MinHeight) MinHeight = List[n].Height;
             
-            NameLength = strlen(List[n].PatternName);
+            NameLength = (int)strlen(List[n].PatternName);
             if (NameLength > MaxNameLength) MaxNameLength = NameLength;
         }
 

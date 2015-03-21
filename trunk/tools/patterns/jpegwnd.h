@@ -2,16 +2,20 @@
 typedef struct PatternEntry
 {
     char    PatternName[128];
-    int     PosX;           // Относительно верхнего левого угла родительского окна.
-    int     PosY;
-    int     SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
-    int     SavedPosY;
-    int     PlaneX;         // Относительно верхнего левого угла исходной картинки.
-    int     PlaneY;
-    int     Width;
-    int     Height;
-    HWND    Hwnd;
-    bool    Flipped;
+    long    PosX;           // Относительно верхнего левого угла родительского окна.
+    long    PosY;
+    long    SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
+    long    SavedPosY;
+    long    PlaneX;         // Относительно верхнего левого угла исходной картинки.
+    long    PlaneY;
+    long    Width;
+    long    Height;
+    union
+    {
+        HWND    Hwnd;
+        unsigned __int64 Padding;
+    };
+    long    Flipped;
     float   BlendLevel;     // UpdateLayeredWindow
 } PatternEntry;
 

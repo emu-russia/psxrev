@@ -95,7 +95,6 @@ void SavePatternsTxt(HWND Parent)
 {
     OPENFILENAME ofn;
     char szFileName[MAX_PATH] = "";
-    TextPlugin TextSaver;
 
     ZeroMemory(&ofn, sizeof(ofn));
 
@@ -138,7 +137,7 @@ void WorkspaceHandler(HWND Parent, void (*Callback)(char *filename))
     }
 }
 
-BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
     char Text[1024];
 
@@ -166,9 +165,9 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
             //
 
             GetDlgItemText(hwnd, ID_LAMDA, Text, sizeof(Text));
-            WorkspaceLamda = atof(Text);
+            WorkspaceLamda = (float) atof(Text);
             GetDlgItemText(hwnd, ID_LAMDA_DELTA, Text, sizeof(Text));
-            WorkspaceLamdaDelta = atof(Text);
+            WorkspaceLamdaDelta = (float) atof(Text);
 
             sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
             SetStatusText(STATUS_LAMDA_DELTA, Text);
@@ -344,5 +343,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             DispatchMessage(&Msg);
         }
     }
-    return Msg.wParam;
+    return (int) Msg.wParam;
 }
