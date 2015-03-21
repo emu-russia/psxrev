@@ -142,8 +142,6 @@ pattern FA, 5.0, "patterns_db/FA.jpg"
 pattern FA2, 5.0, "patterns_db/FA2.jpg"
 pattern MUX_ARRAY, 5.0, "patterns_db/MUX_ARRAY.jpg"
 
-# Composite Cells (helpers)
-
 # Misc
 
 pattern TRISTATE3, 5.0, "patterns_db/TRISTATE3.jpg"
