@@ -41,8 +41,16 @@ int GetPatternEntryNum(void);
 
 void JpegDestroy(void);
 
+void JpegRemoveAllPatterns(void);
+
 char * JpegGetImageName(void);
 
 void JpegGetScroll(LPPOINT Offset);
 
 void JpegSetScroll(LPPOINT Offset);
+
+void JpegSelectPattern(PatternEntry * Pattern);
+
+PatternEntry * JpegGetSelectedPattern(void);
+
+void JpegEnsureVisible(PatternEntry * Pattern);

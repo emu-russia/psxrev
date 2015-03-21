@@ -57,7 +57,7 @@ int GetPatternIndexByHwnd(HWND hwnd)
     return -1;
 }
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box, bool Label)
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box, bool Label, bool SelectHint)
 {
     HGDIOBJ oldBitmap;
     HDC hdcMem;
@@ -65,6 +65,12 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
     BLENDFUNCTION Blend;
     HPEN Pen;
     HGDIOBJ OldPen;
+    HBRUSH SelectionBrush;
+    HGDIOBJ OldBrush;
+    HDC hdcSelection;
+    BITMAPINFO Bmi;
+    HBITMAP SelectionBitmap;
+    RECT SelectionRect;
 
     if (Item)
     {
@@ -88,6 +94,50 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
 
         SelectObject(hdcMem, oldBitmap);
         DeleteDC(hdcMem);
+
+        //
+        // Selection Hint
+        //
+
+        if (SelectHint)
+        {
+            hdcSelection = CreateCompatibleDC(hdc);
+
+            SelectionBrush = CreateHatchBrush(HS_DIAGCROSS, RGB(127,127,127));
+            OldBrush = SelectObject(hdcSelection, SelectionBrush);
+
+            memset(&Bmi, 0, sizeof(BITMAPINFO));
+
+            Bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+            Bmi.bmiHeader.biWidth = Item->PatternWidth;
+            Bmi.bmiHeader.biHeight = Item->PatternHeight;
+            Bmi.bmiHeader.biPlanes = 1;
+            Bmi.bmiHeader.biBitCount = 32;         // four 8-bit components 
+            Bmi.bmiHeader.biCompression = BI_RGB;
+            Bmi.bmiHeader.biSizeImage = Item->PatternWidth * Item->PatternHeight * 4;
+
+            SelectionBitmap = CreateDIBSection(hdcSelection, &Bmi, DIB_RGB_COLORS, NULL, NULL, 0x0);
+            SelectObject(hdcSelection, SelectionBitmap);
+
+            SetRect(&SelectionRect, 0, 0, Item->PatternWidth, Item->PatternHeight);
+
+            RoundRect(hdcSelection, 0, 0, Item->PatternWidth, Item->PatternHeight, 10, 10);
+
+            memset(&Blend, 0, sizeof(BLENDFUNCTION));
+
+            Blend.BlendOp = AC_SRC_OVER;
+            Blend.SourceConstantAlpha = 50;
+            Blend.AlphaFormat = AC_SRC_ALPHA;
+
+            AlphaBlend(
+                hdc, 0, 0, Item->PatternWidth, Item->PatternHeight,
+                hdcSelection, 0, 0, Item->PatternWidth, Item->PatternHeight, Blend);
+
+            DeleteObject(SelectionBitmap);
+            DeleteObject(SelectionBrush);
+
+            DeleteDC(hdcSelection);
+        }
 
         //
         // Bounding box
@@ -175,11 +225,14 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         {
             Item = &Patterns[PatternIndex];
             Flipped = Button_GetCheck(FlipWnd) == BST_CHECKED;
-            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, FALSE, FALSE);
+            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, FALSE, FALSE, FALSE);
         }
 
         EndPaint(hwnd, &ps);
         break;
+
+    case WM_ERASEBKGND:
+        return TRUE;
 
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -568,7 +621,7 @@ void PatternInit(HWND Parent, char * dbfile)
 
     memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    wc.style = CS_OWNDC;
     wc.lpfnWndProc = PatternProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -622,7 +675,7 @@ void PatternInit(HWND Parent, char * dbfile)
 
     memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    wc.style = CS_OWNDC;
     wc.lpfnWndProc = PatternTileProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;

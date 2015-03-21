@@ -28,7 +28,7 @@ void ResetStatusBar(void)
 // create status bar window
 void CreateStatusBar(HWND Parent)
 {
-    int parts[] = { 0, 250, 400, 550, 700, 850, -1 };
+    int parts[] = { 0, 350, 500, 650, 800, 950, -1 };
 
     if (Parent == NULL) return;
 

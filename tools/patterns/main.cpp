@@ -234,6 +234,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_WORKSPACE_SAVE:
             WorkspaceHandler(hwnd, SaveWorkspace);
             break;
+        case ID_ENSURE_VISIBLE:
+            JpegEnsureVisible(JpegGetSelectedPattern());
+            break;
+        case ID_REMOVE_ALL_PATTERNS:
+            JpegRemoveAllPatterns();
+            break;
         }
         if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == FlipWnd)
         {

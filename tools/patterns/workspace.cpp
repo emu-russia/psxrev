@@ -225,6 +225,8 @@ void LoadWorkspace(char *filename)
         }
     }
 
+    JpegSelectPattern(NULL);
+
     fclose(f);
 
     //

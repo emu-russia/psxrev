@@ -7,6 +7,13 @@
 #include "jpegwnd.h"
 
 //
+// Debug visualisation
+//
+
+//#define DEBUG_VIS
+#define DEBUG_VIS_DELAY  200        // ms
+
+//
 // Max number of pattern columns in source image.
 //
 
@@ -121,6 +128,9 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
     int PatternsFound;
     int MaxNameLength;
     int NameLength;
+    int SavedPosx;
+    int MaxWidth;
+    int NewPosx;
 
     if (Count == 0) return;
 
@@ -196,7 +206,7 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
         // Iterate columns from Leftmost posx, with step = AvgWidth, until posx < (Rightmost posx + Rightmost Width)
         //
 
-        for (posx = Leftmost->PlaneX; posx < (Rightmost->PlaneX + Rightmost->Width); posx += AvgWidth)
+        for (posx = Leftmost->PlaneX; posx < (Rightmost->PlaneX + Rightmost->Width); )
         {
             //
             // Iterate rows from Topmost posy, with step = Cell Height, until posy < (Bottomost posy + Bottomost Height)
@@ -205,6 +215,8 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
             PatternsFound = 0;
 
             //fprintf(f, "COLUMN:\n");
+
+            MaxWidth = 0;
 
             for (posy = Topmost->PlaneY; posy < (Bottomost->PlaneY + Bottomost->Height);)
             {
@@ -231,6 +243,15 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
                         InsertTailList(&CurrentHead->ListEntry, (PLIST_ENTRY)&TextEntry->ListEntry);
 
                         PatternsFound++;
+
+                        if ( Pattern->Width > MaxWidth ) MaxWidth = Pattern->Width;
+
+#ifdef DEBUG_VIS
+                        JpegSelectPattern(Pattern);
+                        JpegEnsureVisible(Pattern);
+
+                        Sleep(DEBUG_VIS_DELAY);
+#endif // DEBUG_VIS
                     }
                 }
 
@@ -241,6 +262,26 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
                 if ( Pattern ) posy += Pattern->Height;
                 else posy += MinHeight;
             }
+
+            //
+            // Recalculate Leftmost posx
+            //
+
+            SavedPosx = posx;
+
+            NewPosx = Rightmost->PlaneX;
+
+            for (n = 0; n < Count; n++)
+            {
+                if (List[n].PlaneX > (SavedPosx + MaxWidth))
+                {
+                    if (List[n].PlaneX < NewPosx) NewPosx = List[n].PlaneX;
+                }
+            }
+
+            posx = NewPosx;
+
+            if (posx == SavedPosx) break;
 
             //
             // Advance list heads
@@ -264,6 +305,7 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
         // Debug: Dump column lists
         //
 
+#if 1
         for (n = 0; n < NumListHeads; n++)
         {
             CurrentHead = &ListHeads[n];
@@ -284,6 +326,7 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
 
             fprintf(f, "\n");
         }
+#endif
 
         //
         // Cleanup.
@@ -306,5 +349,9 @@ void TextSaverVertical (PatternEntry *List, int Count, char *Filename)
         free(ListHeads);
 
         fclose(f);
+
+#ifdef DEBUG_VIS
+        JpegSelectPattern(NULL);
+#endif // DEBUG_VIS
     }
 }
