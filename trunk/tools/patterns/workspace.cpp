@@ -1,4 +1,4 @@
-// Сохранение и загрузка Workspace (рабочей среды).
+// Workspace Backup (saving/loading)
 //
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -26,14 +26,14 @@ void SaveWorkspace(char *filename)
     FILE * f;
 
     //
-    // Стадия 1 : Сохраняем.
+    // Stage 1 : Save context.
     //
 
     strcpy(ws.Signature, "WRK");
     ws.Signature[3] = 0;
 
     //
-    // Глобальные переменные
+    // Global settings
     //
 
     ws.Lamda = WorkspaceLamda;
@@ -41,7 +41,7 @@ void SaveWorkspace(char *filename)
     ws.Flipped = (Button_GetCheck(FlipWnd) == BST_CHECKED) ? true : false;
 
     //
-    // Загруженные паттерны
+    // Pattern database
     //
 
     Database = GetSavedDatabase();
@@ -49,7 +49,7 @@ void SaveWorkspace(char *filename)
     ws.DatabaseLength = (long)strlen(Database) + 1;
 
     //
-    // Плоскость исходной картинки
+    // Source image layer
     //
 
     JpegGetScroll(&Offset);
@@ -71,7 +71,7 @@ void SaveWorkspace(char *filename)
     }
 
     //
-    // Плоскость добавленных паттернов.
+    // Added patterns layer
     //
 
     NumPatterns = GetPatternEntryNum();
@@ -81,7 +81,7 @@ void SaveWorkspace(char *filename)
     {
         memcpy(&PatternLayer[Count], GetPatternEntry(Count), sizeof(PatternEntry));
 
-        // Почистить ненужные поля.
+        // Cleanup not needed fields
         PatternLayer[Count].Hwnd = NULL;
         PatternLayer[Count].SavedPosX = PatternLayer[Count].SavedPosY = 0;
     }
@@ -91,16 +91,16 @@ void SaveWorkspace(char *filename)
     else ws.PatternsLayerOffset = 0;
 
     //
-    // Сохраняем рабочую среду в файл.
+    // Save workspace in file
     //
 
     f = fopen(filename, "wb");
     if (f)
     {
-        fwrite(&ws, 1, sizeof(WorkspaceImage), f);      // Заголовок
-        fwrite(Database, 1, ws.DatabaseLength, f);      // База данных
-        fwrite(ImageName, 1, ws.SourceImageLength, f);      // Плоскость исходной картинки
-        fwrite(PatternLayer, 1, sizeof(PatternEntry)* NumPatterns, f);   // Плоскость добавленных паттернов
+        fwrite(&ws, 1, sizeof(WorkspaceImage), f);      // Header
+        fwrite(Database, 1, ws.DatabaseLength, f);      // Pattern Database
+        fwrite(ImageName, 1, ws.SourceImageLength, f);      // Source image layer
+        fwrite(PatternLayer, 1, sizeof(PatternEntry)* NumPatterns, f);   // Added patterns layer
         fclose(f);
     }
     else MessageBox(0, "Cannot create workspace iamge file", "Workspace Save Failed", 0);
@@ -135,34 +135,34 @@ void LoadWorkspace(char *filename)
     }
 
     //
-    // Стадия 1 : Чистим.
+    // Stage 1 : Cleanup
     //
 
     //
-    // Удалить все ресурсы, занимаемые окнами.
+    // Delete all system resources
     //
 
     JpegDestroy();
     PatternDestroy();
 
     //
-    // Установить Lamda / Delta по умолчанию.
+    // Set default Lamda / Delta.
     //
 
     WorkspaceLamda = WorkspaceLamdaDelta = 1.0f;
 
     //
-    // Обновить строку статуса по умолчанию.
+    // Set default status line.
     //
 
     ResetStatusBar ();
 
     //
-    // Стадия 2 : Загружаем.
+    // Stage 2 : Load.
     //
 
     //
-    // Глобальные переменные
+    // Global settings
     //
 
     WorkspaceLamda = ws.Lamda;
@@ -171,7 +171,7 @@ void LoadWorkspace(char *filename)
     else Button_SetCheck(FlipWnd, BST_UNCHECKED);
 
     //
-    // База данных паттернов
+    // Pattern database
     //
 
     fseek(f, ws.DatabaseOffset, SEEK_SET);
@@ -181,7 +181,7 @@ void LoadWorkspace(char *filename)
     PatternRedraw();
 
     //
-    // Плоскость исходной картинки
+    // Source image layer
     //
 
     if (ws.SourceImagePresent)
@@ -198,7 +198,7 @@ void LoadWorkspace(char *filename)
     JpegSetScroll(&Offset);
 
     //
-    // Плоскость добавленных паттернов
+    // Added patterns layer
     //
 
     NumPatterns = ws.PatternsAdded;
@@ -230,7 +230,7 @@ void LoadWorkspace(char *filename)
     fclose(f);
 
     //
-    // Обновить строку статуса
+    // Update status line
     //
 
     sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
@@ -239,8 +239,7 @@ void LoadWorkspace(char *filename)
     MessageBox(0, "Workspace Loaded", "Workspace Loaded", 0);
 }
 
-// Добавить обработчик, который будет сохранять рабочее пространство каждые Seconds секунд.
-// Файл для автосохранения - WORKSPACE_AUTOSAVE
+// Add periodic handler, which will save workspace every Some seconds into WORKSPACE_AUTOSAVE file.
 void EnableAutosave(int Seconds)
 {
 

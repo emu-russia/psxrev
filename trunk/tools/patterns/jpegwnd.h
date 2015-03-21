@@ -2,11 +2,11 @@
 typedef struct PatternEntry
 {
     char    PatternName[128];
-    long    PosX;           // Относительно верхнего левого угла родительского окна.
+    long    PosX;           // Relative to upper-left corner of parent window
     long    PosY;
-    long    SavedPosX;      // Старое положение окна сохраняется сюда при скроллинге
+    long    SavedPosX;      // Old position saved here during scrolling
     long    SavedPosY;
-    long    PlaneX;         // Относительно верхнего левого угла исходной картинки.
+    long    PlaneX;         // Relative to upper-left corner of source image
     long    PlaneY;
     long    Width;
     long    Height;
