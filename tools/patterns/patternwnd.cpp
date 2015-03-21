@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-// Окно для отображения паттернов.
+// Pattern Database pane.
 
 #include <stdio.h>
 #include <setjmp.h>
@@ -283,11 +283,11 @@ bool CheckHidden(int PatternIndex)
     else return false;
 }
 
-// Составить из дочерних окон паттернов подобие thumbnail-галереи, путём задания из координат.
-// Вызывается при:
-//   - Изменении размеров родительского окна
-//   - При нажатии на flip
-//   - При добавлении нового паттерна из библиотеки
+// Line up child windows in thumbnail-like order
+// Called after:
+//   - Changing parent window size
+//   - Flip checkbox was pressed
+//   - Adding new pattern from library
 void RearrangePatternTiles(void)
 {
     int n;
@@ -488,7 +488,7 @@ void ParseDatabase(char *text)
     char linebuffer[0x10000], *ptr = text;
     char *lineptr = linebuffer, c = *ptr;
     
-    // Сохраним базу данных текущей рабочей среды.
+    // Save current workspace pattern database.
     if (SavedDatabase)
     {
         free(SavedDatabase);
@@ -498,7 +498,7 @@ void ParseDatabase(char *text)
     strcpy(SavedDatabase, text);
     SavedDatabase[strlen(text)] = 0;
 
-    // Загружаем по строкам.
+    // Line by line.
     while (c)
     {
         c = *ptr++;
@@ -655,7 +655,7 @@ void PatternInit(HWND Parent, char * dbfile)
     UpdateWindow(PatternWnd);
 
     //
-    // Создадим галочку "flip"
+    // Create "flip" checkbox
     //
 
     FlipWnd = CreateWindow(
@@ -666,7 +666,7 @@ void PatternInit(HWND Parent, char * dbfile)
         ParentWnd, NULL, GetModuleHandle(NULL), NULL);
 
     //
-    // Регистрирум класс окна паттерна.
+    // Register pattern window class
     //
 
     memset(&wc, 0, sizeof(wc));
@@ -700,7 +700,7 @@ void PatternInit(HWND Parent, char * dbfile)
 
     PatternFont = CreateFontIndirect(&LogFont);
 
-    // Загрузить и распарсить базу данных паттернов.
+    // Load and parse pattern database.
     f = fopen(dbfile, "rb");
     if (f)
     {
@@ -748,19 +748,19 @@ PatternItem * PatternGetItem(char * PatternName)
     return NULL;
 }
 
-// Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
+// Destroy all system resource, to create it again.
 void PatternDestroy(void)
 {
     int Count;
 
     //
-    // Галочка "flip"
+    // "flip" checkbox
     //
 
     Button_SetCheck(FlipWnd, BST_UNCHECKED);
 
     //
-    // Окна
+    // Windows
     //
 
     for (Count = 0; Count < NumPatterns; Count++)
@@ -769,7 +769,7 @@ void PatternDestroy(void)
     }
 
     //
-    // Шаблоны
+    // Templates
     //
 
     if (Patterns)

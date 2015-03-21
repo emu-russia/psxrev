@@ -15,12 +15,12 @@
 /*
 Controls:
 
-LMB на плоскости Jpeg : создание фильтрующей рамки
-Esc : отмена рамки
+LMB over source image : Selection box
+Esc : cancel selection
 Home : ScrollX = ScrollY = 0
-LMB на плоскости Patterns : перетаскивание паттернов
-Double click на плоскости Patterns : Flip паттерна
-RMB : скроллинг всех плоскостей
+LMB over patterns : drag & drop patterns
+Double click on pattern : flip it
+RMB over empty space : Scrolling
 
 */
 
@@ -237,7 +237,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         break;
 
     //
-    // Блокировать скроллинг плоскости исходной картинки, если нажатие на RMB произошло внутри плоскости паттернов.
+    // Block source image scrolling, whenever RMB was pressed over added patterns layer
     //
 
     case WM_RBUTTONDOWN:
@@ -373,7 +373,7 @@ void AddPatternEntry(char * PatternName)
     }
 }
 
-// Обновить добавленный паттерн некоторыми свойствами (положение на экране / плоскости, Flip итп.)
+// Update added pattern entry by some given properties (screen and layer displacement, Flip flag etc.)
 void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
 {
     PatternEntry * Orig = GetPatternEntry(EntryIndex);
@@ -435,6 +435,10 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
 
+        //
+        // Background image
+        //
+
         if (JpegBitmap)
         {
             hdcMem = CreateCompatibleDC(hdc);
@@ -447,7 +451,10 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             DeleteDC(hdcMem);
         }
 
-        // Select box.
+        //
+        // Selection box
+        //
+
         if (RegionSelected)
         {
             oldColor = SelectObject(hdc, GetStockObject(DC_PEN));
@@ -677,8 +684,8 @@ void JpegLoadImage(char *filename, bool Silent)
     JpegRedraw();
 }
 
-// Возвращает true и выбранный регион, если рамка есть
-// Возвращает false, если рамки нет
+// Return true and selected area, if selection box is present and large enough.
+// Return false, otherwise
 bool JpegGetSelectRegion(LPRECT Region)
 {
     int Width, Height;
@@ -710,16 +717,16 @@ void JpegSetSelectRegion(LPRECT Region)
     RegionSelected = true;
 }
 
-// Изменить размер окна Jpeg в соответствии с размерами родительского окна.
+// Change Jpeg window size according to parent window dimensions
 void JpegResize(int Width, int Height)
 {
     MoveWindow(JpegWnd, 2, 2, max(100, Width - 300), max(100, Height - 5), TRUE);
 
-    // Сбросить регион выделения при изменении размеров окна.
+    // Reset selection box after window size was changed
     JpegRemoveSelection();
 }
 
-// Вернуть ширину окна.
+// Window width.
 int JpegWindowWidth(void)
 {
     RECT Rect;
@@ -750,7 +757,7 @@ int GetPatternEntryNum(void)
     return NumPatterns;
 }
 
-// Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
+// Destroy all system resources to create it again.
 void JpegDestroy(void)
 {
     JpegRemoveSelection();
@@ -758,7 +765,7 @@ void JpegDestroy(void)
     ScrollX = ScrollY = 0;
 
     //
-    // Плоскость исходной картинки.
+    // Source image layer.
     //
 
     if (JpegBitmap)
@@ -768,7 +775,7 @@ void JpegDestroy(void)
     }
 
     //
-    // Плоскость паттернов.
+    // Patterns layer.
     //
 
     JpegRemoveAllPatterns();
