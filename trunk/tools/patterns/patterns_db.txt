@@ -147,4 +147,9 @@ pattern MUX_ARRAY, 5.0, "patterns_db/MUX_ARRAY.jpg"
 pattern TRISTATE3, 5.0, "patterns_db/TRISTATE3.jpg"
 pattern BUS_KEEPER, 5.0, "patterns_db/BUS_KEEPER.jpg"
 
+pattern UNK_SMALL, 5.0, "patterns_db/UNK_SMALL.jpg"
+pattern UNK_MED, 5.0, "patterns_db/UNK_MED.jpg"
+pattern UNK_BIG, 5.0, "patterns_db/UNK_BIG.jpg"
+pattern GARBAGE, 5.0, "patterns_db/GARBAGE.jpg"
+
 # EOF
