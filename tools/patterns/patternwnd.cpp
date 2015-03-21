@@ -278,6 +278,13 @@ bool CheckHidden(int PatternIndex)
         {
             if (PLamdaHeight >= (LamdaHeight - 2 * WorkspaceLamdaDelta) && PLamdaHeight < (LamdaHeight + 2 * WorkspaceLamdaDelta)) Fit = true;
         }
+
+        //
+        // Special garbage cell is always shown
+        //
+
+        if (!_stricmp(Item->Name, "GARBAGE")) Fit = true;
+
         return !Fit;
     }
     else return false;
