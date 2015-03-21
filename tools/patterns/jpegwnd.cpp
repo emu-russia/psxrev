@@ -34,8 +34,8 @@ static HWND JpegWnd;
 
 // Source Jpeg
 static unsigned char *JpegBuffer = NULL;
-static int JpegBufferSize;
-static int JpegWidth, JpegHeight;
+static long JpegBufferSize;
+static long JpegWidth, JpegHeight;
 static HBITMAP JpegBitmap;
 
 // Scrolling / Region Selection Control
@@ -275,7 +275,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             Rect.top = 0;
             Rect.right = Entry->Width;
             Rect.bottom = Entry->Height;
-            DrawPattern(Item, hdc, &Rect, Entry->Flipped, TRUE, TRUE, Entry == SelectedPattern);
+            DrawPattern(Item, hdc, &Rect, Entry->Flipped ? TRUE : FALSE, TRUE, TRUE, Entry == SelectedPattern);
 
             //
             // Pattern remove button.

@@ -15,7 +15,7 @@ typedef struct WorkspaceImage
 
     float   Lamda;
     float   LamdaDelta;
-    bool    Flipped;            // "flip" checkbox state
+    long    Flipped;            // "flip" checkbox state
 
     //
     // Pattern Database
@@ -28,11 +28,11 @@ typedef struct WorkspaceImage
     // Source mathing image layer
     //
 
-    bool SourceImagePresent;
+    long SourceImagePresent;
     long SourceImageOffset;
     long SourceImageLength;
-    int ScrollX;
-    int ScrollY;
+    long ScrollX;
+    long ScrollY;
 
     //
     // Added patterns layer

@@ -22,7 +22,7 @@ void SaveWorkspace(char *filename)
     POINT Offset;
     PatternEntry *PatternLayer;
     int NumPatterns;
-    unsigned Count;
+    int Count;
     FILE * f;
 
     //
@@ -46,7 +46,7 @@ void SaveWorkspace(char *filename)
 
     Database = GetSavedDatabase();
     ws.DatabaseOffset = sizeof(WorkspaceImage);
-    ws.DatabaseLength = strlen(Database) + 1;
+    ws.DatabaseLength = (long)strlen(Database) + 1;
 
     //
     // Плоскость исходной картинки
@@ -61,7 +61,7 @@ void SaveWorkspace(char *filename)
     {
         ws.SourceImagePresent = true;
         ws.SourceImageOffset = sizeof(WorkspaceImage)+ws.DatabaseLength;
-        ws.SourceImageLength = strlen(ImageName) + 1;
+        ws.SourceImageLength = (long)strlen(ImageName) + 1;
     }
     else
     {
@@ -116,7 +116,7 @@ void LoadWorkspace(char *filename)
     POINT Offset;
     PatternEntry *PatternLayer;
     int NumPatterns;
-    unsigned Count;
+    int Count;
     RECT Region;
 
     f = fopen(filename, "rb");

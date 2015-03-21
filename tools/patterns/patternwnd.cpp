@@ -37,7 +37,7 @@ static HGDIOBJ PatternFont;
 static void DumpPatterns(void)
 {
     char Buffer[0x10000], *ptr = Buffer;
-    unsigned n;
+    int n;
 
     for (n = 0; n < NumPatterns; n++)
     {
@@ -49,7 +49,7 @@ static void DumpPatterns(void)
 
 int GetPatternIndexByHwnd(HWND hwnd)
 {
-    unsigned n;
+    int n;
     for (n = 0; n < NumPatterns; n++)
     {
         if (PatternTiles[n] == hwnd) return n;
@@ -172,13 +172,13 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
         if (Label)
         {
             SelectObject(hdc, PatternFont);
-            TextOut(hdc, 0, 0, Item->Name, strlen(Item->Name));
+            TextOut(hdc, 0, 0, Item->Name, (int)strlen(Item->Name));
         }
     }
     else
     {
         SelectObject(hdc, PatternFont);
-        TextOut(hdc, 0, 0, "UNKNOWN", strlen("UNKNOWN"));
+        TextOut(hdc, 0, 0, "UNKNOWN", (int)strlen("UNKNOWN"));
     }
 }
 
@@ -290,7 +290,7 @@ bool CheckHidden(int PatternIndex)
 //   - При добавлении нового паттерна из библиотеки
 void RearrangePatternTiles(void)
 {
-    unsigned n;
+    int n;
     RECT Rect;
 
     GetClientRect(PatternWnd, &Rect);
@@ -311,7 +311,7 @@ void RearrangePatternTiles(void)
         if (ColCount == 0) HorPos = Border;
 
         Aspect = (float)Patterns[n].PatternWidth / (float)TileWidth;
-        TileHeight = floor ( (float)Patterns[n].PatternHeight / Aspect );
+        TileHeight = (int) floor ( (float)Patterns[n].PatternHeight / Aspect );
 
         if (CheckHidden(n))
         {
@@ -428,7 +428,7 @@ char *TrimString(char *str)
 {
     int length, n;
     while (*str == ' ' || *str == '\"') str++;
-    length = strlen(str);
+    length = (int)strlen(str);
     for (n = length - 1; n > 0; n--)
     {
         if (str[n] == ' ' || str[n] == '\"') str[n] = 0;
@@ -440,9 +440,9 @@ char *TrimString(char *str)
 char *trimwhitespace(char *str)
 {
     static char *WHITESPACE = " \t\n\r\"";
-    int spacesAtStart = strspn(str, WHITESPACE);
+    int spacesAtStart = (int)strspn(str, WHITESPACE);
     char *result = str + spacesAtStart;
-    int lengthOfNonSpace = strcspn(result, WHITESPACE);
+    int lengthOfNonSpace = (int)strcspn(result, WHITESPACE);
     result[lengthOfNonSpace] = 0;
     return result;
 }
@@ -517,9 +517,6 @@ void ParseDatabase(char *text)
 
 LRESULT CALLBACK PatternProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    RECT Rect;
-    RECT ScrollRect;
-    int ScrollBarWidth;
     SCROLLINFO si;
     int yChar;
     int yPos;
@@ -614,7 +611,6 @@ void PatternInit(HWND Parent, char * dbfile)
     char *buffer;
     int filesize;
     RECT Rect;
-    int ScrollBarWidth;
     LOGFONT LogFont;
 
     ParentWnd = Parent;
@@ -755,7 +751,7 @@ PatternItem * PatternGetItem(char * PatternName)
 // Уничтожить все ресурсы этого окна, чтобы потом создать их заново.
 void PatternDestroy(void)
 {
-    unsigned Count;
+    int Count;
 
     //
     // Галочка "flip"
