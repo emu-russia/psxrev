@@ -52,6 +52,8 @@ static BOOL DragOccureInPattern;
 
 static PatternEntry * PatternLayer;
 static int NumPatterns;
+static PatternEntry * SelectedPattern;
+static bool DraggingPattern;
 
 HBITMAP RemoveBitmap;
 #define REMOVE_BITMAP_WIDTH 12
@@ -62,7 +64,7 @@ static char * SavedImageName = NULL;
 
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 {
-    unsigned n;
+    int n;
     for (n = 0; n < NumPatterns; n++)
     {
         if (PatternLayer[n].Hwnd == Hwnd) return n;
@@ -72,7 +74,7 @@ static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 
 static void SaveEntryPositions(void)
 {
-    unsigned n;
+    int n;
     for (n = 0; n < NumPatterns; n++)
     {
         PatternLayer[n].SavedPosX = PatternLayer[n].PosX;
@@ -80,14 +82,14 @@ static void SaveEntryPositions(void)
     }
 }
 
-static void UpdateEntryPositions(int OffsetX, int OffsetY)
+static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
 {
-    unsigned n;
+    int n;
     for (n = 0; n < NumPatterns; n++)
     {
         PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
         PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
-        MoveWindow(PatternLayer[n].Hwnd, PatternLayer[n].PosX, PatternLayer[n].PosY, PatternLayer[n].Width, PatternLayer[n].Height, FALSE);
+        MoveWindow(PatternLayer[n].Hwnd, PatternLayer[n].PosX, PatternLayer[n].PosY, PatternLayer[n].Width, PatternLayer[n].Height, Update);
     }
 }
 
@@ -98,7 +100,7 @@ static void RemovePatternEntry(int EntryIndex)
 {
     PatternEntry * Entry = &PatternLayer[EntryIndex];
     PatternEntry * TempList;
-    unsigned Count, Index;
+    int Count, Index;
     char Text[0x100];
 
     DestroyWindow(Entry->Hwnd);
@@ -132,8 +134,9 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
     int EntryIndex;
     PatternEntry * Entry;
     PatternItem * Item;
-    LRESULT hit;
     int CursorX, CursorY;
+    char Text[0x1000];
+    PatternEntry *Selected;
 
     switch (msg)
     {
@@ -143,9 +146,6 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
-        break;
-
-    case WM_ERASEBKGND:
         break;
 
     //
@@ -159,6 +159,27 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             Entry = &PatternLayer[EntryIndex];
             Entry->PosX = (int)(short)LOWORD(lParam);
             Entry->PosY = (int)(short)HIWORD(lParam);
+
+            //
+            // Update Plane coords
+            //
+
+            Entry->PlaneX = Entry->PosX - ScrollX;
+            Entry->PlaneY = Entry->PosY - ScrollY;
+
+            //
+            // Update status line by selection
+            //
+
+            Selected = JpegGetSelectedPattern();
+
+            if (Selected)
+            {
+                sprintf(
+                    Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
+                    Selected->PatternName, Selected->PlaneX, Selected->PlaneY, Selected->PosX, Selected->PosY);
+                SetStatusText(STATUS_SELECTED, Text);
+            }
         }
         break;
 
@@ -173,6 +194,21 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             {
                 SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, NULL);
             }
+        }
+        return FALSE;
+
+    //
+    // Pattern Selection
+    //
+
+    case WM_LBUTTONDOWN:
+        EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            JpegSelectPattern(Entry);
+            DraggingPattern = TRUE;
+            return TRUE;
         }
         return FALSE;
 
@@ -195,6 +231,8 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
                     RemovePatternEntry(EntryIndex);
                 }
             }
+
+            DraggingPattern = FALSE;
         }
         break;
 
@@ -204,11 +242,11 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
 
     case WM_RBUTTONDOWN:
         DragOccureInPattern = true;
-        break;
+        return TRUE;
 
     case WM_RBUTTONUP:
         DragOccureInPattern = false;
-        break;
+        return TRUE;
 
     //
     // Flip entry
@@ -237,7 +275,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             Rect.top = 0;
             Rect.right = Entry->Width;
             Rect.bottom = Entry->Height;
-            DrawPattern(Item, hdc, &Rect, Entry->Flipped, TRUE, TRUE);
+            DrawPattern(Item, hdc, &Rect, Entry->Flipped, TRUE, TRUE, Entry == SelectedPattern);
 
             //
             // Pattern remove button.
@@ -258,6 +296,9 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
 
         EndPaint(hwnd, &ps);
         break;
+
+    case WM_ERASEBKGND:
+        return TRUE;
 
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -286,8 +327,8 @@ void AddPatternEntry(char * PatternName)
 
         LamdaWidth = (float)Item->PatternWidth / Item->Lamda;
         LamdaHeight = (float)Item->PatternHeight / Item->Lamda;
-        Entry.Width = LamdaWidth * WorkspaceLamda;
-        Entry.Height = LamdaHeight * WorkspaceLamda;
+        Entry.Width = (int) (LamdaWidth * WorkspaceLamda);
+        Entry.Height = (int) (LamdaHeight * WorkspaceLamda);
 
         //
         // Position
@@ -452,7 +493,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             InvalidateRect(JpegWnd, NULL, FALSE);
             UpdateWindow(JpegWnd);
 
-            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
 
             sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
             SetStatusText(STATUS_SCROLL, Text);
@@ -481,7 +522,10 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             //InvalidateRect(JpegWnd, NULL, TRUE);
             //UpdateWindow(JpegWnd);
 
-            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY);
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
+
+            InvalidateRect(JpegWnd, NULL, TRUE);
+            UpdateWindow(JpegWnd);
 
             sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
             SetStatusText(STATUS_SCROLL, Text);
@@ -496,6 +540,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         RearrangePatternTiles();
         PatternRedraw();
         UpdateSelectionStatus();
+        JpegSelectPattern(NULL);
         break;
 
     default:
@@ -516,7 +561,7 @@ void JpegInit(HWND Parent)
 
     memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    wc.style = CS_OWNDC;
     wc.lpfnWndProc = JpegProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -557,7 +602,7 @@ void JpegInit(HWND Parent)
 
     memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+    wc.style = CS_OWNDC | CS_DBLCLKS;
     wc.lpfnWndProc = PatternEntryProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -708,9 +753,6 @@ int GetPatternEntryNum(void)
 // ”ничтожить все ресурсы этого окна, чтобы потом создать их заново.
 void JpegDestroy(void)
 {
-    unsigned Count;
-    PatternEntry *Entry;
-
     JpegRemoveSelection();
 
     ScrollX = ScrollY = 0;
@@ -729,6 +771,16 @@ void JpegDestroy(void)
     // ѕлоскость паттернов.
     //
 
+    JpegRemoveAllPatterns();
+
+    JpegRedraw();
+}
+
+void JpegRemoveAllPatterns(void)
+{
+    int Count;
+    PatternEntry *Entry;
+
     for (Count = 0; Count < NumPatterns; Count++)
     {
         Entry = GetPatternEntry(Count);
@@ -742,7 +794,7 @@ void JpegDestroy(void)
     }
     NumPatterns = 0;
 
-    JpegRedraw();
+    SetStatusText(STATUS_ADDED, "Patterns Added : 0");
 }
 
 char * JpegGetImageName(void)
@@ -767,4 +819,82 @@ void JpegSetScroll(LPPOINT Offset)
 
     sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
     SetStatusText(STATUS_SCROLL, Text);
+}
+
+void JpegSelectPattern(PatternEntry * Pattern)
+{
+    char Text[0x1000];
+    PatternEntry * OldPattern;
+
+    OldPattern = SelectedPattern;
+
+    SelectedPattern = Pattern;
+
+    //
+    // Update newly selected Pattern
+    //
+
+    if (Pattern)
+    {
+        if (IsWindow(Pattern->Hwnd))
+        {
+            InvalidateRect(Pattern->Hwnd, NULL, FALSE);
+            UpdateWindow(Pattern->Hwnd);
+        }
+
+        sprintf(
+            Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
+            Pattern->PatternName, Pattern->PlaneX, Pattern->PlaneY, Pattern->PosX, Pattern->PosY);
+        SetStatusText(STATUS_SELECTED, Text);
+    }
+
+    //
+    // Update previously selected pattern
+    //
+
+    if (OldPattern)
+    {
+        if (IsWindow(OldPattern->Hwnd))
+        {
+            InvalidateRect(OldPattern->Hwnd, NULL, FALSE);
+            UpdateWindow(OldPattern->Hwnd);
+        }
+    }
+}
+
+PatternEntry * JpegGetSelectedPattern(void)
+{
+    return SelectedPattern;
+}
+
+void JpegEnsureVisible(PatternEntry * Pattern)
+{
+    POINT Offset;
+    int DeltaX;
+    int DeltaY;
+
+    if (Pattern == NULL) return;
+
+    DeltaX = ScrollX;
+    DeltaY = ScrollY;
+
+    SaveEntryPositions();
+
+    //
+    // Set scroll offset
+    //
+
+    Offset.x = - Pattern->PlaneX + Pattern->Width;
+    Offset.y = - Pattern->PlaneY + Pattern->Height;
+
+    JpegSetScroll(&Offset);
+
+    //
+    // Adjust added patterns windows positions, according to changed scroll offset.
+    //
+
+    DeltaX -= ScrollX;
+    DeltaY -= ScrollY;
+
+    UpdateEntryPositions(-DeltaX, -DeltaY, TRUE);
 }

@@ -16,6 +16,9 @@ BEGIN
     BEGIN
         MENUITEM "Load Workspace", ID_WORKSPACE_LOAD
         MENUITEM "Save Workspace", ID_WORKSPACE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Remove all added patterns", ID_REMOVE_ALL_PATTERNS
+        MENUITEM "Ensure Visible", ID_ENSURE_VISIBLE
     END
 
     POPUP "&Settings"
@@ -34,10 +37,10 @@ BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,174,18,50,14
     PUSHBUTTON      "&Cancel",IDCANCEL,174,35,50,14
     
-    LTEXT       "Lambda:" 0, 2, 3, 66, 8
+    LTEXT       "Lambda:" IDC_STATIC, 2, 3, 66, 8
     EDITTEXT    ID_LAMDA, 66, 2, 50, 11, WS_TABSTOP, WS_EX_WINDOWEDGE
 
-    LTEXT       "Lambda Delta:" 0, 2, 3+20, 66, 16
+    LTEXT       "Lambda Delta:" IDC_STATIC, 2, 3+20, 66, 16
     EDITTEXT    ID_LAMDA_DELTA, 66, 2+20, 50, 11, WS_TABSTOP, WS_EX_WINDOWEDGE
 END
 
