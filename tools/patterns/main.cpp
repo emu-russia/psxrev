@@ -16,6 +16,7 @@
 #include "workspace.h"
 #include "textsaver.h"
 #include "text_vertical.h"
+#include "profiler.h"
 
 const char g_szClassName[] = "myWindowClass";
 
