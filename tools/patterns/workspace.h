@@ -3,6 +3,7 @@
 
 //
 // Workspace image state
+// Watch for x64 compatibility! (i.e. not implicit int vatiables, only data types with certain size)
 //
 
 typedef struct WorkspaceImage

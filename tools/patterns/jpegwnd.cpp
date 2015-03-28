@@ -804,9 +804,10 @@ void JpegRemoveAllPatterns(void)
     SetStatusText(STATUS_ADDED, "Patterns Added : 0");
 }
 
-char * JpegGetImageName(void)
+char * JpegGetImageName(bool NameOnly)
 {
-    return SavedImageName;
+    if (NameOnly) return strrchr(SavedImageName, '\\') + 1;
+    else return SavedImageName;
 }
 
 void JpegGetScroll(LPPOINT Offset)

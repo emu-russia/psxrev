@@ -24,6 +24,17 @@ void SaveWorkspace(char *filename)
     int NumPatterns;
     int Count;
     FILE * f;
+    char Drive[MAX_PATH];
+    char Dir[MAX_PATH];
+    char Name[MAX_PATH];
+    char WorkspacePath[MAX_PATH];
+
+    //
+    // Obtain workspace path
+    //
+
+    _splitpath(filename, Drive, Dir, Name, NULL);
+    sprintf(WorkspacePath, "%s%s", Drive, Dir);
 
     //
     // Stage 1 : Save context.
@@ -56,7 +67,7 @@ void SaveWorkspace(char *filename)
     ws.ScrollX = Offset.x;
     ws.ScrollY = Offset.y;
 
-    ImageName = JpegGetImageName();
+    ImageName = JpegGetImageName(true);
     if (ImageName)
     {
         ws.SourceImagePresent = true;
@@ -118,11 +129,16 @@ void LoadWorkspace(char *filename)
     int NumPatterns;
     int Count;
     RECT Region;
+    char Drive[MAX_PATH];
+    char Dir[MAX_PATH];
+    char Name[MAX_PATH];
+    char WorkspacePath[MAX_PATH];
+    char ImagePath[MAX_PATH];
 
     f = fopen(filename, "rb");
     if (!f)
     {
-        MessageBox(0, "Cannot load workspace iamge file", "Workspace Load Failed", 0);
+        MessageBox(0, "Cannot load workspace image file", "Workspace Load Failed", 0);
         return;
     }
 
@@ -133,6 +149,13 @@ void LoadWorkspace(char *filename)
         MessageBox(0, "Incorrect workspace image file format", "Workspace Load Failed", 0);
         return;
     }
+
+    //
+    // Obtain workspace path
+    //
+
+    _splitpath(filename, Drive, Dir, Name, NULL);
+    sprintf(WorkspacePath, "%s%s", Drive, Dir);
 
     //
     // Stage 1 : Cleanup
@@ -190,7 +213,8 @@ void LoadWorkspace(char *filename)
         fseek(f, ws.SourceImageOffset, SEEK_SET);
         ImageName = (char *)malloc(ws.SourceImageLength);
         fread(ImageName, 1, ws.SourceImageLength, f);
-        JpegLoadImage(ImageName, true);
+        sprintf(ImagePath, "%s%s", WorkspacePath, ImageName);
+        JpegLoadImage(ImagePath, true);
     }
 
     Offset.x = ws.ScrollX;
