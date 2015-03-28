@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "jpegwnd.h"
+#include "listutils.h"
 
 //
 // Debug visualisation
@@ -26,37 +27,6 @@ typedef struct _TEXT_ENTRY
     PatternEntry * Pattern;
 
 } TEXT_ENTRY, *PTEXT_ENTRY;
-
-static void InitializeListHead(PLIST_ENTRY ListHead)
-{
-    ListHead->Blink = ListHead->Flink = ListHead;
-}
-
-static void InsertTailList(PLIST_ENTRY ListHead, PLIST_ENTRY Entry)
-{
-    PLIST_ENTRY OldBlink;
-    OldBlink = ListHead->Blink;
-    Entry->Flink = ListHead;
-    Entry->Blink = OldBlink;
-    OldBlink->Flink = Entry;
-    ListHead->Blink = Entry;
-}
-
-static void RemoveEntryList(PLIST_ENTRY Entry)
-{
-    PLIST_ENTRY OldFlink;
-    PLIST_ENTRY OldBlink;
-
-    OldFlink = Entry->Flink;
-    OldBlink = Entry->Blink;
-    OldFlink->Blink = OldBlink;
-    OldBlink->Flink = OldFlink;
-}
-
-static BOOLEAN IsListEmpty(PLIST_ENTRY ListHead)
-{
-    return ListHead->Flink == ListHead;
-}
 
 // Just enumerate added patterns layer.
 static void DebugEnum(PatternEntry *List, int Count, FILE *f)

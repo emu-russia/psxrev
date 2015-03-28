@@ -200,11 +200,13 @@
     <ClCompile Include="..\libjpeg\jquant1.c" />
     <ClCompile Include="..\libjpeg\jquant2.c" />
     <ClCompile Include="..\libjpeg\jutils.c" />
+    <ClCompile Include="..\listutils.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\patternwnd.cpp" />
     <ClCompile Include="..\profiler.cpp" />
     <ClCompile Include="..\statuswnd.cpp" />
     <ClCompile Include="..\textsaver.cpp" />
+    <ClCompile Include="..\text_horz.cpp" />
     <ClCompile Include="..\text_vertical.cpp" />
     <ClCompile Include="..\workspace.cpp" />
   </ItemGroup>
@@ -225,11 +227,13 @@
     <ClInclude Include="..\libjpeg\jpegint.h" />
     <ClInclude Include="..\libjpeg\jpeglib.h" />
     <ClInclude Include="..\libjpeg\jversion.h" />
+    <ClInclude Include="..\listutils.h" />
     <ClInclude Include="..\patternwnd.h" />
     <ClInclude Include="..\profiler.h" />
     <ClInclude Include="..\resource.h" />
     <ClInclude Include="..\statuswnd.h" />
     <ClInclude Include="..\textsaver.h" />
+    <ClInclude Include="..\text_horz.h" />
     <ClInclude Include="..\text_vertical.h" />
     <ClInclude Include="..\workspace.h" />
   </ItemGroup>

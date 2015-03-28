@@ -20,6 +20,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include "workspace.h"
 #include "textsaver.h"
 #include "text_vertical.h"
+#include "text_horz.h"
 #include "profiler.h"
 
 const char g_szClassName[] = "myWindowClass";
@@ -244,6 +245,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_REMOVE_ALL_PATTERNS:
             JpegRemoveAllPatterns();
             break;
+        case ID_SHOW_PROFILER:
+            if (PerfRunning())
+            {
+                PerfShutdown();
+                CheckMenuItem(GetMenu(hwnd), ID_SHOW_PROFILER, MF_BYCOMMAND | MF_UNCHECKED);
+            }
+            else
+            {
+                PerfInit();
+                CheckMenuItem(GetMenu(hwnd), ID_SHOW_PROFILER, MF_BYCOMMAND | MF_CHECKED);
+            }
+            break;
         }
         if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == FlipWnd)
         {
@@ -269,6 +282,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+void AddProfilerProcs(void)
+{
+    //
+    // Register only time-consuming procedures
+    //
+
+    //
+    // JpegWnd
+    //
+
+    PerfRegisterEntity("JpegLoadImage");
+    PerfRegisterEntity("AddPatternEntry");
+    PerfRegisterEntity("UpdatePatternEntry");
+    PerfRegisterEntity("JpegRedraw");
+    PerfRegisterEntity("JpegSelectPattern");
+    PerfRegisterEntity("UpdateEntryPositions");
+    PerfRegisterEntity("Entry WM_PAINT");
+    PerfRegisterEntity("JpegWnd WM_PAINT");
+
+    //
+    // 
+    //
+
+    PerfRegisterEntity("DrawPattern");
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, int nCmdShow)
 {
@@ -276,12 +315,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     MSG Msg;
     HACCEL haccel;
 
+    AddProfilerProcs();
+
     //
     // Add available Text Savers
     // Idea: make all text savers as pattern handler scripts ???
     //
 
-    TextsAddPlugin("VerticalText", TextSaverVertical);
+    TextsAddPlugin("Vertical", TextSaverVertical);
+    TextsAddPlugin("Horizontal", TextSaverHorz);
 
     //
     // FIXME: Add Text Plugin saver select box in Options.

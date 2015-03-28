@@ -12,6 +12,7 @@
 #include "jpegload.h"
 #include "statuswnd.h"
 #include "patternwnd.h"
+#include "profiler.h"
 
 #define FLIP_BUTTON_HEIGHT  30
 
@@ -71,6 +72,8 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
     BITMAPINFO Bmi;
     HBITMAP SelectionBitmap;
     RECT SelectionRect;
+
+    PERF_START("DrawPattern");
 
     if (Item)
     {
@@ -180,6 +183,8 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
         SelectObject(hdc, PatternFont);
         TextOut(hdc, 0, 0, "UNKNOWN", (int)strlen("UNKNOWN"));
     }
+
+    PERF_STOP("DrawPattern");
 }
 
 LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

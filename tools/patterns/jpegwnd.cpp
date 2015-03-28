@@ -11,6 +11,7 @@
 #include "patternwnd.h"
 #include "statuswnd.h"
 #include "jpegwnd.h"
+#include "profiler.h"
 
 /*
 Controls:
@@ -75,6 +76,7 @@ static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 static void SaveEntryPositions(void)
 {
     int n;
+
     for (n = 0; n < NumPatterns; n++)
     {
         PatternLayer[n].SavedPosX = PatternLayer[n].PosX;
@@ -85,12 +87,17 @@ static void SaveEntryPositions(void)
 static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
 {
     int n;
+
+    PERF_START("UpdateEntryPositions");
+
     for (n = 0; n < NumPatterns; n++)
     {
         PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
         PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
         MoveWindow(PatternLayer[n].Hwnd, PatternLayer[n].PosX, PatternLayer[n].PosY, PatternLayer[n].Width, PatternLayer[n].Height, Update);
     }
+
+    PERF_STOP("UpdateEntryPositions");
 }
 
 // Delete cell from patterns layer.
@@ -264,6 +271,9 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         break;
 
     case WM_PAINT:
+
+        PERF_START("Entry WM_PAINT");
+
         hdc = BeginPaint(hwnd, &ps);
 
         EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
@@ -295,6 +305,9 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         }
 
         EndPaint(hwnd, &ps);
+
+        PERF_STOP("Entry WM_PAINT");
+
         break;
 
     case WM_ERASEBKGND:
@@ -308,6 +321,8 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
 
 void AddPatternEntry(char * PatternName)
 {
+    PERF_START("AddPatternEntry");
+
     PatternItem * Item = PatternGetItem(PatternName);
     PatternEntry Entry;
     RECT Region;
@@ -371,11 +386,15 @@ void AddPatternEntry(char * PatternName)
         sprintf(Text, "Patterns Added : %i", NumPatterns);
         SetStatusText(STATUS_ADDED, Text);
     }
+
+    PERF_STOP("AddPatternEntry");
 }
 
 // Update added pattern entry by some given properties (screen and layer displacement, Flip flag etc.)
 void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
 {
+    PERF_START("UpdatePatternEntry");
+
     PatternEntry * Orig = GetPatternEntry(EntryIndex);
 
     Orig->BlendLevel = Entry->BlendLevel;
@@ -390,6 +409,8 @@ void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
 
     //InvalidateRect(Orig->Hwnd, NULL, TRUE);
     //UpdateWindow(Orig->Hwnd);
+
+    PERF_STOP("UpdatePatternEntry");
 }
 
 static void UpdateSelectionStatus(void)
@@ -433,6 +454,9 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_PAINT:
+
+        PERF_START("JpegWnd WM_PAINT");
+
         hdc = BeginPaint(hwnd, &ps);
 
         //
@@ -467,7 +491,11 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SelectObject(hdc, oldColor);
         }
 
+        PerfUpdateStats(hdc);
+
         EndPaint(hwnd, &ps);
+
+        PERF_STOP("JpegWnd WM_PAINT");
         break;
 
     case WM_LBUTTONDOWN:
@@ -644,6 +672,8 @@ void JpegLoadImage(char *filename, bool Silent)
 {
     char Text[1024];
 
+    PERF_START("JpegLoadImage");
+
     SetCursor(LoadCursor(NULL, IDC_WAIT));
 
     JpegLoad(
@@ -682,6 +712,8 @@ void JpegLoadImage(char *filename, bool Silent)
     SetCursor(LoadCursor(NULL, IDC_ARROW));
 
     JpegRedraw();
+
+    PERF_STOP("JpegLoadImage");
 }
 
 // Return true and selected area, if selection box is present and large enough.
@@ -743,8 +775,12 @@ void JpegRemoveSelection(void)
 
 void JpegRedraw(void)
 {
+    PERF_START("JpegRedraw");
+
     InvalidateRect(JpegWnd, NULL, TRUE);
     UpdateWindow(JpegWnd);
+
+    PERF_STOP("JpegRedraw");
 }
 
 PatternEntry * GetPatternEntry(int EntryIndex)
@@ -834,6 +870,8 @@ void JpegSelectPattern(PatternEntry * Pattern)
     char Text[0x1000];
     PatternEntry * OldPattern;
 
+    PERF_START("JpegSelectPattern");
+
     OldPattern = SelectedPattern;
 
     SelectedPattern = Pattern;
@@ -868,6 +906,8 @@ void JpegSelectPattern(PatternEntry * Pattern)
             UpdateWindow(OldPattern->Hwnd);
         }
     }
+
+    PERF_STOP("JpegSelectPattern");
 }
 
 PatternEntry * JpegGetSelectedPattern(void)
@@ -882,6 +922,8 @@ void JpegEnsureVisible(PatternEntry * Pattern)
     int DeltaY;
 
     if (Pattern == NULL) return;
+
+    PERF_START("JpegEnsureVisible");
 
     DeltaX = ScrollX;
     DeltaY = ScrollY;
@@ -905,4 +947,6 @@ void JpegEnsureVisible(PatternEntry * Pattern)
     DeltaY -= ScrollY;
 
     UpdateEntryPositions(-DeltaX, -DeltaY, TRUE);
+
+    PERF_STOP("JpegEnsureVisible");
 }
