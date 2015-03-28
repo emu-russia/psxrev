@@ -32,6 +32,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static HWND ParentWnd;
 static HWND JpegWnd;
+static HDC JpegOffscreenDC;
 
 // Source Jpeg
 static unsigned char *JpegBuffer = NULL;
@@ -87,15 +88,30 @@ static void SaveEntryPositions(void)
 static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
 {
     int n;
+    int OldPosX;
+    int OldPosY;
 
     PERF_START("UpdateEntryPositions");
 
     for (n = 0; n < NumPatterns; n++)
     {
+        OldPosX = PatternLayer[n].PosX;
+        OldPosY = PatternLayer[n].PosY;
         PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
         PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
-        MoveWindow(PatternLayer[n].Hwnd, PatternLayer[n].PosX, PatternLayer[n].PosY, PatternLayer[n].Width, PatternLayer[n].Height, Update);
+
+        if (OldPosX != PatternLayer[n].PosX || OldPosY != PatternLayer[n].PosY)
+        {
+            MoveWindow(
+                PatternLayer[n].Hwnd,
+                PatternLayer[n].PosX, PatternLayer[n].PosY,
+                PatternLayer[n].Width, PatternLayer[n].Height, Update );
+        }
     }
+
+    //Entry->PosX = Entry->SavedPosX + OffsetX;
+    //Entry->PosY = Entry->SavedPosY + OffsetY;
+    //MoveWindow(Entry->Hwnd, Entry->PosX, Entry->PosY, Entry->Width, Entry->Height, Update);
 
     PERF_STOP("UpdateEntryPositions");
 }
@@ -446,8 +462,14 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_CREATE:
+
+        JpegOffscreenDC = CreateCompatibleDC(GetWindowDC(hwnd));
+
         break;
     case WM_CLOSE:
+
+        DeleteDC(JpegOffscreenDC);
+
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
@@ -465,14 +487,13 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         if (JpegBitmap)
         {
-            hdcMem = CreateCompatibleDC(hdc);
+            hdcMem = JpegOffscreenDC;
             oldBitmap = SelectObject(hdcMem, JpegBitmap);
 
             GetObject(JpegBitmap, sizeof(bitmap), &bitmap);
             BitBlt(hdc, ScrollX, ScrollY, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
             SelectObject(hdcMem, oldBitmap);
-            DeleteDC(hdcMem);
         }
 
         //
@@ -491,11 +512,11 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SelectObject(hdc, oldColor);
         }
 
+        PERF_STOP("JpegWnd WM_PAINT");
+
         PerfUpdateStats(hdc);
 
         EndPaint(hwnd, &ps);
-
-        PERF_STOP("JpegWnd WM_PAINT");
         break;
 
     case WM_LBUTTONDOWN:
@@ -554,8 +575,6 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (DragOccureInPattern == false)
         {
             ScrollingBegin = false;
-            //InvalidateRect(JpegWnd, NULL, TRUE);
-            //UpdateWindow(JpegWnd);
 
             UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
 

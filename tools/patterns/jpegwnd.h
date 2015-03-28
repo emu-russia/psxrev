@@ -1,7 +1,10 @@
 
 typedef struct PatternEntry
 {
-    char    PatternName[128];
+    char    PatternName[64];
+
+    char    Reserved[64];
+
     long    PosX;           // Relative to upper-left corner of parent window
     long    PosY;
     long    SavedPosX;      // Old position saved here during scrolling

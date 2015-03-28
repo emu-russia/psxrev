@@ -300,12 +300,6 @@ void AddProfilerProcs(void)
     PerfRegisterEntity("UpdateEntryPositions");
     PerfRegisterEntity("Entry WM_PAINT");
     PerfRegisterEntity("JpegWnd WM_PAINT");
-
-    //
-    // 
-    //
-
-    PerfRegisterEntity("DrawPattern");
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,

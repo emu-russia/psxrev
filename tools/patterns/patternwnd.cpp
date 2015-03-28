@@ -73,8 +73,6 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
     HBITMAP SelectionBitmap;
     RECT SelectionRect;
 
-    PERF_START("DrawPattern");
-
     if (Item)
     {
         //
@@ -183,8 +181,6 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
         SelectObject(hdc, PatternFont);
         TextOut(hdc, 0, 0, "UNKNOWN", (int)strlen("UNKNOWN"));
     }
-
-    PERF_STOP("DrawPattern");
 }
 
 LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
