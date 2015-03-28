@@ -1,0 +1,10 @@
+Debug
+Release
+x64
+patterns_db
+patterns.opensdf
+patterns.sdf
+patterns.v12.suo
+patterns.vcxproj.filters
+patterns.vcxproj.user
+patterns_db.txt
