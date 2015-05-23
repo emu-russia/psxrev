@@ -3,6 +3,7 @@
 #define IDR_MYMENU 101
 #define IDI_MYICON 201
 #define IDB_REMOVE 202
+#define IDB_GLFONT 203
 
 #define ID_FILE_EXIT 9001
 #define ID_FILE_LOAD 9002

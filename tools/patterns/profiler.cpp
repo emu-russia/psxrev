@@ -181,8 +181,16 @@ void PerfUpdateStats(HDC hdc)
     PPROFILER_ENTRY Entry;
     int y;
     LARGE_INTEGER TotalTime;
+    RECT Rect;
 
     if (!PerfActive) return;
+
+    Rect.top = 0;
+    Rect.left = 0;
+    Rect.right = 200;
+    Rect.bottom = 150;
+
+    FillRect(hdc, &Rect, (HBRUSH)(COLOR_WINDOW + 2));
 
     SetTextColor(hdc, RGB(255, 255, 255));
     SetBkMode(hdc, TRANSPARENT);

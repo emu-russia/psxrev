@@ -13,6 +13,11 @@
 #include "jpegwnd.h"
 #include "profiler.h"
 
+#ifdef USEGL
+#include <GL/gl.h>
+#pragma comment(lib, "opengl32.lib")
+#endif
+
 /*
 Controls:
 
@@ -64,6 +69,355 @@ HBITMAP RemoveBitmap;
 
 static char * SavedImageName = NULL;
 
+#ifdef USEGL
+
+//
+// OpenGL stuff
+//
+
+static HGLRC hGLRC;
+
+typedef struct _MESH_ENTRY
+{
+    int         Vertex0[2];
+    int         Vertex1[2];
+    int         Vertex2[2];
+    int         Vertex3[2];
+    GLuint      TextureID;
+    PUCHAR      BitmapBlock;
+} MESH_ENTRY, *PMESH_ENTRY;
+
+// 0 : Big mesh
+// 1 : Right-side smaller mesh
+// 2 : Bootom-side smaller mesh
+
+typedef struct _MESH_BUCKET
+{
+    PMESH_ENTRY Mesh[3];
+    int MeshWidth[3];
+    int MeshHeight[3];
+} MESH_BUCKET, *PMESH_BUCKET;
+
+MESH_BUCKET JpegMesh;
+
+#define JPEG_MESH_LOG2   7
+#define JPEG_SMALLER_MESH_LOG2   5
+
+#define checkImageWidth 64
+#define checkImageHeight 64
+GLubyte checkImage[checkImageHeight][checkImageWidth][3];
+
+static void SetupPixelFormat(HDC hDC)
+{
+    PIXELFORMATDESCRIPTOR pfd = {
+        sizeof(PIXELFORMATDESCRIPTOR),  /* size */
+        1,                              /* version */
+        PFD_SUPPORT_OPENGL |
+        PFD_DRAW_TO_WINDOW |
+        PFD_DOUBLEBUFFER,               /* support double-buffering */
+        PFD_TYPE_RGBA,                  /* color type */
+        16,                             /* prefered color depth */
+        0, 0, 0, 0, 0, 0,               /* color bits (ignored) */
+        0,                              /* no alpha buffer */
+        0,                              /* alpha bits (ignored) */
+        0,                              /* no accumulation buffer */
+        0, 0, 0, 0,                     /* accum bits (ignored) */
+        16,                             /* depth buffer */
+        0,                              /* no stencil buffer */
+        0,                              /* no auxiliary buffers */
+        PFD_MAIN_PLANE,                 /* main layer */
+        0,                              /* reserved */
+        0, 0, 0,                        /* no layer, visible, damage masks */
+    };
+    int pixelFormat;
+
+    pixelFormat = ChoosePixelFormat(hDC, &pfd);
+    if (pixelFormat == 0) {
+        MessageBox(WindowFromDC(hDC), "ChoosePixelFormat failed.", "Error",
+            MB_ICONERROR | MB_OK);
+        exit(1);
+    }
+
+    if (SetPixelFormat(hDC, pixelFormat, &pfd) != TRUE) {
+        MessageBox(WindowFromDC(hDC), "SetPixelFormat failed.", "Error",
+            MB_ICONERROR | MB_OK);
+        exit(1);
+    }
+}
+
+static PMESH_ENTRY JpegGenerateMesh(int Width, int Height, unsigned char *BitmapData, int *MeshWidth, int *MeshHeight, int MeshLog2, long Stride)
+{
+    PMESH_ENTRY Mesh;
+    PMESH_ENTRY Entry;
+    int Rows;
+    int Columns;
+    int RowCounter;
+    int ColumnCounter;
+    int ImageX, ImageY, RowStride;
+    int ImageRow;
+    PUCHAR ImagePointer;
+    int BlockWidth;
+
+#define MESH_LOG2  MeshLog2
+
+    Rows = Height >> MESH_LOG2;
+    Columns = Width >> MESH_LOG2;
+
+    *MeshWidth = Rows;
+    *MeshHeight = Columns;
+
+    Mesh = (PMESH_ENTRY)malloc(Rows * Columns * sizeof(MESH_ENTRY));
+    if (!Mesh) return NULL;
+
+    memset(Mesh, 0, Rows * Columns * sizeof(MESH_ENTRY));
+
+    BlockWidth = 1 << MESH_LOG2;
+
+    for (RowCounter = 0; RowCounter < Rows; RowCounter++)
+    {
+        for (ColumnCounter = 0; ColumnCounter < Columns; ColumnCounter++)
+        {
+            Entry = &Mesh[RowCounter * Columns + ColumnCounter];
+
+            Entry->Vertex0[0] = ColumnCounter << MESH_LOG2;
+            Entry->Vertex0[1] = RowCounter << MESH_LOG2;
+            Entry->Vertex1[0] = Entry->Vertex0[0] + BlockWidth;
+            Entry->Vertex1[1] = Entry->Vertex0[1];
+            Entry->Vertex2[0] = Entry->Vertex0[0];
+            Entry->Vertex2[1] = Entry->Vertex0[1] + BlockWidth;
+            Entry->Vertex3[0] = Entry->Vertex0[0] + BlockWidth;
+            Entry->Vertex3[1] = Entry->Vertex0[1] + BlockWidth;
+
+            glGenTextures(1, &Entry->TextureID);
+
+            glBindTexture(GL_TEXTURE_2D, Entry->TextureID);
+
+            //
+            // Copy bitmap sub-region
+            //
+
+            Entry->BitmapBlock = (PUCHAR)malloc(BlockWidth * BlockWidth * 3);
+            if (!Entry->BitmapBlock)
+            {
+                free(Mesh);
+                return NULL;
+            }
+
+            ImageX = ColumnCounter * BlockWidth;
+            ImageY = RowCounter * BlockWidth;
+            RowStride = Width * 3 + Stride;
+            ImagePointer = &BitmapData[(ImageY * Width + ImageX) * 3 + Stride];
+
+            for (ImageRow = 0; ImageRow < BlockWidth; ImageRow++, ImagePointer += RowStride)
+            {
+                memcpy(&Entry->BitmapBlock[ImageRow * BlockWidth * 3],
+                    ImagePointer,
+                    BlockWidth * 3);
+            }
+
+            //
+            // Set texture Data
+            //
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, (1 << MESH_LOG2), (1 << MESH_LOG2), 0, GL_RGB, GL_UNSIGNED_BYTE, Entry->BitmapBlock);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        }
+    }
+
+    return Mesh;
+}
+
+static void JpegDrawMesh(PMESH_ENTRY Mesh, int MeshWidth, int MeshHeight)
+{
+    PMESH_ENTRY Entry;
+    int RowCounter;
+    int ColumnCounter;
+
+    if (Mesh == NULL) return;
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_SRC_COLOR);
+
+    for (RowCounter = 0; RowCounter < MeshHeight; RowCounter++)
+    {
+        for (ColumnCounter = 0; ColumnCounter < MeshWidth; ColumnCounter++)
+        {
+            Entry = &Mesh[RowCounter * MeshWidth + ColumnCounter];
+
+            //
+            // Skip invisible meshes
+            //
+
+            if ((Entry->Vertex0[0] + ScrollX) > JpegWindowWidth()) continue;
+            if ((Entry->Vertex1[0] + ScrollX) < 0) continue;
+            if ((Entry->Vertex0[1] + ScrollY) > JpegWindowHeight()) continue;
+            if ((Entry->Vertex2[1] + ScrollY) < 0) continue;
+
+            //
+            // Draw mesh
+            //
+
+            glBindTexture(GL_TEXTURE_2D, Entry->TextureID);
+
+            glBegin(GL_QUADS);
+            glNormal3d(1, 0, 0);
+            glTexCoord2f(0, 0);
+            glVertex2i(Entry->Vertex0[0] + ScrollX, Entry->Vertex0[1] + ScrollY);
+            glTexCoord2f(1, 0);
+            glVertex2i(Entry->Vertex1[0] + ScrollX, Entry->Vertex1[1] + ScrollY);
+            glTexCoord2f(1, 1);
+            glVertex2i(Entry->Vertex3[0] + ScrollX, Entry->Vertex3[1] + ScrollY);
+            glTexCoord2f(0, 1);
+            glVertex2i(Entry->Vertex2[0] + ScrollX, Entry->Vertex2[1] + ScrollY);
+            glEnd();
+
+        }
+    }
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+static void JpegMeshRelease(PMESH_BUCKET Bucket)
+{
+    int MeshCount;
+    int EntryCount;
+    int Count;
+
+    for (MeshCount = 0; MeshCount < 3; MeshCount++)
+    {
+        EntryCount = Bucket->MeshWidth[MeshCount] * Bucket->MeshHeight[MeshCount];
+
+        for (Count = 0; Count < EntryCount; Count++)
+        {
+            if (Bucket->Mesh[MeshCount][Count].BitmapBlock)
+            {
+                glDeleteTextures(1, &Bucket->Mesh[MeshCount][Count].TextureID);
+
+                free(Bucket->Mesh[MeshCount][Count].BitmapBlock);
+            }
+        }
+
+        if (Bucket->Mesh[MeshCount])
+        {
+            free(Bucket->Mesh[MeshCount]);
+            Bucket->Mesh[MeshCount] = NULL;
+            Bucket->MeshWidth[MeshCount] = 0;
+            Bucket->MeshHeight[MeshCount] = 0;
+        }
+    }
+}
+
+static void MakeCheckImage(void)
+{
+    int i, j, c;
+
+    for (i = 0; i < checkImageHeight; i++) {
+        for (j = 0; j < checkImageWidth; j++) {
+            c = ((((i & 0x8) == 0) ^ ((j & 0x8)) == 0)) * 255;
+            checkImage[i][j][0] = (GLubyte)c;
+            checkImage[i][j][1] = (GLubyte)c;
+            checkImage[i][j][2] = (GLubyte)c;
+        }
+    }
+}
+
+static void GL_init(void)
+{
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+
+    MakeCheckImage();
+}
+
+static void GL_redraw(HDC hDC)
+{
+    glClear(GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
+
+    //
+    // Draw Jpeg mesh
+    //
+
+    if (JpegBuffer)
+    {
+        JpegDrawMesh(JpegMesh.Mesh[0], JpegMesh.MeshWidth[0], JpegMesh.MeshHeight[0]);
+    }
+
+    //
+    // Draw added patterns
+    //
+
+    /*
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_SRC_COLOR);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glBegin(GL_QUADS);
+    glNormal3d(1, 0, 0);
+    glTexCoord2f(0, 1);
+    glVertex2i(0 + ScrollX, 0 + ScrollY);
+    glTexCoord2f(0, 0);
+    glVertex2i(0 + ScrollX, 100 + ScrollY);
+    glTexCoord2f(1, 0);
+    glVertex2i(100 + ScrollX, 100 + ScrollY);
+    glTexCoord2f(1, 1);
+    glVertex2i(100 + ScrollX, 0 + ScrollY);
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    */
+
+    //
+    // Draw selection box
+    //
+
+    if (RegionSelected)
+    {
+        glLineWidth(1.5);
+        glColor3f(1.0, 0.0, 0.0);
+        glBegin(GL_LINES);
+        glVertex2i(SelectionStartX, SelectionStartY);
+        glVertex2i(SelectionEndX, SelectionStartY);
+        glVertex2i(SelectionEndX, SelectionStartY);
+        glVertex2i(SelectionEndX, SelectionEndY);
+        glVertex2i(SelectionEndX, SelectionEndY);
+        glVertex2i(SelectionStartX, SelectionEndY);
+        glVertex2i(SelectionStartX, SelectionEndY);
+        glVertex2i(SelectionStartX, SelectionStartY);
+        glEnd();
+    }
+
+    /*
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex2f(0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex2f(0.5f, 1.5f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex2f(1.0f, 0.0f);
+    glEnd();
+    */
+
+    SwapBuffers(hDC);
+}
+
+static void GL_resize(int winWidth, int winHeight)
+{
+    /* set viewport to cover the window */
+    glViewport(0, 0, winWidth, winHeight);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, winWidth, winHeight, 0.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+#endif // USEGL
+
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 {
     int n;
@@ -102,10 +456,19 @@ static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
 
         if (OldPosX != PatternLayer[n].PosX || OldPosY != PatternLayer[n].PosY)
         {
+
+            //
+            // WDM is weak on windows movement.
+            //
+
+#if 1
+#ifndef USEGL
             MoveWindow(
                 PatternLayer[n].Hwnd,
                 PatternLayer[n].PosX, PatternLayer[n].PosY,
                 PatternLayer[n].Width, PatternLayer[n].Height, Update );
+#endif  // USEGL
+#endif
         }
     }
 
@@ -126,7 +489,9 @@ static void RemovePatternEntry(int EntryIndex)
     int Count, Index;
     char Text[0x100];
 
+#ifndef USEGL
     DestroyWindow(Entry->Hwnd);
+#endif
 
     TempList = (PatternEntry *)malloc(sizeof(PatternEntry)* (NumPatterns - 1));
 
@@ -145,6 +510,8 @@ static void RemovePatternEntry(int EntryIndex)
     sprintf(Text, "Patterns Added : %i", NumPatterns);
     SetStatusText(STATUS_ADDED, Text);
 }
+
+#ifndef USEGL
 
 static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -335,6 +702,8 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
     return 0;
 }
 
+#endif
+
 void AddPatternEntry(char * PatternName)
 {
     PERF_START("AddPatternEntry");
@@ -375,6 +744,7 @@ void AddPatternEntry(char * PatternName)
         // Create Window
         //
 
+#ifndef USEGL
         Entry.Hwnd = CreateWindowEx(
             0,
             PATTERN_ENTRY_CLASS,
@@ -391,6 +761,7 @@ void AddPatternEntry(char * PatternName)
 
         ShowWindow(Entry.Hwnd, SW_NORMAL);
         UpdateWindow(Entry.Hwnd);
+#endif
 
         //
         // Add Entry in List.
@@ -421,7 +792,9 @@ void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
     Orig->PlaneX = Entry->PlaneX;
     Orig->PlaneY = Entry->PlaneY;
 
+#ifndef USEGL
     MoveWindow(Orig->Hwnd, Orig->PosX, Orig->PosY, Orig->Width, Orig->Height, TRUE);
+#endif
 
     //InvalidateRect(Orig->Hwnd, NULL, TRUE);
     //UpdateWindow(Orig->Hwnd);
@@ -458,12 +831,23 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HGDIOBJ oldColor;
     RECT Rect;
     char Text[0x100];
+    POINT Offset;
 
     switch (msg)
     {
     case WM_CREATE:
 
+#ifdef USEGL
+        /* initialize OpenGL rendering */
+        hdc = GetDC(hwnd);
+        SetupPixelFormat(hdc);
+        hGLRC = wglCreateContext(hdc);
+        wglMakeCurrent(hdc, hGLRC);
+        GL_init();
+#else
+
         JpegOffscreenDC = CreateCompatibleDC(GetWindowDC(hwnd));
+#endif  // USEGL
 
         break;
     case WM_CLOSE:
@@ -473,6 +857,15 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
+
+#ifdef USEGL
+        /* finish OpenGL rendering */
+        if (hGLRC) {
+            wglMakeCurrent(NULL, NULL);
+            wglDeleteContext(hGLRC);
+        }
+#endif
+
         break;
 
     case WM_PAINT:
@@ -480,6 +873,14 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         PERF_START("JpegWnd WM_PAINT");
 
         hdc = BeginPaint(hwnd, &ps);
+
+#ifdef USEGL
+
+        if (hGLRC) {
+            GL_redraw(hdc);
+        }
+
+#else
 
         //
         // Background image
@@ -511,6 +912,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             LineTo(hdc, SelectionStartX, SelectionStartY);
             SelectObject(hdc, oldColor);
         }
+
+#endif  // USEGL
 
         PERF_STOP("JpegWnd WM_PAINT");
 
@@ -544,15 +947,12 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
         if (ScrollingBegin)
         {
-            ScrollX = SavedScrollX + LOWORD(lParam) - SavedMouseX;
-            ScrollY = SavedScrollY + HIWORD(lParam) - SavedMouseY;
-            InvalidateRect(JpegWnd, NULL, FALSE);
-            UpdateWindow(JpegWnd);
+            Offset.x = SavedScrollX + LOWORD(lParam) - SavedMouseX;
+            Offset.y = SavedScrollY + HIWORD(lParam) - SavedMouseY;
+
+            JpegSetScroll(&Offset);
 
             UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
-
-            sprintf(Text, "Scroll : %i / %ipx", ScrollX, ScrollY);
-            SetStatusText(STATUS_SCROLL, Text);
         }
         if (SelectionBegin)
         {
@@ -622,7 +1022,7 @@ void JpegInit(HWND Parent)
     wc.hInstance = GetModuleHandle(NULL);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+    wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "JpegWnd";
     wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -650,6 +1050,8 @@ void JpegInit(HWND Parent)
     ShowWindow(JpegWnd, SW_NORMAL);
     UpdateWindow(JpegWnd);
 
+#ifndef USEGL
+
     //
     // Register pattern window class.
     //
@@ -672,6 +1074,8 @@ void JpegInit(HWND Parent)
     {
         MessageBox(0, "Cannot register Pattern EntryWnd Class", "Error", 0);
     }
+
+#endif  // USEGL
 
     //
     // Load pattern remove button picture
@@ -704,6 +1108,23 @@ void JpegLoadImage(char *filename, bool Silent)
         &JpegHeight,
         NULL );
 
+#ifdef USEGL
+    //
+    // GL Mesh
+    //
+
+    JpegMeshRelease(&JpegMesh);
+
+    JpegMesh.Mesh[0] = JpegGenerateMesh(JpegWidth,
+        JpegHeight,
+        JpegBuffer,
+        &JpegMesh.MeshWidth[0],
+        &JpegMesh.MeshHeight[0],
+        JPEG_MESH_LOG2,
+        0);
+
+#else
+
     if (JpegBitmap)
     {
         DeleteObject(JpegBitmap);
@@ -712,7 +1133,7 @@ void JpegLoadImage(char *filename, bool Silent)
     if (JpegBuffer)
         JpegBitmap = CreateBitmapFromPixels(GetWindowDC(JpegWnd), JpegWidth, JpegHeight, 24, JpegBuffer);
 
-    if (!Silent) MessageBox(0, "Loaded", "Loaded", MB_OK);
+#endif  // USEGL
 
     sprintf(Text, "Source Image : %s", filename);
     SetStatusText(STATUS_SOURCE_IMAGE, Text);
@@ -727,6 +1148,8 @@ void JpegLoadImage(char *filename, bool Silent)
     SavedImageName = (char *)malloc(strlen(filename) + 1);
     strcpy(SavedImageName, filename);
     SavedImageName[strlen(filename)] = 0;
+
+    if (!Silent) MessageBox(0, "Loaded", "Loaded", MB_OK);
 
     SetCursor(LoadCursor(NULL, IDC_ARROW));
 
@@ -771,7 +1194,16 @@ void JpegSetSelectRegion(LPRECT Region)
 // Change Jpeg window size according to parent window dimensions
 void JpegResize(int Width, int Height)
 {
-    MoveWindow(JpegWnd, 2, 2, max(100, Width - 300), max(100, Height - 5), TRUE);
+    int winWidth, winHeight;
+
+    winWidth = max(100, Width - 300);
+    winHeight = max(100, Height - 5);
+
+    MoveWindow(JpegWnd, 2, 2, winWidth, winHeight, TRUE);
+
+#ifdef USEGL
+    GL_resize(winWidth, winHeight);
+#endif 
 
     // Reset selection box after window size was changed
     JpegRemoveSelection();
@@ -783,6 +1215,14 @@ int JpegWindowWidth(void)
     RECT Rect;
     GetClientRect(JpegWnd, &Rect);
     return Rect.right;
+}
+
+// Window height.
+int JpegWindowHeight(void)
+{
+    RECT Rect;
+    GetClientRect(JpegWnd, &Rect);
+    return Rect.bottom;
 }
 
 void JpegRemoveSelection(void)
@@ -823,11 +1263,13 @@ void JpegDestroy(void)
     // Source image layer.
     //
 
+#ifndef USEGL
     if (JpegBitmap)
     {
         DeleteObject(JpegBitmap);
         JpegBitmap = NULL;
     }
+#endif
 
     //
     // Patterns layer.
@@ -843,11 +1285,13 @@ void JpegRemoveAllPatterns(void)
     int Count;
     PatternEntry *Entry;
 
+#ifndef USEGL
     for (Count = 0; Count < NumPatterns; Count++)
     {
         Entry = GetPatternEntry(Count);
         DestroyWindow(Entry->Hwnd);
     }
+#endif
 
     if (PatternLayer)
     {
@@ -901,11 +1345,13 @@ void JpegSelectPattern(PatternEntry * Pattern)
 
     if (Pattern)
     {
+#ifndef USEGL
         if (IsWindow(Pattern->Hwnd))
         {
             InvalidateRect(Pattern->Hwnd, NULL, FALSE);
             UpdateWindow(Pattern->Hwnd);
         }
+#endif
 
         sprintf(
             Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
@@ -917,6 +1363,7 @@ void JpegSelectPattern(PatternEntry * Pattern)
     // Update previously selected pattern
     //
 
+#ifndef USEGL
     if (OldPattern)
     {
         if (IsWindow(OldPattern->Hwnd))
@@ -925,6 +1372,7 @@ void JpegSelectPattern(PatternEntry * Pattern)
             UpdateWindow(OldPattern->Hwnd);
         }
     }
+#endif
 
     PERF_STOP("JpegSelectPattern");
 }

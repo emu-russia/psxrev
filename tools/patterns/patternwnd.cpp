@@ -72,9 +72,22 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
     BITMAPINFO Bmi;
     HBITMAP SelectionBitmap;
     RECT SelectionRect;
+    float LamdaWidth;
+    float LamdaHeight;
+    int Width;
+    int Height;
 
     if (Item)
     {
+        //
+        // Get dimensions
+        //
+
+        LamdaWidth = (float)Item->PatternWidth / Item->Lamda;
+        LamdaHeight = (float)Item->PatternHeight / Item->Lamda;
+        Width = (int)(LamdaWidth * WorkspaceLamda);
+        Height = (int)(LamdaHeight * WorkspaceLamda);
+
         //
         // Draw pattern's images
         //
@@ -110,19 +123,19 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
             memset(&Bmi, 0, sizeof(BITMAPINFO));
 
             Bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            Bmi.bmiHeader.biWidth = Item->PatternWidth;
-            Bmi.bmiHeader.biHeight = Item->PatternHeight;
+            Bmi.bmiHeader.biWidth = Width;
+            Bmi.bmiHeader.biHeight = Height;
             Bmi.bmiHeader.biPlanes = 1;
             Bmi.bmiHeader.biBitCount = 32;         // four 8-bit components 
             Bmi.bmiHeader.biCompression = BI_RGB;
-            Bmi.bmiHeader.biSizeImage = Item->PatternWidth * Item->PatternHeight * 4;
+            Bmi.bmiHeader.biSizeImage = Width * Height * 4;
 
             SelectionBitmap = CreateDIBSection(hdcSelection, &Bmi, DIB_RGB_COLORS, NULL, NULL, 0x0);
             SelectObject(hdcSelection, SelectionBitmap);
 
-            SetRect(&SelectionRect, 0, 0, Item->PatternWidth, Item->PatternHeight);
+            SetRect(&SelectionRect, 0, 0, Width, Height);
 
-            RoundRect(hdcSelection, 0, 0, Item->PatternWidth, Item->PatternHeight, 10, 10);
+            RoundRect(hdcSelection, 0, 0, Width, Height, 10, 10);
 
             memset(&Blend, 0, sizeof(BLENDFUNCTION));
 
@@ -131,8 +144,8 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
             Blend.AlphaFormat = AC_SRC_ALPHA;
 
             AlphaBlend(
-                hdc, 0, 0, Item->PatternWidth, Item->PatternHeight,
-                hdcSelection, 0, 0, Item->PatternWidth, Item->PatternHeight, Blend);
+                hdc, 0, 0, Width, Height,
+                hdcSelection, 0, 0, Width, Height, Blend);
 
             DeleteObject(SelectionBitmap);
             DeleteObject(SelectionBrush);
@@ -153,13 +166,13 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
             SetPolyFillMode(hdc, TRANSPARENT);
 
             //
-            // Fuck it....
+            // Box
             //
 
             MoveToEx(hdc, LINE_WIDTH, LINE_WIDTH, NULL);
-            LineTo(hdc, Item->PatternWidth, 0);
-            LineTo(hdc, Item->PatternWidth, Item->PatternHeight);
-            LineTo(hdc, 0, Item->PatternHeight);
+            LineTo(hdc, Width, 0);
+            LineTo(hdc, Width, Height);
+            LineTo(hdc, 0, Height);
             LineTo(hdc, 0, 0);
 
             SelectObject(hdc, OldPen);

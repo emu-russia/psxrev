@@ -1,4 +1,10 @@
 
+//
+// Enable OpenGL renderer
+//
+
+#define USEGL
+
 typedef struct PatternEntry
 {
     char    PatternName[64];
@@ -33,6 +39,8 @@ void JpegSetSelectRegion(LPRECT Region);
 void JpegResize(int Width, int Height);
 
 int JpegWindowWidth(void);
+
+int JpegWindowHeight(void);
 
 void AddPatternEntry(char * PatternName);
 

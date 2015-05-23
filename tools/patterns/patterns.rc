@@ -47,6 +47,8 @@ END
 
 IDB_REMOVE BITMAP "remove.bmp"
 
+IDB_GLFONT BITMAP "glfont.bmp"
+
 PatternsAccel ACCELERATORS
 {
     "^Z", ID_SAVE_PATTXT  
