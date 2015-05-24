@@ -4,6 +4,7 @@
 #include <windowsx.h>
 #include "resource.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -106,6 +107,17 @@ MESH_BUCKET JpegMesh;
 #define checkImageWidth 64
 #define checkImageHeight 64
 GLubyte checkImage[checkImageHeight][checkImageWidth][3];
+
+#define GL_FONT_WIDTH 256
+
+HBITMAP GlFontBitmap;
+PUCHAR GlFontBuffer;
+GLuint GlFontTextureId;
+
+PUCHAR RemoveBitmapBuffer;
+GLuint RemoveButtonTextureId;
+
+bool GlLock = false;
 
 static void SetupPixelFormat(HDC hDC)
 {
@@ -335,28 +347,36 @@ static void GL_init(void)
 static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
 {
     int Width, Height;
+    int TopLeftX, TopLeftY;
 
     Width = Pattern->Width;
     Height = Pattern->Height;
+
+    glEnable(GL_BLEND);
 
     //
     // Cell pattern
     //
 
-    glBegin(GL_QUADS);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, Pattern->TextureId);
+    glBegin(GL_QUADS);
+    glNormal3d(1, 0, 0);
+    glTexCoord2f(0, 0);
     glVertex2i(Pattern->PosX, Pattern->PosY);
-    glVertex2i(Pattern->PosX, Pattern->PosY + Height);
-    glVertex2i(Pattern->PosX + Width, Pattern->PosY + Height);
-    glVertex2i(Pattern->PosX + Width, Pattern->PosY);
+    glTexCoord2f(1, 0);
+    glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY);
+    glTexCoord2f(1, 1);
+    glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY + Height - 1);
+    glTexCoord2f(0, 1);
+    glVertex2i(Pattern->PosX, Pattern->PosY + Height - 1);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 
     //
     // Cell name
-    //
-
-    //
-    // Remove button
     //
 
     //
@@ -365,20 +385,48 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
 
     if (Selected)
     {
+        glColor4f(.7f, .7f, .7f, .5f);
         glBegin(GL_QUADS);
-        glColor4f(.2f, 1.0f, .2f, .5f);
         glVertex2i(Pattern->PosX, Pattern->PosY);
         glVertex2i(Pattern->PosX, Pattern->PosY + Height);
         glVertex2i(Pattern->PosX + Width, Pattern->PosY + Height);
         glVertex2i(Pattern->PosX + Width, Pattern->PosY);
         glEnd();
     }
+
+    //
+    // Remove button
+    //
+
+    TopLeftX = Pattern->PosX + Width - REMOVE_BITMAP_WIDTH;
+    TopLeftY = Pattern->PosY;
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_SRC_COLOR);
+    glBindTexture(GL_TEXTURE_2D, RemoveButtonTextureId);
+    glBegin(GL_QUADS);
+    glNormal3d(1, 0, 0);
+    glTexCoord2f(0, 0);
+    glVertex2i(TopLeftX, TopLeftY);
+    glTexCoord2f(1, 0);
+    glVertex2i(TopLeftX + REMOVE_BITMAP_WIDTH - 1, TopLeftY);
+    glTexCoord2f(1, 1);
+    glVertex2i(TopLeftX + REMOVE_BITMAP_WIDTH - 1, TopLeftY + REMOVE_BITMAP_WIDTH - 1);
+    glTexCoord2f(0, 1);
+    glVertex2i(TopLeftX, TopLeftY + REMOVE_BITMAP_WIDTH - 1);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+    glDisable(GL_BLEND);
 }
 
 static void GL_redraw(HDC hDC)
 {
     int n;
     PatternEntry * Entry;
+
+    if (GlLock) return;     // Draw disabled, added patterns list is updating.
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -433,6 +481,55 @@ static void GL_resize(int winWidth, int winHeight)
     glLoadIdentity();
     glOrtho(0.0, winWidth, winHeight, 0.0, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+}
+
+static void GL_LoadTextureRaw(PUCHAR RawBitmap, int Width, int Height, PUCHAR * TextureBuffer, GLuint * TextureId, bool Wrap)
+{
+    *TextureBuffer = RawBitmap;
+
+    glEnable(GL_TEXTURE_2D);
+
+    glGenTextures(1, TextureId);
+    glBindTexture(GL_TEXTURE_2D, *TextureId);
+
+    if (Wrap)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, RawBitmap);
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * TextureBuffer, GLuint * TextureId, bool Wrap)
+{
+    HDC dcBitmap;
+    BITMAPINFO bmpInfo;
+    int Size;
+
+    Size = Width * Height * 4;
+    *TextureBuffer = (PUCHAR)malloc(Size);
+
+    dcBitmap = CreateCompatibleDC(NULL);
+    SelectObject(dcBitmap, Bitmap);
+
+    bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmpInfo.bmiHeader.biWidth = Width;
+    bmpInfo.bmiHeader.biHeight = -Height;
+    bmpInfo.bmiHeader.biPlanes = 1;
+    bmpInfo.bmiHeader.biBitCount = 24;
+    bmpInfo.bmiHeader.biCompression = BI_RGB;
+    bmpInfo.bmiHeader.biSizeImage = 0;
+
+    GetDIBits(dcBitmap, Bitmap, 0, Height, *TextureBuffer, &bmpInfo, DIB_RGB_COLORS);
+
+    DeleteDC(dcBitmap);
+
+    GL_LoadTextureRaw(*TextureBuffer, Width, Height, TextureBuffer, TextureId, Wrap);
 }
 
 #endif // USEGL
@@ -570,8 +667,21 @@ static void RemovePatternEntry(int EntryIndex)
     int Count, Index;
     char Text[0x100];
 
+#ifdef USEGL
+    GlLock = true;
+#endif
+
 #ifndef USEGL
     DestroyWindow(Entry->Hwnd);
+#endif
+
+#ifdef USEGL
+    glDeleteTextures(1, &Entry->TextureId);
+    if (Entry->TextureBuffer)
+    {
+        free(Entry->TextureBuffer);
+        Entry->TextureBuffer = NULL;
+    }
 #endif
 
     TempList = (PatternEntry *)malloc(sizeof(PatternEntry)* (NumPatterns - 1));
@@ -584,6 +694,10 @@ static void RemovePatternEntry(int EntryIndex)
     free(PatternLayer);
     PatternLayer = TempList;
     NumPatterns--;
+
+#ifdef USEGL
+    GlLock = false;
+#endif
 
     //
     // Update status line.
@@ -788,6 +902,10 @@ void AddPatternEntry(char * PatternName)
     float LamdaWidth, LamdaHeight;
     char Text[0x100];
 
+#ifdef USEGL
+    GlLock = true;
+#endif
+
     if (Selected && Item)
     {
         Entry.BlendLevel = 1.0f;
@@ -837,6 +955,16 @@ void AddPatternEntry(char * PatternName)
 #endif
 
         //
+        // GL Texture
+        //
+
+#ifdef USEGL
+
+        GL_LoadTexture(Item->PatternBitmap, Item->PatternWidth, Item->PatternHeight, &Entry.TextureBuffer, &Entry.TextureId, false);
+
+#endif
+
+        //
         // Add Entry in List.
         //
 
@@ -846,6 +974,10 @@ void AddPatternEntry(char * PatternName)
         sprintf(Text, "Patterns Added : %i", NumPatterns);
         SetStatusText(STATUS_ADDED, Text);
     }
+
+#ifdef USEGL
+    GlLock = false;
+#endif
 
     PERF_STOP("AddPatternEntry");
 }
@@ -1206,6 +1338,16 @@ void JpegInit(HWND Parent)
     //
 
     RemoveBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_REMOVE));
+
+#ifdef USEGL
+
+    GL_LoadTexture(RemoveBitmap, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, &RemoveBitmapBuffer, &RemoveButtonTextureId, false);
+
+    GlFontBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GLFONT));
+
+    GL_LoadTexture(GlFontBitmap, GL_FONT_WIDTH, GL_FONT_WIDTH, &GlFontBuffer, &GlFontTextureId, true);
+
+#endif  // USEGL
 }
 
 static void JpegAddScanline(unsigned char *buffer, int stride, void *Param)
@@ -1409,13 +1551,28 @@ void JpegRemoveAllPatterns(void)
     int Count;
     PatternEntry *Entry;
 
-#ifndef USEGL
+#ifdef USEGL
+    GlLock = true;
+#endif
+
     for (Count = 0; Count < NumPatterns; Count++)
     {
         Entry = GetPatternEntry(Count);
+
+#ifndef USEGL
         DestroyWindow(Entry->Hwnd);
-    }
 #endif
+
+#ifdef USEGL
+        glDeleteTextures(1, &Entry->TextureId);
+        if (Entry->TextureBuffer)
+        {
+            free(Entry->TextureBuffer);
+            Entry->TextureBuffer = NULL;
+        }
+#endif
+
+    }
 
     if (PatternLayer)
     {
@@ -1423,6 +1580,10 @@ void JpegRemoveAllPatterns(void)
         PatternLayer = NULL;
     }
     NumPatterns = 0;
+
+#ifdef USEGL
+    GlLock = false;
+#endif
 
     SetStatusText(STATUS_ADDED, "Patterns Added : 0");
 }
