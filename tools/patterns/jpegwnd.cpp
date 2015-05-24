@@ -332,9 +332,55 @@ static void GL_init(void)
     MakeCheckImage();
 }
 
+static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
+{
+    int Width, Height;
+
+    Width = Pattern->Width;
+    Height = Pattern->Height;
+
+    //
+    // Cell pattern
+    //
+
+    glBegin(GL_QUADS);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glVertex2i(Pattern->PosX, Pattern->PosY);
+    glVertex2i(Pattern->PosX, Pattern->PosY + Height);
+    glVertex2i(Pattern->PosX + Width, Pattern->PosY + Height);
+    glVertex2i(Pattern->PosX + Width, Pattern->PosY);
+    glEnd();
+
+    //
+    // Cell name
+    //
+
+    //
+    // Remove button
+    //
+
+    //
+    // Selection
+    //
+
+    if (Selected)
+    {
+        glBegin(GL_QUADS);
+        glColor4f(.2f, 1.0f, .2f, .5f);
+        glVertex2i(Pattern->PosX, Pattern->PosY);
+        glVertex2i(Pattern->PosX, Pattern->PosY + Height);
+        glVertex2i(Pattern->PosX + Width, Pattern->PosY + Height);
+        glVertex2i(Pattern->PosX + Width, Pattern->PosY);
+        glEnd();
+    }
+}
+
 static void GL_redraw(HDC hDC)
 {
-    glClear(GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
+    int n;
+    PatternEntry * Entry;
+
+    glClear(GL_COLOR_BUFFER_BIT);
 
     //
     // Draw Jpeg mesh
@@ -349,27 +395,11 @@ static void GL_redraw(HDC hDC)
     // Draw added patterns
     //
 
-    /*
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_SRC_COLOR);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glBegin(GL_QUADS);
-    glNormal3d(1, 0, 0);
-    glTexCoord2f(0, 1);
-    glVertex2i(0 + ScrollX, 0 + ScrollY);
-    glTexCoord2f(0, 0);
-    glVertex2i(0 + ScrollX, 100 + ScrollY);
-    glTexCoord2f(1, 0);
-    glVertex2i(100 + ScrollX, 100 + ScrollY);
-    glTexCoord2f(1, 1);
-    glVertex2i(100 + ScrollX, 0 + ScrollY);
-    glEnd();
-
-    glDisable(GL_TEXTURE_2D);
-    */
+    for (n = 0; n < NumPatterns; n++)
+    {
+        Entry = &PatternLayer[n];
+        GL_DrawPattern(Entry, Entry == SelectedPattern);
+    }
 
     //
     // Draw selection box
@@ -390,17 +420,6 @@ static void GL_redraw(HDC hDC)
         glVertex2i(SelectionStartX, SelectionStartY);
         glEnd();
     }
-
-    /*
-    glBegin(GL_TRIANGLES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(0.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex2f(0.5f, 1.5f);
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex2f(1.0f, 0.0f);
-    glEnd();
-    */
 
     SwapBuffers(hDC);
 }
@@ -428,18 +447,48 @@ static int GetPatternEntryIndexByHwnd(HWND Hwnd)
     return -1;
 }
 
-static void SaveEntryPositions(void)
+static int GetPatternEntryIndexByCursorPos(int CursorX, int CursorY)
 {
     int n;
+    POINT Point;
+    RECT Rect;
+
+    Point.x = CursorX;
+    Point.y = CursorY;
 
     for (n = 0; n < NumPatterns; n++)
     {
-        PatternLayer[n].SavedPosX = PatternLayer[n].PosX;
-        PatternLayer[n].SavedPosY = PatternLayer[n].PosY;
+        SetRect(&Rect,
+                PatternLayer[n].PosX,
+                PatternLayer[n].PosY,
+                PatternLayer[n].PosX + PatternLayer[n].Width,
+                PatternLayer[n].PosY + PatternLayer[n].Height);
+
+        if (PtInRect(&Rect, Point)) return n;
+    }
+    return -1;
+}
+
+static void SaveEntryPositions(PatternEntry * Entry)
+{
+    int n;
+
+    if (Entry)
+    {
+        Entry->SavedPosX = Entry->PosX;
+        Entry->SavedPosY = Entry->PosY;
+    }
+    else
+    {
+        for (n = 0; n < NumPatterns; n++)
+        {
+            PatternLayer[n].SavedPosX = PatternLayer[n].PosX;
+            PatternLayer[n].SavedPosY = PatternLayer[n].PosY;
+        }
     }
 }
 
-static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
+static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOL Update, PatternEntry * Entry)
 {
     int n;
     int OldPosX;
@@ -447,34 +496,66 @@ static void UpdateEntryPositions(int OffsetX, int OffsetY, BOOLEAN Update)
 
     PERF_START("UpdateEntryPositions");
 
-    for (n = 0; n < NumPatterns; n++)
+    if (Entry)
     {
-        OldPosX = PatternLayer[n].PosX;
-        OldPosY = PatternLayer[n].PosY;
-        PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
-        PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
+        OldPosX = Entry->PosX;
+        OldPosY = Entry->PosY;
+        Entry->PosX = Entry->SavedPosX + OffsetX;
+        Entry->PosY = Entry->SavedPosY + OffsetY;
 
-        if (OldPosX != PatternLayer[n].PosX || OldPosY != PatternLayer[n].PosY)
+        //
+        // Update Plane coords
+        //
+
+        Entry->PlaneX = Entry->PosX - ScrollX;
+        Entry->PlaneY = Entry->PosY - ScrollY;
+
+        if (OldPosX != Entry->PosX || OldPosY != Entry->PosY)
         {
-
-            //
-            // WDM is weak on windows movement.
-            //
-
 #if 1
 #ifndef USEGL
             MoveWindow(
-                PatternLayer[n].Hwnd,
-                PatternLayer[n].PosX, PatternLayer[n].PosY,
-                PatternLayer[n].Width, PatternLayer[n].Height, Update );
+                Entry->Hwnd,
+                Entry->PosX, Entry->PosY,
+                Entry->Width, Entry->Height, Update);
 #endif  // USEGL
 #endif
         }
     }
+    else
+    {
+        for (n = 0; n < NumPatterns; n++)
+        {
+            OldPosX = PatternLayer[n].PosX;
+            OldPosY = PatternLayer[n].PosY;
+            PatternLayer[n].PosX = PatternLayer[n].SavedPosX + OffsetX;
+            PatternLayer[n].PosY = PatternLayer[n].SavedPosY + OffsetY;
 
-    //Entry->PosX = Entry->SavedPosX + OffsetX;
-    //Entry->PosY = Entry->SavedPosY + OffsetY;
-    //MoveWindow(Entry->Hwnd, Entry->PosX, Entry->PosY, Entry->Width, Entry->Height, Update);
+            //
+            // Update Plane coords
+            //
+
+            PatternLayer[n].PlaneX = PatternLayer[n].PosX - ScrollX;
+            PatternLayer[n].PlaneY = PatternLayer[n].PosY - ScrollY;
+
+            if (OldPosX != PatternLayer[n].PosX || OldPosY != PatternLayer[n].PosY)
+            {
+
+                //
+                // WDM is weak on windows movement.
+                //
+
+#if 1
+#ifndef USEGL
+                MoveWindow(
+                    PatternLayer[n].Hwnd,
+                    PatternLayer[n].PosX, PatternLayer[n].PosY,
+                    PatternLayer[n].Width, PatternLayer[n].Height, Update );
+#endif  // USEGL
+#endif
+            }
+        }
+    }
 
     PERF_STOP("UpdateEntryPositions");
 }
@@ -561,15 +642,7 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             // Update status line by selection
             //
 
-            Selected = JpegGetSelectedPattern();
-
-            if (Selected)
-            {
-                sprintf(
-                    Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
-                    Selected->PatternName, Selected->PlaneX, Selected->PlaneY, Selected->PosX, Selected->PosY);
-                SetStatusText(STATUS_SELECTED, Text);
-            }
+            UpdateSelectionStatus ();
         }
         break;
 
@@ -811,14 +884,24 @@ static void UpdateSelectionStatus(void)
     Width = abs(SelectionEndX - SelectionStartX);
     Height = abs(SelectionEndY - SelectionStartY);
 
-    if (RegionSelected && Width > 10 && Height > 10)
+    if (SelectedPattern)
     {
-        LamdaWidth = (float)Width / WorkspaceLamda;
-        LamdaHeight = (float)Height / WorkspaceLamda;
-        sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LamdaWidth, LamdaHeight);
+        sprintf(
+            Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
+            SelectedPattern->PatternName, SelectedPattern->PlaneX, SelectedPattern->PlaneY, SelectedPattern->PosX, SelectedPattern->PosY);
         SetStatusText(STATUS_SELECTED, Text);
     }
-    else SetStatusText(STATUS_SELECTED, "Selected: ---");
+    else
+    {
+        if (RegionSelected && Width > 10 && Height > 10)
+        {
+            LamdaWidth = (float)Width / WorkspaceLamda;
+            LamdaHeight = (float)Height / WorkspaceLamda;
+            sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LamdaWidth, LamdaHeight);
+            SetStatusText(STATUS_SELECTED, Text);
+        }
+        else SetStatusText(STATUS_SELECTED, "Selected: ---");
+    }
 }
 
 LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -832,6 +915,9 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     RECT Rect;
     char Text[0x100];
     POINT Offset;
+    int EntryIndex;
+    PatternEntry * Entry;
+    PatternEntry * Selected;
 
     switch (msg)
     {
@@ -923,10 +1009,27 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_LBUTTONDOWN:
+
         RegionSelected = false;
-        SelectionBegin = true;
-        SelectionStartX = LOWORD(lParam);
-        SelectionStartY = HIWORD(lParam);
+
+#ifdef USEGL
+        EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            JpegSelectPattern(Entry);
+            DraggingPattern = TRUE;
+            SavedMouseX = LOWORD(lParam);
+            SavedMouseY = HIWORD(lParam);
+            SaveEntryPositions(Entry);
+        }
+        else
+#endif
+        {
+            SelectionBegin = true;
+            SelectionStartX = LOWORD(lParam);
+            SelectionStartY = HIWORD(lParam);
+        }
         InvalidateRect(JpegWnd, NULL, TRUE);
         UpdateWindow(JpegWnd);
         break;
@@ -940,7 +1043,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SavedMouseY = HIWORD(lParam);
             SavedScrollX = ScrollX;
             SavedScrollY = ScrollY;
-            SaveEntryPositions();
+            SaveEntryPositions(NULL);
         }
         break;
 
@@ -952,7 +1055,9 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
             JpegSetScroll(&Offset);
 
-            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE, NULL);
+
+            UpdateSelectionStatus();
         }
         if (SelectionBegin)
         {
@@ -969,6 +1074,22 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PatternRedraw();
             UpdateSelectionStatus();
         }
+#ifdef USEGL
+        if (DraggingPattern)
+        {
+            Selected = JpegGetSelectedPattern();
+
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE, Selected);
+
+            //
+            // Update status line by selection
+            //
+
+            UpdateSelectionStatus();
+
+            JpegRedraw();
+        }
+#endif  // USEGL
         break;
 
     case WM_RBUTTONUP:
@@ -976,7 +1097,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             ScrollingBegin = false;
 
-            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE);
+            UpdateEntryPositions(LOWORD(lParam) - SavedMouseX, HIWORD(lParam) - SavedMouseY, FALSE, NULL);
 
             InvalidateRect(JpegWnd, NULL, TRUE);
             UpdateWindow(JpegWnd);
@@ -988,6 +1109,9 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_LBUTTONUP:
+#ifdef USEGL
+        DraggingPattern = FALSE;
+#endif
         SelectionBegin = false;
         InvalidateRect(JpegWnd, NULL, TRUE);
         UpdateWindow(JpegWnd);
@@ -1395,7 +1519,7 @@ void JpegEnsureVisible(PatternEntry * Pattern)
     DeltaX = ScrollX;
     DeltaY = ScrollY;
 
-    SaveEntryPositions();
+    SaveEntryPositions(NULL);
 
     //
     // Set scroll offset
@@ -1413,7 +1537,7 @@ void JpegEnsureVisible(PatternEntry * Pattern)
     DeltaX -= ScrollX;
     DeltaY -= ScrollY;
 
-    UpdateEntryPositions(-DeltaX, -DeltaY, TRUE);
+    UpdateEntryPositions(-DeltaX, -DeltaY, TRUE, NULL);
 
     PERF_STOP("JpegEnsureVisible");
 }
