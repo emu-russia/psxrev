@@ -344,19 +344,98 @@ static void GL_init(void)
     MakeCheckImage();
 }
 
+static void GL_Printf(int x, int y, char *Fmt, ...)
+{
+    va_list Arg;
+    int x0 = x;
+    char Buffer[0x1000];
+    int Length;
+    PUCHAR ptr = (PUCHAR)Buffer;
+
+    va_start(Arg, Fmt);
+    Length = vsprintf(Buffer, Fmt, Arg);
+    va_end(Arg);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    glBindTexture(GL_TEXTURE_2D, GlFontTextureId);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glColor3ub(255, 255, 255);
+
+    while (Length--)
+    {
+        UCHAR c = *ptr++;
+        float cx, cy;
+
+        if (c == '\0') break;
+        if (c == '\n') { y += 16; x = x0; continue; }
+        if (c < ' ') continue;
+
+        c -= 0x20;
+        c += 128;
+
+        cx = float(c % 16) / 16.0f;
+        cy = (float(c / 16) / 16.0f);
+
+        glBegin(GL_QUADS);
+        {
+            glTexCoord2f(cx, cy);
+            glVertex2i(x + 0, y + 0);
+            glTexCoord2f(cx, cy + 0.0625f);
+            glVertex2i(x, y + 16);
+            glTexCoord2f(cx + 0.0625f, cy + 0.0625f);
+            glVertex2i(x + 16, y + 16);
+            glTexCoord2f(cx + 0.0625f, cy);
+            glVertex2i(x + 16, y + 0);
+        }
+        glEnd();
+
+        x += 12;
+    }
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+}
+
 static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
 {
     int Width, Height;
     int TopLeftX, TopLeftY;
+    static float TexCoordX_Normal[4] = { 0, 1, 1, 0 };
+    static float TexCoordY_Normal[4] = { 0, 0, 1, 1 };
+    static float TexCoordX_Flipped[4] = { 1, 0, 0, 1 };     // XOR Flipped can be used, but its not as nice looking
+    static float TexCoordY_Flipped[4] = { 1, 1, 0, 0 };
+    float * TexCoordX;
+    float * TexCoordY;
 
     Width = Pattern->Width;
     Height = Pattern->Height;
 
-    glEnable(GL_BLEND);
+    //
+    // Don't draw invisible
+    //
+
+    if (Pattern->PosX > JpegWindowWidth()) return;
+    if ((Pattern->PosX + Width) < 0) return;
+    if (Pattern->PosY > JpegWindowHeight()) return;
+    if ((Pattern->PosY + Height) < 0) return;
 
     //
     // Cell pattern
     //
+
+    if (Pattern->Flipped)
+    {
+        TexCoordX = TexCoordX_Flipped;
+        TexCoordY = TexCoordY_Flipped;
+    }
+    else
+    {
+        TexCoordX = TexCoordX_Normal;
+        TexCoordY = TexCoordY_Normal;
+    }
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_TEXTURE_2D);
@@ -364,13 +443,13 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     glBindTexture(GL_TEXTURE_2D, Pattern->TextureId);
     glBegin(GL_QUADS);
     glNormal3d(1, 0, 0);
-    glTexCoord2f(0, 0);
+    glTexCoord2f(TexCoordX[0], TexCoordY[0]);
     glVertex2i(Pattern->PosX, Pattern->PosY);
-    glTexCoord2f(1, 0);
+    glTexCoord2f(TexCoordX[1], TexCoordY[1]);
     glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY);
-    glTexCoord2f(1, 1);
+    glTexCoord2f(TexCoordX[2], TexCoordY[2]);
     glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY + Height - 1);
-    glTexCoord2f(0, 1);
+    glTexCoord2f(TexCoordX[3], TexCoordY[3]);
     glVertex2i(Pattern->PosX, Pattern->PosY + Height - 1);
     glEnd();
     glDisable(GL_TEXTURE_2D);
@@ -379,19 +458,26 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     // Cell name
     //
 
+    GL_Printf(Pattern->PosX, Pattern->PosY, Pattern->PatternName);
+
     //
     // Selection
     //
 
     if (Selected)
     {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glColor4f(.7f, .7f, .7f, .5f);
         glBegin(GL_QUADS);
         glVertex2i(Pattern->PosX, Pattern->PosY);
-        glVertex2i(Pattern->PosX, Pattern->PosY + Height);
-        glVertex2i(Pattern->PosX + Width, Pattern->PosY + Height);
-        glVertex2i(Pattern->PosX + Width, Pattern->PosY);
+        glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY);
+        glVertex2i(Pattern->PosX + Width - 1, Pattern->PosY + Height - 1);
+        glVertex2i(Pattern->PosX, Pattern->PosY + Height - 1);
         glEnd();
+
+        glDisable(GL_BLEND);
     }
 
     //
@@ -417,8 +503,6 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     glVertex2i(TopLeftX, TopLeftY + REMOVE_BITMAP_WIDTH - 1);
     glEnd();
     glDisable(GL_TEXTURE_2D);
-
-    glDisable(GL_BLEND);
 }
 
 static void GL_redraw(HDC hDC)
@@ -505,11 +589,14 @@ static void GL_LoadTextureRaw(PUCHAR RawBitmap, int Width, int Height, PUCHAR * 
     glDisable(GL_TEXTURE_2D);
 }
 
-static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * TextureBuffer, GLuint * TextureId, bool Wrap)
+static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * TextureBuffer, GLuint * TextureId, bool Wrap, bool SwapRgb)
 {
     HDC dcBitmap;
     BITMAPINFO bmpInfo;
     int Size;
+    PUCHAR Ptr;
+    int Counter;
+    UCHAR Temp;
 
     Size = Width * Height * 4;
     *TextureBuffer = (PUCHAR)malloc(Size);
@@ -527,12 +614,65 @@ static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * Textu
 
     GetDIBits(dcBitmap, Bitmap, 0, Height, *TextureBuffer, &bmpInfo, DIB_RGB_COLORS);
 
+    if (SwapRgb)
+    {
+        Ptr = *TextureBuffer;
+
+        int BytesPerLine = Width * 3;
+        if (BytesPerLine % 4 != 0)
+            BytesPerLine += 4 - BytesPerLine % 4;
+        PBYTE Line = NULL;
+        PBYTE SrcLine = NULL;
+        for (UINT y = Height; y > 0; y--)
+        {
+            Line = (PBYTE)Ptr;
+            for (UINT x = 0; x < Width; x++)
+            {
+                Temp = Line[0];
+                Line[0] = Line[2];
+                Line[2] = Temp;
+                Line += 3;
+            }
+            Ptr += BytesPerLine;
+        }
+
+    }
+
     DeleteDC(dcBitmap);
 
     GL_LoadTextureRaw(*TextureBuffer, Width, Height, TextureBuffer, TextureId, Wrap);
 }
 
 #endif // USEGL
+
+static void UpdateSelectionStatus(void)
+{
+    char Text[0x100];
+    int Width, Height;
+    float LamdaWidth, LamdaHeight;
+
+    Width = abs(SelectionEndX - SelectionStartX);
+    Height = abs(SelectionEndY - SelectionStartY);
+
+    if (SelectedPattern)
+    {
+        sprintf(
+            Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
+            SelectedPattern->PatternName, SelectedPattern->PlaneX, SelectedPattern->PlaneY, SelectedPattern->PosX, SelectedPattern->PosY);
+        SetStatusText(STATUS_SELECTED, Text);
+    }
+    else
+    {
+        if (RegionSelected && Width > 10 && Height > 10)
+        {
+            LamdaWidth = (float)Width / WorkspaceLamda;
+            LamdaHeight = (float)Height / WorkspaceLamda;
+            sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LamdaWidth, LamdaHeight);
+            SetStatusText(STATUS_SELECTED, Text);
+        }
+        else SetStatusText(STATUS_SELECTED, "Selected: ---");
+    }
+}
 
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
 {
@@ -702,6 +842,13 @@ static void RemovePatternEntry(int EntryIndex)
     //
     // Update status line.
     //
+
+    if (Entry == SelectedPattern)
+    {
+        SelectedPattern = NULL;
+        UpdateSelectionStatus();
+    }
+
     sprintf(Text, "Patterns Added : %i", NumPatterns);
     SetStatusText(STATUS_ADDED, Text);
 }
@@ -960,7 +1107,7 @@ void AddPatternEntry(char * PatternName)
 
 #ifdef USEGL
 
-        GL_LoadTexture(Item->PatternBitmap, Item->PatternWidth, Item->PatternHeight, &Entry.TextureBuffer, &Entry.TextureId, false);
+        GL_LoadTexture(Item->PatternBitmap, Item->PatternWidth, Item->PatternHeight, &Entry.TextureBuffer, &Entry.TextureId, false, true);
 
 #endif
 
@@ -1007,35 +1154,6 @@ void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
     PERF_STOP("UpdatePatternEntry");
 }
 
-static void UpdateSelectionStatus(void)
-{
-    char Text[0x100];
-    int Width, Height;
-    float LamdaWidth, LamdaHeight;
-
-    Width = abs(SelectionEndX - SelectionStartX);
-    Height = abs(SelectionEndY - SelectionStartY);
-
-    if (SelectedPattern)
-    {
-        sprintf(
-            Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
-            SelectedPattern->PatternName, SelectedPattern->PlaneX, SelectedPattern->PlaneY, SelectedPattern->PosX, SelectedPattern->PosY);
-        SetStatusText(STATUS_SELECTED, Text);
-    }
-    else
-    {
-        if (RegionSelected && Width > 10 && Height > 10)
-        {
-            LamdaWidth = (float)Width / WorkspaceLamda;
-            LamdaHeight = (float)Height / WorkspaceLamda;
-            sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LamdaWidth, LamdaHeight);
-            SetStatusText(STATUS_SELECTED, Text);
-        }
-        else SetStatusText(STATUS_SELECTED, "Selected: ---");
-    }
-}
-
 LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
@@ -1046,7 +1164,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     HGDIOBJ oldColor;
     RECT Rect;
     char Text[0x100];
-    POINT Offset;
+    POINT Offset, Point;
     int EntryIndex;
     PatternEntry * Entry;
     PatternEntry * Selected;
@@ -1149,11 +1267,24 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (EntryIndex != -1)
         {
             Entry = &PatternLayer[EntryIndex];
-            JpegSelectPattern(Entry);
-            DraggingPattern = TRUE;
-            SavedMouseX = LOWORD(lParam);
-            SavedMouseY = HIWORD(lParam);
-            SaveEntryPositions(Entry);
+
+            Point.x = LOWORD(lParam);
+            Point.y = HIWORD(lParam);
+
+            SetRect(&Rect,
+                Entry->PosX + Entry->Width - REMOVE_BITMAP_WIDTH,
+                Entry->PosY,
+                Entry->PosX + Entry->Width - 1,
+                Entry->PosY + REMOVE_BITMAP_WIDTH - 1);
+
+            if (!PtInRect(&Rect, Point))
+            {
+                JpegSelectPattern(Entry);
+                DraggingPattern = TRUE;
+                SavedMouseX = LOWORD(lParam);
+                SavedMouseY = HIWORD(lParam);
+                SaveEntryPositions(Entry);
+            }
         }
         else
 #endif
@@ -1243,7 +1374,31 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONUP:
 #ifdef USEGL
         DraggingPattern = FALSE;
-#endif
+
+        EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+
+            Point.x = LOWORD(lParam);
+            Point.y = HIWORD(lParam);
+
+            SetRect(&Rect,
+                    Entry->PosX + Entry->Width - REMOVE_BITMAP_WIDTH,
+                    Entry->PosY,
+                    Entry->PosX + Entry->Width - 1,
+                    Entry->PosY + REMOVE_BITMAP_WIDTH - 1);
+
+            if (PtInRect(&Rect, Point))
+            {
+                if (MessageBox(NULL, "Are you sure?", "User confirm", MB_ICONQUESTION | MB_YESNO) == IDYES)
+                {
+                    RemovePatternEntry(EntryIndex);
+                }
+            }
+        }
+#endif  // USEGL
+
         SelectionBegin = false;
         InvalidateRect(JpegWnd, NULL, TRUE);
         UpdateWindow(JpegWnd);
@@ -1252,6 +1407,24 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         UpdateSelectionStatus();
         JpegSelectPattern(NULL);
         break;
+
+#ifdef USEGL
+
+        //
+        // Flip entry
+        //
+
+    case WM_LBUTTONDBLCLK:
+        EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
+        if (EntryIndex != -1)
+        {
+            Entry = &PatternLayer[EntryIndex];
+            Entry->Flipped ^= 1;
+            Entry->Flipped &= 1;
+            JpegRedraw();
+        }
+        break;
+#endif  // USEGL
 
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -1272,6 +1445,9 @@ void JpegInit(HWND Parent)
     memset(&wc, 0, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_OWNDC;
+#ifdef USEGL
+    wc.style |= CS_DBLCLKS;
+#endif
     wc.lpfnWndProc = JpegProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -1341,11 +1517,11 @@ void JpegInit(HWND Parent)
 
 #ifdef USEGL
 
-    GL_LoadTexture(RemoveBitmap, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, &RemoveBitmapBuffer, &RemoveButtonTextureId, false);
+    GL_LoadTexture(RemoveBitmap, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, &RemoveBitmapBuffer, &RemoveButtonTextureId, false, false);
 
     GlFontBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GLFONT));
 
-    GL_LoadTexture(GlFontBitmap, GL_FONT_WIDTH, GL_FONT_WIDTH, &GlFontBuffer, &GlFontTextureId, true);
+    GL_LoadTexture(GlFontBitmap, GL_FONT_WIDTH, GL_FONT_WIDTH, &GlFontBuffer, &GlFontTextureId, true, false);
 
 #endif  // USEGL
 }
@@ -1699,6 +1875,10 @@ void JpegEnsureVisible(PatternEntry * Pattern)
     DeltaY -= ScrollY;
 
     UpdateEntryPositions(-DeltaX, -DeltaY, TRUE, NULL);
+
+#ifdef USEGL
+    JpegRedraw();
+#endif
 
     PERF_STOP("JpegEnsureVisible");
 }
