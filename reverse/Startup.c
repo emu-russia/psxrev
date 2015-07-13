@@ -206,42 +206,41 @@ Patch_A0_2:     .word getchar
                 .word puts
 
 //
-// 0x974 - Never patched A0 callbacks
+// B0 Continues
 //
 
-off_974:        .word cd
+off_974:        .word cd_0              // B0:40
                 .word format
-                .word firstfile
-                .word nextfile
-                .word rename
-                .word delete
-                .word undelete
-                .word AddDevice
+                .word firstfile_0
+                .word nextfile_0
+                .word rename_0
+                .word delete_0
+                .word undelete_0
+                .word AddDevice_0
                 .word RemoveDevice
                 .word PrintInstalledDevices
-                .word InitCARD
-                .word StartCARD
+                .word InitCARD_1
+                .word StartCARD_1
                 .word StopCARD
-                .word _card_write
-                .word _card_read
-                .word _new_card
+                .word Unk_B0_4D
+                .word _card_write_0
+                .word _card_read_0
+                .word _new_card_1        // B0:50
                 .word Krom2RawAdd
-                .word sub_65E0
-                .word Unk_B0_52
-                .word sub_6670
+                .word NotImplemented_B0_52
+                .word Unk_B0_53
                 .word get_errno
                 .word get_error
                 .word GetC0Table
                 .word GetB0Table
-                .word _card_chan
-                .word sub_3678
+                .word _card_chan_0
+                .word Unk_B0_59
                 .word SysHalt
-                .word ChangeClearPad
+                .word ChangeClearPad_0
                 .word _card_status
                 .word _card_wait
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                .word 0
+                .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

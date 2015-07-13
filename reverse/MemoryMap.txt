@@ -1,4 +1,4 @@
-SCPH-1001 Kernel map:
+SCPH-1001 BIOS / Kernel map:
 
 * 0x500 : Startup code and system tables (Startup.asm)
 * 0xC80 : Exception handling (Exception.asm)
@@ -13,5 +13,7 @@ SCPH-1001 Kernel map:
 * 0x609C : Another PAD stuff (PAD_init and PAD_dr)
 * 0x6A50 : Syscall stubs
 * 0x6C60 : Various pre-initialzed data and strings (.sdata)
-* 0x7460 : KernelData (zeroed by startup code)
+* 0x7460 : KernelData (zeroed by startup code), 0x14C0 bytes
+* 0x85D8 : Top of Kernel stack
+* 0x9000 : BiosData (zeroed by Reset), 0x3160 bytes
 * 0xE000 : Kernel Heap (0x2000 bytes)
