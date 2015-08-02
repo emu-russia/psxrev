@@ -1,0 +1,19 @@
+SCPH-1001 BIOS / Kernel map:
+
+* 0x500 : Startup code and system tables (Startup.asm)
+* 0xC80 : Exception handling (Exception.asm)
+* 0x1030 : Memory manager (Memory.c)
+* 0x1420 : Interrupt queue control (Int.c)
+* 0x1508 : Root counters (RCnt.c)
+* 0x1794 : Events (Event.c)
+* 0x1F88 : Threads (Thread.c)
+* 0x27C0 : Device drivers (IO Subsystem)
+* 0x43D0 : PAD driver
+* 0x47C0 : CARD driver
+* 0x609C : Another PAD stuff (PAD_init and PAD_dr)
+* 0x6A50 : Syscall stubs
+* 0x6C60 : Various pre-initialzed data and strings (.sdata)
+* 0x7460 : KernelData (zeroed by startup code), 0x14C0 bytes
+* 0x85D8 : Top of Kernel stack
+* 0x9000 : BiosData (zeroed by Reset), 0x3160 bytes
+* 0xE000 : Kernel Heap (0x2000 bytes)
