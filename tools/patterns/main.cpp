@@ -57,6 +57,30 @@ void LoadSourceImage(HWND Parent)
     }
 }
 
+void SaveImage(HWND Parent)
+{
+    OPENFILENAME ofn;
+    char szFileName[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+    ofn.hwndOwner = Parent;
+    ofn.lpstrFilter = "Jpeg Files (*.jpg)\0*.jpg\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = "jpg";
+
+    if (GetOpenFileName(&ofn))
+    {
+        // Do something usefull with the filename stored in szFileName 
+
+        JpegSaveImage(szFileName);
+    }
+}
+
+
 void LoadPatternsDB(HWND Parent)
 {
     FILE *f;
@@ -225,6 +249,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case ID_FILE_LOAD_PATTERNS_DB:
             LoadPatternsDB(hwnd);
+            break;
+        case ID_SAVE_PATIMG:
+            SaveImage(hwnd);
             break;
         case ID_SAVE_PATTXT:
             SavePatternsTxt(hwnd);

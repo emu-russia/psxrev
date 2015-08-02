@@ -9,6 +9,7 @@
 #include <math.h>
 
 #include "jpegload.h"
+#include "jpegsave.h"
 #include "patternwnd.h"
 #include "statuswnd.h"
 #include "jpegwnd.h"
@@ -1598,6 +1599,11 @@ void JpegLoadImage(char *filename, bool Silent)
     JpegRedraw();
 
     PERF_STOP("JpegLoadImage");
+}
+
+// Save combined layers Jpeg image
+void JpegSaveImage(char *filename)
+{
 }
 
 // Return true and selected area, if selection box is present and large enough.

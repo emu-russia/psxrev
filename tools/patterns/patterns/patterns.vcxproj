@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\jpegload.cpp" />
+    <ClCompile Include="..\jpegsave.cpp" />
     <ClCompile Include="..\jpegwnd.cpp" />
     <ClCompile Include="..\libjpeg\jcapimin.c" />
     <ClCompile Include="..\libjpeg\jcapistd.c" />
@@ -215,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\jpegload.h" />
+    <ClInclude Include="..\jpegsave.h" />
     <ClInclude Include="..\jpegwnd.h" />
     <ClInclude Include="..\libjpeg\jchuff.h" />
     <ClInclude Include="..\libjpeg\jconfig.h" />

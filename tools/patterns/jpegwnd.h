@@ -40,6 +40,8 @@ void JpegInit(HWND Parent);
 
 void JpegLoadImage(char *filename, bool Silent);
 
+void JpegSaveImage(char *filename);
+
 bool JpegGetSelectRegion(LPRECT Region);
 
 void JpegSetSelectRegion(LPRECT Region);
