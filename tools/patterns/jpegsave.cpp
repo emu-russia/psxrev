@@ -11,7 +11,7 @@
 
 extern "C"
 {
-#include "libjpeg\jpeglib.h"
+#include "jpeglib.h"
 };
 
 struct my_error_mgr {
