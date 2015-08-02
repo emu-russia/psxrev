@@ -183,6 +183,9 @@
     <ClCompile Include="..\..\libjpeg\jutils.c">
       <Filter>libjpeg</Filter>
     </ClCompile>
+    <ClCompile Include="..\entity_config.c">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\entity.h">
@@ -229,6 +232,21 @@
     </ClInclude>
     <ClInclude Include="..\..\libjpeg\jversion.h">
       <Filter>libjpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\entity_config.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\entity_loader.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\entity_render.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gui_deroute.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gui_tabs.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

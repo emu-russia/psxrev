@@ -212,6 +212,7 @@
     <ClCompile Include="..\..\libjpeg\jquant2.c" />
     <ClCompile Include="..\..\libjpeg\jutils.c" />
     <ClCompile Include="..\deroute.c" />
+    <ClCompile Include="..\entity_config.c" />
     <ClCompile Include="..\entity_loader.c" />
     <ClCompile Include="..\entity_render.c" />
     <ClCompile Include="..\gui_deroute.c" />
@@ -233,6 +234,11 @@
     <ClInclude Include="..\..\libjpeg\jpeglib.h" />
     <ClInclude Include="..\..\libjpeg\jversion.h" />
     <ClInclude Include="..\entity.h" />
+    <ClInclude Include="..\entity_config.h" />
+    <ClInclude Include="..\entity_loader.h" />
+    <ClInclude Include="..\entity_render.h" />
+    <ClInclude Include="..\gui_deroute.h" />
+    <ClInclude Include="..\gui_tabs.h" />
     <ClInclude Include="..\jpeg_loader.h" />
     <ClInclude Include="..\jpeg_render.h" />
     <ClInclude Include="..\listutils.h" />

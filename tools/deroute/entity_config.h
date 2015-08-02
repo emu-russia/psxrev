@@ -1,0 +1,4 @@
+
+//
+// Entity rendering settings
+//
