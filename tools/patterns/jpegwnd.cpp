@@ -80,6 +80,8 @@ HBITMAP RemoveBitmap;
 
 static char * SavedImageName = NULL;
 
+static int TransCount[2];
+
 #ifdef USEGL
 
 //
@@ -199,9 +201,9 @@ VOID ClearTexCache(VOID)
         if (TexEntry->OrigName)
             free (TexEntry->OrigName);
 
-        free(TexEntry);
-
         RemoveEntryList (Entry);
+
+        free(TexEntry);
     }
 }
 
@@ -942,8 +944,11 @@ static void RemovePatternEntry(int EntryIndex)
 {
     PatternEntry * Entry = &PatternLayer[EntryIndex];
     PatternEntry * TempList;
+    PatternItem * Item;
     int Count, Index;
     char Text[0x100];
+    int pcount;
+    int ncount;
 
 #ifdef USEGL
     GlLock = true;
@@ -953,14 +958,7 @@ static void RemovePatternEntry(int EntryIndex)
     DestroyWindow(Entry->Hwnd);
 #endif
 
-#ifdef USEGL
-    glDeleteTextures(1, &Entry->TextureId);
-    if (Entry->TextureBuffer)
-    {
-        free(Entry->TextureBuffer);
-        Entry->TextureBuffer = NULL;
-    }
-#endif
+    Item = PatternGetItem(Entry->PatternName);
 
     TempList = (PatternEntry *)malloc(sizeof(PatternEntry)* (NumPatterns - 1));
 
@@ -978,6 +976,16 @@ static void RemovePatternEntry(int EntryIndex)
 #endif
 
     //
+    // Reflect transistor counters
+    //
+
+    if (Item)
+    {
+        TransCount[0] -= Item->pcount;
+        TransCount[1] -= Item->ncount;
+    }
+
+    //
     // Update status line.
     //
 
@@ -987,7 +995,7 @@ static void RemovePatternEntry(int EntryIndex)
         UpdateSelectionStatus();
     }
 
-    sprintf(Text, "Added : %i", NumPatterns);
+    sprintf(Text, "Added : %i (t:%i)", NumPatterns, TransCount[0] + TransCount[1]);
     SetStatusText(STATUS_ADDED, Text);
 }
 
@@ -1267,8 +1275,16 @@ void AddPatternEntry(char * PatternName)
         PatternLayer = (PatternEntry *)realloc(PatternLayer, sizeof(PatternEntry)* (NumPatterns + 1));
         PatternLayer[NumPatterns++] = Entry;
 
-        sprintf(Text, "Added : %i", NumPatterns);
+        //
+        // Update transistor counters
+        //
+
+        TransCount[0] += Item->pcount;
+        TransCount[1] += Item->ncount;
+
+        sprintf(Text, "Added : %i (t:%i)", NumPatterns, TransCount[0] + TransCount[1]);
         SetStatusText(STATUS_ADDED, Text);
+
     }
 
 #ifdef USEGL
@@ -1929,6 +1945,8 @@ void JpegRemoveAllPatterns(void)
 
     ClearTexCache();
 #endif
+
+    TransCount[0] = TransCount[1] = 0;
 
     SetStatusText(STATUS_ADDED, "Added : 0");
 }

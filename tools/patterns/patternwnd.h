@@ -10,6 +10,8 @@ typedef struct PatternItem
     long    PatternHeight;
     HBITMAP PatternBitmap;
     long    Hidden;
+    long    pcount;
+    long    ncount;
 } PatternItem;
 
 void PatternInit(HWND Parent, char * dbfile);
@@ -27,5 +29,3 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Mir
 void PatternDestroy(void);
 
 void ParseDatabase(char *text);
-
-char * GetSavedDatabase(void);

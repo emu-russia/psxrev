@@ -21,8 +21,8 @@ typedef struct WorkspaceImage
     // Pattern Database
     //
 
-    long DatabaseOffset;
-    long DatabaseLength;
+    long DatabaseOffset;        // deprecated
+    long DatabaseLength;        // deprecated
 
     //
     // Source mathing image layer

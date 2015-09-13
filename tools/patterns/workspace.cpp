@@ -20,7 +20,6 @@ char * FileSmartSize(ULONG size);
 void SaveWorkspace(char *filename)
 {
     WorkspaceImage ws;
-    char *Database;
     char *ImageName;
     POINT Offset;
     PatternEntry *PatternLayer;
@@ -59,12 +58,11 @@ void SaveWorkspace(char *filename)
         ws.Flag |= FLAG_MIRROR;
 
     //
-    // Pattern database
+    // Pattern database - deprecated
     //
 
-    Database = GetSavedDatabase();
-    ws.DatabaseOffset = sizeof(WorkspaceImage);
-    ws.DatabaseLength = (long)strlen(Database) + 1;
+    ws.DatabaseOffset = 0;
+    ws.DatabaseLength = 0;
 
     //
     // Source image layer
@@ -116,7 +114,6 @@ void SaveWorkspace(char *filename)
     if (f)
     {
         fwrite(&ws, 1, sizeof(WorkspaceImage), f);      // Header
-        fwrite(Database, 1, ws.DatabaseLength, f);      // Pattern Database
         fwrite(ImageName, 1, ws.SourceImageLength, f);      // Source image layer
         fwrite(PatternLayer, 1, sizeof(PatternEntry)* NumPatterns, f);   // Added patterns layer
         fclose(f);
@@ -129,7 +126,6 @@ void LoadWorkspace(char *filename)
     WorkspaceImage ws;
     FILE * f;
     char Text[0x100];
-    char *Database;
     char *ImageName;
     POINT Offset;
     PatternEntry *PatternLayer;
@@ -175,7 +171,6 @@ void LoadWorkspace(char *filename)
     //
 
     JpegDestroy();
-    PatternDestroy();
 
     //
     // Set default Lamda / Delta.
@@ -203,16 +198,6 @@ void LoadWorkspace(char *filename)
     else Button_SetCheck(FlipWnd, BST_UNCHECKED);
     if (ws.Flag & FLAG_MIRROR) Button_SetCheck(MirrorWnd, BST_CHECKED);
     else Button_SetCheck(MirrorWnd, BST_UNCHECKED);
-
-    //
-    // Pattern database
-    //
-
-    fseek(f, ws.DatabaseOffset, SEEK_SET);
-    Database = (char *)malloc(ws.DatabaseLength);
-    fread(Database, 1, ws.DatabaseLength, f);
-    ParseDatabase(Database);
-    PatternRedraw();
 
     //
     // Source image layer

@@ -31,8 +31,6 @@ static HWND *PatternTiles;
 
 #define PATTERN_TILE_CLASS "PatternTile"
 
-static char * SavedDatabase = NULL;
-
 static HGDIOBJ PatternFont;
 
 // DEBUG
@@ -389,7 +387,7 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
 }
 
 // Add new pattern.
-void AddNewPattern(char *name, char *jpeg_path, float lamda)
+void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int ncount)
 {
     PatternItem Item;
     char buffer[1024];
@@ -401,6 +399,8 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
 
     strncpy(Item.Name, name, sizeof(Item.Name) - 1);
     Item.Lamda = lamda;
+    Item.pcount = pcount;
+    Item.ncount = ncount;
     Item.Hidden = false;
 
     sprintf(FullPath, "%s\\%s", CurrentWorkingDir, jpeg_path);
@@ -454,7 +454,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda)
     RearrangePatternTiles();
 
     // DEBUG
-    //sprintf(buffer, "Add Pattern: name:%s, lamda:%f, path:[%s]\n", name, lamda, jpeg_path);
+    //sprintf(buffer, "Add Pattern: name:%s, lamda:%f, pcount:%i, ncount:%i, path:[%s]\n", name, lamda, pcount, ncount, jpeg_path);
     //MessageBox(0, buffer, "New Pattern", 0);
 }
 
@@ -488,6 +488,8 @@ void ParseLine(char *line)
     char command[32];
     char name[128];
     char lamda[16];
+    char pcount[16];
+    char ncount[16];
     char path[256];
     char buffer[1024];
 
@@ -505,15 +507,16 @@ void ParseLine(char *line)
     // Check comments
     if (*line == '#') return;
 
-    sscanf(line, "%s %[^','],%[^','],%s", command, name, lamda, path);
+    sscanf(line, "%s %[^','],%[^','],%[^','],%[^','],%s", command, name, lamda, pcount, ncount, path);
 
     if (!_stricmp(command, "pattern"))
     {
-        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lamda));
+        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lamda), atoi(pcount), atoi(ncount));
     }
     
     // DEBUG.
-    //sprintf(buffer, "Case: command:%s, name:%s, lamda:%s, path:%s\n", command, name, lamda, path);
+    //sprintf( buffer, "Case: command:%s, name:%s, lamda:%s, pcount:%s, ncount:%s, path:%s\n",
+    //         command, name, lamda, pcount, ncount, path);
     //MessageBox(0, buffer, "Line", 0);
 }
 
@@ -522,16 +525,6 @@ void ParseDatabase(char *text)
     char Text[0x100];
     char linebuffer[0x10000], *ptr = text;
     char *lineptr = linebuffer, c = *ptr;
-    
-    // Save current workspace pattern database.
-    if (SavedDatabase)
-    {
-        free(SavedDatabase);
-        SavedDatabase = NULL;
-    }
-    SavedDatabase = (char *)malloc(strlen(text) + 1);
-    strcpy(SavedDatabase, text);
-    SavedDatabase[strlen(text)] = 0;
 
     // Line by line.
     while (c)
@@ -828,9 +821,4 @@ void PatternDestroy(void)
     NumPatterns = 0;
 
     PatternRedraw();
-}
-
-char * GetSavedDatabase(void)
-{
-    return SavedDatabase;
 }
