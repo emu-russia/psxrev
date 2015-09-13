@@ -175,7 +175,7 @@ ErrorExit:
         return;
     }
 
-    Len = strlen(ItemName);
+    Len = (int)strlen(ItemName);
 
     TexEntry->TextureId = TextureId;
 
@@ -705,7 +705,6 @@ static void GL_LoadTexture( PCHAR ItemName,
     BITMAPINFO bmpInfo;
     int Size;
     PUCHAR Ptr;
-    int Counter;
     UCHAR Temp;
     BOOLEAN Result;
 
@@ -740,10 +739,10 @@ static void GL_LoadTexture( PCHAR ItemName,
             BytesPerLine += 4 - BytesPerLine % 4;
         PBYTE Line = NULL;
         PBYTE SrcLine = NULL;
-        for (UINT y = Height; y > 0; y--)
+        for (int y = Height; y > 0; y--)
         {
             Line = (PBYTE)Ptr;
-            for (UINT x = 0; x < Width; x++)
+            for (int x = 0; x < Width; x++)
             {
                 Temp = Line[0];
                 Line[0] = Line[2];
@@ -947,8 +946,6 @@ static void RemovePatternEntry(int EntryIndex)
     PatternItem * Item;
     int Count, Index;
     char Text[0x100];
-    int pcount;
-    int ncount;
 
 #ifdef USEGL
     GlLock = true;
@@ -1208,6 +1205,8 @@ void AddPatternEntry(char * PatternName)
 
     if (Selected && Item)
     {
+        memset(&Entry, 0, sizeof(PatternEntry));
+
         Entry.BlendLevel = 1.0f;
         Entry.Flag = 0;
         if (Button_GetCheck(FlipWnd) == BST_CHECKED)
@@ -1323,10 +1322,12 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
     HDC hdc;
+#ifndef USEGL
     HGDIOBJ oldBitmap;
     HDC hdcMem;
     BITMAP bitmap;
     HGDIOBJ oldColor;
+#endif
     RECT Rect;
     char Text[0x100];
     POINT Offset, Point;
