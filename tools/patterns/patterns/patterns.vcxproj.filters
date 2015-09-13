@@ -197,14 +197,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\patterns.rc">
-      <Filter>Файлы ресурсов</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\resource.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="..\patternwnd.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -274,5 +266,13 @@
     <ClInclude Include="..\..\libjpeg\transupp.h">
       <Filter>libjpeg</Filter>
     </ClInclude>
+    <ClInclude Include="..\Resource\resource.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Resource\patterns.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

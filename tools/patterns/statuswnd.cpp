@@ -20,7 +20,7 @@ void ResetStatusBar(void)
     SetStatusText(STATUS_SELECTED, "Selected: ---");
     SetStatusText(STATUS_SCROLL, "Scroll : 0 / 0px");
     SetStatusText(STATUS_PATTERNS, "Patterns : 0 / 0");
-    SetStatusText(STATUS_ADDED, "Patterns Added : 0");
+    SetStatusText(STATUS_ADDED, "Added : 0");
     SetStatusText(STATUS_LAMDA_DELTA, LamdaDelta);
     SetStatusText(STATUS_SOURCE_IMAGE, "Not Loaded");
 }

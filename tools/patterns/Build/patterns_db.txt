@@ -1,7 +1,7 @@
 # Patterns database
 
 # Pattern Syntax:
-# pattern name, source_lamda, image_path
+# pattern name, source_lamda, pcount, ncount, image_path
 
 # Inverters and Buffers
 

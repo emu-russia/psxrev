@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../libjpeg</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjpeg;../Resource</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../libjpeg</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjpeg;../Resource</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,7 +126,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../libjpeg</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjpeg;../Resource</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../libjpeg</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjpeg;../Resource</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -222,9 +222,6 @@
     <ClCompile Include="..\workspace.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\patterns.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\libjpeg\jchuff.h" />
     <ClInclude Include="..\..\libjpeg\jconfig.h" />
     <ClInclude Include="..\..\libjpeg\jdct.h" />
@@ -243,12 +240,15 @@
     <ClInclude Include="..\listutils.h" />
     <ClInclude Include="..\patternwnd.h" />
     <ClInclude Include="..\profiler.h" />
-    <ClInclude Include="..\resource.h" />
+    <ClInclude Include="..\Resource\resource.h" />
     <ClInclude Include="..\statuswnd.h" />
     <ClInclude Include="..\textsaver.h" />
     <ClInclude Include="..\text_horz.h" />
     <ClInclude Include="..\text_vertical.h" />
     <ClInclude Include="..\workspace.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Resource\patterns.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

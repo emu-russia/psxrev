@@ -1,5 +1,7 @@
 // Pattern layer text saving manager.
 
+#pragma once
+
 typedef void(*TEXT_SAVER)(PatternEntry *List, int Count, char *Filename);
 
 typedef struct TextPlugin

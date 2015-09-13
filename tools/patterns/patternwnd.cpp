@@ -20,6 +20,7 @@ static HWND ParentWnd;
 static HWND PatternWnd;
 
 extern HWND FlipWnd;
+extern HWND MirrorWnd;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
 extern char CurrentWorkingDir[MAX_PATH];
 
@@ -58,7 +59,7 @@ int GetPatternIndexByHwnd(HWND hwnd)
     return -1;
 }
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box, bool Label, bool SelectHint)
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Mirrored, bool Box, bool Label, bool SelectHint)
 {
     HGDIOBJ oldBitmap;
     HDC hdcMem;
@@ -76,6 +77,7 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
     float LamdaHeight;
     int Width;
     int Height;
+    int Flags;
 
     if (Item)
     {
@@ -97,13 +99,23 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Box
         GetObject(Item->PatternBitmap, sizeof(bitmap), &bitmap);
 
         SetStretchBltMode(hdc, HALFTONE);
-        if (Flipped)
+
+        Flags = ((int)Mirrored << 1) | (int)Flipped;
+
+        switch (Flags)
         {
-            StretchBlt(hdc, Rect->right, Rect->bottom, -Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
-        }
-        else
-        {
-            StretchBlt(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+            case 0:         // NORM
+                StretchBlt(hdc, Rect->left, Rect->top, Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+                break;
+            case 1:         // FLIP
+                StretchBlt(hdc, Rect->right, Rect->bottom, -Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+                break;
+            case 2:         // MIRROR
+                StretchBlt(hdc, Rect->right, Rect->top, -Rect->right, Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+                break;
+            case 3:         // MIRROR FLIP
+                StretchBlt(hdc, Rect->left, Rect->bottom, Rect->right, -Rect->bottom, hdcMem, 0, 0, Item->PatternWidth, Item->PatternHeight, SRCCOPY);
+                break;
         }
 
         SelectObject(hdcMem, oldBitmap);
@@ -204,6 +216,7 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
     int PatternIndex;
     PatternItem *Item;
     bool Flipped;
+    bool Mirrored;
 
     switch (msg)
     {
@@ -239,7 +252,8 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
         {
             Item = &Patterns[PatternIndex];
             Flipped = Button_GetCheck(FlipWnd) == BST_CHECKED;
-            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, FALSE, FALSE, FALSE);
+            Mirrored = Button_GetCheck(MirrorWnd) == BST_CHECKED;
+            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, Mirrored, FALSE, FALSE, FALSE);
         }
 
         EndPaint(hwnd, &ps);
@@ -687,6 +701,17 @@ void PatternInit(HWND Parent, char * dbfile)
         ParentWnd, NULL, GetModuleHandle(NULL), NULL);
 
     //
+    // Create "mirror" checkbox
+    //
+
+    MirrorWnd = CreateWindow(
+        "BUTTON",
+        "mirror",
+        BS_CHECKBOX | WS_CHILDWINDOW | WS_VISIBLE,
+        0, 0, 100, FLIP_BUTTON_HEIGHT - 3,
+        ParentWnd, NULL, GetModuleHandle(NULL), NULL);
+
+    //
     // Register pattern window class
     //
 
@@ -744,7 +769,8 @@ void PatternResize(int Width, int Height)
 {
     int NewWidth = max(100, Width - JpegWindowWidth() - 15);
 
-    MoveWindow(FlipWnd, JpegWindowWidth() + 10, 2, NewWidth, FLIP_BUTTON_HEIGHT - 3, TRUE);
+    MoveWindow(FlipWnd, JpegWindowWidth() + 10, 2, NewWidth / 2, FLIP_BUTTON_HEIGHT - 3, TRUE);
+    MoveWindow(MirrorWnd, JpegWindowWidth() + NewWidth / 2 + 10, 2, NewWidth / 2, FLIP_BUTTON_HEIGHT - 3, TRUE);
 
     MoveWindow(PatternWnd, JpegWindowWidth() + 10, FLIP_BUTTON_HEIGHT + 2, NewWidth, max(100, Height - FLIP_BUTTON_HEIGHT - 5), TRUE);
 
@@ -779,6 +805,7 @@ void PatternDestroy(void)
     //
 
     Button_SetCheck(FlipWnd, BST_UNCHECKED);
+    Button_SetCheck(MirrorWnd, BST_UNCHECKED);
 
     //
     // Windows

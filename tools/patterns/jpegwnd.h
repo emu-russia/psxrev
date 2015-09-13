@@ -1,9 +1,13 @@
+#pragma once
 
 //
 // Enable OpenGL renderer
 //
 
 #define USEGL
+
+#define FLAG_FLIP 0x01
+#define FLAG_MIRROR 0x02
 
 typedef struct PatternEntry
 {
@@ -32,13 +36,13 @@ typedef struct PatternEntry
         HWND    Hwnd;
         unsigned __int64 Padding;
     };
-    long    Flipped;
+    long    Flag;
     float   BlendLevel;     // UpdateLayeredWindow
 } PatternEntry;
 
 void JpegInit(HWND Parent);
 
-void JpegLoadImage(char *filename, bool Silent);
+ULONG JpegLoadImage(char *filename, bool Silent);
 
 void JpegSaveImage(char *filename);
 

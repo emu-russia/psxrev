@@ -1,3 +1,4 @@
+#pragma once
 
 typedef struct _JPEG_SAVE_CONTEXT
 {

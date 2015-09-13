@@ -1,5 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+//
+// Enable pattern texture caching
+//
+
+#define TEXCACHE
+
 #include <Windows.h>
 #include <windowsx.h>
 #include "resource.h"
@@ -14,6 +20,7 @@
 #include "statuswnd.h"
 #include "jpegwnd.h"
 #include "profiler.h"
+#include "listutils.h"
 
 #ifdef USEGL
 #include <GL/gl.h>
@@ -33,9 +40,11 @@ RMB over empty space : Scrolling
 */
 
 extern HWND FlipWnd;
+extern HWND MirrorWnd;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
 
 LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+char * FileSmartSize(ULONG size);
 
 static HWND ParentWnd;
 static HWND JpegWnd;
@@ -119,6 +128,82 @@ PUCHAR RemoveBitmapBuffer;
 GLuint RemoveButtonTextureId;
 
 bool GlLock = false;
+
+typedef struct _TEXCACHE_ENTRY
+{
+    LIST_ENTRY Entry;
+    PCHAR OrigName;
+    GLuint TextureId;
+} TEXCACHE_ENTRY, *PTEXCACHE_ENTRY;
+
+LIST_ENTRY TexCacheHead = { &TexCacheHead, &TexCacheHead };
+
+BOOLEAN CheckTexCache(PCHAR ItemName, GLuint * TextureId)
+{
+    PLIST_ENTRY Entry;
+    PTEXCACHE_ENTRY TexEntry;
+
+    Entry = TexCacheHead.Flink;
+    while (Entry != &TexCacheHead)
+    {
+        TexEntry = (PTEXCACHE_ENTRY)Entry;
+
+        if (!strcmp(TexEntry->OrigName, ItemName))
+        {
+            *TextureId = TexEntry->TextureId;
+            return TRUE;
+        }
+
+        Entry = Entry->Flink;
+    }
+
+    return FALSE;
+}
+
+VOID AddTexCache(PCHAR ItemName, GLuint TextureId)
+{
+    PTEXCACHE_ENTRY TexEntry;
+    int Len;
+
+    TexEntry = (PTEXCACHE_ENTRY)malloc(sizeof(TEXCACHE_ENTRY));
+    if (TexEntry == NULL)
+    {
+ErrorExit:
+        MessageBox(NULL, "TexCache: not enough memory for TexCache entry", "Error", MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    Len = strlen(ItemName);
+
+    TexEntry->TextureId = TextureId;
+
+    TexEntry->OrigName = (PCHAR)malloc(Len + 1);
+    if (TexEntry->OrigName == NULL)
+        goto ErrorExit;
+
+    strcpy(TexEntry->OrigName, ItemName);
+
+    InsertTailList(&TexCacheHead, (PLIST_ENTRY)TexEntry);
+}
+
+VOID ClearTexCache(VOID)
+{
+    PLIST_ENTRY Entry;
+    PTEXCACHE_ENTRY TexEntry;
+
+    while (!IsListEmpty(&TexCacheHead))
+    {
+        Entry = TexCacheHead.Flink;
+        TexEntry = (PTEXCACHE_ENTRY)Entry;
+
+        if (TexEntry->OrigName)
+            free (TexEntry->OrigName);
+
+        free(TexEntry);
+
+        RemoveEntryList (Entry);
+    }
+}
 
 static void SetupPixelFormat(HDC hDC)
 {
@@ -358,8 +443,8 @@ static void GL_Printf(int x, int y, char *Fmt, ...)
     va_end(Arg);
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
 
     glBindTexture(GL_TEXTURE_2D, GlFontTextureId);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -406,10 +491,15 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     int TopLeftX, TopLeftY;
     static float TexCoordX_Normal[4] = { 0, 1, 1, 0 };
     static float TexCoordY_Normal[4] = { 0, 0, 1, 1 };
-    static float TexCoordX_Flipped[4] = { 1, 0, 0, 1 };     // XOR Flipped can be used, but its not as nice looking
+    static float TexCoordX_Flipped[4] = { 1, 0, 0, 1 };
     static float TexCoordY_Flipped[4] = { 1, 1, 0, 0 };
+    static float TexCoordX_Mirror[4] = { 1, 0, 0, 1 };
+    static float TexCoordY_Mirror[4] = { 0, 0, 1, 1 };
+    static float TexCoordX_MirrFlip[4] = { 0, 1, 1, 0 };
+    static float TexCoordY_MirrFlip[4] = { 1, 1, 0, 0 };
     float * TexCoordX;
     float * TexCoordY;
+    int RemoveButtonWidth = 2 * REMOVE_BITMAP_WIDTH;
 
     Width = Pattern->Width;
     Height = Pattern->Height;
@@ -427,15 +517,25 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     // Cell pattern
     //
 
-    if (Pattern->Flipped)
+    switch (Pattern->Flag & 3)
     {
-        TexCoordX = TexCoordX_Flipped;
-        TexCoordY = TexCoordY_Flipped;
-    }
-    else
-    {
-        TexCoordX = TexCoordX_Normal;
-        TexCoordY = TexCoordY_Normal;
+        case 0:
+        default:
+            TexCoordX = TexCoordX_Normal;
+            TexCoordY = TexCoordY_Normal;
+            break;
+        case 1:
+            TexCoordX = TexCoordX_Flipped;
+            TexCoordY = TexCoordY_Flipped;
+            break;
+        case 2:
+            TexCoordX = TexCoordX_Mirror;
+            TexCoordY = TexCoordY_Mirror;
+            break;
+        case 3:
+            TexCoordX = TexCoordX_MirrFlip;
+            TexCoordY = TexCoordY_MirrFlip;
+            break;
     }
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -485,7 +585,7 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     // Remove button
     //
 
-    TopLeftX = Pattern->PosX + Width - REMOVE_BITMAP_WIDTH;
+    TopLeftX = Pattern->PosX + Width - RemoveButtonWidth;
     TopLeftY = Pattern->PosY;
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -497,11 +597,11 @@ static void GL_DrawPattern(PatternEntry * Pattern, bool Selected)
     glTexCoord2f(0, 0);
     glVertex2i(TopLeftX, TopLeftY);
     glTexCoord2f(1, 0);
-    glVertex2i(TopLeftX + REMOVE_BITMAP_WIDTH - 1, TopLeftY);
+    glVertex2i(TopLeftX + RemoveButtonWidth - 1, TopLeftY);
     glTexCoord2f(1, 1);
-    glVertex2i(TopLeftX + REMOVE_BITMAP_WIDTH - 1, TopLeftY + REMOVE_BITMAP_WIDTH - 1);
+    glVertex2i(TopLeftX + RemoveButtonWidth - 1, TopLeftY + RemoveButtonWidth - 1);
     glTexCoord2f(0, 1);
-    glVertex2i(TopLeftX, TopLeftY + REMOVE_BITMAP_WIDTH - 1);
+    glVertex2i(TopLeftX, TopLeftY + RemoveButtonWidth - 1);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
@@ -590,7 +690,14 @@ static void GL_LoadTextureRaw(PUCHAR RawBitmap, int Width, int Height, PUCHAR * 
     glDisable(GL_TEXTURE_2D);
 }
 
-static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * TextureBuffer, GLuint * TextureId, bool Wrap, bool SwapRgb)
+static void GL_LoadTexture( PCHAR ItemName,
+                            HBITMAP Bitmap,
+                            int Width,
+                            int Height,
+                            PUCHAR * TextureBuffer,
+                            GLuint * TextureId,
+                            bool Wrap,
+                            bool SwapRgb)
 {
     HDC dcBitmap;
     BITMAPINFO bmpInfo;
@@ -598,6 +705,13 @@ static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * Textu
     PUCHAR Ptr;
     int Counter;
     UCHAR Temp;
+    BOOLEAN Result;
+
+#ifdef TEXCACHE
+    Result = CheckTexCache(ItemName, TextureId);
+    if (Result)
+        return;
+#endif
 
     Size = Width * Height * 4;
     *TextureBuffer = (PUCHAR)malloc(Size);
@@ -636,12 +750,15 @@ static void GL_LoadTexture(HBITMAP Bitmap, int Width, int Height, PUCHAR * Textu
             }
             Ptr += BytesPerLine;
         }
-
     }
 
     DeleteDC(dcBitmap);
 
     GL_LoadTextureRaw(*TextureBuffer, Width, Height, TextureBuffer, TextureId, Wrap);
+
+#ifdef TEXCACHE
+    AddTexCache(ItemName, *TextureId);
+#endif
 }
 
 #endif // USEGL
@@ -651,15 +768,35 @@ static void UpdateSelectionStatus(void)
     char Text[0x100];
     int Width, Height;
     float LamdaWidth, LamdaHeight;
+    PCHAR FlagDesc = "";
 
     Width = abs(SelectionEndX - SelectionStartX);
     Height = abs(SelectionEndY - SelectionStartY);
 
     if (SelectedPattern)
     {
+        switch (SelectedPattern->Flag & 3)
+        {
+            case 0:
+                FlagDesc = "NORM";
+                break;
+            case 1:
+                FlagDesc = "FLIP";
+                break;
+            case 2:
+                FlagDesc = "MIRROR";
+                break;
+            case 3:
+                FlagDesc = "MIRR FLIP";
+                break;
+        }
+
         sprintf(
-            Text, "Selected: %s, Plane: %i,%i, Pos: %i:%i",
-            SelectedPattern->PatternName, SelectedPattern->PlaneX, SelectedPattern->PlaneY, SelectedPattern->PosX, SelectedPattern->PosY);
+            Text, "%s, Plane: %i,%i, Pos: %i:%i, Flags: %s",
+            SelectedPattern->PatternName,
+            SelectedPattern->PlaneX, SelectedPattern->PlaneY,
+            SelectedPattern->PosX, SelectedPattern->PosY,
+            FlagDesc );
         SetStatusText(STATUS_SELECTED, Text);
     }
     else
@@ -850,7 +987,7 @@ static void RemovePatternEntry(int EntryIndex)
         UpdateSelectionStatus();
     }
 
-    sprintf(Text, "Patterns Added : %i", NumPatterns);
+    sprintf(Text, "Added : %i", NumPatterns);
     SetStatusText(STATUS_ADDED, Text);
 }
 
@@ -974,15 +1111,15 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         return TRUE;
 
     //
-    // Flip entry
+    // Rotate flags
     //
     case WM_LBUTTONDBLCLK:
         EntryIndex = GetPatternEntryIndexByHwnd(hwnd);
         if (EntryIndex != -1)
         {
             Entry = &PatternLayer[EntryIndex];
-            Entry->Flipped ^= 1;
-            Entry->Flipped &= 1;
+            Entry->Flag += 1;
+            Entry->Flag &= 3;
             InvalidateRect(Entry->Hwnd, NULL, TRUE);
             UpdateWindow(Entry->Hwnd);
         }
@@ -1003,7 +1140,14 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             Rect.top = 0;
             Rect.right = Entry->Width;
             Rect.bottom = Entry->Height;
-            DrawPattern(Item, hdc, &Rect, Entry->Flipped ? TRUE : FALSE, TRUE, TRUE, Entry == SelectedPattern);
+            DrawPattern ( Item,
+                          hdc,
+                          &Rect,
+                          (Entry->Flag & FLAG_FLIP) ? TRUE : FALSE,
+                          (Entry->Flag & FLAG_MIRROR) ? TRUE : FALSE,
+                          TRUE,
+                          TRUE,
+                          Entry == SelectedPattern );
 
             //
             // Pattern remove button.
@@ -1057,7 +1201,11 @@ void AddPatternEntry(char * PatternName)
     if (Selected && Item)
     {
         Entry.BlendLevel = 1.0f;
-        Entry.Flipped = (Button_GetCheck(FlipWnd) == BST_CHECKED);
+        Entry.Flag = 0;
+        if (Button_GetCheck(FlipWnd) == BST_CHECKED)
+            Entry.Flag |= FLAG_FLIP;
+        if (Button_GetCheck(MirrorWnd) == BST_CHECKED)
+            Entry.Flag |= FLAG_MIRROR;
         strcpy(Entry.PatternName, PatternName);
 
         //
@@ -1108,7 +1256,7 @@ void AddPatternEntry(char * PatternName)
 
 #ifdef USEGL
 
-        GL_LoadTexture(Item->PatternBitmap, Item->PatternWidth, Item->PatternHeight, &Entry.TextureBuffer, &Entry.TextureId, false, true);
+        GL_LoadTexture(Item->Name, Item->PatternBitmap, Item->PatternWidth, Item->PatternHeight, &Entry.TextureBuffer, &Entry.TextureId, false, true);
 
 #endif
 
@@ -1119,7 +1267,7 @@ void AddPatternEntry(char * PatternName)
         PatternLayer = (PatternEntry *)realloc(PatternLayer, sizeof(PatternEntry)* (NumPatterns + 1));
         PatternLayer[NumPatterns++] = Entry;
 
-        sprintf(Text, "Patterns Added : %i", NumPatterns);
+        sprintf(Text, "Added : %i", NumPatterns);
         SetStatusText(STATUS_ADDED, Text);
     }
 
@@ -1138,7 +1286,7 @@ void UpdatePatternEntry(int EntryIndex, PatternEntry * Entry)
     PatternEntry * Orig = GetPatternEntry(EntryIndex);
 
     Orig->BlendLevel = Entry->BlendLevel;
-    Orig->Flipped = Entry->Flipped;
+    Orig->Flag = Entry->Flag;
 
     Orig->PosX = Entry->PosX;
     Orig->PosY = Entry->PosY;
@@ -1357,7 +1505,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_RBUTTONUP:
-        if (DragOccureInPattern == false)
+        if (DragOccureInPattern == false && ScrollingBegin)
         {
             ScrollingBegin = false;
 
@@ -1385,10 +1533,10 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             Point.y = HIWORD(lParam);
 
             SetRect(&Rect,
-                    Entry->PosX + Entry->Width - REMOVE_BITMAP_WIDTH,
+                    Entry->PosX + Entry->Width - 2 * REMOVE_BITMAP_WIDTH,
                     Entry->PosY,
                     Entry->PosX + Entry->Width - 1,
-                    Entry->PosY + REMOVE_BITMAP_WIDTH - 1);
+                    Entry->PosY + 2 * REMOVE_BITMAP_WIDTH - 1);
 
             if (PtInRect(&Rect, Point))
             {
@@ -1412,7 +1560,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #ifdef USEGL
 
         //
-        // Flip entry
+        // Rotate flags
         //
 
     case WM_LBUTTONDBLCLK:
@@ -1420,8 +1568,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (EntryIndex != -1)
         {
             Entry = &PatternLayer[EntryIndex];
-            Entry->Flipped ^= 1;
-            Entry->Flipped &= 1;
+            Entry->Flag += 1;
+            Entry->Flag &= 3;
             JpegRedraw();
         }
         break;
@@ -1518,11 +1666,11 @@ void JpegInit(HWND Parent)
 
 #ifdef USEGL
 
-    GL_LoadTexture(RemoveBitmap, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, &RemoveBitmapBuffer, &RemoveButtonTextureId, false, false);
+    GL_LoadTexture("RemoveBitmap", RemoveBitmap, REMOVE_BITMAP_WIDTH, REMOVE_BITMAP_WIDTH, &RemoveBitmapBuffer, &RemoveButtonTextureId, false, false);
 
     GlFontBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GLFONT));
 
-    GL_LoadTexture(GlFontBitmap, GL_FONT_WIDTH, GL_FONT_WIDTH, &GlFontBuffer, &GlFontTextureId, true, false);
+    GL_LoadTexture("GlFontBitmap", GlFontBitmap, GL_FONT_WIDTH, GL_FONT_WIDTH, &GlFontBuffer, &GlFontTextureId, true, false);
 
 #endif  // USEGL
 }
@@ -1534,9 +1682,14 @@ static void JpegAddScanline(unsigned char *buffer, int stride, void *Param)
 }
 
 // Load source Jpeg image
-void JpegLoadImage(char *filename, bool Silent)
+ULONG JpegLoadImage(char *filename, bool Silent)
 {
     char Text[1024];
+    char disk[256];
+    char dir[256];
+    char fname[256];
+    char ext[256];
+    char JpegInfo[0x100];
 
     PERF_START("JpegLoadImage");
 
@@ -1578,7 +1731,9 @@ void JpegLoadImage(char *filename, bool Silent)
 
 #endif  // USEGL
 
-    sprintf(Text, "Source Image : %s", filename);
+    _splitpath(filename, disk, dir, fname, ext);
+
+    sprintf(Text, "Source Image : %s.%s", fname, ext);
     SetStatusText(STATUS_SOURCE_IMAGE, Text);
 
     ScrollX = ScrollY = 0;
@@ -1592,13 +1747,19 @@ void JpegLoadImage(char *filename, bool Silent)
     strcpy(SavedImageName, filename);
     SavedImageName[strlen(filename)] = 0;
 
-    if (!Silent) MessageBox(0, "Loaded", "Loaded", MB_OK);
+    if (!Silent)
+    {
+        sprintf(JpegInfo, "JpegBufferSize: %s", FileSmartSize(JpegBufferSize) );
+        MessageBox(0, JpegInfo, "Loaded", MB_OK);
+    }
 
     SetCursor(LoadCursor(NULL, IDC_ARROW));
 
     JpegRedraw();
 
     PERF_STOP("JpegLoadImage");
+
+    return JpegBufferSize;
 }
 
 // Save combined layers Jpeg image
@@ -1765,9 +1926,11 @@ void JpegRemoveAllPatterns(void)
 
 #ifdef USEGL
     GlLock = false;
+
+    ClearTexCache();
 #endif
 
-    SetStatusText(STATUS_ADDED, "Patterns Added : 0");
+    SetStatusText(STATUS_ADDED, "Added : 0");
 }
 
 char * JpegGetImageName(bool NameOnly)

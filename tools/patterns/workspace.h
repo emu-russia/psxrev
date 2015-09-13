@@ -1,5 +1,4 @@
-// Autosave filename.
-#define WORKSPACE_AUTOSAVE "Autosave.wrk"
+#pragma once
 
 //
 // Workspace image state
@@ -16,7 +15,7 @@ typedef struct WorkspaceImage
 
     float   Lamda;
     float   LamdaDelta;
-    long    Flipped;            // "flip" checkbox state
+    long    Flag;               // "flip" / "mirror" checkbox state
 
     //
     // Pattern Database

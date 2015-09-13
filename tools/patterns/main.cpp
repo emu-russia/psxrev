@@ -27,12 +27,33 @@ const char g_szClassName[] = "myWindowClass";
 
 HWND MainWnd;
 HWND FlipWnd;
+HWND MirrorWnd;
 
 float WorkspaceLamda = 1.0f, WorkspaceLamdaDelta = 1.0f;
 
 char CurrentWorkingDir[MAX_PATH];
 
 int SelectedTextSaver;
+
+// nice value of KB, MB or GB, for output
+char * FileSmartSize(ULONG size)
+{
+    static char tempBuf[0x200];
+    if (size < 1024)
+    {
+        sprintf(tempBuf, "%i byte", size);
+    }
+    else if (size < 1024 * 1024)
+    {
+        sprintf(tempBuf, "%i KB", size / 1024);
+    }
+    else if (size < 1024 * 1024 * 1024)
+    {
+        sprintf(tempBuf, "%i MB", size / 1024 / 1024);
+    }
+    else sprintf(tempBuf, "%1.1f GB", (float)size / 1024 / 1024 / 1024);
+    return tempBuf;
+}
 
 void LoadSourceImage(HWND Parent)
 {
@@ -294,6 +315,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             else
             {
                 Button_SetCheck(FlipWnd, BST_CHECKED);
+            }
+            RearrangePatternTiles();
+            PatternRedraw();
+        }
+        if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == MirrorWnd)
+        {
+            if (Button_GetCheck(MirrorWnd) == BST_CHECKED)
+            {
+                Button_SetCheck(MirrorWnd, BST_UNCHECKED);
+            }
+            else
+            {
+                Button_SetCheck(MirrorWnd, BST_CHECKED);
             }
             RearrangePatternTiles();
             PatternRedraw();

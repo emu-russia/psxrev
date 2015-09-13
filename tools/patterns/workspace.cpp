@@ -12,7 +12,10 @@
 #include "workspace.h"
 
 extern HWND FlipWnd;
+extern HWND MirrorWnd;
 extern float WorkspaceLamda, WorkspaceLamdaDelta;
+
+char * FileSmartSize(ULONG size);
 
 void SaveWorkspace(char *filename)
 {
@@ -49,7 +52,11 @@ void SaveWorkspace(char *filename)
 
     ws.Lamda = WorkspaceLamda;
     ws.LamdaDelta = WorkspaceLamdaDelta;
-    ws.Flipped = (Button_GetCheck(FlipWnd) == BST_CHECKED) ? true : false;
+    ws.Flag = 0;
+    if (Button_GetCheck(FlipWnd) == BST_CHECKED)
+        ws.Flag |= FLAG_FLIP;
+    if (Button_GetCheck(MirrorWnd) == BST_CHECKED)
+        ws.Flag |= FLAG_MIRROR;
 
     //
     // Pattern database
@@ -134,6 +141,8 @@ void LoadWorkspace(char *filename)
     char Name[MAX_PATH];
     char WorkspacePath[MAX_PATH];
     char ImagePath[MAX_PATH];
+    ULONG JpegSize;
+    CHAR JpegInfo[0x200];
 
     f = fopen(filename, "rb");
     if (!f)
@@ -190,8 +199,10 @@ void LoadWorkspace(char *filename)
 
     WorkspaceLamda = ws.Lamda;
     WorkspaceLamdaDelta = ws.LamdaDelta;
-    if (ws.Flipped) Button_SetCheck(FlipWnd, BST_CHECKED);
+    if (ws.Flag & FLAG_FLIP) Button_SetCheck(FlipWnd, BST_CHECKED);
     else Button_SetCheck(FlipWnd, BST_UNCHECKED);
+    if (ws.Flag & FLAG_MIRROR) Button_SetCheck(MirrorWnd, BST_CHECKED);
+    else Button_SetCheck(MirrorWnd, BST_UNCHECKED);
 
     //
     // Pattern database
@@ -214,7 +225,7 @@ void LoadWorkspace(char *filename)
         ImageName = (char *)malloc(ws.SourceImageLength);
         fread(ImageName, 1, ws.SourceImageLength, f);
         sprintf(ImagePath, "%s%s", WorkspacePath, ImageName);
-        JpegLoadImage(ImagePath, true);
+        JpegSize = JpegLoadImage(ImagePath, true);
     }
 
     Offset.x = ws.ScrollX;
@@ -260,11 +271,6 @@ void LoadWorkspace(char *filename)
     sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
     SetStatusText(STATUS_LAMDA_DELTA, Text);
 
-    MessageBox(0, "Workspace Loaded", "Workspace Loaded", 0);
-}
-
-// Add periodic handler, which will save workspace every Some seconds into WORKSPACE_AUTOSAVE file.
-void EnableAutosave(int Seconds)
-{
-
+    sprintf(JpegInfo, "JpegBufferSize: %s", FileSmartSize(JpegSize));
+    MessageBox(0, JpegInfo, "Workspace Loaded", 0);
 }

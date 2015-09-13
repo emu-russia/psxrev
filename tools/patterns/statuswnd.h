@@ -1,9 +1,10 @@
+#pragma once
 
 /*
 Selected: 100 / 100px, 3.4 / 5.5l / ---
 Scroll : 100 / 100px
 Patterns : Shown / 100
-Patterns Added : 5
+Added : 5
 Lamda / Delta : 6.0 / 3.0
 Source Image : Path / Not Loaded(last)
 */
