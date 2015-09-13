@@ -3,5 +3,6 @@ Release
 x64
 patterns.opensdf
 patterns.sdf
-patterns.vcxproj.user
+patterns.v12.suo
+
 
