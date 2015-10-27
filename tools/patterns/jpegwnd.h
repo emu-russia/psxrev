@@ -42,11 +42,11 @@ typedef struct PatternEntry
 
 void JpegInit(HWND Parent);
 
-ULONG JpegLoadImage(char *filename, bool Silent);
+ULONG JpegLoadImage(char *filename, BOOL Silent);
 
 void JpegSaveImage(char *filename);
 
-bool JpegGetSelectRegion(LPRECT Region);
+BOOL JpegGetSelectRegion(LPRECT Region);
 
 void JpegSetSelectRegion(LPRECT Region);
 
@@ -72,7 +72,7 @@ void JpegDestroy(void);
 
 void JpegRemoveAllPatterns(void);
 
-char * JpegGetImageName(bool NameOnly);
+char * JpegGetImageName(BOOL NameOnly);
 
 void JpegGetScroll(LPPOINT Offset);
 

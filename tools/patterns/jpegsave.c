@@ -8,11 +8,7 @@
 #include <Windows.h>
 
 #include "jpegsave.h"
-
-extern "C"
-{
 #include "jpeglib.h"
-};
 
 struct my_error_mgr {
     struct jpeg_error_mgr pub;    /* "public" fields */
@@ -21,7 +17,7 @@ struct my_error_mgr {
 };
 
 typedef struct my_error_mgr * my_error_ptr;
- 
+
 METHODDEF(void)
 my_error_exit(j_common_ptr cinfo)
 {

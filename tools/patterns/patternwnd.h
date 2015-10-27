@@ -24,7 +24,7 @@ void PatternRedraw(void);
 
 PatternItem * PatternGetItem(char * PatternName);
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, bool Flipped, bool Mirrored, bool Box, bool Label, bool SelectHint);
+void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, BOOL Flipped, BOOL Mirrored, BOOL Box, BOOL Label, BOOL SelectHint);
 
 void PatternDestroy(void);
 
