@@ -18,6 +18,7 @@ pattern BUF3X, 5.0, 5, 5, "patterns_db/BUF3X.jpg"
 pattern BUF3X2, 5.0, 5, 5, "patterns_db/BUF3X2.jpg"
 pattern BUF4X, 5.0, 6, 6, "patterns_db/BUF4X.jpg"
 pattern BUF5X, 5.0, 8, 8, "patterns_db/BUF5X.jpg"
+pattern BUF6X, 5.0, 10, 10, "patterns_db/BUF6X.jpg"
 
 # Binary Logic
 
@@ -99,6 +100,7 @@ pattern NOR|AND, 5.0, 5, 5, "patterns_db/NOR_AND.jpg"
 
 # Multiplexers
 
+pattern MUX, 5.0, 6, 6, "patterns_db/MUX.jpg"
 pattern MUX1, 5.0, 6, 6, "patterns_db/MUX1.jpg"
 pattern MUX2X, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
 pattern MUX3X, 5.0, 8, 8, "patterns_db/MUX3X.jpg"
@@ -135,6 +137,7 @@ pattern DFFRS3X, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
 # Adder / Multiplier
 
 pattern HA, 5.0, 7, 7, "patterns_db/HA.jpg"
+pattern HA2, 5.0, 7, 7, "patterns_db/HA2.jpg"
 pattern CA, 5.0, 7, 7, "patterns_db/CA.jpg"
 pattern WS1, 5.0, 24, 24, "patterns_db/WS1.jpg"
 pattern WS2, 5.0, 24, 23, "patterns_db/WS2.jpg"
