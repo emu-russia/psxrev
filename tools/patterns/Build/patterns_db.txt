@@ -100,6 +100,8 @@ pattern NOR|AND, 5.0, 5, 5, "patterns_db/NOR_AND.jpg"
 
 # Multiplexers
 
+pattern DEMUX, 5.0, 3, 3, "patterns_db/DEMUX.jpg"
+
 pattern MUX, 5.0, 6, 6, "patterns_db/MUX.jpg"
 pattern MUX1, 5.0, 6, 6, "patterns_db/MUX1.jpg"
 pattern MUX2X, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
