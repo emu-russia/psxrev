@@ -1763,7 +1763,7 @@ ULONG JpegLoadImage(char *filename, BOOL Silent)
 
     _splitpath(filename, disk, dir, fname, ext);
 
-    sprintf(Text, "Source Image : %s.%s", fname, ext);
+    sprintf(Text, "Source Image : %s%s", fname, ext);
     SetStatusText(STATUS_SOURCE_IMAGE, Text);
 
     ScrollX = ScrollY = 0;
