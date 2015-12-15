@@ -1,3 +1,6 @@
 active
-active_sequenced
+active_sequenced/00_cells/*.jpg
+active_sequenced/01_cells/*.jpg
+active_sequenced/02_cells/*.jpg
+active_sequenced/03_cells/*.jpg
 m1
