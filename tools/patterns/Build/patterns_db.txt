@@ -73,6 +73,10 @@ pattern 3-OR2X, 5.0, 4, 4, "patterns_db/3-OR2X.jpg"
 
 pattern 3-XOR, 5.0, 10, 10, "patterns_db/3-XOR.jpg"
 
+# 4-Input Logic
+
+pattern 4-NOR, 5.0, 7, 7, "patterns_db/4-NOR.jpg"
+
 # 5-Input Logic
 
 pattern 5-NAND, 5.0, 8, 8, "patterns_db/5-NAND.jpg"
