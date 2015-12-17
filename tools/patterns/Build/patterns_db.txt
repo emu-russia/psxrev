@@ -142,6 +142,8 @@ pattern DFFR3X-FLIP, 5.0, 16, 16, "patterns_db/DFFR3X-FLIP.jpg"
 
 pattern DFFRS3X, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
 
+pattern DFFR_MUX, 5.0, 18, 18, "patterns_db/DFFR_MUX.jpg"
+
 # Adder / Multiplier
 
 pattern HA, 5.0, 7, 7, "patterns_db/HA.jpg"
