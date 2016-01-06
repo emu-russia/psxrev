@@ -8,7 +8,7 @@ Sony PlayStation chips reverse engineering.
 
  * 350 nm
  * 2 metal layers (aluminium)
- * Around 37600 cells
+ * Around 37600 cells (~150 unique)
  * 850k transistors
  * Custom units (internal SRAM and dual-port registers)
 
