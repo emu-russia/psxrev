@@ -4,3 +4,6 @@ active_sequenced/01_cells/*.jpg
 active_sequenced/02_cells/*.jpg
 active_sequenced/03_cells/*.jpg
 m1
+tools/DerouteSharp/bin
+tools/DerouteSharp/obj
+tools/DerouteSharp/.vs

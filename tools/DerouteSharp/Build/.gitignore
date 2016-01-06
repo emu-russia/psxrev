@@ -1,0 +1,5 @@
+*.exe
+*.config
+*.manifest
+*.pdb
+*.ilk
