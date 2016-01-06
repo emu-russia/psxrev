@@ -1,5 +1,9 @@
 Sony PlayStation chips reverse engineering.
 
+ * Headquarters: http://psxdev.ru
+ * Wiki: http://psxdev.ru/wiki
+ * Board: http://psxdev.ru/board
+
 # PSX CPU (CXD8530CQ) #
 
  * 350 nm
