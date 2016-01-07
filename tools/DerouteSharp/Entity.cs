@@ -25,6 +25,22 @@ public enum EntityType
     UnitCustom,
 }
 
+public enum ViasShape
+{
+    Square = 1,
+    Round,
+}
+
+public enum CellTextAlignment
+{
+    Top = 1,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    Bottom,
+    BottomRight,
+}
+
 public class Entity
 {
     public string Label;

@@ -30,7 +30,15 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSceneAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteAllEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -39,6 +47,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
@@ -56,6 +68,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -66,17 +79,76 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadImageToolStripMenuItem,
+            this.saveSceneAsImageToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.loadEntitiesToolStripMenuItem,
+            this.saveEntitiesToolStripMenuItem,
+            this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // loadImageToolStripMenuItem
+            // 
+            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadImageToolStripMenuItem.Text = "Load Image...";
+            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // loadEntitiesToolStripMenuItem
+            // 
+            this.loadEntitiesToolStripMenuItem.Name = "loadEntitiesToolStripMenuItem";
+            this.loadEntitiesToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadEntitiesToolStripMenuItem.Text = "Add entities...";
+            this.loadEntitiesToolStripMenuItem.Click += new System.EventHandler(this.loadEntitiesToolStripMenuItem_Click);
+            // 
+            // saveEntitiesToolStripMenuItem
+            // 
+            this.saveEntitiesToolStripMenuItem.Name = "saveEntitiesToolStripMenuItem";
+            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveEntitiesToolStripMenuItem.Text = "Save entities...";
+            this.saveEntitiesToolStripMenuItem.Click += new System.EventHandler(this.saveEntitiesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // saveSceneAsImageToolStripMenuItem
+            // 
+            this.saveSceneAsImageToolStripMenuItem.Name = "saveSceneAsImageToolStripMenuItem";
+            this.saveSceneAsImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveSceneAsImageToolStripMenuItem.Text = "Save scene as Image...";
+            this.saveSceneAsImageToolStripMenuItem.Click += new System.EventHandler(this.saveSceneAsImageToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteAllEntitiesToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // deleteAllEntitiesToolStripMenuItem
+            // 
+            this.deleteAllEntitiesToolStripMenuItem.Name = "deleteAllEntitiesToolStripMenuItem";
+            this.deleteAllEntitiesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.deleteAllEntitiesToolStripMenuItem.Text = "Delete all entities";
+            this.deleteAllEntitiesToolStripMenuItem.Click += new System.EventHandler(this.deleteAllEntitiesToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -91,6 +163,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -167,10 +240,41 @@
             this.propertyGrid2.Size = new System.Drawing.Size(256, 345);
             this.propertyGrid2.TabIndex = 1;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "jpg";
+            this.openFileDialog1.Filter = "JPEG Images|*.jpg|PNG Images|*.png|All files|*.*";
+            this.openFileDialog1.Title = "Load Image";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "jpg";
+            this.saveFileDialog1.Filter = "JPEG Images|*.jpg|PNG Images|*.png|All files|*.*";
+            // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.DefaultExt = "xml";
+            this.openFileDialog2.Filter = "XML Files|*.xml|All Files|*.*";
+            // 
+            // saveFileDialog2
+            // 
+            this.saveFileDialog2.DefaultExt = "xml";
+            this.saveFileDialog2.Filter = "XML Files|*.xml|All Files|*.*";
+            // 
             // entityBox1
             // 
             this.entityBox1.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.entityBox1.CellAdderColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellBufferColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellBusSuppColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellLatchColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellLogicColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellMuxColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellNotColor = System.Drawing.Color.Empty;
+            this.entityBox1.CellTextAlignment = CellTextAlignment.TopLeft;
             this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox1.HideImage = false;
             this.entityBox1.Lambda = 5F;
             this.entityBox1.Location = new System.Drawing.Point(0, 0);
             this.entityBox1.Mode = EntityType.Selection;
@@ -180,6 +284,22 @@
             this.entityBox1.Size = new System.Drawing.Size(538, 454);
             this.entityBox1.TabIndex = 0;
             this.entityBox1.Text = "entityBox1";
+            this.entityBox1.UnitCustomColor = System.Drawing.Color.Empty;
+            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Empty;
+            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Empty;
+            this.entityBox1.ViasBaseSize = 4;
+            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasShape = ViasShape.Round;
+            this.entityBox1.WireBaseSize = 5;
+            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
             this.entityBox1.Zoom = 100;
             // 
             // propertyGrid1
@@ -229,6 +349,18 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteAllEntitiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem loadEntitiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveEntitiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ToolStripMenuItem saveSceneAsImageToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     }
 }
 
