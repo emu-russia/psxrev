@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -11,7 +12,7 @@ namespace System.Windows.Forms
 {
     public partial class EntityBox : Control
     {
-        private System.Drawing.Image _image;
+        private Image _image;
         private float _lambda;
         private int _zoom;
         private int _ScrollX;
@@ -22,11 +23,17 @@ namespace System.Windows.Forms
         private int SavedMouseY;
         private int LastMouseX;
         private int LastMouseY;
+        private int DragStartMouseX;
+        private int DragStartMouseY;
         private bool ScrollingBegin = false;
         private bool DrawingBegin = false;
+        private bool DraggingBegin = false;
         private List <Entity> _entities;
         private EntityType drawMode = EntityType.Selection;
-        bool hideImage;
+        private bool hideImage;
+        private PropertyGrid entityGrid;
+        private List<Entity> selected;
+        private float draggingDist;
 
         public EntityBox()
         {
@@ -37,10 +44,11 @@ namespace System.Windows.Forms
             Lambda = 5.0F;
             Zoom = 100;
             HideImage = false;
+            entityGrid = null;
 
             DefaultEntityAppearance();
 
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         public event EventHandler<EventArgs> ImageChanged;
@@ -115,13 +123,95 @@ namespace System.Windows.Forms
         // Mouse hit test
         //
 
+        private PointF rotate(PointF point, double angle)
+        {
+            PointF rotated_point = new Point();
+            double rad = angle * Math.PI / 180.0F;
+            rotated_point.X = point.X * (float)Math.Cos(rad) - point.Y * (float)Math.Sin(rad);
+            rotated_point.Y = point.X * (float)Math.Sin(rad) + point.Y * (float)Math.Cos(rad);
+            return rotated_point;
+        }
+
         private Entity EntityHitTest ( int MouseX, int MouseY )
         {
-            PointF point = ScreenToLambda(MouseX, MouseY);
+            PointF point = new Point(MouseX, MouseY);
+            PointF[] rect = new PointF[4];
+            float zf = (float)Zoom / 100.0F;
 
             foreach ( Entity entity in _entities )
             {
+                if ( IsEntityWire(entity) )
+                {
+                    PointF start = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    PointF end = LambdaToScreen(entity.LambdaEndX, entity.LambdaEndY);
+                    
+                    if ( end.X < start.X )
+                    {
+                        PointF temp = start;
+                        start = end;
+                        end = temp;
+                    }
 
+                    PointF ortho = new PointF(end.X - start.X, end.Y - start.Y);
+
+                    float len = (float)Math.Sqrt( Math.Pow(ortho.X, 2) + 
+                                                  Math.Pow(ortho.Y, 2));
+                    len = Math.Max(1.0F, len);
+
+                    PointF rot = rotate(ortho, -90);
+                    PointF normalized = new PointF(rot.X / len, rot.Y / len);
+                    PointF baseVect = new PointF(normalized.X * ((WireBaseSize * zf) / 2),
+                                                  normalized.Y * ((WireBaseSize * zf) / 2));
+
+                    rect[0].X = baseVect.X + start.X;
+                    rect[0].Y = baseVect.Y + start.Y;
+                    rect[3].X = baseVect.X + end.X;
+                    rect[3].Y = baseVect.Y + end.Y;
+
+                    rot = rotate(ortho, +90);
+                    normalized = new PointF(rot.X / len, rot.Y / len);
+                    baseVect = new PointF(normalized.X * ((WireBaseSize * zf) / 2),
+                                           normalized.Y * ((WireBaseSize * zf) / 2));
+
+                    rect[1].X = baseVect.X + start.X;
+                    rect[1].Y = baseVect.Y + start.Y;
+                    rect[2].X = baseVect.X + end.X;
+                    rect[2].Y = baseVect.Y + end.Y;
+
+                    if (PointInPoly(rect, point) == true)
+                        return entity;
+                }
+                else if ( IsEntityCell(entity))
+                {
+                    rect[0] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    rect[1] = LambdaToScreen(entity.LambdaX, entity.LambdaY + entity.LambdaHeight);
+                    rect[2] = LambdaToScreen(entity.LambdaX + entity.LambdaWidth, entity.LambdaY + entity.LambdaHeight);
+                    rect[3] = LambdaToScreen(entity.LambdaX + entity.LambdaWidth, entity.LambdaY);
+
+                    if (PointInPoly(rect, point) == true)
+                        return entity;
+                }
+                else        // Vias
+                {
+                    rect[0] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    rect[0].X -= ((float)ViasBaseSize * zf);
+                    rect[0].Y -= ((float)ViasBaseSize * zf);
+
+                    rect[1] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    rect[1].X += ((float)ViasBaseSize * zf);
+                    rect[1].Y -= ((float)ViasBaseSize * zf);
+
+                    rect[2] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    rect[2].X += ((float)ViasBaseSize * zf);
+                    rect[2].Y += ((float)ViasBaseSize * zf);
+
+                    rect[3] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    rect[3].X -= ((float)ViasBaseSize * zf);
+                    rect[3].Y += ((float)ViasBaseSize * zf);
+
+                    if (PointInPoly(rect, point) == true)
+                        return entity;
+                }
             }
 
             return null;
@@ -183,27 +273,76 @@ namespace System.Windows.Forms
                 }
             }
 
+            //
+            // Dragging
+            //
+
+            if ( e.Button == MouseButtons.Left && Mode == EntityType.Selection && DraggingBegin == false )
+            {
+                selected = GetSelected();
+
+                if ( selected.Count > 0 )
+                {
+                    foreach ( Entity entity in selected )
+                    {
+                        entity.SavedLambdaX = entity.LambdaX;
+                        entity.SavedLambdaY = entity.LambdaY;
+
+                        entity.SavedLambdaEndX = entity.LambdaEndX;
+                        entity.SavedLambdaEndY = entity.LambdaEndY;
+                    }
+
+                    DragStartMouseX = e.X;
+                    DragStartMouseY = e.Y;
+                    DraggingBegin = true;
+                }
+            }
+
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            Focus();
+
             if ( e.Button == MouseButtons.Right && ScrollingBegin)
             {
                 ScrollingBegin = false;
-                this.Invalidate();
+                Invalidate();
             }
 
             //
             // Select entity
             //
 
-            if ( e.Button == MouseButtons.Left && Mode == EntityType.Selection )
+            if (e.Button == MouseButtons.Left && Mode == EntityType.Selection)
             {
                 Entity entity = EntityHitTest(e.X, e.Y);
 
                 if (entity != null)
-                    MessageBox.Show("Selected " + entity.Label);
+                {
+                    if (entity.Selected == true && draggingDist < 1.0F)
+                    {
+                        entity.Selected = false;
+                        Invalidate();
+
+                        if (entityGrid != null)
+                            entityGrid.SelectedObject = null;
+                    }
+                    else
+                    {
+                        entity.Selected = true;
+                        Invalidate();
+
+                        if (entityGrid != null)
+                            entityGrid.SelectedObject = entity;
+                    }
+                }
+                else
+                {
+                    if (draggingDist < 1.0F )
+                        RemoveSelection();
+                }
             }
 
             //
@@ -232,6 +371,17 @@ namespace System.Windows.Forms
                 DrawingBegin = false;
             }
 
+            //
+            // End Drag
+            //
+
+            if (e.Button == MouseButtons.Left && DraggingBegin)
+            {
+                selected.Clear();
+                draggingDist = 0.0F;
+                DraggingBegin = false;
+            }
+
             base.OnMouseUp(e);
         }
 
@@ -245,7 +395,7 @@ namespace System.Windows.Forms
             {
                 ScrollX = SavedScrollX + e.X - SavedMouseX;
                 ScrollY = SavedScrollY + e.Y - SavedMouseY;
-                this.Invalidate();
+                Invalidate();
             }
 
             //
@@ -257,7 +407,42 @@ namespace System.Windows.Forms
             {
                 LastMouseX = e.X;
                 LastMouseY = e.Y;
-                this.Invalidate();
+                Invalidate();
+            }
+
+            //
+            // Drag animation
+            //
+
+            if (DraggingBegin && selected.Count > 0)
+            {
+                foreach ( Entity entity in selected )
+                {
+                    Point point = LambdaToScreen(entity.SavedLambdaX, entity.SavedLambdaY);
+
+                    point.X += e.X - DragStartMouseX;
+                    point.Y += e.Y - DragStartMouseY;
+
+                    PointF lambda = ScreenToLambda(point.X, point.Y);
+
+                    entity.LambdaX = lambda.X;
+                    entity.LambdaY = lambda.Y;
+
+                    point = LambdaToScreen(entity.SavedLambdaEndX, entity.SavedLambdaEndY);
+
+                    point.X += e.X - DragStartMouseX;
+                    point.Y += e.Y - DragStartMouseY;
+
+                    lambda = ScreenToLambda(point.X, point.Y);
+
+                    entity.LambdaEndX = lambda.X;
+                    entity.LambdaEndY = lambda.Y;
+
+                    draggingDist = (float)Math.Sqrt( Math.Pow(Math.Abs(e.X - DragStartMouseX), 2) +
+                                                     Math.Pow(Math.Abs(e.Y - DragStartMouseY), 2) );
+                }
+
+                Invalidate();
             }
 
             base.OnMouseMove(e);
@@ -273,6 +458,8 @@ namespace System.Windows.Forms
             base.OnMouseWheel(e);
         }
 
+        #region Drawing
+
         //
         // Drawing
         //
@@ -286,10 +473,10 @@ namespace System.Windows.Forms
             Pen linePen = new Pen(Color.LightGray, 3);
 
             gr.DrawLine( linePen,
-                         this.Width - scaleWidth - 5,
-                         this.Height - 5,
-                         this.Width - 5,
-                         this.Height - 5);
+                         Width - scaleWidth - 5,
+                         Height - 5,
+                         Width - 5,
+                         Height - 5);
 
             string label = "5λ";
             int labelWidth = (int)gr.MeasureString(label, this.Font).Width;
@@ -306,9 +493,9 @@ namespace System.Windows.Forms
             float scaleWidth = (int)Lambda * 5;
             scaleWidth *= (float)Zoom / 100.0F;
 
-            for ( y=0; y<this.Height; y+= scaleWidth)
+            for ( y=0; y<Height; y+= scaleWidth)
             {
-                for (x=0; x<this.Width; x+= scaleWidth)
+                for (x=0; x<Width; x+= scaleWidth)
                 {
                     gr.FillRectangle(Brushes.LightGray, x, y, 1, 1);
                 }
@@ -328,7 +515,7 @@ namespace System.Windows.Forms
             int endY;
             float zf = (float)Zoom / 100.0F;
 
-            switch ( entity.Type )
+            switch (entity.Type)
             {
                 case EntityType.ViasConnect:
                 case EntityType.ViasFloating:
@@ -361,9 +548,40 @@ namespace System.Windows.Forms
                     centerY = point.Y;
                     radius = (int)((float)ViasBaseSize * zf);
 
-                    gr.FillEllipse( new SolidBrush(viasColor),
-                                    centerX - radius, centerY - radius,
-                                    radius + radius, radius + radius );
+                    if (ViasShape == ViasShape.Round)
+                    {
+                        if (entity.Selected == true)
+                        {
+                            radius += (int)Lambda;
+
+                            gr.FillEllipse(new SolidBrush(SelectionColor),
+                                            centerX - radius, centerY - radius,
+                                            radius + radius, radius + radius);
+
+                            radius -= (int)Lambda;
+                        }
+
+                        gr.FillEllipse(new SolidBrush(viasColor),
+                                        centerX - radius, centerY - radius,
+                                        radius + radius, radius + radius);
+                    }
+                    else
+                    {
+                        if (entity.Selected == true)
+                        {
+                            radius += (int)Lambda;
+
+                            gr.FillRectangle(new SolidBrush(SelectionColor),
+                                               centerX - radius, centerY - radius,
+                                               2 * radius, 2 * radius);
+
+                            radius -= (int)Lambda;
+                        }
+
+                        gr.FillRectangle(new SolidBrush(viasColor),
+                                           centerX - radius, centerY - radius,
+                                           2 * radius, 2 * radius);
+                    }
 
                     break;
 
@@ -387,6 +605,13 @@ namespace System.Windows.Forms
                     startY = point1.Y;
                     endX = point2.X;
                     endY = point2.Y;
+
+                    if (entity.Selected == true)
+                    {
+                        gr.DrawLine(new Pen(Color.LimeGreen, (float)WireBaseSize * zf + (int)Lambda),
+                                     startX, startY,
+                                     endX, endY);
+                    }
 
                     gr.DrawLine( new Pen(wireColor, (float)WireBaseSize * zf),
                                  startX, startY,
@@ -493,18 +718,20 @@ namespace System.Windows.Forms
 
             context = BufferedGraphicsManager.Current;
 
-            context.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+            context.MaximumBuffer = new Size(Width + 1, Height + 1);
 
-            gfx = context.Allocate(this.CreateGraphics(),
-                 new Rectangle(0, 0, this.Width, this.Height));
+            gfx = context.Allocate(CreateGraphics(),
+                 new Rectangle(0, 0, Width, Height));
 
             Point origin = new Point(0, 0);
-            DrawScene(gfx.Graphics, this.Width, this.Height, false, origin);
+            DrawScene(gfx.Graphics, Width, Height, false, origin);
 
             gfx.Render(e.Graphics);
 
             gfx.Dispose();
         }
+
+        #endregion Drawing
 
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Image BackgroundImage
@@ -535,7 +762,7 @@ namespace System.Windows.Forms
                     ScrollingBegin = false;
                     Zoom = 100;
 
-                    this.OnImageChanged(EventArgs.Empty);
+                    OnImageChanged(EventArgs.Empty);
                 }
             }
         }
@@ -591,10 +818,10 @@ namespace System.Windows.Forms
 
         protected virtual void OnImageChanged(EventArgs e)
         {
-            this.Invalidate();
+            Invalidate();
 
-            if (this.ImageChanged != null)
-                this.ImageChanged(this, e);
+            if (ImageChanged != null)
+                ImageChanged(this, e);
         }
 
         private void AddVias ( EntityType Type, int ScreenX, int ScreenY )
@@ -609,10 +836,11 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
+            item.SetParent(this);
 
             _entities.Add(item);
 
-            this.Invalidate();
+            Invalidate();
         }
 
         private void AddWire ( EntityType Type, int StartX, int StartY, int EndX, int EndY )
@@ -630,10 +858,11 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
+            item.SetParent(this);
 
             _entities.Add(item);
 
-            this.Invalidate();
+            Invalidate();
         }
 
         [Category("Appearance")]
@@ -657,7 +886,7 @@ namespace System.Windows.Forms
         public void DeleteAllEntites ()
         {
             _entities.Clear();
-            this.Invalidate();
+            Invalidate();
         }
 
         private Point DetermineSceneSize (out Point origin)
@@ -767,9 +996,6 @@ namespace System.Windows.Forms
 
             Graphics gr = Graphics.FromImage(bitmap);
 
-            //origin.X = -100;
-            //origin.Y = -100;
-
             DrawScene(gr, sceneSize.X, sceneSize.Y, true, origin);
 
             ext = Path.GetExtension(FileName);
@@ -825,6 +1051,127 @@ namespace System.Windows.Forms
         }
 
         //
+        // Entity Selection-related
+        //
+
+        private bool PointInPoly ( PointF[] poly, PointF point )
+        {
+            int max_point = poly.Length - 1;
+            float total_angle = GetAngle(
+                poly[max_point].X, poly[max_point].Y,
+                point.X, point.Y,
+                poly[0].X, poly[0].Y);
+
+            for (int i = 0; i < max_point; i++)
+            {
+                total_angle += GetAngle(
+                    poly[i].X, poly[i].Y,
+                    point.X, point.Y,
+                    poly[i + 1].X, poly[i + 1].Y);
+            }
+
+            return (Math.Abs(total_angle) > 0.000001);
+        }
+
+        private float GetAngle(float Ax, float Ay,
+            float Bx, float By, float Cx, float Cy)
+        {
+            float dot_product = DotProduct(Ax, Ay, Bx, By, Cx, Cy);
+
+            float cross_product = CrossProductLength(Ax, Ay, Bx, By, Cx, Cy);
+
+            return (float)Math.Atan2(cross_product, dot_product);
+        }
+
+        private float DotProduct(float Ax, float Ay,
+            float Bx, float By, float Cx, float Cy)
+        {
+            float BAx = Ax - Bx;
+            float BAy = Ay - By;
+            float BCx = Cx - Bx;
+            float BCy = Cy - By;
+
+            return (BAx * BCx + BAy * BCy);
+        }
+
+        private float CrossProductLength(float Ax, float Ay,
+            float Bx, float By, float Cx, float Cy)
+        {
+            float BAx = Ax - Bx;
+            float BAy = Ay - By;
+            float BCx = Cx - Bx;
+            float BCy = Cy - By;
+
+            return (BAx * BCy - BAy * BCx);
+        }
+
+        private void RemoveSelection ()
+        {
+            bool UpdateRequired = false;
+
+            foreach ( Entity entity in _entities )
+            {
+                if (entity.Selected == true)
+                {
+                    entity.Selected = false;
+                    UpdateRequired = true;
+                }
+            }
+
+            if (UpdateRequired == true)
+                Invalidate();
+
+            if (entityGrid != null)
+                entityGrid.SelectedObject = null;
+        }
+
+        public void AssociateSelectionPropertyGrid ( PropertyGrid propertyGrid )
+        {
+            entityGrid = propertyGrid;
+        }
+
+        private void DeleteSelected ()
+        {
+            bool UpdateRequired = false;
+            List<Entity> pendingDelete = new List<Entity>();
+
+            foreach (Entity entity in _entities)
+            {
+                if (entity.Selected == true)
+                {
+                    pendingDelete.Add(entity);
+                    UpdateRequired = true;
+                }
+            }
+
+            foreach (Entity entity in pendingDelete)
+            {
+                _entities.Remove(entity);
+            }
+
+            if (UpdateRequired == true)
+                Invalidate();
+
+            if (entityGrid != null)
+                entityGrid.SelectedObject = null;
+        }
+
+        private List<Entity> GetSelected ()
+        {
+            List<Entity> _selected = new List<Entity>();
+
+            foreach (Entity entity in _entities)
+            {
+                if (entity.Selected == true)
+                {
+                    _selected.Add(entity);
+                }
+            }
+
+            return _selected;
+        }
+
+        //
         // Entity properties
         //
 
@@ -849,6 +1196,7 @@ namespace System.Windows.Forms
         private Color _UnitRegfileColor;
         private Color _UnitMemoryColor;
         private Color _UnitCustomColor;
+        private Color _SelectionColor;
         private ViasShape _viasShape;
         private int _viasBaseSize;
         private int _wireBaseSize;
@@ -872,6 +1220,8 @@ namespace System.Windows.Forms
             WireInterconnectColor = Color.Blue;
             WirePowerColor = Color.Red;
             WireGroundColor = Color.Green;
+
+            SelectionColor = Color.LimeGreen;
         }
 
         [Category("Entity Appearance")]
@@ -1049,5 +1399,26 @@ namespace System.Windows.Forms
             set { _UnitCustomColor = value; Invalidate(); }
         }
 
+        [Category("Entity Appearance")]
+        public Color SelectionColor
+        {
+            get { return _SelectionColor; }
+            set { _SelectionColor = value; Invalidate(); }
+        }
+
+        //
+        // Key input handling
+        //
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if ( e.KeyCode == Keys.Delete )
+                DeleteSelected();
+
+            if (e.KeyCode == Keys.Escape)
+                RemoveSelection();
+
+            base.OnKeyUp(e);
+        }
     }
 }

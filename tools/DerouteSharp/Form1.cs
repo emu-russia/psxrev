@@ -92,5 +92,9 @@ namespace DerouteSharp
             }
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            entityBox1.AssociateSelectionPropertyGrid(propertyGrid2);
+        }
     }
 }
