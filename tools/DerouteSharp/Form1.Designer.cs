@@ -35,11 +35,10 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
@@ -131,22 +130,15 @@
             this.splitContainer2.SplitterDistance = 454;
             this.splitContainer2.TabIndex = 0;
             // 
-            // propertyGrid2
+            // button3
             // 
-            this.propertyGrid2.Location = new System.Drawing.Point(305, 4);
-            this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(256, 345);
-            this.propertyGrid2.TabIndex = 1;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(20, 24);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(102, 44);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Selection";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button3.Location = new System.Drawing.Point(268, 24);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(102, 44);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "Wire";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -158,15 +150,22 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button3
+            // button1
             // 
-            this.button3.Location = new System.Drawing.Point(268, 24);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(102, 44);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Wire";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button1.Location = new System.Drawing.Point(20, 24);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(102, 44);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Selection";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // propertyGrid2
+            // 
+            this.propertyGrid2.Location = new System.Drawing.Point(305, 4);
+            this.propertyGrid2.Name = "propertyGrid2";
+            this.propertyGrid2.Size = new System.Drawing.Size(256, 345);
+            this.propertyGrid2.TabIndex = 1;
             // 
             // entityBox1
             // 
@@ -230,7 +229,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
-        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 

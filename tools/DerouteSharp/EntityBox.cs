@@ -46,19 +46,10 @@ namespace System.Windows.Forms
         private PointF ScreenToLambda ( int ScreenX, int ScreenY)
         {
             PointF point = new PointF (0.0F, 0.0F);
+            float zf = (float)Zoom / 100;
 
-            point.X = (float)(ScreenX - ScrollX);
-            point.Y = (float)(ScreenY - ScrollY);
-
-            //
-            // Zoom
-            //
-
-            //point.X /= (float)Zoom / 100.0F;
-            //point.Y /= (float)Zoom / 100.0F;
-
-            point.X /= Lambda;
-            point.Y /= Lambda;
+            point.X = (float)(ScreenX - ScrollX) / (zf * Lambda);
+            point.Y = (float)(ScreenY - ScrollY) / (zf * Lambda);
 
             return point;
         }
@@ -66,16 +57,10 @@ namespace System.Windows.Forms
         private Point LambdaToScreen ( float LambdaX, float LambdaY )
         {
             Point point = new Point(0, 0);
+            float zf = (float)Zoom / 100;
 
-            point.X = (int)(LambdaX * Lambda) + ScrollX;
-            point.Y = (int)(LambdaY * Lambda) + ScrollY;
-
-            //
-            // Zoom
-            //
-
-            float x = (float)point.X;// * (float)Zoom / 100.0F;
-            float y = (float)point.Y;// * (float)Zoom / 100.0F;
+            float x = LambdaX * Lambda * zf + (float)ScrollX;
+            float y = LambdaY * Lambda * zf + (float)ScrollY;
 
             point.X = (int)x;
             point.Y = (int)y;
@@ -363,7 +348,7 @@ namespace System.Windows.Forms
 
             if (Image != null)
             {
-                gr.DrawImage(Image,
+                gr.DrawImage( Image,
                               ScrollX, ScrollY,
                               Image.Width * Zoom / 100,
                               Image.Height * Zoom / 100);
