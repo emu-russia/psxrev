@@ -215,7 +215,6 @@
             this.entityBox1.CellLogicColor = System.Drawing.Color.Empty;
             this.entityBox1.CellMuxColor = System.Drawing.Color.Empty;
             this.entityBox1.CellNotColor = System.Drawing.Color.Empty;
-            this.entityBox1.CellTextAlignment = CellTextAlignment.TopLeft;
             this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.entityBox1.HideImage = false;
             this.entityBox1.Lambda = 5F;

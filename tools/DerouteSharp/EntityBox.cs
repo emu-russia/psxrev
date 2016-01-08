@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace System.Windows.Forms
 {
@@ -31,6 +32,9 @@ namespace System.Windows.Forms
         private List <Entity> _entities;
         private EntityType drawMode = EntityType.Selection;
         private bool hideImage;
+        private bool hideVias;
+        private bool hideWires;
+        private bool hideCells;
         private PropertyGrid entityGrid;
         private List<Entity> selected;
         private float draggingDist;
@@ -43,7 +47,10 @@ namespace System.Windows.Forms
 
             Lambda = 5.0F;
             Zoom = 100;
-            HideImage = false;
+            hideImage = false;
+            hideVias = false;
+            hideWires = false;
+            hideCells = false;
             entityGrid = null;
 
             DefaultEntityAppearance();
@@ -525,6 +532,9 @@ namespace System.Windows.Forms
                 case EntityType.ViasOutput:
                 case EntityType.ViasPower:
 
+                    if (hideVias == true)
+                        break;
+
                     if (entity.Type == EntityType.ViasConnect)
                         viasColor = ViasConnectColor;
                     else if (entity.Type == EntityType.ViasFloating)
@@ -541,6 +551,11 @@ namespace System.Windows.Forms
                         viasColor = ViasPowerColor;
                     else
                         viasColor = Color.Black;
+
+                    if (entity.ColorOverride != Color.Black)
+                        viasColor = entity.ColorOverride;
+
+                    viasColor = Color.FromArgb(ViasOpacity, viasColor);
 
                     Point point = LambdaToScreen(entity.LambdaX, entity.LambdaY);
 
@@ -583,11 +598,70 @@ namespace System.Windows.Forms
                                            2 * radius, 2 * radius);
                     }
 
+                    //
+                    // Label
+                    //
+
+                    if (entity.Label != null && entity.Label.Length > 0)
+                    {
+                        TextAlignment align = entity.LabelAlignment;
+
+                        if (align == TextAlignment.GlobalSettings)
+                            align = ViasTextAlignment;
+
+                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+
+                        Point origin = new Point(centerX, centerY);
+
+                        switch (align)
+                        {
+                            case TextAlignment.Top:
+                            case TextAlignment.TopLeft:
+                            case TextAlignment.TopRight:
+                            default:
+                                origin.Y = centerY - radius - (int)(textSize.Height * zf);
+                                break;
+
+                            case TextAlignment.Bottom:
+                            case TextAlignment.BottomLeft:
+                            case TextAlignment.BottomRight:
+                                origin.Y = centerY + radius;
+                                break;
+                        }
+
+                        switch (align)
+                        {
+                            case TextAlignment.Top:
+                            case TextAlignment.Bottom:
+                            default:
+                                origin.X = centerX - (int)(textSize.Width * zf / 2);
+                                break;
+
+                            case TextAlignment.TopLeft:
+                            case TextAlignment.BottomLeft:
+                                origin.X = centerX - radius - (int)(textSize.Width * zf);
+                                break;
+
+                            case TextAlignment.TopRight:
+                            case TextAlignment.BottomRight:
+                                origin.X = centerX + radius;
+                                break;
+                        }
+
+                        gr.TranslateTransform(origin.X, origin.Y);
+                        gr.ScaleTransform(zf, zf);
+                        gr.DrawString(entity.Label, Font, Brushes.Black, 0, 0);
+                        gr.ResetTransform();
+                    }
+
                     break;
 
                 case EntityType.WireGround:
                 case EntityType.WirePower:
                 case EntityType.WireInterconnect:
+
+                    if (hideWires == true)
+                        break;
 
                     if (entity.Type == EntityType.WireGround)
                         wireColor = WireGroundColor;
@@ -597,6 +671,11 @@ namespace System.Windows.Forms
                         wireColor = WireInterconnectColor;
                     else
                         wireColor = Color.Blue;
+
+                    if (entity.ColorOverride != Color.Black)
+                        wireColor = entity.ColorOverride;
+
+                    wireColor = Color.FromArgb(WireOpacity, wireColor);
 
                     Point point1 = LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     Point point2 = LambdaToScreen(entity.LambdaEndX, entity.LambdaEndY);
@@ -616,6 +695,78 @@ namespace System.Windows.Forms
                     gr.DrawLine( new Pen(wireColor, (float)WireBaseSize * zf),
                                  startX, startY,
                                  endX, endY);
+
+                    //
+                    // Label
+                    //
+
+                    if ( entity.Label != null && entity.Label.Length > 0 )
+                    {
+                        Point start = new Point(startX, startY);
+                        Point end = new Point(endX, endY);
+                        Point temp;
+
+                        if (startX == endX && startY == endY)
+                            break;
+
+                        if ( end.X < start.X )
+                        {
+                            temp = start;
+                            start = end;
+                            end = temp;
+                        }
+
+                        int a = end.Y - start.Y;
+                        int b = end.X - start.X;
+                        float Tga = (float)a / (float)b;
+                        float alpha = (float)Math.Atan(Tga);
+
+                        int wireLength = (int)Math.Sqrt( Math.Pow(end.X - start.X, 2) +
+                                                         Math.Pow(end.Y - start.Y, 2));
+
+                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+
+                        int origin;
+
+                        TextAlignment align = entity.LabelAlignment;
+
+                        if (align == TextAlignment.GlobalSettings)
+                            align = WireTextAlignment;
+
+                        switch (align)
+                        {
+                            case TextAlignment.BottomLeft:
+                            case TextAlignment.TopLeft:
+                            default:
+                                origin = (int)(textSize.Width / entity.Label.Length);
+                                break;
+                            case TextAlignment.Top:
+                            case TextAlignment.Bottom:
+                                origin = wireLength / 2 - (int)textSize.Width / 2;
+                                break;
+                            case TextAlignment.BottomRight:
+                            case TextAlignment.TopRight:
+                                origin = wireLength - (int)textSize.Width - (int)(textSize.Width / entity.Label.Length);
+                                break;
+                        }
+
+                        gr.TranslateTransform(start.X, start.Y);
+                        gr.RotateTransform((float)(180.0F * alpha / Math.PI));
+                        gr.ScaleTransform(zf, zf);
+                        gr.DrawString(entity.Label, Font, Brushes.Black, origin, -textSize.Height / 2);
+                        gr.ResetTransform();
+                    }
+
+                    break;
+
+                //
+                // TODO: Draw cells and units
+                //
+
+                case EntityType.CellNot:
+
+                    if (hideCells == true)
+                        break;
 
                     break;
             }
@@ -691,6 +842,8 @@ namespace System.Windows.Forms
                     virtualEntity.LambdaEndX = point2.X;
                     virtualEntity.LambdaEndY = point2.Y;
                     virtualEntity.Type = Mode;
+                    virtualEntity.Priority = WirePriority;
+                    virtualEntity.ColorOverride = Color.Black; 
 
                     DrawEntity(virtualEntity, gr);
                 }
@@ -816,6 +969,27 @@ namespace System.Windows.Forms
             set { hideImage = value; Invalidate(); }
         }
 
+        [Category("Appearance")]
+        public bool HideVias
+        {
+            get { return hideVias; }
+            set { hideVias = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public bool HideWires
+        {
+            get { return hideWires; }
+            set { hideWires = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public bool HideCells
+        {
+            get { return hideCells; }
+            set { hideCells = value; Invalidate(); }
+        }
+
         protected virtual void OnImageChanged(EventArgs e)
         {
             Invalidate();
@@ -830,16 +1004,18 @@ namespace System.Windows.Forms
 
             PointF point = ScreenToLambda(ScreenX, ScreenY);
 
-            item.Label = "vias";
+            item.Label = "";
             item.LambdaX = point.X;
             item.LambdaY = point.Y;
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
+            item.ColorOverride = Color.Black;
+            item.Priority = ViasPriority;
             item.SetParent(this);
 
             _entities.Add(item);
-
+            SortEntities();
             Invalidate();
         }
 
@@ -850,7 +1026,16 @@ namespace System.Windows.Forms
             PointF point1 = ScreenToLambda(StartX, StartY);
             PointF point2 = ScreenToLambda(EndX, EndY);
 
-            item.Label = "wire";
+            float len = (float)Math.Sqrt( Math.Pow(point2.X - point1.X, 2) + 
+                                          Math.Pow(point2.Y - point1.Y, 2));
+
+            if (len < 1.0F)
+            {
+                Invalidate();
+                return;
+            }
+
+            item.Label = "";
             item.LambdaX = point1.X;
             item.LambdaY = point1.Y;
             item.LambdaEndX = point2.X;
@@ -858,10 +1043,12 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
+            item.ColorOverride = Color.Black;
+            item.Priority = WirePriority;
             item.SetParent(this);
 
             _entities.Add(item);
-
+            SortEntities();
             Invalidate();
         }
 
@@ -871,13 +1058,34 @@ namespace System.Windows.Forms
             get { return _zoom; }
             set
             {
+                int oldZoom = _zoom;
+                float oldzf = (float)oldZoom / 100.0F;
+
+                if (value < 30)
+                    value = 30;
+
+                if (value > 400)
+                    value = 400;
+
                 _zoom = value;
+                float zf = (float)Zoom / 100.0F;
 
-                if (_zoom < 30)
-                    _zoom = 30;
+                Point origin;
+                Point sceneSize = DetermineSceneSize(out origin);
 
-                if (_zoom > 400)
-                    _zoom = 400;
+                float deltaX = Math.Abs(sceneSize.X * zf - sceneSize.X * oldzf) / 2;
+                float deltaY = Math.Abs(sceneSize.Y * zf - sceneSize.Y * oldzf) / 2;
+
+                if (_zoom < oldZoom)  // Zoom out
+                {
+                    _ScrollX += (int)deltaX;
+                    _ScrollY += (int)deltaY;
+                }
+                else if (_zoom > oldZoom) // Zoom in
+                {
+                    _ScrollX -= (int)deltaX;
+                    _ScrollY -= (int)deltaY;
+                }
 
                 Invalidate();
             }
@@ -1016,9 +1224,40 @@ namespace System.Windows.Forms
         // Serialization
         //
 
+        private void WipeGarbage ()
+        {
+            //
+            // Wipe small wires (< 1 lambda)
+            //
+
+            List<Entity> pendingDelete = new List<Entity>();
+
+            foreach (Entity entity in _entities)
+            {
+                if (IsEntityWire(entity))
+                {
+                    float len = (float)Math.Sqrt(Math.Pow(entity.LambdaEndX - entity.LambdaX, 2) +
+                                                   Math.Pow(entity.SavedLambdaEndY - entity.LambdaY, 2));
+
+                    if (len < 1.0F)
+                        pendingDelete.Add(entity);
+                }
+            }
+
+            if (pendingDelete.Count > 0)
+            {
+                foreach (Entity entity in pendingDelete)
+                {
+                    _entities.Remove(entity);
+                }
+            }
+        }
+
         public void Serialize (string FileName)
         {
             XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+            WipeGarbage();
 
             using (FileStream fs = new FileStream(FileName, FileMode.Create))
             {
@@ -1045,6 +1284,10 @@ namespace System.Windows.Forms
 
                     _entities = (List<Entity>)ser.Deserialize(fs);
                 }
+
+                WipeGarbage();
+
+                _entities = _entities.OrderBy(o => o.Priority).ToList();
 
                 Invalidate();
             }
@@ -1171,6 +1414,8 @@ namespace System.Windows.Forms
             return _selected;
         }
 
+        #region Entity Props
+
         //
         // Entity properties
         //
@@ -1200,29 +1445,49 @@ namespace System.Windows.Forms
         private ViasShape _viasShape;
         private int _viasBaseSize;
         private int _wireBaseSize;
-        private CellTextAlignment _cellTextAlignment;
+        private TextAlignment _cellTextAlignment;
+        private TextAlignment _viasTextAlignment;
+        private TextAlignment _wireTextAlignment;
+        private int _ViasOpacity;
+        private int _WireOpacity;
+        private int _CellOpacity;
+        private int _ViasPriority;
+        private int _WirePriority;
+        private int _CellPriority;
+        private bool _AutoPriority;
 
         private void DefaultEntityAppearance()
         {
-            ViasShape = ViasShape.Round;
-            ViasBaseSize = Math.Max(1, (int)Lambda - 1);
-            WireBaseSize = (int)Lambda;
-            CellTextAlignment = CellTextAlignment.TopLeft;
+            _viasShape = ViasShape.Round;
+            _viasBaseSize = Math.Max(1, (int)Lambda - 1);
+            _wireBaseSize = (int)Lambda;
+            _cellTextAlignment = TextAlignment.TopLeft;
+            _viasTextAlignment = TextAlignment.Top;
+            _wireTextAlignment = TextAlignment.TopLeft;
 
-            ViasInputColor = Color.Green;
-            ViasOutputColor = Color.Red;
-            ViasInoutColor = Color.Yellow;
-            ViasConnectColor = Color.Black;
-            ViasFloatingColor = Color.Gray;
-            ViasPowerColor = Color.Black;
-            ViasGroundColor = Color.Black;
+            _ViasInputColor = Color.Green;
+            _ViasOutputColor = Color.Red;
+            _ViasInoutColor = Color.Yellow;
+            _ViasConnectColor = Color.Black;
+            _ViasFloatingColor = Color.Gray;
+            _ViasPowerColor = Color.Black;
+            _ViasGroundColor = Color.Black;
 
-            WireInterconnectColor = Color.Blue;
-            WirePowerColor = Color.Red;
-            WireGroundColor = Color.Green;
+            _WireInterconnectColor = Color.Blue;
+            _WirePowerColor = Color.Red;
+            _WireGroundColor = Color.Green;
 
-            SelectionColor = Color.LimeGreen;
-        }
+            _SelectionColor = Color.LimeGreen;
+
+            _ViasOpacity = 255;
+            _WireOpacity = 128;
+            _CellOpacity = 128;
+
+            _ViasPriority = 3;
+            _WirePriority = 2;
+            _CellPriority = 1;
+            _AutoPriority = true;
+    }
 
         [Category("Entity Appearance")]
         public ViasShape ViasShape
@@ -1246,10 +1511,24 @@ namespace System.Windows.Forms
         }
 
         [Category("Entity Appearance")]
-        public CellTextAlignment CellTextAlignment
+        public TextAlignment CellTextAlignment
         {
             get { return _cellTextAlignment; }
             set { _cellTextAlignment = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public TextAlignment WireTextAlignment
+        {
+            get { return _wireTextAlignment; }
+            set { _wireTextAlignment = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public TextAlignment ViasTextAlignment
+        {
+            get { return _viasTextAlignment; }
+            set { _viasTextAlignment = value; Invalidate(); }
         }
 
         [Category("Entity Appearance")]
@@ -1406,6 +1685,86 @@ namespace System.Windows.Forms
             set { _SelectionColor = value; Invalidate(); }
         }
 
+        [Category("Entity Appearance")]
+        public int ViasOpacity
+        {
+            get { return _ViasOpacity; }
+            set
+            {
+                _ViasOpacity = Math.Max (0, Math.Min(255, value));
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int WireOpacity
+        {
+            get { return _WireOpacity; }
+            set
+            {
+                _WireOpacity = Math.Max(0, Math.Min(255, value));
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int CellOpacity
+        {
+            get { return _CellOpacity; }
+            set
+            {
+                _CellOpacity = Math.Max(0, Math.Min(255, value));
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int ViasPriority
+        {
+            get { return _ViasPriority; }
+            set
+            {
+                _ViasPriority = value;
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int WirePriority
+        {
+            get { return _WirePriority; }
+            set
+            {
+                _WirePriority = value;
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int CellPriority
+        {
+            get { return _CellPriority; }
+            set
+            {
+                _CellPriority = value;
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public bool AutoPriority
+        {
+            get { return _AutoPriority; }
+            set
+            {
+                _AutoPriority = value;
+                SortEntities();
+                Invalidate();
+            }
+        }
+
+        #endregion Entity Props
+
         //
         // Key input handling
         //
@@ -1419,6 +1778,16 @@ namespace System.Windows.Forms
                 RemoveSelection();
 
             base.OnKeyUp(e);
+        }
+
+        //
+        // Priority stuff
+        //
+
+        public void SortEntities()
+        {
+            if ( AutoPriority == true )
+                _entities = _entities.OrderBy(o => o.Priority).ToList();
         }
     }
 }

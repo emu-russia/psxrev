@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Xml.Serialization;
 
 public enum EntityType
 {
@@ -33,9 +35,10 @@ public enum ViasShape
     Round,
 }
 
-public enum CellTextAlignment
+public enum TextAlignment
 {
-    Top = 1,
+    GlobalSettings,
+    Top,
     TopLeft,
     TopRight,
     BottomLeft,
@@ -55,10 +58,17 @@ public class Entity
     private EntityType _Type;
     private bool _Selected;
     private EntityBox parentBox = null;
+    private Color _ColorOverride;
+    private TextAlignment labelAlignment;
+    private int _Priority;
 
+    [XmlIgnore]
     public float SavedLambdaX;
+    [XmlIgnore]
     public float SavedLambdaY;
+    [XmlIgnore]
     public float SavedLambdaEndX;
+    [XmlIgnore]
     public float SavedLambdaEndY;
 
     [Category("Entity Properties")]
@@ -126,11 +136,59 @@ public class Entity
     }
 
     [Category("Entity Properties")]
+    [XmlIgnore]
     public bool Selected
     {
         get { return _Selected; }
         set { _Selected = value;
             if (parentBox != null) parentBox.Invalidate(); }
+    }
+
+    [Category("Entity Properties")]
+    [Description("Set color other than Black to override it.")]
+    [XmlIgnore]
+    public Color ColorOverride
+    {
+        get { return _ColorOverride; }
+        set
+        {
+            _ColorOverride = value;
+            if (parentBox != null) parentBox.Invalidate();
+        }
+    }
+
+    [XmlElement("ColorOverride")]
+    [Browsable(false)]
+    public string ClrGridHtml
+    {
+        get { return ColorTranslator.ToHtml(_ColorOverride); }
+        set { _ColorOverride = ColorTranslator.FromHtml(value); }
+    }
+
+    [Category("Entity Properties")]
+    public TextAlignment LabelAlignment
+    {
+        get { return labelAlignment; }
+        set
+        {
+            labelAlignment = value;
+            if (parentBox != null) parentBox.Invalidate();
+        }
+    }
+
+    [Category("Entity Properties")]
+    public int Priority
+    {
+        get { return _Priority; }
+        set
+        {
+            _Priority = value;
+            if (parentBox != null)
+            {
+                parentBox.SortEntities();
+                parentBox.Invalidate();
+            }
+        }
     }
 
     public void SetParent ( EntityBox parent )
