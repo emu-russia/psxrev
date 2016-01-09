@@ -358,27 +358,52 @@ namespace System.Windows.Forms
                     // Selection box area
                     //
 
-                    PointF left = ScreenToLambda(SelectStartMouseX, SelectStartMouseY);
-                    PointF right = ScreenToLambda(e.X, e.Y);
-                    PointF temp;
+                    PointF selectionStart = ScreenToLambda(SelectStartMouseX, SelectStartMouseY);
+                    PointF selectionEnd = ScreenToLambda(e.X, e.Y);
 
-                    if ( right.X < left.X )
+                    PointF selectionOrigin = new PointF();
+                    PointF selectionSize = new PointF();
+
+                    selectionSize.X = Math.Abs(selectionEnd.X - selectionStart.X);
+                    selectionSize.Y = Math.Abs(selectionEnd.Y - selectionStart.Y);
+
+                    if ( selectionEnd.X > selectionStart.X )
                     {
-                        temp = left;
-                        left = right;
-                        right = temp;
+                        if ( selectionEnd.Y > selectionStart.Y )
+                        {
+                            selectionOrigin.X = selectionStart.X;
+                            selectionOrigin.Y = selectionStart.Y;
+                        }
+                        else
+                        {
+                            selectionOrigin.X = selectionStart.X;
+                            selectionOrigin.Y = selectionEnd.Y;
+                        }
+                    }
+                    else
+                    {
+                        if (selectionEnd.Y > selectionStart.Y)
+                        {
+                            selectionOrigin.X = selectionEnd.X;
+                            selectionOrigin.Y = selectionStart.Y;
+                        }
+                        else
+                        {
+                            selectionOrigin.X = selectionEnd.X;
+                            selectionOrigin.Y = selectionEnd.Y;
+                        }
                     }
 
-                    RectangleF rect = new RectangleF(left.X,
-                                                      left.Y,
-                                                      right.X - left.X,
-                                                      right.Y - left.Y);
+                    RectangleF rect = new RectangleF(selectionOrigin.X,
+                                                      selectionOrigin.Y,
+                                                      selectionSize.X,
+                                                      selectionSize.Y);
 
                     //
                     // Estimate area. Doesn't count selection below 4 lamda square
                     //
 
-                    float square = Math.Abs(right.X - left.X) * Math.Abs(right.Y - left.Y);
+                    float square = selectionSize.X * selectionSize.Y;
 
                     if (square >= 4.0F)
                     {
