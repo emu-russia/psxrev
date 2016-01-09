@@ -311,5 +311,48 @@ namespace DerouteSharp
         {
             entityBox1.DeleteSelected();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.Selection;
+            propertyGrid1.Refresh();
+            SelectionButtonHighlight();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasConnect;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.WireInterconnect;
+            propertyGrid1.Refresh();
+            WiresButtonHighlight();
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.D1)
+            {
+                entityBox1.Mode = EntityType.Selection;
+                propertyGrid1.Refresh();
+                SelectionButtonHighlight();
+            }
+            else if (e.KeyCode == Keys.D2)
+            {
+                entityBox1.Mode = EntityType.ViasConnect;
+                propertyGrid1.Refresh();
+                ViasButtonHighlight();
+            }
+            else if (e.KeyCode == Keys.D3)
+            {
+                entityBox1.Mode = EntityType.WireInterconnect;
+                propertyGrid1.Refresh();
+                WiresButtonHighlight();
+            }
+        }
     }
 }

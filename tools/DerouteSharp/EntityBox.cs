@@ -18,8 +18,8 @@ namespace System.Windows.Forms
         private float _lambda;
         private int [] _imageZoom = new int[3];
         private int _zoom;
-        private Point[] _imageScroll = new Point[3];
-        private Point[] _savedImageScroll = new Point[3];
+        private PointF[] _imageScroll = new PointF[3];
+        private PointF[] _savedImageScroll = new PointF[3];
         private int _ScrollX;
         private int _ScrollY;
         private int SavedScrollX;
@@ -115,7 +115,7 @@ namespace System.Windows.Forms
         private PointF ScreenToLambda ( int ScreenX, int ScreenY)
         {
             PointF point = new PointF (0.0F, 0.0F);
-            float zf = (float)Zoom / 100;
+            float zf = (float)Zoom / 100F;
 
             point.X = (float)(ScreenX - ScrollX) / (zf * Lambda);
             point.Y = (float)(ScreenY - ScrollY) / (zf * Lambda);
@@ -126,7 +126,7 @@ namespace System.Windows.Forms
         private Point LambdaToScreen ( float LambdaX, float LambdaY )
         {
             Point point = new Point(0, 0);
-            float zf = (float)Zoom / 100;
+            float zf = (float)Zoom / 100F;
 
             float x = LambdaX * Lambda * zf + (float)ScrollX;
             float y = LambdaY * Lambda * zf + (float)ScrollY;
@@ -556,6 +556,8 @@ namespace System.Windows.Forms
             // Scroll animation
             //
 
+            Point screenCoord = new Point();
+
             if ( ScrollingBegin )
             {
                 switch (Mode)
@@ -564,27 +566,27 @@ namespace System.Windows.Forms
                     default:
                         ScrollX = SavedScrollX + e.X - SavedMouseX;
                         ScrollY = SavedScrollY + e.Y - SavedMouseY;
-                        _imageScroll[0].X = _savedImageScroll[0].X + e.X - SavedMouseX;
-                        _imageScroll[0].Y = _savedImageScroll[0].Y + e.Y - SavedMouseY;
-                        _imageScroll[1].X = _savedImageScroll[1].X + e.X - SavedMouseX;
-                        _imageScroll[1].Y = _savedImageScroll[1].Y + e.Y - SavedMouseY;
-                        _imageScroll[2].X = _savedImageScroll[2].X + e.X - SavedMouseX;
-                        _imageScroll[2].Y = _savedImageScroll[2].Y + e.Y - SavedMouseY;
                         break;
 
                     case EntityType.ImageLayer0:
-                        _imageScroll[0].X = _savedImageScroll[0].X + e.X - SavedMouseX;
-                        _imageScroll[0].Y = _savedImageScroll[0].Y + e.Y - SavedMouseY;
+                        screenCoord = LambdaToScreen(_savedImageScroll[0].X, _savedImageScroll[0].Y);
+
+                        _imageScroll[0] = ScreenToLambda(screenCoord.X + e.X - SavedMouseX,
+                                                          screenCoord.Y + e.Y - SavedMouseY);
                         break;
 
                     case EntityType.ImageLayer1:
-                        _imageScroll[1].X = _savedImageScroll[1].X + e.X - SavedMouseX;
-                        _imageScroll[1].Y = _savedImageScroll[1].Y + e.Y - SavedMouseY;
+                        screenCoord = LambdaToScreen(_savedImageScroll[1].X, _savedImageScroll[1].Y);
+
+                        _imageScroll[1] = ScreenToLambda(screenCoord.X + e.X - SavedMouseX,
+                                                          screenCoord.Y + e.Y - SavedMouseY);
                         break;
 
                     case EntityType.ImageLayer2:
-                        _imageScroll[2].X = _savedImageScroll[2].X + e.X - SavedMouseX;
-                        _imageScroll[2].Y = _savedImageScroll[2].Y + e.Y - SavedMouseY;
+                        screenCoord = LambdaToScreen(_savedImageScroll[2].X, _savedImageScroll[2].Y);
+
+                        _imageScroll[2] = ScreenToLambda(screenCoord.X + e.X - SavedMouseX,
+                                                          screenCoord.Y + e.Y - SavedMouseY);
                         break;
                 }
 
@@ -688,9 +690,6 @@ namespace System.Windows.Forms
             {
                 case EntityType.Selection:
                 default:
-                    ZoomImage0 += delta;
-                    ZoomImage1 += delta;
-                    ZoomImage2 += delta;
                     Zoom += delta;
                     break;
 
@@ -1192,15 +1191,17 @@ namespace System.Windows.Forms
             // Image Layers
             //
 
+            float zf = (float)Zoom / 100F;
+
             for (int n = 2; n >= 0; n--)
             {
                 if (_image[n] != null && hideImage == false)
                 {
-                    int zoom = _imageZoom[n];
-                    int imageWidth = _image[n].Width * zoom / 100;
-                    int imageHeight = _image[n].Height * zoom / 100;
-                    int sx = _imageScroll[n].X;
-                    int sy = _imageScroll[n].Y;
+                    Point imageOffset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
+                    float imageWidth = _image[n].Width * zf;
+                    float imageHeight = _image[n].Height * zf;
+                    float sx = imageOffset.X;
+                    float sy = imageOffset.Y;
 
                     gr.DrawImage(_image[n],
                                   sx, sy,
@@ -1446,10 +1447,14 @@ namespace System.Windows.Forms
             get { return _imageOpacity[0]; }
             set
             {
-                if (_image[0] != null)
+                if (_imageOrig[0] != null)
                 {
+                    float zf = (float)_imageZoom[0] / 100F;
                     _imageOpacity[0] = Math.Max(0, Math.Min(100, value));
-                    _image[0] = ChangeOpacity(_imageOrig[0], (float)_imageOpacity[0] / 100);
+                    _image[0] = ResizeImage(_imageOrig[0],
+                                          (int)((float)_imageOrig[0].Width * zf),
+                                          (int)((float)_imageOrig[0].Height * zf));
+                    _image[0] = ChangeOpacity(_image[0], (float)_imageOpacity[0] / 100);
                     Invalidate();
                 }
             }
@@ -1461,10 +1466,14 @@ namespace System.Windows.Forms
             get { return _imageOpacity[1]; }
             set
             {
-                if (_image[1] != null)
+                if (_imageOrig[1] != null)
                 {
+                    float zf = (float)_imageZoom[1] / 100F;
                     _imageOpacity[1] = Math.Max(0, Math.Min(100, value));
-                    _image[1] = ChangeOpacity(_imageOrig[1], (float)_imageOpacity[1] / 100);
+                    _image[1] = ResizeImage(_imageOrig[1],
+                                          (int)((float)_imageOrig[1].Width * zf),
+                                          (int)((float)_imageOrig[1].Height * zf));
+                    _image[1] = ChangeOpacity(_image[1], (float)_imageOpacity[1] / 100);
                     Invalidate();
                 }
             }
@@ -1476,10 +1485,14 @@ namespace System.Windows.Forms
             get { return _imageOpacity[2]; }
             set
             {
-                if (_image[2] != null)
+                if (_imageOrig[2] != null)
                 {
+                    float zf = (float)_imageZoom[2] / 100F;
                     _imageOpacity[2] = Math.Max(0, Math.Min(100, value));
-                    _image[2] = ChangeOpacity(_imageOrig[2], (float)_imageOpacity[2] / 100);
+                    _image[2] = ResizeImage(_imageOrig[2],
+                                          (int)((float)_imageOrig[2].Width * zf),
+                                          (int)((float)_imageOrig[2].Height * zf));
+                    _image[2] = ChangeOpacity(_image[2], (float)_imageOpacity[2] / 100);
                     Invalidate();
                 }
             }
@@ -1517,21 +1530,21 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
-        public Point ScrollImage0
+        public PointF ScrollImage0
         {
             get { return _imageScroll[0]; }
             set { _imageScroll[0] = value; Invalidate(); }
         }
 
         [Category("Appearance")]
-        public Point ScrollImage1
+        public PointF ScrollImage1
         {
             get { return _imageScroll[1]; }
             set { _imageScroll[1] = value; Invalidate(); }
         }
 
         [Category("Appearance")]
-        public Point ScrollImage2
+        public PointF ScrollImage2
         {
             get { return _imageScroll[2]; }
             set { _imageScroll[2] = value; Invalidate(); }
@@ -1711,9 +1724,6 @@ namespace System.Windows.Forms
             get { return _zoom; }
             set
             {
-                int oldZoom = _zoom;
-                float oldzf = (float)oldZoom / 100.0F;
-
                 if (value < 30)
                     value = 30;
 
@@ -1722,29 +1732,33 @@ namespace System.Windows.Forms
 
                 _zoom = value;
                 
-/*
-                float zf = (float)Zoom / 100.0F;
-
-                Point origin;
-                Point sceneSize = DetermineSceneSize(out origin);
-
-                float deltaX = Math.Abs(sceneSize.X * zf - sceneSize.X * oldzf) / 2;
-                float deltaY = Math.Abs(sceneSize.Y * zf - sceneSize.Y * oldzf) / 2;
-
-                if (_zoom < oldZoom)  // Zoom out
-                {
-                    _ScrollX += (int)deltaX;
-                    _ScrollY += (int)deltaY;
-                }
-                else if (_zoom > oldZoom) // Zoom in
-                {
-                    _ScrollX -= (int)deltaX;
-                    _ScrollY -= (int)deltaY;
-                }
-*/
-
                 Invalidate();
             }
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
 
         [Category("Appearance")]
@@ -1760,6 +1774,16 @@ namespace System.Windows.Forms
                     value = 400;
 
                 _imageZoom[0] = value;
+
+                float zf = (float)_imageZoom[0] / 100F;
+
+                if (_imageOrig[0] != null)
+                {
+                    _image[0] = ResizeImage(_imageOrig[0],
+                                          (int)((float)_imageOrig[0].Width * zf),
+                                          (int)((float)_imageOrig[0].Height * zf));
+                    _image[0] = ChangeOpacity(_image[0], (float)_imageOpacity[0] / 100);
+                }
 
                 Invalidate();
             }
@@ -1779,6 +1803,16 @@ namespace System.Windows.Forms
 
                 _imageZoom[1] = value;
 
+                float zf = (float)_imageZoom[1] / 100F;
+
+                if (_imageOrig[1] != null)
+                {
+                    _image[1] = ResizeImage(_imageOrig[1],
+                                          (int)((float)_imageOrig[1].Width * zf),
+                                          (int)((float)_imageOrig[1].Height * zf));
+                    _image[1] = ChangeOpacity(_image[1], (float)_imageOpacity[1] / 100);
+                }
+
                 Invalidate();
             }
         }
@@ -1796,6 +1830,16 @@ namespace System.Windows.Forms
                     value = 400;
 
                 _imageZoom[2] = value;
+
+                float zf = (float)_imageZoom[2] / 100F;
+
+                if (_imageOrig[2] != null)
+                {
+                    _image[2] = ResizeImage(_imageOrig[2],
+                                              (int)((float)_imageOrig[2].Width * zf),
+                                              (int)((float)_imageOrig[2].Height * zf));
+                    _image[2] = ChangeOpacity(_image[2], (float)_imageOpacity[2] / 100);
+                }
 
                 Invalidate();
             }
@@ -1834,16 +1878,16 @@ namespace System.Windows.Forms
             {
                 if (_image[n] != null && HideImage == false)
                 {
-                    float zf = (float)_imageZoom[n] / 100F;
+                    Point offset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
 
-                    if (_imageScroll[n].X < originOut.X)
-                        originOut.X = _imageScroll[n].X;
+                    if (offset.X < originOut.X)
+                        originOut.X = offset.X;
 
-                    if (_imageScroll[n].Y < originOut.Y)
-                        originOut.Y = _imageScroll[n].Y;
+                    if (offset.Y < originOut.Y)
+                        originOut.Y = offset.Y;
 
-                    int rightSide = (int)((float)_image[n].Width * zf) + _imageScroll[n].X;
-                    int bottomSide = (int)((float)_image[n].Height * zf) + _imageScroll[n].Y;
+                    int rightSide = _image[n].Width + offset.X;
+                    int bottomSide = _image[n].Height + offset.Y;
 
                     if (rightSide > point.X )
                         point.X = rightSide;
