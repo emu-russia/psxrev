@@ -26,9 +26,12 @@ namespace System.Windows.Forms
         private int LastMouseY;
         private int DragStartMouseX;
         private int DragStartMouseY;
+        private int SelectStartMouseX;
+        private int SelectStartMouseY;
         private bool ScrollingBegin = false;
         private bool DrawingBegin = false;
         private bool DraggingBegin = false;
+        private bool SelectionBegin = false;
         private List <Entity> _entities;
         private EntityType drawMode = EntityType.Selection;
         private bool hideImage;
@@ -38,6 +41,7 @@ namespace System.Windows.Forms
         private PropertyGrid entityGrid;
         private List<Entity> selected;
         private float draggingDist;
+        private Color selectionBoxColor;
 
         public EntityBox()
         {
@@ -51,6 +55,7 @@ namespace System.Windows.Forms
             hideVias = false;
             hideWires = false;
             hideCells = false;
+            selectionBoxColor = Color.Red;
             entityGrid = null;
 
             DefaultEntityAppearance();
@@ -281,10 +286,11 @@ namespace System.Windows.Forms
             }
 
             //
-            // Dragging
+            // Dragging / selection
             //
 
-            if ( e.Button == MouseButtons.Left && Mode == EntityType.Selection && DraggingBegin == false )
+            if ( e.Button == MouseButtons.Left && Mode == EntityType.Selection
+                 && DraggingBegin == false && SelectionBegin == false )
             {
                 selected = GetSelected();
 
@@ -302,6 +308,12 @@ namespace System.Windows.Forms
                     DragStartMouseX = e.X;
                     DragStartMouseY = e.Y;
                     DraggingBegin = true;
+                }
+                else
+                {
+                    SelectStartMouseX = e.X;
+                    SelectStartMouseY = e.Y;
+                    SelectionBegin = true;
                 }
             }
 
@@ -324,9 +336,86 @@ namespace System.Windows.Forms
 
             if (e.Button == MouseButtons.Left && Mode == EntityType.Selection)
             {
+                //
+                // Catch entities overlapping selection box
+                //
+
+                bool CatchSomething = false;
+
+                if (SelectionBegin)
+                {
+                    //
+                    // Selection box area
+                    //
+
+                    PointF left = ScreenToLambda(SelectStartMouseX, SelectStartMouseY);
+                    PointF right = ScreenToLambda(e.X, e.Y);
+                    PointF temp;
+
+                    if ( right.X < left.X )
+                    {
+                        temp = left;
+                        left = right;
+                        right = temp;
+                    }
+
+                    RectangleF rect = new RectangleF(left.X,
+                                                      left.Y,
+                                                      right.X - left.X,
+                                                      right.Y - left.Y);
+
+                    //
+                    // Estimate area. Doesn't count selection below 4 lamda square
+                    //
+
+                    float square = Math.Abs(right.X - left.X) * Math.Abs(right.Y - left.Y);
+
+                    if (square >= 4.0F)
+                    {
+                        foreach (Entity ent in _entities)
+                        {
+                            if ( IsEntityCell(ent) )
+                            {
+                                RectangleF rect2 = new RectangleF(ent.LambdaX, ent.LambdaY,
+                                                                   ent.LambdaWidth, ent.LambdaHeight);
+
+                                if ( rect.IntersectsWith(rect2) && ent.Selected == false )
+                                {
+                                    ent.Selected = true;
+                                    CatchSomething = true;
+                                }
+                            }
+                            else if ( IsEntityWire(ent) )
+                            {
+                                PointF point1 = new PointF(ent.LambdaX, ent.LambdaY);
+                                PointF point2 = new PointF(ent.LambdaEndX, ent.LambdaEndY);
+
+                                if (LineIntersectsRect(point1, point2, rect) && ent.Selected == false)
+                                {
+                                    ent.Selected = true;
+                                    CatchSomething = true;
+                                }
+                            }
+                            else    // Vias
+                            {
+                                PointF point1 = new PointF(ent.LambdaX, ent.LambdaY);
+
+                                if ( rect.Contains ( point1 ) && ent.Selected == false )
+                                {
+                                    ent.Selected = true;
+                                    CatchSomething = true;
+                                }
+                            }
+                        }
+
+                        if (CatchSomething == true)
+                            Invalidate();
+                    }
+                }
+
                 Entity entity = EntityHitTest(e.X, e.Y);
 
-                if (entity != null)
+                if (entity != null && CatchSomething == false)
                 {
                     if (entity.Selected == true && draggingDist < 1.0F)
                     {
@@ -347,7 +436,7 @@ namespace System.Windows.Forms
                 }
                 else
                 {
-                    if (draggingDist < 1.0F )
+                    if (draggingDist < 1.0F && CatchSomething == false )
                         RemoveSelection();
                 }
             }
@@ -387,6 +476,16 @@ namespace System.Windows.Forms
                 selected.Clear();
                 draggingDist = 0.0F;
                 DraggingBegin = false;
+            }
+
+            //
+            // Clear selection box
+            //
+
+            if (SelectionBegin)
+            {
+                SelectionBegin = false;
+                Invalidate();
             }
 
             base.OnMouseUp(e);
@@ -449,6 +548,17 @@ namespace System.Windows.Forms
                                                      Math.Pow(Math.Abs(e.Y - DragStartMouseY), 2) );
                 }
 
+                Invalidate();
+            }
+
+            //
+            // Selection box animation
+            //
+
+            if ( SelectionBegin )
+            {
+                LastMouseX = e.X;
+                LastMouseY = e.Y;
                 Invalidate();
             }
 
@@ -829,7 +939,7 @@ namespace System.Windows.Forms
                 // Wire drawing animation
                 //
 
-                if (DrawingBegin && (Mode == EntityType.WireGround ||
+                if (WholeScene == false && DrawingBegin && (Mode == EntityType.WireGround ||
                        Mode == EntityType.WireInterconnect || Mode == EntityType.WirePower))
                 {
                     Entity virtualEntity = new Entity();
@@ -854,6 +964,25 @@ namespace System.Windows.Forms
 
                 if (WholeScene == false)
                     DrawLambdaScale(gr);
+            }
+
+            //
+            // Select box animation
+            //
+
+            if (SelectionBegin && WholeScene == false)
+            {
+                Point[] points = new Point[5];
+
+                points[0] = new Point(SelectStartMouseX, SelectStartMouseY);
+                points[1] = new Point(SelectStartMouseX, LastMouseY);
+                points[2] = new Point(LastMouseX, LastMouseY);
+                points[3] = new Point(LastMouseX, SelectStartMouseY);
+                points[4] = new Point(SelectStartMouseX, SelectStartMouseY);
+
+                Pen pen = new Pen(SelectionBoxColor, 2);
+
+                gr.DrawLines(pen, points);
             }
 
             if (WholeScene == true )
@@ -988,6 +1117,13 @@ namespace System.Windows.Forms
         {
             get { return hideCells; }
             set { hideCells = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public Color SelectionBoxColor
+        {
+            get { return selectionBoxColor; }
+            set { selectionBoxColor = value; Invalidate(); }
         }
 
         protected virtual void OnImageChanged(EventArgs e)
@@ -1296,6 +1432,38 @@ namespace System.Windows.Forms
         //
         // Entity Selection-related
         //
+
+        public static bool LineIntersectsRect(PointF p1, PointF p2, RectangleF r)
+        {
+            return LineIntersectsLine(p1, p2, new PointF(r.X, r.Y), new PointF(r.X + r.Width, r.Y)) ||
+                   LineIntersectsLine(p1, p2, new PointF(r.X + r.Width, r.Y), new PointF(r.X + r.Width, r.Y + r.Height)) ||
+                   LineIntersectsLine(p1, p2, new PointF(r.X + r.Width, r.Y + r.Height), new PointF(r.X, r.Y + r.Height)) ||
+                   LineIntersectsLine(p1, p2, new PointF(r.X, r.Y + r.Height), new PointF(r.X, r.Y)) ||
+                   (r.Contains(p1) && r.Contains(p2));
+        }
+
+        private static bool LineIntersectsLine(PointF l1p1, PointF l1p2, PointF l2p1, PointF l2p2)
+        {
+            float q = (l1p1.Y - l2p1.Y) * (l2p2.X - l2p1.X) - (l1p1.X - l2p1.X) * (l2p2.Y - l2p1.Y);
+            float d = (l1p2.X - l1p1.X) * (l2p2.Y - l2p1.Y) - (l1p2.Y - l1p1.Y) * (l2p2.X - l2p1.X);
+
+            if (d == 0)
+            {
+                return false;
+            }
+
+            float r = q / d;
+
+            q = (l1p1.Y - l2p1.Y) * (l1p2.X - l1p1.X) - (l1p1.X - l2p1.X) * (l1p2.Y - l1p1.Y);
+            float s = q / d;
+
+            if (r < 0 || r > 1 || s < 0 || s > 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         private bool PointInPoly ( PointF[] poly, PointF point )
         {
@@ -1774,8 +1942,53 @@ namespace System.Windows.Forms
             if ( e.KeyCode == Keys.Delete )
                 DeleteSelected();
 
-            if (e.KeyCode == Keys.Escape)
+            else if (e.KeyCode == Keys.Escape)
                 RemoveSelection();
+
+            else if ( ( e.KeyCode == Keys.Right ||
+                        e.KeyCode == Keys.Left ||
+                        e.KeyCode == Keys.Up ||
+                        e.KeyCode == Keys.Down ) && Mode == EntityType.Selection)
+            {
+                bool NeedUpdate = false;
+                float deltaX = 0;
+                float deltaY = 0;
+
+                switch (e.KeyCode)
+                {
+                    case Keys.Right:
+                        deltaX = +0.1F;
+                        deltaY = 0;
+                        break;
+                    case Keys.Left:
+                        deltaX = -0.1F;
+                        deltaY = 0;
+                        break;
+                    case Keys.Up:
+                        deltaX = 0;
+                        deltaY = -0.1F;
+                        break;
+                    case Keys.Down:
+                        deltaX = 0;
+                        deltaY = +0.1F;
+                        break;
+                }
+
+                foreach (Entity entity in _entities)
+                {
+                    if (entity.Selected)
+                    {
+                        entity.LambdaX += deltaX;
+                        entity.LambdaY += deltaY;
+                        entity.LambdaEndX += deltaX;
+                        entity.LambdaEndY += deltaY;
+                        NeedUpdate = true;
+                    }
+                }
+
+                if (NeedUpdate)
+                    Invalidate();
+            }
 
             base.OnKeyUp(e);
         }
@@ -1788,6 +2001,140 @@ namespace System.Windows.Forms
         {
             if ( AutoPriority == true )
                 _entities = _entities.OrderBy(o => o.Priority).ToList();
+        }
+
+        //
+        // Wire merger. This operation is potentially dangerous!!!
+        //
+
+        public void MergeSelectedWires (bool Vertical)
+        {
+            List<Entity> selectedWires = new List<Entity>();
+
+            //
+            // Grab selected 
+            //
+
+            foreach ( Entity entity in _entities )
+            {
+                if ( IsEntityWire(entity) && entity.Selected == true)
+                {
+                    selectedWires.Add(entity);
+                }
+            }
+
+            if (selectedWires.Count == 0)
+                return;
+
+            //
+            // Find left-most and right-most points + Determine average wire type
+            //
+
+            PointF left = new PointF(float.MaxValue, float.MaxValue);
+            PointF right = new PointF(float.MinValue, float.MinValue);
+            int [] types = { 0, 0, 0 };
+
+            foreach ( Entity entity in selectedWires )
+            {
+                if (Vertical == true)
+                {
+                    if (entity.LambdaY < left.Y)
+                    {
+                        left.X = entity.LambdaX;
+                        left.Y = entity.LambdaY;
+                    }
+                    if (entity.LambdaEndY < left.Y)
+                    {
+                        left.X = entity.LambdaEndX;
+                        left.Y = entity.LambdaEndY;
+                    }
+                    if (entity.LambdaY > right.Y)
+                    {
+                        right.X = entity.LambdaX;
+                        right.Y = entity.LambdaY;
+                    }
+                    if (entity.LambdaEndY > right.Y)
+                    {
+                        right.X = entity.LambdaEndX;
+                        right.Y = entity.LambdaEndY;
+                    }
+                }
+                else
+                {
+                    if (entity.LambdaX < left.X)
+                    {
+                        left.X = entity.LambdaX;
+                        left.Y = entity.LambdaY;
+                    }
+                    if (entity.LambdaEndX < left.X)
+                    {
+                        left.X = entity.LambdaEndX;
+                        left.Y = entity.LambdaEndY;
+                    }
+                    if (entity.LambdaX > right.X)
+                    {
+                        right.X = entity.LambdaX;
+                        right.Y = entity.LambdaY;
+                    }
+                    if (entity.LambdaEndX > right.X)
+                    {
+                        right.X = entity.LambdaEndX;
+                        right.Y = entity.LambdaEndY;
+                    }
+                }
+
+                switch ( entity.Type )
+                {
+                    case EntityType.WireGround:
+                        types[0]++;
+                        break;
+                    case EntityType.WireInterconnect:
+                        types[1]++;
+                        break;
+                    case EntityType.WirePower:
+                        types[2]++;
+                        break;
+                }
+            }
+
+            //
+            // Remove selected
+            //
+
+            foreach (Entity entity in selectedWires)
+            {
+                _entities.Remove(entity);
+            }
+
+            //
+            // Add merger
+            //
+
+            Point start = LambdaToScreen(left.X, left.Y);
+            Point end = LambdaToScreen(right.X, right.Y);
+
+            int maxValue = types.Max();
+            int index = types.ToList().IndexOf(maxValue);
+
+            EntityType type;
+
+            switch(index)
+            {
+                case 0:
+                    type = EntityType.WireGround;
+                    break;
+                case 1:
+                default:
+                    type = EntityType.WireInterconnect;
+                    break;
+                case 2:
+                    type = EntityType.WirePower;
+                    break;
+            }
+
+            AddWire(type, start.X, start.Y, end.X, end.Y);
+
+            Invalidate();
         }
     }
 }

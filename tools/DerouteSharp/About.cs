@@ -15,6 +15,8 @@ namespace DerouteSharp
         public About()
         {
             InitializeComponent();
+
+            label3.Text = Environment.Version.ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)

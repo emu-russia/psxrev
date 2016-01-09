@@ -96,5 +96,15 @@ namespace DerouteSharp
         {
             entityBox1.AssociateSelectionPropertyGrid(propertyGrid2);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(false);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(true);
+        }
     }
 }
