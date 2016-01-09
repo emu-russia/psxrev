@@ -335,24 +335,58 @@ namespace DerouteSharp
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.D1)
+            if (e.KeyCode == Keys.F1 )
             {
                 entityBox1.Mode = EntityType.Selection;
                 propertyGrid1.Refresh();
                 SelectionButtonHighlight();
             }
-            else if (e.KeyCode == Keys.D2)
+            else if (e.KeyCode == Keys.F2 )
             {
                 entityBox1.Mode = EntityType.ViasConnect;
                 propertyGrid1.Refresh();
                 ViasButtonHighlight();
             }
-            else if (e.KeyCode == Keys.D3)
+            else if (e.KeyCode == Keys.F3 )
             {
                 entityBox1.Mode = EntityType.WireInterconnect;
                 propertyGrid1.Refresh();
                 WiresButtonHighlight();
             }
+        }
+
+        private void SetLayerOpacity (int opacity)
+        {
+            switch (entityBox1.Mode)
+            {
+                case EntityType.ImageLayer0:
+                    entityBox1.ImageOpacity0 = opacity;
+                    entityBox1.Invalidate();
+                    break;
+                case EntityType.ImageLayer1:
+                    entityBox1.ImageOpacity1 = opacity;
+                    entityBox1.Invalidate();
+                    break;
+                case EntityType.ImageLayer2:
+                    entityBox1.ImageOpacity2 = opacity;
+                    entityBox1.Invalidate();
+                    break;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SetLayerOpacity(50);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SetLayerOpacity(75);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            SetLayerOpacity(100);
         }
     }
 }

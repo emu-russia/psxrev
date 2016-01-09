@@ -17,6 +17,8 @@ namespace DerouteSharp
             InitializeComponent();
 
             label3.Text = Environment.Version.ToString();
+
+            label5.Text = GC.GetTotalMemory(true).ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)
