@@ -3,9 +3,20 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Xml.Serialization;
 
+//
+// Japan coding style.
+//
+// We use this enumeration for Mode and entity type at same time.
+//
+
 public enum EntityType
 {
     Selection = 0,
+
+    ImageLayer0,
+    ImageLayer1,
+    ImageLayer2,
+
     ViasInput = 10,
     ViasOutput,
     ViasInout,

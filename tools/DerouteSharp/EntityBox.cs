@@ -13,9 +13,13 @@ namespace System.Windows.Forms
 {
     public partial class EntityBox : Control
     {
-        private Image _image;
+        private Image [] _image = new Image[3];
+        private Image[] _imageOrig = new Image[3];
         private float _lambda;
+        private int [] _imageZoom = new int[3];
         private int _zoom;
+        private Point[] _imageScroll = new Point[3];
+        private Point[] _savedImageScroll = new Point[3];
         private int _ScrollX;
         private int _ScrollY;
         private int SavedScrollX;
@@ -42,6 +46,7 @@ namespace System.Windows.Forms
         private List<Entity> selected;
         private float draggingDist;
         private Color selectionBoxColor;
+        private int[] _imageOpacity = new int[3];
 
         public EntityBox()
         {
@@ -51,6 +56,8 @@ namespace System.Windows.Forms
 
             Lambda = 5.0F;
             Zoom = 100;
+            _imageZoom[0] = _imageZoom[1] = _imageZoom[2] = 100;
+            _imageOpacity[0] = _imageOpacity[1] = _imageOpacity[2] = 100;
             hideImage = false;
             hideVias = false;
             hideWires = false;
@@ -62,8 +69,6 @@ namespace System.Windows.Forms
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
-
-        public event EventHandler<EventArgs> ImageChanged;
 
         private bool IsEntityWire(Entity entity)
         {
@@ -246,6 +251,9 @@ namespace System.Windows.Forms
                 SavedMouseY = e.Y;
                 SavedScrollX = _ScrollX;
                 SavedScrollY = _ScrollY;
+                _savedImageScroll[0] = _imageScroll[0];
+                _savedImageScroll[1] = _imageScroll[1];
+                _savedImageScroll[2] = _imageScroll[2];
                 ScrollingBegin = true;
             }
 
@@ -253,7 +261,8 @@ namespace System.Windows.Forms
             // Drawing
             //
 
-            if (e.Button == MouseButtons.Left && Mode != EntityType.Selection && 
+            if (e.Button == MouseButtons.Left && Mode != EntityType.Selection &&
+                 Mode != EntityType.ImageLayer0 && Mode != EntityType.ImageLayer1 && Mode != EntityType.ImageLayer2 && 
                  DrawingBegin == false && ScrollingBegin == false )
             {
                 Entity entity;
@@ -524,8 +533,36 @@ namespace System.Windows.Forms
 
             if ( ScrollingBegin )
             {
-                ScrollX = SavedScrollX + e.X - SavedMouseX;
-                ScrollY = SavedScrollY + e.Y - SavedMouseY;
+                switch (Mode)
+                {
+                    case EntityType.Selection:
+                    default:
+                        ScrollX = SavedScrollX + e.X - SavedMouseX;
+                        ScrollY = SavedScrollY + e.Y - SavedMouseY;
+                        _imageScroll[0].X = _savedImageScroll[0].X + e.X - SavedMouseX;
+                        _imageScroll[0].Y = _savedImageScroll[0].Y + e.Y - SavedMouseY;
+                        _imageScroll[1].X = _savedImageScroll[1].X + e.X - SavedMouseX;
+                        _imageScroll[1].Y = _savedImageScroll[1].Y + e.Y - SavedMouseY;
+                        _imageScroll[2].X = _savedImageScroll[2].X + e.X - SavedMouseX;
+                        _imageScroll[2].Y = _savedImageScroll[2].Y + e.Y - SavedMouseY;
+                        break;
+
+                    case EntityType.ImageLayer0:
+                        _imageScroll[0].X = _savedImageScroll[0].X + e.X - SavedMouseX;
+                        _imageScroll[0].Y = _savedImageScroll[0].Y + e.Y - SavedMouseY;
+                        break;
+
+                    case EntityType.ImageLayer1:
+                        _imageScroll[1].X = _savedImageScroll[1].X + e.X - SavedMouseX;
+                        _imageScroll[1].Y = _savedImageScroll[1].Y + e.Y - SavedMouseY;
+                        break;
+
+                    case EntityType.ImageLayer2:
+                        _imageScroll[2].X = _savedImageScroll[2].X + e.X - SavedMouseX;
+                        _imageScroll[2].Y = _savedImageScroll[2].Y + e.Y - SavedMouseY;
+                        break;
+                }
+
                 Invalidate();
             }
 
@@ -615,10 +652,38 @@ namespace System.Windows.Forms
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            if ( e.Delta > 0 )
-                Zoom += 10;
+            int delta;
+
+            if (e.Delta > 0)
+                delta = +10;
             else
-                Zoom -= 10;
+                delta = -10;
+
+            switch ( Mode )
+            {
+                case EntityType.Selection:
+                default:
+                    ZoomImage0 += delta;
+                    ZoomImage1 += delta;
+                    ZoomImage2 += delta;
+                    Zoom += delta;
+                    break;
+
+                case EntityType.ImageLayer0:
+                    ZoomImage0 += delta;
+                    Invalidate();
+                    break;
+
+                case EntityType.ImageLayer1:
+                    ZoomImage1 += delta;
+                    Invalidate();
+                    break;
+
+                case EntityType.ImageLayer2:
+                    ZoomImage2 += delta;
+                    Invalidate();
+                    break;
+            }
 
             base.OnMouseWheel(e);
         }
@@ -1055,6 +1120,25 @@ namespace System.Windows.Forms
                     break;
             }
         }
+        
+        private static Bitmap ChangeOpacity(Image img, float opacityvalue)
+        {
+            Bitmap bmp = new Bitmap(img.Width, img.Height); // Determining Width and Height of Source Image
+            Graphics graphics = Graphics.FromImage(bmp);
+            ColorMatrix colormatrix = new ColorMatrix();
+            colormatrix.Matrix33 = opacityvalue;
+            ImageAttributes imgAttribute = new ImageAttributes();
+            imgAttribute.SetColorMatrix(colormatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+            graphics.DrawImage(img, new Rectangle(0, 0, bmp.Width, bmp.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imgAttribute);
+            graphics.Dispose();   // Releasing all resource used by graphics 
+            return bmp;
+        }
+
+        //
+        // width / height - Scene viewport size
+        // WholeScene - draw Scene for saving to bitmap
+        // origin - Scene offset.
+        //
 
         private void DrawScene (Graphics gr, int width, int height, bool WholeScene, Point origin)
         {
@@ -1080,15 +1164,24 @@ namespace System.Windows.Forms
             gr.FillRegion(new SolidBrush(BackColor), region);
 
             //
-            // Image
+            // Image Layers
             //
 
-            if (Image != null && hideImage == false)
+            for (int n = 2; n >= 0; n--)
             {
-                gr.DrawImage( Image,
-                              ScrollX, ScrollY,
-                              Image.Width * Zoom / 100,
-                              Image.Height * Zoom / 100);
+                if (_image[n] != null && hideImage == false)
+                {
+                    int zoom = _imageZoom[n];
+                    int imageWidth = _image[n].Width * zoom / 100;
+                    int imageHeight = _image[n].Height * zoom / 100;
+                    int sx = _imageScroll[n].X;
+                    int sy = _imageScroll[n].Y;
+
+                    gr.DrawImage(_image[n],
+                                  sx, sy,
+                                  imageWidth,
+                                  imageHeight);
+                }
             }
 
             //
@@ -1278,21 +1371,91 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance"), DefaultValue(null)]
-        public System.Drawing.Image Image
+        public Image Image0
         {
-            get { return _image; }
+            get { return _image[0]; }
             set
             {
-                if (_image != value)
+                if (_image[0] != value)
                 {
-                    _image = value;
-
-                    ScrollX = 0;
-                    ScrollY = 0;
+                    _image[0] = _imageOrig[0] = value;
                     ScrollingBegin = false;
-                    Zoom = 100;
+                    Invalidate();
+                }
+            }
+        }
 
-                    OnImageChanged(EventArgs.Empty);
+        [Category("Appearance"), DefaultValue(null)]
+        public Image Image1
+        {
+            get { return _image[1]; }
+            set
+            {
+                if (_image[1] != value)
+                {
+                    _image[1] = _imageOrig[1] = value;
+                    ScrollingBegin = false;
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Appearance"), DefaultValue(null)]
+        public Image Image2
+        {
+            get { return _image[2]; }
+            set
+            {
+                if (_image[2] != value)
+                {
+                    _image[2] = _imageOrig[2] = value;
+                    ScrollingBegin = false;
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Appearance")]
+        public int ImageOpacity0
+        {
+            get { return _imageOpacity[0]; }
+            set
+            {
+                if (_image[0] != null)
+                {
+                    _imageOpacity[0] = Math.Max(0, Math.Min(100, value));
+                    _image[0] = ChangeOpacity(_imageOrig[0], (float)_imageOpacity[0] / 100);
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Appearance")]
+        public int ImageOpacity1
+        {
+            get { return _imageOpacity[1]; }
+            set
+            {
+                if (_image[1] != null)
+                {
+                    _imageOpacity[1] = Math.Max(0, Math.Min(100, value));
+                    _image[1] = ChangeOpacity(_imageOrig[1], (float)_imageOpacity[1] / 100);
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Appearance")]
+        public int ImageOpacity2
+        {
+            get { return _imageOpacity[2]; }
+            set
+            {
+                if (_image[2] != null)
+                {
+                    _imageOpacity[2] = Math.Max(0, Math.Min(100, value));
+                    _image[2] = ChangeOpacity(_imageOrig[2], (float)_imageOpacity[2] / 100);
+                    Invalidate();
                 }
             }
         }
@@ -1320,9 +1483,33 @@ namespace System.Windows.Forms
             {
                 drawMode = value;
 
-                if (drawMode == EntityType.Selection)
+                if (drawMode == EntityType.Selection || 
+                    drawMode == EntityType.ImageLayer0 || 
+                    drawMode == EntityType.ImageLayer1 || 
+                    drawMode == EntityType.ImageLayer2 )
                     DrawingBegin = false;
             }
+        }
+
+        [Category("Appearance")]
+        public Point ScrollImage0
+        {
+            get { return _imageScroll[0]; }
+            set { _imageScroll[0] = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public Point ScrollImage1
+        {
+            get { return _imageScroll[1]; }
+            set { _imageScroll[1] = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public Point ScrollImage2
+        {
+            get { return _imageScroll[2]; }
+            set { _imageScroll[2] = value; Invalidate(); }
         }
 
         [Category("Appearance")]
@@ -1372,14 +1559,6 @@ namespace System.Windows.Forms
         {
             get { return selectionBoxColor; }
             set { selectionBoxColor = value; Invalidate(); }
-        }
-
-        protected virtual void OnImageChanged(EventArgs e)
-        {
-            Invalidate();
-
-            if (ImageChanged != null)
-                ImageChanged(this, e);
         }
 
         private void AddVias ( EntityType Type, int ScreenX, int ScreenY )
@@ -1517,6 +1696,8 @@ namespace System.Windows.Forms
                     value = 400;
 
                 _zoom = value;
+                
+/*
                 float zf = (float)Zoom / 100.0F;
 
                 Point origin;
@@ -1535,6 +1716,61 @@ namespace System.Windows.Forms
                     _ScrollX -= (int)deltaX;
                     _ScrollY -= (int)deltaY;
                 }
+*/
+
+                Invalidate();
+            }
+        }
+
+        [Category("Appearance")]
+        public int ZoomImage0
+        {
+            get { return _imageZoom[0]; }
+            set
+            {
+                if (value < 30)
+                    value = 30;
+
+                if (value > 400)
+                    value = 400;
+
+                _imageZoom[0] = value;
+
+                Invalidate();
+            }
+        }
+
+        [Category("Appearance")]
+        public int ZoomImage1
+        {
+            get { return _imageZoom[1]; }
+            set
+            {
+                if (value < 30)
+                    value = 30;
+
+                if (value > 400)
+                    value = 400;
+
+                _imageZoom[1] = value;
+
+                Invalidate();
+            }
+        }
+
+        [Category("Appearance")]
+        public int ZoomImage2
+        {
+            get { return _imageZoom[2]; }
+            set
+            {
+                if (value < 30)
+                    value = 30;
+
+                if (value > 400)
+                    value = 400;
+
+                _imageZoom[2] = value;
 
                 Invalidate();
             }
@@ -1545,6 +1781,10 @@ namespace System.Windows.Forms
             _entities.Clear();
             Invalidate();
         }
+
+        //
+        // Scene size and origin in screen coordinate space
+        //
 
         private Point DetermineSceneSize (out Point origin)
         {
@@ -1561,11 +1801,36 @@ namespace System.Windows.Forms
             _ScrollY = 0;
             _zoom = 100;
 
-            if ( Image != null && HideImage == false )
+            //
+            // Space occupied by Image layers
+            //
+
+            for (int n = 2; n >= 0; n--)
             {
-                point.X = Image.Width;
-                point.Y = Image.Height;
+                if (_image[n] != null && HideImage == false)
+                {
+                    float zf = (float)_imageZoom[n] / 100F;
+
+                    if (_imageScroll[n].X < originOut.X)
+                        originOut.X = _imageScroll[n].X;
+
+                    if (_imageScroll[n].Y < originOut.Y)
+                        originOut.Y = _imageScroll[n].Y;
+
+                    int rightSide = (int)((float)_image[n].Width * zf) + _imageScroll[n].X;
+                    int bottomSide = (int)((float)_image[n].Height * zf) + _imageScroll[n].Y;
+
+                    if (rightSide > point.X )
+                        point.X = rightSide;
+
+                    if (bottomSide > point.Y)
+                        point.Y = bottomSide;
+                }
             }
+
+            //
+            // Space occupied by Entities
+            //
 
             if (Lambda > 0)
             {
@@ -1829,7 +2094,7 @@ namespace System.Windows.Forms
             return (BAx * BCy - BAy * BCx);
         }
 
-        private void RemoveSelection ()
+        public void RemoveSelection ()
         {
             bool UpdateRequired = false;
 
@@ -1854,7 +2119,7 @@ namespace System.Windows.Forms
             entityGrid = propertyGrid;
         }
 
-        private void DeleteSelected ()
+        public void DeleteSelected ()
         {
             bool UpdateRequired = false;
             List<Entity> pendingDelete = new List<Entity>();
@@ -2470,6 +2735,26 @@ namespace System.Windows.Forms
             AddWire(type, start.X, start.Y, end.X, end.Y);
 
             Invalidate();
+        }
+
+        public void LoadImage (Image image)
+        {
+            switch ( drawMode )
+            {
+                case EntityType.ImageLayer0:
+                default:
+                    _image[0] = _imageOrig[0] = image;
+                    Invalidate();
+                    break;
+                case EntityType.ImageLayer1:
+                    _image[1] = _imageOrig[1] = image;
+                    Invalidate();
+                    break;
+                case EntityType.ImageLayer2:
+                    _image[2] = _imageOrig[2] = image;
+                    Invalidate();
+                    break;
+            }
         }
     }
 }
