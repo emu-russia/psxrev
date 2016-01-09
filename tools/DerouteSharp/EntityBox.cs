@@ -45,7 +45,7 @@ namespace System.Windows.Forms
 
         public EntityBox()
         {
-            BackColor = SystemColors.MenuHighlight;
+            BackColor = SystemColors.WindowFrame;
 
             _entities = new List<Entity>();
 
@@ -93,6 +93,7 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.CellBusSupp ||
                      entity.Type == EntityType.CellFlipFlop ||
                      entity.Type == EntityType.CellLatch ||
+                     entity.Type == EntityType.CellOther ||
                      entity.Type == EntityType.UnitRegfile ||
                      entity.Type == EntityType.UnitMemory ||
                      entity.Type == EntityType.UnitCustom);
@@ -269,7 +270,7 @@ namespace System.Windows.Forms
                      Mode == EntityType.CellBuffer || Mode == EntityType.CellBusSupp ||
                      Mode == EntityType.CellFlipFlop || Mode == EntityType.CellLatch ||
                      Mode == EntityType.CellLogic || Mode == EntityType.CellMux ||
-                     Mode == EntityType.CellNot || Mode == EntityType.UnitCustom ||
+                     Mode == EntityType.CellNot || Mode == EntityType.CellOther || Mode == EntityType.UnitCustom ||
                      Mode == EntityType.UnitMemory || Mode == EntityType.UnitRegfile ) )
                 {
                     Okay = false;
@@ -468,6 +469,30 @@ namespace System.Windows.Forms
             }
 
             //
+            // Add cell
+            //
+
+            if (e.Button == MouseButtons.Left && (
+                    Mode == EntityType.CellNot ||
+                    Mode == EntityType.CellBuffer ||
+                    Mode == EntityType.CellMux ||
+                    Mode == EntityType.CellLogic ||
+                    Mode == EntityType.CellAdder ||
+                    Mode == EntityType.CellBusSupp ||
+                    Mode == EntityType.CellFlipFlop ||
+                    Mode == EntityType.CellLatch ||
+                    Mode == EntityType.CellOther ||
+                    Mode == EntityType.UnitRegfile ||
+                    Mode == EntityType.UnitMemory ||
+                    Mode == EntityType.UnitCustom
+                    ) && DrawingBegin)
+            {
+                AddCell(Mode, SavedMouseX, SavedMouseY, e.X, e.Y);
+
+                DrawingBegin = false;
+            }
+
+            //
             // End Drag
             //
 
@@ -510,6 +535,29 @@ namespace System.Windows.Forms
 
             if ( DrawingBegin && (Mode == EntityType.WireGround || 
                    Mode == EntityType.WireInterconnect || Mode == EntityType.WirePower ))
+            {
+                LastMouseX = e.X;
+                LastMouseY = e.Y;
+                Invalidate();
+            }
+
+            //
+            // Cell drawing animation
+            //
+
+            if (DrawingBegin && (
+                    Mode == EntityType.CellNot ||
+                    Mode == EntityType.CellBuffer ||
+                    Mode == EntityType.CellMux ||
+                    Mode == EntityType.CellLogic ||
+                    Mode == EntityType.CellAdder ||
+                    Mode == EntityType.CellBusSupp ||
+                    Mode == EntityType.CellFlipFlop ||
+                    Mode == EntityType.CellLatch ||
+                    Mode == EntityType.CellOther ||
+                    Mode == EntityType.UnitRegfile ||
+                    Mode == EntityType.UnitMemory ||
+                    Mode == EntityType.UnitCustom ))
             {
                 LastMouseX = e.X;
                 LastMouseY = e.Y;
@@ -631,9 +679,14 @@ namespace System.Windows.Forms
             int endX;
             int endY;
             float zf = (float)Zoom / 100.0F;
+            Color cellColor;
 
             switch (entity.Type)
             {
+                //
+                // Vias
+                //
+
                 case EntityType.ViasConnect:
                 case EntityType.ViasFloating:
                 case EntityType.ViasGround:
@@ -766,6 +819,10 @@ namespace System.Windows.Forms
 
                     break;
 
+                //
+                // Wires
+                //
+
                 case EntityType.WireGround:
                 case EntityType.WirePower:
                 case EntityType.WireInterconnect:
@@ -797,7 +854,7 @@ namespace System.Windows.Forms
 
                     if (entity.Selected == true)
                     {
-                        gr.DrawLine(new Pen(Color.LimeGreen, (float)WireBaseSize * zf + (int)Lambda),
+                        gr.DrawLine(new Pen(SelectionColor, (float)WireBaseSize * zf + (int)Lambda),
                                      startX, startY,
                                      endX, endY);
                     }
@@ -831,8 +888,8 @@ namespace System.Windows.Forms
                         float Tga = (float)a / (float)b;
                         float alpha = (float)Math.Atan(Tga);
 
-                        int wireLength = (int)Math.Sqrt( Math.Pow(end.X - start.X, 2) +
-                                                         Math.Pow(end.Y - start.Y, 2));
+                        int wireLength = (int)(Math.Sqrt( Math.Pow(end.X - start.X, 2) +
+                                                         Math.Pow(end.Y - start.Y, 2)) / (double)zf);
 
                         SizeF textSize = gr.MeasureString(entity.Label, Font);
 
@@ -870,13 +927,130 @@ namespace System.Windows.Forms
                     break;
 
                 //
-                // TODO: Draw cells and units
+                // Cells and Units
                 //
 
                 case EntityType.CellNot:
+                case EntityType.CellBuffer:
+                case EntityType.CellMux:
+                case EntityType.CellLogic:
+                case EntityType.CellAdder:
+                case EntityType.CellBusSupp:
+                case EntityType.CellFlipFlop:
+                case EntityType.CellLatch:
+                case EntityType.CellOther:
+                case EntityType.UnitRegfile:
+                case EntityType.UnitMemory:
+                case EntityType.UnitCustom:
 
                     if (hideCells == true)
                         break;
+
+                    if (entity.Type == EntityType.CellNot)
+                        cellColor = CellNotColor;
+                    else if (entity.Type == EntityType.CellBuffer)
+                        cellColor = CellBufferColor;
+                    else if (entity.Type == EntityType.CellMux)
+                        cellColor = CellMuxColor;
+                    else if (entity.Type == EntityType.CellLogic)
+                        cellColor = CellLogicColor;
+                    else if (entity.Type == EntityType.CellAdder)
+                        cellColor = CellAdderColor;
+                    else if (entity.Type == EntityType.CellBusSupp)
+                        cellColor = CellBusSuppColor;
+                    else if (entity.Type == EntityType.CellFlipFlop)
+                        cellColor = CellFlipFlopColor;
+                    else if (entity.Type == EntityType.CellLatch)
+                        cellColor = CellLatchColor;
+                    else if (entity.Type == EntityType.CellOther)
+                        cellColor = CellOtherColor;
+                    else if (entity.Type == EntityType.UnitRegfile)
+                        cellColor = UnitRegfileColor;
+                    else if (entity.Type == EntityType.UnitMemory)
+                        cellColor = UnitMemoryColor;
+                    else if (entity.Type == EntityType.UnitCustom)
+                        cellColor = UnitCustomColor;
+                    else
+                        cellColor = Color.Gray;
+
+                    if (entity.ColorOverride != Color.Black)
+                        cellColor = entity.ColorOverride;
+
+                    cellColor = Color.FromArgb(CellOpacity, cellColor);
+
+                    Point topLeft = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point bottomRight = LambdaToScreen( entity.LambdaX + entity.LambdaWidth,
+                                                        entity.LambdaY + entity.LambdaHeight);
+                    Point rectSize = new Point(bottomRight.X - topLeft.X,
+                                               bottomRight.Y - topLeft.Y );
+
+                    if ( entity.Selected )
+                    {
+                        gr.FillRectangle(new SolidBrush(SelectionColor),
+                                           topLeft.X - (int)Lambda, topLeft.Y - (int)Lambda,
+                                           rectSize.X + 2*(int)Lambda, rectSize.Y + 2*(int)Lambda);
+                    }
+
+                    gr.FillRectangle( new SolidBrush(cellColor), topLeft.X, topLeft.Y,
+                                       rectSize.X, rectSize.Y);
+
+                    //
+                    // Label
+                    //
+
+                    if (entity.Label != null && entity.Label.Length > 0)
+                    {
+                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+
+                        Point origin = new Point(0, 0);
+
+                        TextAlignment align = entity.LabelAlignment;
+
+                        if (align == TextAlignment.GlobalSettings)
+                            align = CellTextAlignment;
+
+                        rectSize.X = (int)((float)rectSize.X / zf);
+                        rectSize.Y = (int)((float)rectSize.Y / zf);
+
+                        switch (align)
+                        {
+                            case TextAlignment.TopLeft:
+                            default:
+                                origin.X = 0;
+                                origin.Y = 0;
+                                break;
+
+                            case TextAlignment.BottomLeft:
+                                origin.X = 0;
+                                origin.Y = rectSize.Y - (int)(textSize.Height);
+                                break;
+
+                            case TextAlignment.Top:
+                                origin.X = rectSize.X / 2 - (int)(textSize.Width / 2);
+                                origin.Y = 0;
+                                break;
+
+                            case TextAlignment.Bottom:
+                                origin.X = rectSize.X / 2 - (int)(textSize.Width / 2);
+                                origin.Y = rectSize.Y - (int)textSize.Height;
+                                break;
+
+                            case TextAlignment.TopRight:
+                                origin.X = rectSize.X - (int)textSize.Width;
+                                origin.Y = 0;
+                                break;
+
+                            case TextAlignment.BottomRight:
+                                origin.X = rectSize.X - (int)textSize.Width;
+                                origin.Y = rectSize.Y - (int)textSize.Height;
+                                break;
+                        }
+
+                        gr.TranslateTransform(topLeft.X, topLeft.Y);
+                        gr.ScaleTransform(zf, zf);
+                        gr.DrawString(entity.Label, Font, Brushes.Black, origin.X, origin.Y);
+                        gr.ResetTransform();
+                    }
 
                     break;
             }
@@ -953,7 +1127,75 @@ namespace System.Windows.Forms
                     virtualEntity.LambdaEndY = point2.Y;
                     virtualEntity.Type = Mode;
                     virtualEntity.Priority = WirePriority;
-                    virtualEntity.ColorOverride = Color.Black; 
+                    virtualEntity.ColorOverride = Color.Black;
+
+                    DrawEntity(virtualEntity, gr);
+                }
+
+                //
+                // Cell drawing animation
+                //
+
+                if (WholeScene == false && DrawingBegin && (
+                        Mode == EntityType.CellNot ||
+                        Mode == EntityType.CellBuffer ||
+                        Mode == EntityType.CellMux ||
+                        Mode == EntityType.CellLogic ||
+                        Mode == EntityType.CellAdder ||
+                        Mode == EntityType.CellBusSupp ||
+                        Mode == EntityType.CellFlipFlop ||
+                        Mode == EntityType.CellLatch ||
+                        Mode == EntityType.CellOther ||
+                        Mode == EntityType.UnitRegfile ||
+                        Mode == EntityType.UnitMemory ||
+                        Mode == EntityType.UnitCustom
+                       ))
+                {
+                    Entity virtualEntity = new Entity();
+
+                    PointF point1 = ScreenToLambda(SavedMouseX, SavedMouseY);
+                    PointF point2 = ScreenToLambda(LastMouseX, LastMouseY);
+                    PointF originPos = new PointF();
+                    PointF size = new PointF();
+
+                    size.X = Math.Abs(point2.X - point1.X);
+                    size.Y = Math.Abs(point2.Y - point1.Y);
+
+                    if (point2.X > point1.X)
+                    {
+                        if ( point2.Y > point1.Y )
+                        {
+                            originPos.X = point1.X;
+                            originPos.Y = point1.Y;
+                        }
+                        else
+                        {
+                            originPos.X = point1.X;
+                            originPos.Y = point2.Y;
+                        }
+                    }
+                    else
+                    {
+                        if (point2.Y > point1.Y)
+                        {
+                            originPos.X = point2.X;
+                            originPos.Y = point1.Y;
+                        }
+                        else
+                        {
+                            originPos.X = point2.X;
+                            originPos.Y = point2.Y;
+                        }
+                    }
+
+                    virtualEntity.LambdaX = originPos.X;
+                    virtualEntity.LambdaY = originPos.Y;
+                    virtualEntity.LambdaWidth = size.X;
+                    virtualEntity.LambdaHeight = size.Y;
+                    virtualEntity.Type = Mode;
+                    virtualEntity.Priority = CellPriority;
+                    virtualEntity.ColorOverride = Color.Black;
+                    virtualEntity.Label = Mode.ToString();
 
                     DrawEntity(virtualEntity, gr);
                 }
@@ -1011,6 +1253,12 @@ namespace System.Windows.Forms
             gfx.Render(e.Graphics);
 
             gfx.Dispose();
+        }
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            Invalidate();
+            base.OnSizeChanged(e);
         }
 
         #endregion Drawing
@@ -1181,6 +1429,71 @@ namespace System.Windows.Forms
             item.Type = Type;
             item.ColorOverride = Color.Black;
             item.Priority = WirePriority;
+            item.SetParent(this);
+
+            _entities.Add(item);
+            SortEntities();
+            Invalidate();
+        }
+
+        private void AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        {
+            Entity item = new Entity();
+
+            PointF point1 = ScreenToLambda(StartX, StartY);
+            PointF point2 = ScreenToLambda(EndX, EndY);
+
+            PointF originPos = new PointF();
+            PointF size = new PointF();
+
+            size.X = Math.Abs(point2.X - point1.X);
+            size.Y = Math.Abs(point2.Y - point1.Y);
+
+            float square = size.X * size.Y;
+
+            if (square < 4.0F)
+            {
+                Invalidate();
+                return;
+            }
+
+            if (point2.X > point1.X)
+            {
+                if (point2.Y > point1.Y)
+                {
+                    originPos.X = point1.X;
+                    originPos.Y = point1.Y;
+                }
+                else
+                {
+                    originPos.X = point1.X;
+                    originPos.Y = point2.Y;
+                }
+            }
+            else
+            {
+                if (point2.Y > point1.Y)
+                {
+                    originPos.X = point2.X;
+                    originPos.Y = point1.Y;
+                }
+                else
+                {
+                    originPos.X = point2.X;
+                    originPos.Y = point2.Y;
+                }
+            }
+
+            item.Label = "";
+            item.LambdaX = originPos.X;
+            item.LambdaY = originPos.Y;
+            item.LambdaEndX = 1F;
+            item.LambdaEndY = 1F;
+            item.LambdaWidth = size.X;
+            item.LambdaHeight = size.Y;
+            item.Type = Type;
+            item.ColorOverride = Color.Black;
+            item.Priority = CellPriority;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -1606,6 +1919,7 @@ namespace System.Windows.Forms
         private Color _CellBusSuppColor;
         private Color _CellFlipFlopColor;
         private Color _CellLatchColor;
+        private Color _CellOtherColor;
         private Color _UnitRegfileColor;
         private Color _UnitMemoryColor;
         private Color _UnitCustomColor;
@@ -1644,6 +1958,20 @@ namespace System.Windows.Forms
             _WireInterconnectColor = Color.Blue;
             _WirePowerColor = Color.Red;
             _WireGroundColor = Color.Green;
+
+            _CellNotColor = Color.Navy;
+            _CellBufferColor = Color.Navy;
+            _CellMuxColor = Color.DarkOrange;
+            _CellLogicColor = Color.Yellow;
+            _CellAdderColor = Color.Red;
+            _CellBusSuppColor = Color.DarkViolet;
+            _CellFlipFlopColor = Color.Lime;
+            _CellLatchColor = Color.SpringGreen;
+            _CellOtherColor = Color.Snow;
+
+            _UnitRegfileColor = Color.Snow;
+            _UnitMemoryColor = Color.Snow;
+            _UnitCustomColor = Color.Snow;
 
             _SelectionColor = Color.LimeGreen;
 
@@ -1823,6 +2151,13 @@ namespace System.Windows.Forms
         {
             get { return _CellLatchColor; }
             set { _CellLatchColor = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public Color CellOtherColor
+        {
+            get { return _CellOtherColor; }
+            set { _CellOtherColor = value; Invalidate(); }
         }
 
         [Category("Entity Appearance")]

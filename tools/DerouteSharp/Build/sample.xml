@@ -79,45 +79,6 @@
     <Priority>2</Priority>
   </Entity>
   <Entity>
-    <Label />
-    <LambdaWidth>1</LambdaWidth>
-    <LambdaHeight>1</LambdaHeight>
-    <LambdaX>18.6153851</LambdaX>
-    <LambdaY>5.179487</LambdaY>
-    <LambdaEndX>18.7179489</LambdaEndX>
-    <LambdaEndY>24.7179489</LambdaEndY>
-    <Type>WireInterconnect</Type>
-    <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
-    <Priority>2</Priority>
-  </Entity>
-  <Entity>
-    <Label />
-    <LambdaWidth>1</LambdaWidth>
-    <LambdaHeight>1</LambdaHeight>
-    <LambdaX>18.5641022</LambdaX>
-    <LambdaY>24.4102573</LambdaY>
-    <LambdaEndX>18.5128212</LambdaEndX>
-    <LambdaEndY>46.71795</LambdaEndY>
-    <Type>WireInterconnect</Type>
-    <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
-    <Priority>2</Priority>
-  </Entity>
-  <Entity>
-    <Label />
-    <LambdaWidth>1</LambdaWidth>
-    <LambdaHeight>1</LambdaHeight>
-    <LambdaX>18.3589745</LambdaX>
-    <LambdaY>46.25641</LambdaY>
-    <LambdaEndX>18.5128212</LambdaEndX>
-    <LambdaEndY>50.51282</LambdaEndY>
-    <Type>WireInterconnect</Type>
-    <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
-    <Priority>2</Priority>
-  </Entity>
-  <Entity>
     <Label>Teh orange Wire1</Label>
     <LambdaWidth>1</LambdaWidth>
     <LambdaHeight>1</LambdaHeight>
@@ -469,26 +430,13 @@
     <Priority>2</Priority>
   </Entity>
   <Entity>
-    <Label />
-    <LambdaWidth>1</LambdaWidth>
-    <LambdaHeight>1</LambdaHeight>
-    <LambdaX>7.478261</LambdaX>
-    <LambdaY>-0.7826087</LambdaY>
-    <LambdaEndX>7.39130449</LambdaEndX>
-    <LambdaEndY>31.304348</LambdaEndY>
-    <Type>WireInterconnect</Type>
-    <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
-    <Priority>2</Priority>
-  </Entity>
-  <Entity>
     <Label>Teh Orange Wire2</Label>
     <LambdaWidth>1</LambdaWidth>
     <LambdaHeight>1</LambdaHeight>
-    <LambdaX>14.608696</LambdaX>
-    <LambdaY>49.304348</LambdaY>
-    <LambdaEndX>15.304348</LambdaEndX>
-    <LambdaEndY>85.5652161</LambdaEndY>
+    <LambdaX>14.956522</LambdaX>
+    <LambdaY>49.826088</LambdaY>
+    <LambdaEndX>15.73913</LambdaEndX>
+    <LambdaEndY>86.08696</LambdaEndY>
     <Type>WireInterconnect</Type>
     <ColorOverride>DarkOrange</ColorOverride>
     <LabelAlignment>GlobalSettings</LabelAlignment>
@@ -502,6 +450,19 @@
     <LambdaY>16.333334</LambdaY>
     <LambdaEndX>91.55556</LambdaEndX>
     <LambdaEndY>45</LambdaEndY>
+    <Type>WireInterconnect</Type>
+    <ColorOverride>Black</ColorOverride>
+    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <Priority>2</Priority>
+  </Entity>
+  <Entity>
+    <Label />
+    <LambdaWidth>1</LambdaWidth>
+    <LambdaHeight>1</LambdaHeight>
+    <LambdaX>18.5</LambdaX>
+    <LambdaY>5.125</LambdaY>
+    <LambdaEndX>18.5</LambdaEndX>
+    <LambdaEndY>50.5</LambdaEndY>
     <Type>WireInterconnect</Type>
     <ColorOverride>Black</ColorOverride>
     <LabelAlignment>GlobalSettings</LabelAlignment>
@@ -760,6 +721,19 @@
     <LambdaHeight>1</LambdaHeight>
     <LambdaX>12.7333336</LambdaX>
     <LambdaY>64.86667</LambdaY>
+    <LambdaEndX>0</LambdaEndX>
+    <LambdaEndY>0</LambdaEndY>
+    <Type>ViasConnect</Type>
+    <ColorOverride>Black</ColorOverride>
+    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <Priority>3</Priority>
+  </Entity>
+  <Entity>
+    <Label />
+    <LambdaWidth>1</LambdaWidth>
+    <LambdaHeight>1</LambdaHeight>
+    <LambdaX>14.782609</LambdaX>
+    <LambdaY>50.173912</LambdaY>
     <LambdaEndX>0</LambdaEndX>
     <LambdaEndY>0</LambdaEndY>
     <Type>ViasConnect</Type>

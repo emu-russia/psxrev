@@ -78,6 +78,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -91,6 +92,33 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deroute.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\selection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_float.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_ground.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_inout.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_input.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_output.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vias_power.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

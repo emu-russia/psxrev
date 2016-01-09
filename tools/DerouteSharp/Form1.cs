@@ -17,27 +17,18 @@ namespace DerouteSharp
             InitializeComponent();
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            entityBox1.AssociateSelectionPropertyGrid(propertyGrid2);
+
+            entityBox1.Mode = EntityType.Selection;
+
+            SelectionButtonHighlight();
+        }
+
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            entityBox1.Mode = EntityType.Selection;
-            propertyGrid1.Refresh();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            entityBox1.Mode = EntityType.ViasConnect;
-            propertyGrid1.Refresh();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            entityBox1.Mode = EntityType.WireInterconnect;
-            propertyGrid1.Refresh();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -92,19 +83,207 @@ namespace DerouteSharp
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void SelectionButtonHighlight ()
         {
-            entityBox1.AssociateSelectionPropertyGrid(propertyGrid2);
+            toolStripButton1.BackColor = SystemColors.ActiveCaption;
+            toolStripDropDownButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton2.BackColor = SystemColors.Control;
+            toolStripDropDownButton3.BackColor = SystemColors.Control;
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void ViasButtonHighlight()
+        {
+            toolStripButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton1.BackColor = SystemColors.ActiveCaption;
+            toolStripDropDownButton2.BackColor = SystemColors.Control;
+            toolStripDropDownButton3.BackColor = SystemColors.Control;
+        }
+
+        private void WiresButtonHighlight()
+        {
+            toolStripButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton2.BackColor = SystemColors.ActiveCaption;
+            toolStripDropDownButton3.BackColor = SystemColors.Control;
+        }
+
+        private void CellsButtonHighlight()
+        {
+            toolStripButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton2.BackColor = SystemColors.Control;
+            toolStripDropDownButton3.BackColor = SystemColors.ActiveCaption;
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.Selection;
+            propertyGrid1.Refresh();
+            SelectionButtonHighlight();
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
         {
             entityBox1.MergeSelectedWires(false);
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void toolStripButton3_Click(object sender, EventArgs e)
         {
             entityBox1.MergeSelectedWires(true);
+        }
+
+        private void wireInterconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.WireInterconnect;
+            propertyGrid1.Refresh();
+            WiresButtonHighlight();
+        }
+
+        private void wirePowerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.WirePower;
+            propertyGrid1.Refresh();
+            WiresButtonHighlight();
+        }
+
+        private void wireGroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.WireGround;
+            propertyGrid1.Refresh();
+            WiresButtonHighlight();
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasConnect;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasPowerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasPower;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasGroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasGround;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasInputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasInput;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasOutputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasOutput;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasInoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasInout;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void viasFloatingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.ViasFloating;
+            propertyGrid1.Refresh();
+            ViasButtonHighlight();
+        }
+
+        private void cellNotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellNot;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellBufferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellBuffer;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellMuxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellMux;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellLogicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellLogic;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellAdderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellAdder;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellBusSupportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellBusSupp;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellFlipFlopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellFlipFlop;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellLatchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellLatch;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void cellOtherToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.CellOther;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void unitRegisterFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.UnitRegfile;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void unitMemoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.UnitMemory;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
+        }
+
+        private void unitCustomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityType.UnitCustom;
+            propertyGrid1.Refresh();
+            CellsButtonHighlight();
         }
     }
 }

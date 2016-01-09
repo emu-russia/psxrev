@@ -24,6 +24,7 @@ public enum EntityType
     CellBusSupp,
     CellFlipFlop,
     CellLatch,
+    CellOther,
     UnitRegfile,
     UnitMemory,
     UnitCustom,
