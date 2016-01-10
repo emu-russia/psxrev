@@ -38,10 +38,10 @@ namespace System.Windows.Forms
         private int _zoom;
         private PointF[] _imageScroll = new PointF[3];
         private PointF[] _savedImageScroll = new PointF[3];
-        private int _ScrollX;
-        private int _ScrollY;
-        private int SavedScrollX;
-        private int SavedScrollY;
+        private float _ScrollX;
+        private float _ScrollY;
+        private float SavedScrollX;
+        private float SavedScrollY;
         private int SavedMouseX;
         private int SavedMouseY;
         private int LastMouseX;
@@ -152,8 +152,8 @@ namespace System.Windows.Forms
             PointF point = new PointF(0.0F, 0.0F);
             float zf = (float)Zoom / 100F;
 
-            point.X = (float)(ScreenX - ScrollX) / (zf * Lambda);
-            point.Y = (float)(ScreenY - ScrollY) / (zf * Lambda);
+            point.X = (float)ScreenX / (zf * Lambda) - ScrollX;
+            point.Y = (float)ScreenY / (zf * Lambda) - ScrollY;
 
             return point;
         }
@@ -163,8 +163,8 @@ namespace System.Windows.Forms
             Point point = new Point(0, 0);
             float zf = (float)Zoom / 100F;
 
-            float x = LambdaX * Lambda * zf + (float)ScrollX;
-            float y = LambdaY * Lambda * zf + (float)ScrollY;
+            float x = (LambdaX + ScrollX) * (zf * Lambda);
+            float y = (LambdaY + ScrollY) * (zf * Lambda);
 
             point.X = (int)x;
             point.Y = (int)y;
@@ -644,8 +644,13 @@ namespace System.Windows.Forms
                 {
                     case EntityType.Selection:
                     default:
-                        ScrollX = SavedScrollX + e.X - SavedMouseX;
-                        ScrollY = SavedScrollY + e.Y - SavedMouseY;
+                        screenCoord = LambdaToScreen(SavedScrollX, SavedScrollY);
+
+                        PointF lambdaCoord = ScreenToLambda(screenCoord.X + e.X - SavedMouseX,
+                                                          screenCoord.Y + e.Y - SavedMouseY);
+
+                        ScrollX = lambdaCoord.X;
+                        ScrollY = lambdaCoord.Y;
                         break;
 
                     case EntityType.ImageLayer0:
@@ -1257,12 +1262,13 @@ namespace System.Windows.Forms
         //
         // width / height - Scene viewport size
         // WholeScene - draw Scene for saving to bitmap
-        // origin - Scene offset.
+        // origin - Scene offset (px).
         //
 
         private void DrawScene(Graphics gr, int width, int height, bool WholeScene, Point origin)
         {
-            int savedScrollX = 0, savedScrollY = 0, savedZoom = 0;
+            float savedScrollX = 0, savedScrollY = 0;
+            int savedZoom = 0;
 
             if (WholeScene == true)
             {
@@ -1270,8 +1276,10 @@ namespace System.Windows.Forms
                 savedScrollY = _ScrollY;
                 savedZoom = _zoom;
 
-                _ScrollX = -origin.X;
-                _ScrollY = -origin.Y;
+                PointF originLambda = ScreenToLambda(origin.X, origin.Y);
+
+                _ScrollX = -originLambda.X - ScrollX;
+                _ScrollY = -originLambda.Y - ScrollY;
                 _zoom = 100;
             }
 
@@ -1690,7 +1698,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
-        public int ScrollX
+        public float ScrollX
         {
             get { return _ScrollX; }
             set
@@ -1704,7 +1712,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
-        public int ScrollY
+        public float ScrollY
         {
             get { return _ScrollY; }
             set
@@ -1723,6 +1731,8 @@ namespace System.Windows.Forms
             get { return _zoom; }
             set
             {
+                int oldZoom = _zoom;
+
                 if (value < 30)
                     value = 30;
 
@@ -1731,10 +1741,13 @@ namespace System.Windows.Forms
 
                 _zoom = value;
 
-                Invalidate();
+                if (oldZoom != _zoom)
+                {
+                    Invalidate();
 
-                if (OnZoomChanged != null)
-                    OnZoomChanged(this, EventArgs.Empty);
+                    if (OnZoomChanged != null)
+                        OnZoomChanged(this, EventArgs.Empty);
+                }
             }
         }
 
@@ -2124,7 +2137,8 @@ namespace System.Windows.Forms
             Point point = new Point(0, 0);
             Point originOut = new Point(0, 0);
 
-            int savedScrollX = 0, savedScrollY = 0, savedZoom = 0;
+            float savedScrollX = 0, savedScrollY = 0;
+            int savedZoom = 0;
 
             savedScrollX = _ScrollX;
             savedScrollY = _ScrollY;
@@ -2208,8 +2222,8 @@ namespace System.Windows.Forms
                     {
                         screenCoords = LambdaToScreen(Math.Min(entity.LambdaX, entity.LambdaEndX),
                                                         Math.Min(entity.LambdaY, entity.LambdaEndY));
-                        screenCoords.X -= WireBaseSize;
-                        screenCoords.Y -= WireBaseSize;
+                        screenCoords.X -= 2 * WireBaseSize;
+                        screenCoords.Y -= 2 * WireBaseSize;
                     }
                     else if (IsEntityCell(entity))
                     {
@@ -2219,8 +2233,8 @@ namespace System.Windows.Forms
                     else
                     {
                         screenCoords = LambdaToScreen(entity.LambdaX, entity.LambdaY);
-                        screenCoords.X -= ViasBaseSize;
-                        screenCoords.Y -= ViasBaseSize;
+                        screenCoords.X -= 2 * ViasBaseSize;
+                        screenCoords.Y -= 2 * ViasBaseSize;
                     }
 
                     if (screenCoords.X < originOut.X)
@@ -2265,6 +2279,9 @@ namespace System.Windows.Forms
                 imageFormat = ImageFormat.Jpeg;
 
             bitmap.Save(FileName, imageFormat);
+
+            bitmap.Dispose();
+            gr.Dispose();
         }
 
         //
@@ -2904,6 +2921,16 @@ namespace System.Windows.Forms
             else if (e.KeyCode == Keys.Escape)
                 RemoveSelection();
 
+            else if (e.KeyCode == Keys.Home)
+            {
+                _ScrollX = 0;
+                _ScrollY = 0;
+                Invalidate();
+
+                if (OnScrollChanged != null)
+                    OnScrollChanged(this, EventArgs.Empty);
+            }
+
             else if ((e.KeyCode == Keys.Right ||
                         e.KeyCode == Keys.Left ||
                         e.KeyCode == Keys.Up ||
@@ -3492,8 +3519,8 @@ namespace System.Windows.Forms
         public int[] imageZoom = new int[3];
         public int zoom;
         public PointF[] imageScroll = new PointF[3];
-        public int ScrollX;
-        public int ScrollY;
+        public float ScrollX;
+        public float ScrollY;
         public List<Entity> entities;
         public EntityType drawMode;
         public bool hideImage;
