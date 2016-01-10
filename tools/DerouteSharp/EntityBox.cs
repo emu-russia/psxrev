@@ -2271,9 +2271,9 @@ namespace System.Windows.Forms
 
             if (ext.ToLower() == ".jpg" || ext.ToLower() == ".jpeg")
                 imageFormat = ImageFormat.Jpeg;
-            if (ext.ToLower() == ".png")
+            else if (ext.ToLower() == ".png")
                 imageFormat = ImageFormat.Png;
-            if (ext.ToLower() == ".bmp")
+            else if (ext.ToLower() == ".bmp")
                 imageFormat = ImageFormat.Bmp;
             else
                 imageFormat = ImageFormat.Jpeg;
