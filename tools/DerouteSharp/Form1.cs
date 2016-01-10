@@ -28,6 +28,7 @@ namespace DerouteSharp
             entityBox1.OnZoomChanged += ZoomChanged;
             entityBox1.OnEntityCountChanged += EntityCountChanged;
             entityBox1.OnLastOperation += LastOperation;
+            entityBox1.OnDebug += DebugCallback;
         }
 
         private void ScrollChanged(object sender, EventArgs e)
@@ -59,6 +60,13 @@ namespace DerouteSharp
             EntityBox entityBox = (EntityBox)sender;
 
             toolStripStatusLabel12.Text = entityBox.GetLastOperation().ToString();
+        }
+
+        private void DebugCallback (object sender, EventArgs e)
+        {
+            EntityBox entityBox = (EntityBox)sender;
+
+            label1.Text = "Dragging Distance (px): " + entityBox.GetDragDistance().ToString();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

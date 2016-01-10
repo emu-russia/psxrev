@@ -16,11 +16,15 @@ namespace System.Windows.Forms
     public enum EntityBoxOperation
     {
         Unknown = 0,
-        ImageLoad,
-        ImageScroll,
-        ImageZoom,
+        ImageScroll0,
+        ImageScroll1,
+        ImageScroll2,
+        ImageZoom0,
+        ImageZoom1,
+        ImageZoom2,
         EntityMove,
-        EntityAdd,
+        EntityAddSingle,
+        EntityAddBulk,
         EntityDelete,
         EntityMergeWires,
     }
@@ -66,8 +70,10 @@ namespace System.Windows.Forms
         private BufferedGraphicsContext context;
         private EntityBoxOperation lastOp = EntityBoxOperation.Unknown;
         private object lastOpData;
+        private List<Entity> lastEntities = new List<Entity>();
         private EntityBoxOperation cancelledOp = EntityBoxOperation.Unknown;
         private object cancelledOpData;
+        private List<Entity> cancelledEntities = new List<Entity>();
         private bool[] lockScroll = new bool[3];
         private bool[] lockZoom = new bool[3];
 
@@ -75,6 +81,7 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnZoomChanged = null;
         public event EntityBoxEventHandler OnEntityCountChanged = null;
         public event EntityBoxEventHandler OnLastOperation = null;
+        public event EntityBoxEventHandler OnDebug = null;
 
         public EntityBox()
         {
@@ -343,6 +350,12 @@ namespace System.Windows.Forms
                         entity.SavedLambdaEndY = entity.LambdaEndY;
                     }
 
+                    lastEntities = new List<Entity>();
+                    foreach (Entity entity in _entities)
+                    {
+                        lastEntities.Add(entity);
+                    }
+
                     DragStartMouseX = e.X;
                     DragStartMouseY = e.Y;
                     DraggingBegin = true;
@@ -364,6 +377,25 @@ namespace System.Windows.Forms
 
             if (e.Button == MouseButtons.Right && ScrollingBegin)
             {
+                switch ( Mode )
+                {
+                    case EntityType.ImageLayer0:
+                        LastOpWrapper = EntityBoxOperation.ImageScroll0;
+                        lastOpData = (object)_savedImageScroll[0];
+                        cancelledOp = EntityBoxOperation.Unknown;
+                        break;
+                    case EntityType.ImageLayer1:
+                        LastOpWrapper = EntityBoxOperation.ImageScroll1;
+                        lastOpData = (object)_savedImageScroll[1];
+                        cancelledOp = EntityBoxOperation.Unknown;
+                        break;
+                    case EntityType.ImageLayer2:
+                        LastOpWrapper = EntityBoxOperation.ImageScroll2;
+                        lastOpData = (object)_savedImageScroll[2];
+                        cancelledOp = EntityBoxOperation.Unknown;
+                        break;
+                }
+
                 ScrollingBegin = false;
                 Invalidate();
             }
@@ -428,7 +460,7 @@ namespace System.Windows.Forms
                                                       selectionSize.Y);
 
                     //
-                    // Estimate area. Doesn't count selection below 4 lamda square
+                    // Estimate area. Doesn't count selection below 4 lambda square
                     //
 
                     float square = selectionSize.X * selectionSize.Y;
@@ -480,7 +512,7 @@ namespace System.Windows.Forms
 
                 if (entity != null && CatchSomething == false)
                 {
-                    if (entity.Selected == true && draggingDist < 1.0F)
+                    if (entity.Selected == true && draggingDist < 1F)
                     {
                         entity.Selected = false;
                         Invalidate();
@@ -499,7 +531,7 @@ namespace System.Windows.Forms
                 }
                 else
                 {
-                    if (draggingDist < 1.0F && CatchSomething == false)
+                    if (draggingDist < 1F && CatchSomething == false)
                         RemoveSelection();
                 }
             }
@@ -560,6 +592,26 @@ namespace System.Windows.Forms
 
             if (e.Button == MouseButtons.Left && DraggingBegin)
             {
+                //
+                // Fix move jitter
+                //
+
+                if ( draggingDist < 2 * Lambda )
+                {
+                    foreach ( Entity entity in selected )
+                    {
+                        entity.LambdaX = entity.SavedLambdaX;
+                        entity.LambdaY = entity.SavedLambdaY;
+                        entity.LambdaEndX = entity.SavedLambdaEndX;
+                        entity.LambdaEndY = entity.SavedLambdaEndY;
+                    }
+                }
+                else
+                {
+                    LastOpWrapper = EntityBoxOperation.EntityMove;
+                    cancelledOp = EntityBoxOperation.Unknown;
+                }
+
                 selected.Clear();
                 draggingDist = 0.0F;
                 DraggingBegin = false;
@@ -693,8 +745,14 @@ namespace System.Windows.Forms
                     entity.LambdaEndX = lambda.X;
                     entity.LambdaEndY = lambda.Y;
 
-                    draggingDist = (float)Math.Sqrt(Math.Pow(Math.Abs(e.X - DragStartMouseX), 2) +
-                                                     Math.Pow(Math.Abs(e.Y - DragStartMouseY), 2));
+                    Point dist = new Point(Math.Abs(e.X - DragStartMouseX),
+                                             Math.Abs(e.Y - DragStartMouseY));
+
+                    draggingDist = (float)Math.Sqrt( Math.Pow(dist.X, 2) +
+                                                     Math.Pow(dist.Y, 2) );
+
+                    if (OnDebug != null)
+                        OnDebug(this, EventArgs.Empty);
                 }
 
                 Invalidate();
@@ -993,6 +1051,10 @@ namespace System.Windows.Forms
                                      startX, startY,
                                      endX, endY);
                     }
+
+                    //gr.CompositingQuality = CompositingQuality;
+                    //gr.CompositingMode = CompositingMode.SourceCopy;
+                    
 
                     gr.DrawLine(new Pen(wireColor, (float)WireBaseSize * zf),
                                  startX, startY,
@@ -1413,16 +1475,19 @@ namespace System.Windows.Forms
             }
         }
 
+        private void ReallocateGraphics ()
+        {
+            context = BufferedGraphicsManager.Current;
+            context.MaximumBuffer = new Size(Width + 1, Height + 1);
+
+            gfx = context.Allocate(CreateGraphics(),
+                 new Rectangle(0, 0, Width, Height));
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (gfx == null)
-            {
-                context = BufferedGraphicsManager.Current;
-                context.MaximumBuffer = new Size(Width + 1, Height + 1);
-
-                gfx = context.Allocate(CreateGraphics(),
-                     new Rectangle(0, 0, Width, Height));
-            }
+                ReallocateGraphics();
 
             Point origin = new Point(0, 0);
             DrawScene(gfx.Graphics, Width, Height, false, origin);
@@ -1435,12 +1500,7 @@ namespace System.Windows.Forms
             if (gfx != null)
             {
                 gfx.Dispose();
-
-                context = BufferedGraphicsManager.Current;
-                context.MaximumBuffer = new Size(Width + 1, Height + 1);
-
-                gfx = context.Allocate(CreateGraphics(),
-                     new Rectangle(0, 0, Width, Height));
+                ReallocateGraphics();
             }
 
             Invalidate();
@@ -1785,7 +1845,7 @@ namespace System.Windows.Forms
             if (OnEntityCountChanged != null)
                 OnEntityCountChanged(this, EventArgs.Empty);
 
-            LastOpWrapper = EntityBoxOperation.EntityAdd;
+            LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
         }
@@ -1825,7 +1885,7 @@ namespace System.Windows.Forms
             if (OnEntityCountChanged != null)
                 OnEntityCountChanged(this, EventArgs.Empty);
 
-            LastOpWrapper = EntityBoxOperation.EntityAdd;
+            LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
         }
@@ -1897,7 +1957,7 @@ namespace System.Windows.Forms
             if (OnEntityCountChanged != null)
                 OnEntityCountChanged(this, EventArgs.Empty);
 
-            LastOpWrapper = EntityBoxOperation.EntityAdd;
+            LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
         }
@@ -1941,6 +2001,13 @@ namespace System.Windows.Forms
                 if (value > 400)
                     value = 400;
 
+                if (LastOpWrapper != EntityBoxOperation.ImageZoom0)
+                {
+                    LastOpWrapper = EntityBoxOperation.ImageZoom0;
+                    lastOpData = (object)_imageZoom[0];
+                    cancelledOp = EntityBoxOperation.Unknown;
+                }
+
                 _imageZoom[0] = value;
 
                 float zf = (float)_imageZoom[0] / 100F;
@@ -1969,6 +2036,13 @@ namespace System.Windows.Forms
 
                 if (value > 400)
                     value = 400;
+
+                if (LastOpWrapper != EntityBoxOperation.ImageZoom1)
+                {
+                    LastOpWrapper = EntityBoxOperation.ImageZoom1;
+                    lastOpData = (object)_imageZoom[1];
+                    cancelledOp = EntityBoxOperation.Unknown;
+                }
 
                 _imageZoom[1] = value;
 
@@ -1999,6 +2073,13 @@ namespace System.Windows.Forms
                 if (value > 400)
                     value = 400;
 
+                if (LastOpWrapper != EntityBoxOperation.ImageZoom2)
+                {
+                    LastOpWrapper = EntityBoxOperation.ImageZoom2;
+                    lastOpData = (object)_imageZoom[2];
+                    cancelledOp = EntityBoxOperation.Unknown;
+                }
+
                 _imageZoom[2] = value;
 
                 float zf = (float)_imageZoom[2] / 100F;
@@ -2018,6 +2099,15 @@ namespace System.Windows.Forms
 
         public void DeleteAllEntites()
         {
+            lastEntities = new List<Entity>();
+            foreach (Entity entity in _entities)
+            {
+                lastEntities.Add(entity);
+            }
+
+            LastOpWrapper = EntityBoxOperation.EntityDelete;
+            cancelledOp = EntityBoxOperation.Unknown;
+
             _entities.Clear();
             Invalidate();
 
@@ -2228,6 +2318,15 @@ namespace System.Windows.Forms
 
             using (FileStream fs = new FileStream(FileName, FileMode.Open))
             {
+                lastEntities = new List<Entity>();
+                foreach (Entity entity in _entities)
+                {
+                    lastEntities.Add(entity);
+                }
+
+                LastOpWrapper = EntityBoxOperation.EntityAddBulk;
+                cancelledOp = EntityBoxOperation.Unknown;
+
                 if (Append == true)
                 {
                     List<Entity> list = (List<Entity>)ser.Deserialize(fs);
@@ -2369,6 +2468,15 @@ namespace System.Windows.Forms
         {
             bool UpdateRequired = false;
             List<Entity> pendingDelete = new List<Entity>();
+
+            lastEntities = new List<Entity>();
+            foreach (Entity entity in _entities)
+            {
+                lastEntities.Add(entity);
+            }
+
+            LastOpWrapper = EntityBoxOperation.EntityDelete;
+            cancelledOp = EntityBoxOperation.Unknown;
 
             foreach (Entity entity in _entities)
             {
@@ -2877,6 +2985,12 @@ namespace System.Windows.Forms
             if (selectedWires.Count == 0)
                 return;
 
+            lastEntities = new List<Entity>();
+            foreach ( Entity entity in _entities )
+            {
+                lastEntities.Add(entity);
+            }
+
             //
             // Find left-most and right-most points + Determine average wire type
             //
@@ -2985,6 +3099,9 @@ namespace System.Windows.Forms
 
             AddWire(type, start.X, start.Y, end.X, end.Y);
 
+            LastOpWrapper = EntityBoxOperation.EntityMergeWires;
+            cancelledOp = EntityBoxOperation.Unknown;
+
             Invalidate();
         }
 
@@ -3079,6 +3196,11 @@ namespace System.Windows.Forms
             return Count;
         }
 
+        public float GetDragDistance ()
+        {
+            return draggingDist;
+        }
+
         //
         // Last operation
         //
@@ -3087,16 +3209,127 @@ namespace System.Windows.Forms
         {
             switch (lastOp)
             {
-                case EntityBoxOperation.EntityAdd:
+                case EntityBoxOperation.EntityAddSingle:
                     if (Undo)
+                    {
+                        cancelledOpData = lastOpData;
                         _entities.Remove((Entity)lastOpData);
+                    }
                     else
-                        _entities.Add((Entity)lastOpData);
+                        _entities.Add((Entity)cancelledOpData);
 
                     if (OnEntityCountChanged != null)
                         OnEntityCountChanged(this, EventArgs.Empty);
 
                     Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageScroll0:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageScroll[0];
+                        _imageScroll[0] = (PointF)lastOpData;
+                    }
+                    else
+                        _imageScroll[0] = (PointF)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageScroll1:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageScroll[1];
+                        _imageScroll[1] = (PointF)lastOpData;
+                    }
+                    else
+                        _imageScroll[1] = (PointF)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageScroll2:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageScroll[2];
+                        _imageScroll[2] = (PointF)lastOpData;
+                    }
+                    else
+                        _imageScroll[2] = (PointF)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageZoom0:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageZoom[0];
+                        ZoomImage0 = (int)lastOpData;
+                    }
+                    else
+                        ZoomImage0 = (int)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageZoom1:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageZoom[1];
+                        ZoomImage1 = (int)lastOpData;
+                    }
+                    else
+                        ZoomImage1 = (int)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.ImageZoom2:
+                    if (Undo)
+                    {
+                        cancelledOpData = _imageZoom[2];
+                        ZoomImage2 = (int)lastOpData;
+                    }
+                    else
+                        ZoomImage2 = (int)cancelledOpData;
+                    Invalidate();
+                    break;
+
+                case EntityBoxOperation.EntityMergeWires:
+                case EntityBoxOperation.EntityAddBulk:
+                case EntityBoxOperation.EntityDelete:
+                case EntityBoxOperation.EntityMove:
+                    if (Undo == true)
+                    {
+                        cancelledEntities = new List<Entity>();
+                        foreach ( Entity entity in _entities )
+                        {
+                            cancelledEntities.Add(entity);
+                        }
+
+                        _entities = new List<Entity>();
+                        foreach (Entity entity in lastEntities)
+                        {
+                            if (lastOp == EntityBoxOperation.EntityMove)
+                            {
+                                entity.LambdaX = entity.SavedLambdaX;
+                                entity.LambdaY = entity.SavedLambdaY;
+                                entity.LambdaEndX = entity.SavedLambdaEndX;
+                                entity.LambdaEndY = entity.SavedLambdaEndY;
+                            }
+
+                            _entities.Add(entity);
+                        }
+                    }
+                    else
+                    {
+                        _entities = new List<Entity>();
+                        foreach (Entity entity in cancelledEntities)
+                        {
+                            _entities.Add(entity);
+                        }
+                    }
+
+                    Invalidate();
+
+                    if (OnEntityCountChanged != null)
+                        OnEntityCountChanged(this, EventArgs.Empty);
+
                     break;
             }
         }
@@ -3107,7 +3340,6 @@ namespace System.Windows.Forms
                 return;
 
             cancelledOp = LastOpWrapper;
-            cancelledOpData = lastOpData;
 
             DispatchLastOperation(true);
 
@@ -3120,7 +3352,6 @@ namespace System.Windows.Forms
                 return;
 
             LastOpWrapper = cancelledOp;
-            lastOpData = cancelledOpData;
 
             DispatchLastOperation(false);
 
