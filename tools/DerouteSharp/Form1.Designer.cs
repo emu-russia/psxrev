@@ -38,9 +38,16 @@
             this.loadEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cancelOperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repeatCancelledOperationCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteAllEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setLayerScrollToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -94,15 +101,19 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.setLayerScrollToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel7 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel8 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.cancelOperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repeatCancelledOperationCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -183,6 +194,25 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
             // 
+            // loadWorkspaceToolStripMenuItem
+            // 
+            this.loadWorkspaceToolStripMenuItem.Name = "loadWorkspaceToolStripMenuItem";
+            this.loadWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadWorkspaceToolStripMenuItem.Text = "Load Workspace...";
+            this.loadWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.loadWorkspaceToolStripMenuItem_Click);
+            // 
+            // saveWorkspaceToolStripMenuItem
+            // 
+            this.saveWorkspaceToolStripMenuItem.Name = "saveWorkspaceToolStripMenuItem";
+            this.saveWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveWorkspaceToolStripMenuItem.Text = "Save Workspace...";
+            this.saveWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.saveWorkspaceToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(187, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -202,12 +232,38 @@
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
+            // cancelOperationToolStripMenuItem
+            // 
+            this.cancelOperationToolStripMenuItem.Name = "cancelOperationToolStripMenuItem";
+            this.cancelOperationToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.cancelOperationToolStripMenuItem.Text = "Cancel Operation (Ctrl+Z)";
+            this.cancelOperationToolStripMenuItem.Click += new System.EventHandler(this.cancelOperationToolStripMenuItem_Click);
+            // 
+            // repeatCancelledOperationCtrlYToolStripMenuItem
+            // 
+            this.repeatCancelledOperationCtrlYToolStripMenuItem.Name = "repeatCancelledOperationCtrlYToolStripMenuItem";
+            this.repeatCancelledOperationCtrlYToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.repeatCancelledOperationCtrlYToolStripMenuItem.Text = "Repeat cancelled Operation (Ctrl+Y)";
+            this.repeatCancelledOperationCtrlYToolStripMenuItem.Click += new System.EventHandler(this.repeatCancelledOperationCtrlYToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(261, 6);
+            // 
             // deleteAllEntitiesToolStripMenuItem
             // 
             this.deleteAllEntitiesToolStripMenuItem.Name = "deleteAllEntitiesToolStripMenuItem";
             this.deleteAllEntitiesToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.deleteAllEntitiesToolStripMenuItem.Text = "Delete all entities (DANGER)";
             this.deleteAllEntitiesToolStripMenuItem.Click += new System.EventHandler(this.deleteAllEntitiesToolStripMenuItem_Click);
+            // 
+            // setLayerScrollToOriginToolStripMenuItem
+            // 
+            this.setLayerScrollToOriginToolStripMenuItem.Name = "setLayerScrollToOriginToolStripMenuItem";
+            this.setLayerScrollToOriginToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.setLayerScrollToOriginToolStripMenuItem.Text = "Set layer scroll to origin";
+            this.setLayerScrollToOriginToolStripMenuItem.Click += new System.EventHandler(this.setLayerScrollToOriginToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -703,44 +759,100 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 524);
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel4,
+            this.toolStripStatusLabel5,
+            this.toolStripStatusLabel6,
+            this.toolStripStatusLabel7,
+            this.toolStripStatusLabel8,
+            this.toolStripStatusLabel9,
+            this.toolStripStatusLabel10,
+            this.toolStripStatusLabel11,
+            this.toolStripStatusLabel12});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 522);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1040, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1040, 24);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(72, 17);
-            this.toolStripStatusLabel1.Text = "Some Status";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(39, 19);
+            this.toolStripStatusLabel1.Text = "Scroll:";
             // 
-            // setLayerScrollToOriginToolStripMenuItem
+            // toolStripStatusLabel2
             // 
-            this.setLayerScrollToOriginToolStripMenuItem.Name = "setLayerScrollToOriginToolStripMenuItem";
-            this.setLayerScrollToOriginToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
-            this.setLayerScrollToOriginToolStripMenuItem.Text = "Set layer scroll to origin";
-            this.setLayerScrollToOriginToolStripMenuItem.Click += new System.EventHandler(this.setLayerScrollToOriginToolStripMenuItem_Click);
+            this.toolStripStatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(29, 19);
+            this.toolStripStatusLabel2.Text = "0; 0";
             // 
-            // loadWorkspaceToolStripMenuItem
+            // toolStripStatusLabel3
             // 
-            this.loadWorkspaceToolStripMenuItem.Name = "loadWorkspaceToolStripMenuItem";
-            this.loadWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.loadWorkspaceToolStripMenuItem.Text = "Load Workspace...";
-            this.loadWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.loadWorkspaceToolStripMenuItem_Click);
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(42, 19);
+            this.toolStripStatusLabel3.Text = "Zoom:";
             // 
-            // saveWorkspaceToolStripMenuItem
+            // toolStripStatusLabel4
             // 
-            this.saveWorkspaceToolStripMenuItem.Name = "saveWorkspaceToolStripMenuItem";
-            this.saveWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.saveWorkspaceToolStripMenuItem.Text = "Save Workspace...";
-            this.saveWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.saveWorkspaceToolStripMenuItem_Click);
+            this.toolStripStatusLabel4.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(39, 19);
+            this.toolStripStatusLabel4.Text = "100%";
             // 
-            // toolStripSeparator4
+            // toolStripStatusLabel5
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(187, 6);
+            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(31, 19);
+            this.toolStripStatusLabel5.Text = "Vias:";
+            // 
+            // toolStripStatusLabel6
+            // 
+            this.toolStripStatusLabel6.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
+            this.toolStripStatusLabel6.Size = new System.Drawing.Size(17, 19);
+            this.toolStripStatusLabel6.Text = "0";
+            // 
+            // toolStripStatusLabel7
+            // 
+            this.toolStripStatusLabel7.Name = "toolStripStatusLabel7";
+            this.toolStripStatusLabel7.Size = new System.Drawing.Size(39, 19);
+            this.toolStripStatusLabel7.Text = "Wires:";
+            // 
+            // toolStripStatusLabel8
+            // 
+            this.toolStripStatusLabel8.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel8.Name = "toolStripStatusLabel8";
+            this.toolStripStatusLabel8.Size = new System.Drawing.Size(17, 19);
+            this.toolStripStatusLabel8.Text = "0";
+            // 
+            // toolStripStatusLabel9
+            // 
+            this.toolStripStatusLabel9.Name = "toolStripStatusLabel9";
+            this.toolStripStatusLabel9.Size = new System.Drawing.Size(35, 19);
+            this.toolStripStatusLabel9.Text = "Cells:";
+            // 
+            // toolStripStatusLabel10
+            // 
+            this.toolStripStatusLabel10.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel10.Name = "toolStripStatusLabel10";
+            this.toolStripStatusLabel10.Size = new System.Drawing.Size(17, 19);
+            this.toolStripStatusLabel10.Text = "0";
+            // 
+            // toolStripStatusLabel11
+            // 
+            this.toolStripStatusLabel11.Name = "toolStripStatusLabel11";
+            this.toolStripStatusLabel11.Size = new System.Drawing.Size(87, 19);
+            this.toolStripStatusLabel11.Text = "Last Operation:";
+            // 
+            // toolStripStatusLabel12
+            // 
+            this.toolStripStatusLabel12.Name = "toolStripStatusLabel12";
+            this.toolStripStatusLabel12.Size = new System.Drawing.Size(16, 19);
+            this.toolStripStatusLabel12.Text = "   ";
             // 
             // entityBox1
             // 
@@ -815,23 +927,6 @@
             this.propertyGrid1.SelectedObject = this.entityBox1;
             this.propertyGrid1.Size = new System.Drawing.Size(293, 348);
             this.propertyGrid1.TabIndex = 0;
-            // 
-            // cancelOperationToolStripMenuItem
-            // 
-            this.cancelOperationToolStripMenuItem.Name = "cancelOperationToolStripMenuItem";
-            this.cancelOperationToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
-            this.cancelOperationToolStripMenuItem.Text = "Cancel Operation (Ctrl+Z)";
-            // 
-            // repeatCancelledOperationCtrlYToolStripMenuItem
-            // 
-            this.repeatCancelledOperationCtrlYToolStripMenuItem.Name = "repeatCancelledOperationCtrlYToolStripMenuItem";
-            this.repeatCancelledOperationCtrlYToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
-            this.repeatCancelledOperationCtrlYToolStripMenuItem.Text = "Repeat cancelled Operation (Ctrl+Y)";
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(261, 6);
             // 
             // Form1
             // 
@@ -942,6 +1037,17 @@
         private System.Windows.Forms.ToolStripMenuItem cancelOperationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem repeatCancelledOperationCtrlYToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel7;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel8;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel9;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel10;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel11;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel12;
     }
 }
 

@@ -5,7 +5,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DerouteSharp
@@ -24,6 +23,42 @@ namespace DerouteSharp
             entityBox1.Mode = EntityType.Selection;
 
             SelectionButtonHighlight();
+
+            entityBox1.OnScrollChanged += ScrollChanged;
+            entityBox1.OnZoomChanged += ZoomChanged;
+            entityBox1.OnEntityCountChanged += EntityCountChanged;
+            entityBox1.OnLastOperation += LastOperation;
+        }
+
+        private void ScrollChanged(object sender, EventArgs e)
+        {
+            EntityBox entityBox = (EntityBox)sender;
+
+            toolStripStatusLabel2.Text = entityBox.ScrollX.ToString() + "; " +
+                                         entityBox.ScrollY.ToString();
+        }
+
+        private void ZoomChanged(object sender, EventArgs e)
+        {
+            EntityBox entityBox = (EntityBox)sender;
+
+            toolStripStatusLabel4.Text = entityBox.Zoom.ToString() + "%";
+        }
+
+        private void EntityCountChanged(object sender, EventArgs e)
+        {
+            EntityBox entityBox = (EntityBox)sender;
+
+            toolStripStatusLabel6.Text = entityBox.GetViasCount().ToString();
+            toolStripStatusLabel8.Text = entityBox.GetWireCount().ToString();
+            toolStripStatusLabel10.Text = entityBox.GetCellCount().ToString();
+        }
+
+        private void LastOperation(object sender, EventArgs e)
+        {
+            EntityBox entityBox = (EntityBox)sender;
+
+            toolStripStatusLabel12.Text = entityBox.GetLastOperation().ToString();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -353,6 +388,14 @@ namespace DerouteSharp
                 propertyGrid1.Refresh();
                 WiresButtonHighlight();
             }
+            else if ( e.KeyCode == Keys.Z && e.Control )
+            {
+                entityBox1.CancelLastOperation();
+            }
+            else if (e.KeyCode == Keys.Y && e.Control)
+            {
+                entityBox1.RetryCancelledOperation();
+            }
         }
 
         private void SetLayerOpacity (int opacity)
@@ -419,12 +462,32 @@ namespace DerouteSharp
 
         private void loadWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Bogus");
+            DialogResult result = openFileDialog2.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                entityBox1.LoadWorkspace(openFileDialog2.FileName);
+            }
         }
 
         private void saveWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Bogus");
+            DialogResult result = saveFileDialog2.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                entityBox1.SaveWorkspace(saveFileDialog2.FileName);
+            }
+        }
+
+        private void cancelOperationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.CancelLastOperation();
+        }
+
+        private void repeatCancelledOperationCtrlYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.RetryCancelledOperation();
         }
     }
 }
