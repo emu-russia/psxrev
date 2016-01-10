@@ -360,6 +360,7 @@ namespace DerouteSharp
             switch (entityBox1.Mode)
             {
                 case EntityType.ImageLayer0:
+                default:
                     entityBox1.ImageOpacity0 = opacity;
                     entityBox1.Invalidate();
                     break;
@@ -369,6 +370,28 @@ namespace DerouteSharp
                     break;
                 case EntityType.ImageLayer2:
                     entityBox1.ImageOpacity2 = opacity;
+                    entityBox1.Invalidate();
+                    break;
+            }
+        }
+
+        private void SetLayerOrigin()
+        {
+            PointF zero = new PointF(0, 0);
+
+            switch (entityBox1.Mode)
+            {
+                case EntityType.ImageLayer0:
+                default:
+                    entityBox1.ScrollImage0 = zero;
+                    entityBox1.Invalidate();
+                    break;
+                case EntityType.ImageLayer1:
+                    entityBox1.ScrollImage1 = zero;
+                    entityBox1.Invalidate();
+                    break;
+                case EntityType.ImageLayer2:
+                    entityBox1.ScrollImage2 = zero;
                     entityBox1.Invalidate();
                     break;
             }
@@ -387,6 +410,21 @@ namespace DerouteSharp
         private void button4_Click(object sender, EventArgs e)
         {
             SetLayerOpacity(100);
+        }
+
+        private void setLayerScrollToOriginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetLayerOrigin();
+        }
+
+        private void loadWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Bogus");
+        }
+
+        private void saveWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Bogus");
         }
     }
 }

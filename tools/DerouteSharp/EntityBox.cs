@@ -1147,19 +1147,6 @@ namespace System.Windows.Forms
             }
         }
         
-        private static Bitmap ChangeOpacity(Image img, float opacityvalue)
-        {
-            Bitmap bmp = new Bitmap(img.Width, img.Height); // Determining Width and Height of Source Image
-            Graphics graphics = Graphics.FromImage(bmp);
-            ColorMatrix colormatrix = new ColorMatrix();
-            colormatrix.Matrix33 = opacityvalue;
-            ImageAttributes imgAttribute = new ImageAttributes();
-            imgAttribute.SetColorMatrix(colormatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-            graphics.DrawImage(img, new Rectangle(0, 0, bmp.Width, bmp.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imgAttribute);
-            graphics.Dispose();   // Releasing all resource used by graphics 
-            return bmp;
-        }
-
         //
         // width / height - Scene viewport size
         // WholeScene - draw Scene for saving to bitmap
@@ -1434,12 +1421,24 @@ namespace System.Windows.Forms
         [Category("Appearance"), DefaultValue(null)]
         public Image Image0
         {
-            get { return _image[0]; }
+            get { return _imageOrig[0]; }
             set
             {
-                if (_image[0] != value)
+                if (_imageOrig[0] != value)
                 {
-                    _image[0] = _imageOrig[0] = value;
+                    if (_imageOrig[0] != null)
+                    {
+                        _image[0].Dispose();
+                        _imageOrig[0].Dispose();
+                    }
+
+                    _imageOrig[0] = value;
+
+                    float zf = (float)_imageZoom[0] / 100F;
+                    _image[0] = ResizeImage(_imageOrig[0],
+                                          (int)((float)_imageOrig[0].Width * zf),
+                                          (int)((float)_imageOrig[0].Height * zf));
+
                     ScrollingBegin = false;
                     Invalidate();
                 }
@@ -1449,12 +1448,24 @@ namespace System.Windows.Forms
         [Category("Appearance"), DefaultValue(null)]
         public Image Image1
         {
-            get { return _image[1]; }
+            get { return _imageOrig[1]; }
             set
             {
-                if (_image[1] != value)
+                if (_imageOrig[1] != value)
                 {
-                    _image[1] = _imageOrig[1] = value;
+                    if (_imageOrig[1] != null)
+                    {
+                        _image[1].Dispose();
+                        _imageOrig[1].Dispose();
+                    }
+
+                    _imageOrig[1] = value;
+
+                    float zf = (float)_imageZoom[1] / 100F;
+                    _image[1] = ResizeImage(_imageOrig[1],
+                                          (int)((float)_imageOrig[1].Width * zf),
+                                          (int)((float)_imageOrig[1].Height * zf));
+
                     ScrollingBegin = false;
                     Invalidate();
                 }
@@ -1464,12 +1475,24 @@ namespace System.Windows.Forms
         [Category("Appearance"), DefaultValue(null)]
         public Image Image2
         {
-            get { return _image[2]; }
+            get { return _imageOrig[2]; }
             set
             {
-                if (_image[2] != value)
+                if (_imageOrig[2] != value)
                 {
-                    _image[2] = _imageOrig[2] = value;
+                    if (_imageOrig[2] != null)
+                    {
+                        _image[2].Dispose();
+                        _imageOrig[2].Dispose();
+                    }
+
+                    _imageOrig[2] = value;
+
+                    float zf = (float)_imageZoom[2] / 100F;
+                    _image[2] = ResizeImage(_imageOrig[2],
+                                          (int)((float)_imageOrig[2].Width * zf),
+                                          (int)((float)_imageOrig[2].Height * zf));
+
                     ScrollingBegin = false;
                     Invalidate();
                 }
@@ -1482,20 +1505,8 @@ namespace System.Windows.Forms
             get { return _imageOpacity[0]; }
             set
             {
-                if (_imageOrig[0] != null)
-                {
-                    float zf = (float)_imageZoom[0] / 100F;
-                    _imageOpacity[0] = Math.Max(0, Math.Min(100, value));
-
-/*
-                    _image[0].Dispose();
-                    _image[0] = ResizeImage(_imageOrig[0],
-                                            (int)((float)_imageOrig[0].Width * zf),
-                                            (int)((float)_imageOrig[0].Height * zf));
-                    _image[0] = ChangeOpacity(_image[0], (float)_imageOpacity[0] / 100);
-*/
-                    Invalidate();
-                }
+                _imageOpacity[0] = Math.Max(0, Math.Min(100, value));
+                Invalidate();
             }
         }
 
@@ -1505,21 +1516,8 @@ namespace System.Windows.Forms
             get { return _imageOpacity[1]; }
             set
             {
-                if (_imageOrig[1] != null)
-                {
-                    float zf = (float)_imageZoom[1] / 100F;
-                    _imageOpacity[1] = Math.Max(0, Math.Min(100, value));
-
-/*
-                    _image[1].Dispose();
-                    _image[1] = ResizeImage(_imageOrig[1],
-                                          (int)((float)_imageOrig[1].Width * zf),
-                                          (int)((float)_imageOrig[1].Height * zf));
-                    _image[1] = ChangeOpacity(_image[1], (float)_imageOpacity[1] / 100);
-*/
-
-                    Invalidate();
-                }
+                _imageOpacity[1] = Math.Max(0, Math.Min(100, value));
+                Invalidate();
             }
         }
 
@@ -1529,21 +1527,8 @@ namespace System.Windows.Forms
             get { return _imageOpacity[2]; }
             set
             {
-                if (_imageOrig[2] != null)
-                {
-                    float zf = (float)_imageZoom[2] / 100F;
-                    _imageOpacity[2] = Math.Max(0, Math.Min(100, value));
-
-/*
-                    _image[2].Dispose();
-                    _image[2] = ResizeImage(_imageOrig[2],
-                                          (int)((float)_imageOrig[2].Width * zf),
-                                          (int)((float)_imageOrig[2].Height * zf));
-                    _image[2] = ChangeOpacity(_image[2], (float)_imageOpacity[2] / 100);
-*/
-
-                    Invalidate();
-                }
+                _imageOpacity[2] = Math.Max(0, Math.Min(100, value));
+                Invalidate();
             }
         }
 
