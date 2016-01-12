@@ -31,7 +31,6 @@ namespace System.Windows.Forms
 
     public partial class EntityBox : Control
     {
-        private Image[] _image = new Image[3];
         private Image[] _imageOrig = new Image[3];
         private float _lambda;
         private int[] _imageZoom = new int[3];
@@ -1300,13 +1299,15 @@ namespace System.Windows.Forms
 
             for (int n = 2; n >= 0; n--)
             {
-                if (_image[n] != null && hideImage == false)
+                if (_imageOrig[n] != null && hideImage == false)
                 {
                     Point imageOffset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
-                    float imageWidth = (float)_image[n].Width;
-                    float imageHeight = (float)_image[n].Height;
+                    float imageWidth = (float)_imageOrig[n].Width;
+                    float imageHeight = (float)_imageOrig[n].Height;
                     float sx = imageOffset.X;
                     float sy = imageOffset.Y;
+
+                    float imgZf = (float)_imageZoom[n] / 100F;
 
                     ColorMatrix colorMatrix = new ColorMatrix();
                     colorMatrix.Matrix33 = _imageOpacity[n] / 100F;
@@ -1319,20 +1320,22 @@ namespace System.Windows.Forms
 
                     if (EnableOpacity == false)
                     {
-                        gr.DrawImage(_image[n],
+                        gr.DrawImage(_imageOrig[n],
                                       sx, sy,
-                                      imageWidth * zf,
-                                      imageHeight * zf);
+                                      imageWidth * zf / imgZf,
+                                      imageHeight * zf / imgZf);
                     }
                     else
                     {
-                        gr.DrawImage(_image[n],
+                        gr.InterpolationMode = InterpolationMode.HighQualityBilinear;
+
+                        gr.DrawImage(_imageOrig[n],
                             new Rectangle(
                                 (int)sx, (int)sy,
                                 (int)(imageWidth * zf), (int)(imageHeight * zf)),
                             0, 0,
-                            imageWidth,
-                            imageHeight,
+                            imageWidth / imgZf,
+                            imageHeight / imgZf,
                             GraphicsUnit.Pixel,
                             imageAtt);
                     }
@@ -1531,6 +1534,14 @@ namespace System.Windows.Forms
             set { base.BackgroundImageLayout = value; }
         }
 
+        private static Image ToGrayscale(Image source)
+        {
+            Bitmap grayscale = ColorToGrayscale( new Bitmap(source) );
+            source.Dispose();
+            GC.Collect();
+            return (Image)grayscale;
+        }
+
         [Category("Appearance"), DefaultValue(null)]
         [Browsable(false)]
         public Image Image0
@@ -1542,16 +1553,11 @@ namespace System.Windows.Forms
                 {
                     if (_imageOrig[0] != null)
                     {
-                        _image[0].Dispose();
                         _imageOrig[0].Dispose();
+                        GC.Collect();
                     }
 
-                    _imageOrig[0] = value;
-
-                    float zf = (float)_imageZoom[0] / 100F;
-                    _image[0] = ResizeImage(_imageOrig[0],
-                                          (int)((float)_imageOrig[0].Width * zf),
-                                          (int)((float)_imageOrig[0].Height * zf));
+                    _imageOrig[0] = ToGrayscale(value);
 
                     ScrollingBegin = false;
                     Invalidate();
@@ -1570,16 +1576,10 @@ namespace System.Windows.Forms
                 {
                     if (_imageOrig[1] != null)
                     {
-                        _image[1].Dispose();
                         _imageOrig[1].Dispose();
                     }
 
-                    _imageOrig[1] = value;
-
-                    float zf = (float)_imageZoom[1] / 100F;
-                    _image[1] = ResizeImage(_imageOrig[1],
-                                          (int)((float)_imageOrig[1].Width * zf),
-                                          (int)((float)_imageOrig[1].Height * zf));
+                    _imageOrig[1] = ToGrayscale(value);
 
                     ScrollingBegin = false;
                     Invalidate();
@@ -1598,16 +1598,11 @@ namespace System.Windows.Forms
                 {
                     if (_imageOrig[2] != null)
                     {
-                        _image[2].Dispose();
                         _imageOrig[2].Dispose();
+                        GC.Collect();
                     }
 
-                    _imageOrig[2] = value;
-
-                    float zf = (float)_imageZoom[2] / 100F;
-                    _image[2] = ResizeImage(_imageOrig[2],
-                                          (int)((float)_imageOrig[2].Width * zf),
-                                          (int)((float)_imageOrig[2].Height * zf));
+                    _imageOrig[2] = ToGrayscale(value);
 
                     ScrollingBegin = false;
                     Invalidate();
@@ -2025,18 +2020,6 @@ namespace System.Windows.Forms
                 }
 
                 _imageZoom[0] = value;
-
-                float zf = (float)_imageZoom[0] / 100F;
-
-                if (_imageOrig[0] != null)
-                {
-                    _image[0].Dispose();
-
-                    _image[0] = ResizeImage(_imageOrig[0],
-                                          (int)((float)_imageOrig[0].Width * zf),
-                                          (int)((float)_imageOrig[0].Height * zf));
-                }
-
                 Invalidate();
             }
         }
@@ -2061,18 +2044,6 @@ namespace System.Windows.Forms
                 }
 
                 _imageZoom[1] = value;
-
-                float zf = (float)_imageZoom[1] / 100F;
-
-                if (_imageOrig[1] != null)
-                {
-                    _image[1].Dispose();
-
-                    _image[1] = ResizeImage(_imageOrig[1],
-                                          (int)((float)_imageOrig[1].Width * zf),
-                                          (int)((float)_imageOrig[1].Height * zf));
-                }
-
                 Invalidate();
             }
         }
@@ -2099,16 +2070,6 @@ namespace System.Windows.Forms
                 _imageZoom[2] = value;
 
                 float zf = (float)_imageZoom[2] / 100F;
-
-                if (_imageOrig[2] != null)
-                {
-                    _image[2].Dispose();
-
-                    _image[2] = ResizeImage(_imageOrig[2],
-                                              (int)((float)_imageOrig[2].Width * zf),
-                                              (int)((float)_imageOrig[2].Height * zf));
-                }
-
                 Invalidate();
             }
         }
@@ -2157,7 +2118,7 @@ namespace System.Windows.Forms
 
             for (int n = 2; n >= 0; n--)
             {
-                if (_image[n] != null && HideImage == false)
+                if (_imageOrig[n] != null && HideImage == false)
                 {
                     Point offset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
 
@@ -2167,8 +2128,10 @@ namespace System.Windows.Forms
                     if (offset.Y < originOut.Y)
                         originOut.Y = offset.Y;
 
-                    int rightSide = _image[n].Width + offset.X;
-                    int bottomSide = _image[n].Height + offset.Y;
+                    float imgZf = (float)_imageZoom[n] / 100F;
+
+                    int rightSide = (int)((float)_imageOrig[n].Width * imgZf) + offset.X;
+                    int bottomSide = (int)((float)_imageOrig[n].Height * imgZf) + offset.Y;
 
                     if (rightSide > point.X)
                         point.X = rightSide;
@@ -3135,60 +3098,111 @@ namespace System.Windows.Forms
             Invalidate();
         }
 
+        public static Bitmap ColorToGrayscale(Bitmap bmp)
+        {
+            int w = bmp.Width,
+            h = bmp.Height,
+            r, ic, oc, bmpStride, outputStride, bytesPerPixel;
+            PixelFormat pfIn = bmp.PixelFormat;
+            ColorPalette palette;
+            Bitmap output;
+            BitmapData bmpData, outputData;
+
+            //Create the new bitmap
+            output = new Bitmap(w, h, PixelFormat.Format8bppIndexed);
+
+            //Build a grayscale color Palette
+            palette = output.Palette;
+            for (int i = 0; i < 256; i++)
+            {
+                Color tmp = Color.FromArgb(255, i, i, i);
+                palette.Entries[i] = Color.FromArgb(255, i, i, i);
+            }
+            output.Palette = palette;
+
+            //No need to convert formats if already in 8 bit
+            if (pfIn == PixelFormat.Format8bppIndexed)
+            {
+                output = (Bitmap)bmp.Clone();
+
+                //Make sure the palette is a grayscale palette and not some other
+                //8-bit indexed palette
+                output.Palette = palette;
+
+                return output;
+            }
+
+            //Get the number of bytes per pixel
+            switch (pfIn)
+            {
+                case PixelFormat.Format24bppRgb: bytesPerPixel = 3; break;
+                case PixelFormat.Format32bppArgb: bytesPerPixel = 4; break;
+                case PixelFormat.Format32bppRgb: bytesPerPixel = 4; break;
+                default: throw new InvalidOperationException("Image format not supported");
+            }
+
+            //Lock the images
+            bmpData = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly,
+            pfIn);
+            outputData = output.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly,
+            PixelFormat.Format8bppIndexed);
+            bmpStride = bmpData.Stride;
+            outputStride = outputData.Stride;
+
+            //Traverse each pixel of the image
+            unsafe
+            {
+                byte* bmpPtr = (byte*)bmpData.Scan0.ToPointer(),
+                outputPtr = (byte*)outputData.Scan0.ToPointer();
+
+                if (bytesPerPixel == 3)
+                {
+                    for (r = 0; r < h; r++)
+                    {
+                        for (ic = oc = 0; oc < w; ic += 3, ++oc)
+                        {
+                            outputPtr[r * outputStride + oc] = (byte)(int)
+                            (0.2126f * (float)bmpPtr[r * bmpStride + ic + 1] +
+                            0.752f * (float)bmpPtr[r * bmpStride + ic + 2] +
+                            0.0722f * (float)bmpPtr[r * bmpStride + ic + 3]);
+                        }
+                    }
+                }
+                else //bytesPerPixel == 4
+                {
+                    for (r = 0; r < h; r++)
+                    {
+                        for (ic = oc = 0; oc < w; ic += 4, ++oc)
+                        {
+                            outputPtr[r * outputStride + oc] = (byte)(int)
+                            (0.2126f * (float)bmpPtr[r * bmpStride + ic + 1] +
+                            0.752f * (float)bmpPtr[r * bmpStride + ic + 2] +
+                            0.0722f * (float)bmpPtr[r * bmpStride + ic + 3]);
+                        }
+                    }
+                }
+            }
+
+            //Unlock the images
+            bmp.UnlockBits(bmpData);
+            output.UnlockBits(outputData);
+
+            return output;
+        }
+
         public void LoadImage(Image image)
         {
-            float zf;
-
             switch (drawMode)
             {
                 case EntityType.ImageLayer0:
                 default:
-                    if (_imageOrig[0] != null)
-                    {
-                        _image[0].Dispose();
-                        _imageOrig[0].Dispose();
-                    }
-
-                    _imageOrig[0] = image;
-
-                    zf = (float)_imageZoom[0] / 100F;
-                    _image[0] = ResizeImage(_imageOrig[0],
-                                          (int)((float)_imageOrig[0].Width * zf),
-                                          (int)((float)_imageOrig[0].Height * zf));
-
-                    Invalidate();
+                    Image0 = image;
                     break;
                 case EntityType.ImageLayer1:
-                    if (_imageOrig[1] != null)
-                    {
-                        _image[1].Dispose();
-                        _imageOrig[1].Dispose();
-                    }
-
-                    _imageOrig[1] = image;
-
-                    zf = (float)_imageZoom[1] / 100F;
-                    _image[1] = ResizeImage(_imageOrig[1],
-                                          (int)((float)_imageOrig[1].Width * zf),
-                                          (int)((float)_imageOrig[1].Height * zf));
-
-                    Invalidate();
+                    Image1 = image;
                     break;
                 case EntityType.ImageLayer2:
-                    if (_imageOrig[2] != null)
-                    {
-                        _image[2].Dispose();
-                        _imageOrig[2].Dispose();
-                    }
-
-                    _imageOrig[2] = image;
-
-                    zf = (float)_imageZoom[2] / 100F;
-                    _image[2] = ResizeImage(_imageOrig[2],
-                                          (int)((float)_imageOrig[2].Width * zf),
-                                          (int)((float)_imageOrig[2].Height * zf));
-
-                    Invalidate();
+                    Image2 = image;
                     break;
             }
         }
@@ -3924,6 +3938,7 @@ namespace System.Windows.Forms
             parent.CellPriority = CellPriority;
             parent.AutoPriority = AutoPriority;
 
+            GC.Collect();
             parent.Invalidate();
         }
     }
