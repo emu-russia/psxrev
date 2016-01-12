@@ -1532,6 +1532,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance"), DefaultValue(null)]
+        [Browsable(false)]
         public Image Image0
         {
             get { return _imageOrig[0]; }
@@ -1559,6 +1560,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance"), DefaultValue(null)]
+        [Browsable(false)]
         public Image Image1
         {
             get { return _imageOrig[1]; }
@@ -1586,6 +1588,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance"), DefaultValue(null)]
+        [Browsable(false)]
         public Image Image2
         {
             get { return _imageOrig[2]; }
@@ -3529,6 +3532,7 @@ namespace System.Windows.Forms
         public bool hideCells;
         public bool hideGrid;
         [XmlIgnore] public Color selectionBoxColor;
+        [XmlIgnore] public Color ForeColor;
         public int[] imageOpacity = new int[3];
         public bool[] lockScroll = new bool[3];
         public bool[] lockZoom = new bool[3];
@@ -3569,6 +3573,15 @@ namespace System.Windows.Forms
         public int WirePriority;
         public int CellPriority;
         public bool AutoPriority;
+
+        [XmlElement("ForeColor")]
+        [Browsable(false)]
+        public string ForeColorHtml
+        {
+            get { return ColorTranslator.ToHtml(ForeColor); }
+            set { ForeColor = ColorTranslator.FromHtml(value); }
+        }
+
 
         [XmlElement("SelectionBoxColor")]
         [Browsable(false)]
@@ -3787,6 +3800,7 @@ namespace System.Windows.Forms
             hideCells = parent.HideCells;
             hideGrid = parent.HideGrid;
             selectionBoxColor = parent.SelectionBoxColor;
+            ForeColor = parent.ForeColor;
             imageOpacity[0] = parent.ImageOpacity0;
             imageOpacity[1] = parent.ImageOpacity1;
             imageOpacity[2] = parent.ImageOpacity2;
@@ -3862,6 +3876,7 @@ namespace System.Windows.Forms
             parent.HideCells = hideCells;
             parent.HideGrid = hideGrid;
             parent.SelectionBoxColor = selectionBoxColor;
+            parent.ForeColor = ForeColor;
             parent.ImageOpacity0 = imageOpacity[0];
             parent.ImageOpacity1 = imageOpacity[1];
             parent.ImageOpacity2 = imageOpacity[2];
