@@ -22,6 +22,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include "text_vertical.h"
 #include "text_horz.h"
 #include "profiler.h"
+#include "xmlsaver.h"
 
 const char g_szClassName[] = "myWindowClass";
 
@@ -97,7 +98,9 @@ void SaveImage(HWND Parent)
     {
         // Do something usefull with the filename stored in szFileName
 
-        JpegSaveImage(szFileName);
+        //JpegSaveImage(szFileName);
+
+        MessageBox ( Parent, "Bogus", "Not implemented", MB_OK );
     }
 }
 
@@ -164,6 +167,31 @@ void SavePatternsTxt(HWND Parent)
         TextSave(szFileName);
     }
 }
+
+
+void SavePatternsXml(HWND Parent)
+{
+    OPENFILENAME ofn;
+    char szFileName[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+    ofn.hwndOwner = Parent;
+    ofn.lpstrFilter = "XML Files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt = "xml";
+
+    if (GetOpenFileName(&ofn))
+    {
+        // Do something usefull with the filename stored in szFileName
+
+        XmlSave ( szFileName );
+    }
+}
+
 
 void WorkspaceHandler(HWND Parent, void (*Callback)(char *filename))
 {
@@ -276,6 +304,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case ID_SAVE_PATTXT:
             SavePatternsTxt(hwnd);
+            break;
+        case ID_SAVE_PATXML:
+            SavePatternsXml(hwnd);
             break;
         case ID_SETTINGS:
             DialogBox(GetModuleHandle(NULL),

@@ -1,168 +1,182 @@
 # Patterns database
 
 # Pattern Syntax:
-# pattern name, source_lamda, pcount, ncount, image_path
+# pattern name, type, source_lamda, pcount, ncount, image_path
+
+# Pattern types: CellNot, CellBuffer, CellMux, CellLogic, CellAdder, CellBusSupp, CellFlipFlop, CellLatch, CellOther
 
 # Inverters and Buffers
 
-pattern NOT, 5.0, 1, 1, "patterns_db/NOT.jpg"
-pattern NOT1, 5.0, 1, 1, "patterns_db/NOT1.jpg"
-pattern NOT2, 5.0, 2, 2, "patterns_db/NOT2.jpg"
-pattern NOT3, 5.0, 3, 3, "patterns_db/NOT3.jpg"
-pattern NOT4, 5.0, 4, 4, "patterns_db/NOT4.jpg"
-pattern NOT8, 5.0, 8, 8, "patterns_db/NOT8.jpg"
-pattern NOT12, 5.0, 12, 12, "patterns_db/NOT12.jpg"
+pattern NOT, CellNot, 5.0, 1, 1, "patterns_db/NOT.jpg"
+pattern NOT1, CellNot, 5.0, 1, 1, "patterns_db/NOT1.jpg"
+pattern NOT2, CellNot, 5.0, 2, 2, "patterns_db/NOT2.jpg"
+pattern NOT3, CellNot, 5.0, 3, 3, "patterns_db/NOT3.jpg"
+pattern NOT4, CellNot, 5.0, 4, 4, "patterns_db/NOT4.jpg"
+pattern NOT8, CellNot, 5.0, 8, 8, "patterns_db/NOT8.jpg"
+pattern NOT12, CellNot, 5.0, 12, 12, "patterns_db/NOT12.jpg"
 
-pattern BUF2X, 5.0, 3, 3, "patterns_db/BUF2X.jpg"
-pattern BUF3X, 5.0, 5, 5, "patterns_db/BUF3X.jpg"
-pattern BUF3X2, 5.0, 5, 5, "patterns_db/BUF3X2.jpg"
-pattern BUF4X, 5.0, 6, 6, "patterns_db/BUF4X.jpg"
-pattern BUF5X, 5.0, 8, 8, "patterns_db/BUF5X.jpg"
-pattern BUF6X, 5.0, 10, 10, "patterns_db/BUF6X.jpg"
+pattern BUF2X, CellBuffer, 5.0, 3, 3, "patterns_db/BUF2X.jpg"
+pattern BUF3X, CellBuffer, 5.0, 5, 5, "patterns_db/BUF3X.jpg"
+pattern BUF3X2, CellBuffer, 5.0, 5, 5, "patterns_db/BUF3X2.jpg"
+pattern BUF4X, CellBuffer, 5.0, 6, 6, "patterns_db/BUF4X.jpg"
+pattern BUF5X, CellBuffer, 5.0, 8, 8, "patterns_db/BUF5X.jpg"
+pattern BUF6X, CellBuffer, 5.0, 10, 10, "patterns_db/BUF6X.jpg"
 
 # Binary Logic
 
-pattern AND1, 5.0, 3, 3, "patterns_db/AND1.jpg"
-pattern AND, 5.0, 3, 3, "patterns_db/AND.jpg"
-pattern AND2X, 5.0, 4, 4, "patterns_db/AND2X.jpg"
-pattern AND3X, 5.0, 5, 5, "patterns_db/AND3X.jpg"
+pattern AND1, CellLogic, 5.0, 3, 3, "patterns_db/AND1.jpg"
+pattern AND, CellLogic, 5.0, 3, 3, "patterns_db/AND.jpg"
+pattern AND2X, CellLogic, 5.0, 4, 4, "patterns_db/AND2X.jpg"
+pattern AND3X, CellLogic, 5.0, 5, 5, "patterns_db/AND3X.jpg"
 
-pattern NAND, 5.0, 2, 2, "patterns_db/NAND.jpg"
-pattern NAND2X, 5.0, 2, 2, "patterns_db/NAND2X.jpg"
-pattern NAND3X, 5.0, 4, 4, "patterns_db/NAND3X.jpg"
-pattern NAND4X, 5.0, 6, 6, "patterns_db/NAND4X.jpg"
+pattern NAND, CellLogic, 5.0, 2, 2, "patterns_db/NAND.jpg"
+pattern NAND2X, CellLogic, 5.0, 2, 2, "patterns_db/NAND2X.jpg"
+pattern NAND3X, CellLogic, 5.0, 4, 4, "patterns_db/NAND3X.jpg"
+pattern NAND4X, CellLogic, 5.0, 6, 6, "patterns_db/NAND4X.jpg"
 
-pattern OR, 5.0, 3, 3, "patterns_db/OR.jpg"
-pattern OR2X, 5.0, 3, 3, "patterns_db/OR2X.jpg"
-pattern OR3X, 5.0, 4, 4, "patterns_db/OR3X.jpg"
-pattern OR4X, 5.0, 5, 5, "patterns_db/OR4X.jpg"
+pattern OR, CellLogic, 5.0, 3, 3, "patterns_db/OR.jpg"
+pattern OR2X, CellLogic, 5.0, 3, 3, "patterns_db/OR2X.jpg"
+pattern OR3X, CellLogic, 5.0, 4, 4, "patterns_db/OR3X.jpg"
+pattern OR4X, CellLogic, 5.0, 5, 5, "patterns_db/OR4X.jpg"
 
-pattern NOR, 5.0, 2, 2, "patterns_db/NOR.jpg"
-pattern NOR2X, 5.0, 2, 2, "patterns_db/NOR2X.jpg"
-pattern NOR3X, 5.0, 4, 4, "patterns_db/NOR3X.jpg"
-pattern NOR4X, 5.0, 6, 6, "patterns_db/NOR4X.jpg"
+pattern NOR, CellLogic, 5.0, 2, 2, "patterns_db/NOR.jpg"
+pattern NOR2X, CellLogic, 5.0, 2, 2, "patterns_db/NOR2X.jpg"
+pattern NOR3X, CellLogic, 5.0, 4, 4, "patterns_db/NOR3X.jpg"
+pattern NOR4X, CellLogic, 5.0, 6, 6, "patterns_db/NOR4X.jpg"
 
-pattern XNOR, 5.0, 6, 6, "patterns_db/XNOR.jpg"
-pattern XNOR2, 5.0, 7, 7, "patterns_db/XNOR2.jpg"
-pattern XNOR3, 5.0, 8, 8, "patterns_db/XNOR3.jpg"
+pattern XNOR, CellLogic, 5.0, 6, 6, "patterns_db/XNOR.jpg"
+pattern XNOR2, CellLogic, 5.0, 7, 7, "patterns_db/XNOR2.jpg"
+pattern XNOR3, CellLogic, 5.0, 8, 8, "patterns_db/XNOR3.jpg"
 
-pattern XOR, 5.0, 6, 6, "patterns_db/XOR.jpg"
-pattern XOR2, 5.0, 7, 7, "patterns_db/XOR2.jpg"
-pattern XOR3, 5.0, 8, 8, "patterns_db/XOR3.jpg"
+pattern XOR, CellLogic, 5.0, 6, 6, "patterns_db/XOR.jpg"
+pattern XOR2, CellLogic, 5.0, 7, 7, "patterns_db/XOR2.jpg"
+pattern XOR3, CellLogic, 5.0, 8, 8, "patterns_db/XOR3.jpg"
 
 # Ternary Logic
 
-pattern 3-AND, 5.0, 4, 4, "patterns_db/3-AND.jpg"
-pattern 3-AND2X, 5.0, 4, 4, "patterns_db/3-AND2X.jpg"
-pattern 3-AND3X, 5.0, 5, 5, "patterns_db/3-AND3X.jpg"
-pattern 3-AND4X, 5.0, 6, 6, "patterns_db/3-AND4X.jpg"
+pattern 3-AND, CellLogic, 5.0, 4, 4, "patterns_db/3-AND.jpg"
+pattern 3-AND2X, CellLogic, 5.0, 4, 4, "patterns_db/3-AND2X.jpg"
+pattern 3-AND3X, CellLogic, 5.0, 5, 5, "patterns_db/3-AND3X.jpg"
+pattern 3-AND4X, CellLogic, 5.0, 6, 6, "patterns_db/3-AND4X.jpg"
 
-pattern 3-NAND, 5.0, 3, 3, "patterns_db/3-NAND.jpg"
-pattern 3-NAND2X, 5.0, 3, 3, "patterns_db/3-NAND2X.jpg"
-pattern 3-NAND4X, 5.0, 6, 6, "patterns_db/3-NAND4X.jpg"
-pattern 3-NAND5X, 5.0, 7, 7, "patterns_db/3-NAND5X.jpg"
+pattern 3-NAND, CellLogic, 5.0, 3, 3, "patterns_db/3-NAND.jpg"
+pattern 3-NAND2X, CellLogic, 5.0, 3, 3, "patterns_db/3-NAND2X.jpg"
+pattern 3-NAND4X, CellLogic, 5.0, 6, 6, "patterns_db/3-NAND4X.jpg"
+pattern 3-NAND5X, CellLogic, 5.0, 7, 7, "patterns_db/3-NAND5X.jpg"
 
-pattern 3-NOR, 5.0, 3, 3, "patterns_db/3-NOR.jpg"
-pattern 3-NOR2X, 5.0, 3, 3, "patterns_db/3-NOR2X.jpg"
-pattern 3-NOR4X, 5.0, 6, 3, "patterns_db/3-NOR4X.jpg"
-pattern 3-NOR5X, 5.0, 6, 6, "patterns_db/3-NOR5X.jpg"
-pattern 3-NOR6X, 5.0, 9, 6, "patterns_db/3-NOR6X.jpg"
+pattern 3-NOR, CellLogic, 5.0, 3, 3, "patterns_db/3-NOR.jpg"
+pattern 3-NOR2X, CellLogic, 5.0, 3, 3, "patterns_db/3-NOR2X.jpg"
+pattern 3-NOR4X, CellLogic, 5.0, 6, 3, "patterns_db/3-NOR4X.jpg"
+pattern 3-NOR5X, CellLogic, 5.0, 6, 6, "patterns_db/3-NOR5X.jpg"
+pattern 3-NOR6X, CellLogic, 5.0, 9, 6, "patterns_db/3-NOR6X.jpg"
 
-pattern 3-OR, 5.0, 4, 4, "patterns_db/3-OR.jpg"
-pattern 3-OR2X, 5.0, 4, 4, "patterns_db/3-OR2X.jpg"
+pattern 3-OR, CellLogic, 5.0, 4, 4, "patterns_db/3-OR.jpg"
+pattern 3-OR2X, CellLogic, 5.0, 4, 4, "patterns_db/3-OR2X.jpg"
 
-pattern 3-XOR, 5.0, 10, 10, "patterns_db/3-XOR.jpg"
+pattern 3-XOR, CellLogic, 5.0, 10, 10, "patterns_db/3-XOR.jpg"
 
 # 4-Input Logic
 
-pattern 4-NOR, 5.0, 7, 7, "patterns_db/4-NOR.jpg"
+pattern 4-NOR, CellLogic, 5.0, 7, 7, "patterns_db/4-NOR.jpg"
 
 # 5-Input Logic
 
-pattern 5-NAND, 5.0, 8, 8, "patterns_db/5-NAND.jpg"
+pattern 5-NAND, CellLogic, 5.0, 8, 8, "patterns_db/5-NAND.jpg"
 
 # 6-Input Logic
 
-pattern 6-NOR, 5.0, 9, 11, "patterns_db/6-NOR.jpg"
-pattern 6-NOR3X, 5.0, 11, 13, "patterns_db/6-NOR3X.jpg"
+pattern 6-NOR, CellLogic, 5.0, 9, 11, "patterns_db/6-NOR.jpg"
+pattern 6-NOR3X, CellLogic, 5.0, 11, 13, "patterns_db/6-NOR3X.jpg"
 
-pattern 6-NAND, 5.0, 9, 9, "patterns_db/6-NAND.jpg"
-pattern 6-NAND3X, 5.0, 11, 11, "patterns_db/6-NAND3X.jpg"
+pattern 6-NAND, CellLogic, 5.0, 9, 9, "patterns_db/6-NAND.jpg"
+pattern 6-NAND3X, CellLogic, 5.0, 11, 11, "patterns_db/6-NAND3X.jpg"
 
 # Fused Logic
 
-pattern 12-AOI, 5.0, 3, 3, "patterns_db/12-AOI.jpg"
-pattern 12-OAI, 5.0, 3, 3, "patterns_db/12-OAI.jpg"
-pattern 12-OAI3X, 5.0, 9, 9, "patterns_db/12-OAI3X.jpg"
-pattern 21-AOI3X, 5.0, 9, 9, "patterns_db/21-AOI3X.jpg"
-pattern 22-AOI, 5.0, 4, 4, "patterns_db/22-AOI.jpg"
-pattern 22-OAI, 5.0, 4, 4, "patterns_db/22-OAI.jpg"
-pattern 31-AOI, 5.0, 12, 12, "patterns_db/31-AOI.jpg"
+pattern 12-AOI, CellLogic, 5.0, 3, 3, "patterns_db/12-AOI.jpg"
+pattern 12-OAI, CellLogic, 5.0, 3, 3, "patterns_db/12-OAI.jpg"
+pattern 12-OAI3X, CellLogic, 5.0, 9, 9, "patterns_db/12-OAI3X.jpg"
+pattern 21-AOI3X, CellLogic, 5.0, 9, 9, "patterns_db/21-AOI3X.jpg"
+pattern 22-AOI, CellLogic, 5.0, 4, 4, "patterns_db/22-AOI.jpg"
+pattern 22-OAI, CellLogic, 5.0, 4, 4, "patterns_db/22-OAI.jpg"
+pattern 31-AOI, CellLogic, 5.0, 12, 12, "patterns_db/31-AOI.jpg"
 
-pattern NOR&NAND, 5.0, 4, 4, "patterns_db/NOR_NAND.jpg"
-pattern NAND|NOR, 5.0, 4, 4, "patterns_db/NAND_NOR.jpg"
-pattern NAND&XOR, 5.0, 5, 5, "patterns_db/NAND_XOR.jpg"
-pattern NOR|AND, 5.0, 5, 5, "patterns_db/NOR_AND.jpg"
+pattern NOR&NAND, CellLogic, 5.0, 4, 4, "patterns_db/NOR_NAND.jpg"
+pattern NAND|NOR, CellLogic, 5.0, 4, 4, "patterns_db/NAND_NOR.jpg"
+pattern NAND&XOR, CellLogic, 5.0, 5, 5, "patterns_db/NAND_XOR.jpg"
+pattern NOR|AND, CellLogic, 5.0, 5, 5, "patterns_db/NOR_AND.jpg"
 
 # Multiplexers
 
-pattern DEMUX, 5.0, 3, 3, "patterns_db/DEMUX.jpg"
+pattern DEMUX, CellMux, 5.0, 3, 3, "patterns_db/DEMUX.jpg"
 
-pattern MUX, 5.0, 6, 6, "patterns_db/MUX.jpg"
-pattern MUX1, 5.0, 6, 6, "patterns_db/MUX1.jpg"
-pattern MUX2X, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
-pattern MUX3X, 5.0, 8, 8, "patterns_db/MUX3X.jpg"
+pattern MUX, CellMux, 5.0, 6, 6, "patterns_db/MUX.jpg"
+pattern MUX1, CellMux, 5.0, 6, 6, "patterns_db/MUX1.jpg"
+pattern MUX2X, CellMux, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
+pattern MUX3X, CellMux, 5.0, 8, 8, "patterns_db/MUX3X.jpg"
 
-pattern IMUX, 5.0, 4, 4, "patterns_db/IMUX.jpg"
-pattern IMUX2X, 5.0, 5, 5, "patterns_db/IMUX2X.jpg"
-pattern IMUX3X, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
+pattern IMUX, CellMux, 5.0, 4, 4, "patterns_db/IMUX.jpg"
+pattern IMUX2X, CellMux, 5.0, 5, 5, "patterns_db/IMUX2X.jpg"
+pattern IMUX3X, CellMux, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
 
-pattern 3-MUX, 5.0, 10, 10, "patterns_db/3-MUX.jpg"
-pattern 3-MUX3X, 5.0, 12, 12, "patterns_db/3-MUX3X.jpg"
-pattern 4-MUX, 5.0, 13, 13, "patterns_db/4-MUX.jpg"
+pattern 3-MUX, CellMux, 5.0, 10, 10, "patterns_db/3-MUX.jpg"
+pattern 3-MUX3X, CellMux, 5.0, 12, 12, "patterns_db/3-MUX3X.jpg"
+pattern 4-MUX, CellMux, 5.0, 13, 13, "patterns_db/4-MUX.jpg"
 
 # Triggers / latches
 
-pattern DLATCH, 5.0, 8, 8, "patterns_db/DLATCH.jpg"
-pattern /DLATCH, 5.0, 8, 8, "patterns_db/nDLATCH.jpg"
-pattern DLATCH4X, 5.0, 10, 10, "patterns_db/DLATCH4X.jpg"
-pattern /DLATCH4X, 5.0, 10, 10, "patterns_db/nDLATCH4X.jpg"
+pattern DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/DLATCH.jpg"
+pattern /DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/nDLATCH.jpg"
+pattern DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/DLATCH4X.jpg"
+pattern /DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/nDLATCH4X.jpg"
 
-pattern DLATCHR2X, 5.0, 9, 9, "patterns_db/DLATCHR2X.jpg"
-pattern DLATCHR4X, 5.0, 11, 11, "patterns_db/DLATCHR4X.jpg"
+pattern DLATCHR2X, CellLatch, 5.0, 9, 9, "patterns_db/DLATCHR2X.jpg"
+pattern DLATCHR4X, CellLatch, 5.0, 11, 11, "patterns_db/DLATCHR4X.jpg"
 
-pattern DFF, 5.0, 12, 12, "patterns_db/DFF.jpg"
-pattern /DFF, 5.0, 12, 12, "patterns_db/nDFF.jpg"
-pattern DFF3X, 5.0, 14, 14, "patterns_db/DFF3X.jpg"
+pattern DFF, CellFlipFlop, 5.0, 12, 12, "patterns_db/DFF.jpg"
+pattern /DFF, CellFlipFlop, 5.0, 12, 12, "patterns_db/nDFF.jpg"
+pattern DFF3X, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFF3X.jpg"
 
-pattern DFFR, 5.0, 14, 14, "patterns_db/DFFR.jpg"
-pattern /DFFR, 5.0, 14, 14, "patterns_db/nDFFR.jpg"
-pattern DFFR3X, 5.0, 16, 16, "patterns_db/DFFR3X.jpg"
-pattern DFFR3X-FLIP, 5.0, 16, 16, "patterns_db/DFFR3X-FLIP.jpg"
+pattern DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFFR.jpg"
+pattern /DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/nDFFR.jpg"
+pattern DFFR3X, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X.jpg"
+pattern DFFR3X-FLIP, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X-FLIP.jpg"
 
-pattern DFFRS3X, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
+pattern DFFRS3X, CellFlipFlop, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
 
-pattern DFFR_MUX, 5.0, 18, 18, "patterns_db/DFFR_MUX.jpg"
+pattern DFFR_MUX, CellFlipFlop, 5.0, 18, 18, "patterns_db/DFFR_MUX.jpg"
 
 # Adder / Multiplier
 
-pattern HA, 5.0, 7, 7, "patterns_db/HA.jpg"
-pattern HA2, 5.0, 7, 7, "patterns_db/HA2.jpg"
-pattern CA, 5.0, 7, 7, "patterns_db/CA.jpg"
-pattern WS1, 5.0, 24, 24, "patterns_db/WS1.jpg"
-pattern WS2, 5.0, 24, 23, "patterns_db/WS2.jpg"
-pattern FA, 5.0, 12, 12, "patterns_db/FA.jpg"
-pattern FA2, 5.0, 15, 15, "patterns_db/FA2.jpg"
-pattern MUX_ARRAY, 5.0, 26, 26, "patterns_db/MUX_ARRAY.jpg"
+pattern HA, CellAdder, 5.0, 7, 7, "patterns_db/HA.jpg"
+pattern HA2, CellAdder, 5.0, 7, 7, "patterns_db/HA2.jpg"
+pattern CA, CellAdder, 5.0, 7, 7, "patterns_db/CA.jpg"
+pattern WS1, CellAdder, 5.0, 24, 24, "patterns_db/WS1.jpg"
+pattern WS2, CellAdder, 5.0, 24, 23, "patterns_db/WS2.jpg"
+pattern FA, CellAdder, 5.0, 12, 12, "patterns_db/FA.jpg"
+pattern FA2, CellAdder, 5.0, 15, 15, "patterns_db/FA2.jpg"
+pattern MUX_ARRAY, CellAdder, 5.0, 26, 26, "patterns_db/MUX_ARRAY.jpg"
 
 # Misc
 
-pattern TRISTATE3, 5.0, 7, 7, "patterns_db/TRISTATE3.jpg"
-pattern BUS_KEEPER, 5.0, 2, 2, "patterns_db/BUS_KEEPER.jpg"
+pattern TRISTATE3, CellBusSupp, 5.0, 7, 7, "patterns_db/TRISTATE3.jpg"
+pattern BUS_KEEPER, CellBusSupp, 5.0, 2, 2, "patterns_db/BUS_KEEPER.jpg"
 
-pattern UNK_SMALL, 5.0, 0, 0, "patterns_db/UNK_SMALL.jpg"
-pattern UNK_MED, 5.0, 0, 0, "patterns_db/UNK_MED.jpg"
-pattern UNK_BIG, 5.0, 0, 0, "patterns_db/UNK_BIG.jpg"
-pattern GARBAGE, 5.0, 0, 0, "patterns_db/GARBAGE.jpg"
+pattern UNK_SMALL, CellOther, 5.0, 0, 0, "patterns_db/UNK_SMALL.jpg"
+pattern UNK_MED, CellOther, 5.0, 0, 0, "patterns_db/UNK_MED.jpg"
+pattern UNK_BIG, CellOther, 5.0, 0, 0, "patterns_db/UNK_BIG.jpg"
+pattern GARBAGE, CellOther, 5.0, 0, 0, "patterns_db/GARBAGE.jpg"
+
+# -----------------------------------------------------------------------------------
+
+# Vias Syntax:
+# vias pattern_name, vias_name, offset_x, offset_y, type, reserved
+
+# Vias types: ViasInput, ViasOutput, ViasInout
+
+vias NOT1, in, 14.2, 3.2, ViasInput, 0
+vias NOT1, out, 14.4, 0.4, ViasOutput, 0
+
+vias DLATCH, in, 5.0, 5.0, ViasInput, 0
 
 # EOF

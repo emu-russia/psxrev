@@ -8,7 +8,8 @@ BEGIN
         MENUITEM "Load Source Image", ID_FILE_LOAD
         MENUITEM "Load Pattern Database", ID_FILE_LOAD_PATTERNS_DB
         MENUITEM "Save Patterns as Image", ID_SAVE_PATIMG
-        MENUITEM "Save Patterns as Text\tCtrl+Z", ID_SAVE_PATTXT
+        MENUITEM "Save Patterns as Text", ID_SAVE_PATTXT
+        MENUITEM "Save Patterns as XML", ID_SAVE_PATXML
         MENUITEM "E&xit", ID_FILE_EXIT
     END
 
@@ -51,5 +52,4 @@ IDB_GLFONT BITMAP "glfont.bmp"
 
 PatternsAccel ACCELERATORS
 {
-    "^Z", ID_SAVE_PATTXT  
 }

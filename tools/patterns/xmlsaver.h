@@ -1,0 +1,2 @@
+
+void XmlSave ( char * FileName );
