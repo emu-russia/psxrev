@@ -75,6 +75,8 @@ namespace System.Windows.Forms
         private List<Entity> cancelledEntities = new List<Entity>();
         private bool[] lockScroll = new bool[3];
         private bool[] lockZoom = new bool[3];
+        private bool selectEntitiesAfterAdd;
+        private long UnserializeLastStamp = 0;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -85,6 +87,7 @@ namespace System.Windows.Forms
         public EntityBox()
         {
             BackColor = SystemColors.WindowFrame;
+            ForeColor = Color.Snow;
 
             _entities = new List<Entity>();
 
@@ -98,6 +101,7 @@ namespace System.Windows.Forms
             hideCells = false;
             selectionBoxColor = Color.Red;
             entityGrid = null;
+            SelectEntitiesAfterAdd = true;
 
             DefaultEntityAppearance();
 
@@ -334,7 +338,7 @@ namespace System.Windows.Forms
             //
 
             if (e.Button == MouseButtons.Left && Mode == EntityType.Selection
-                 && DraggingBegin == false && SelectionBegin == false)
+                 && DraggingBegin == false && SelectionBegin == false )
             {
                 selected = GetSelected();
 
@@ -373,6 +377,11 @@ namespace System.Windows.Forms
         protected override void OnMouseUp(MouseEventArgs e)
         {
             Focus();
+
+            long timeStampNow = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
+            if ((timeStampNow - UnserializeLastStamp) < 500)
+                return;
 
             if (e.Button == MouseButtons.Right && ScrollingBegin)
             {
@@ -1644,6 +1653,13 @@ namespace System.Windows.Forms
         }
 
         [Category("Logic")]
+        public bool SelectEntitiesAfterAdd
+        {
+            get { return selectEntitiesAfterAdd; }
+            set { selectEntitiesAfterAdd = value; }
+        }
+
+        [Category("Logic")]
         public float Lambda
         {
             get { return _lambda; }
@@ -1731,8 +1747,8 @@ namespace System.Windows.Forms
             {
                 int oldZoom = _zoom;
 
-                if (value < 30)
-                    value = 30;
+                if (value < 10)
+                    value = 10;
 
                 if (value > 400)
                     value = 400;
@@ -2227,7 +2243,10 @@ namespace System.Windows.Forms
             Point origin;
             Point sceneSize = DetermineSceneSize(out origin);
 
-            Bitmap bitmap = new Bitmap(sceneSize.X - origin.X, sceneSize.Y - origin.Y);
+            int bitmapWidth = sceneSize.X - origin.X;
+            int bitmapHeight = sceneSize.Y - origin.Y;
+
+            Bitmap bitmap = new Bitmap(bitmapWidth, bitmapHeight, PixelFormat.Format16bppRgb565);
 
             Graphics gr = Graphics.FromImage(bitmap);
 
@@ -2310,18 +2329,15 @@ namespace System.Windows.Forms
                 LastOpWrapper = EntityBoxOperation.EntityAddBulk;
                 cancelledOp = EntityBoxOperation.Unknown;
 
-                if (Append == true)
-                {
-                    List<Entity> list = (List<Entity>)ser.Deserialize(fs);
+                List<Entity> list = (List<Entity>)ser.Deserialize(fs);
 
-                    foreach (Entity entity in list)
-                        _entities.Add(entity);
-                }
-                else
-                {
+                if (Append == false)
                     _entities.Clear();
 
-                    _entities = (List<Entity>)ser.Deserialize(fs);
+                foreach (Entity entity in list)
+                {
+                    entity.Selected = SelectEntitiesAfterAdd;
+                    _entities.Add(entity);
                 }
 
                 WipeGarbage();
@@ -2332,6 +2348,8 @@ namespace System.Windows.Forms
 
                 if (OnEntityCountChanged != null)
                     OnEntityCountChanged(this, EventArgs.Empty);
+
+                UnserializeLastStamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             }
         }
 
