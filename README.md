@@ -33,7 +33,3 @@ Active / poly : https://drive.google.com/file/d/0B0xV_NJcfKCYTkFWWlQweVBkLTA/vie
 <h3>Cells preview</h3>
 
 <img src='http://wiki.psxdev.ru/images/4/4f/Cells.jpg' width='600px'>
-
-<h3>Cells library</h3>
-
-<img src='http://psxdev.ru/files/IC103/cells.png' width='900px'>
