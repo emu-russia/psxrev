@@ -37,6 +37,27 @@ extern float WorkspaceLamda;
 #define CELL_PRIORITY 1
 #define VIAS_PRIORITY 3
 
+static BOOL RemoveAmpersands(char * string)
+{
+    BOOL Result = FALSE;
+    char * ptr = string;
+
+    if (string == NULL)
+        return FALSE;
+
+    while (*ptr)
+    {
+        if (*ptr == '&')
+        {
+            *ptr = 'n';
+            Result = TRUE;
+        }
+        ptr++;
+    }
+
+    return Result;
+}
+
 void XmlSave ( char * FileName )
 {
     int i, NumCells;
@@ -49,6 +70,9 @@ void XmlSave ( char * FileName )
     float CellPosX, CellPosY;
     float CellWidth, CellHeight;
     float ViasPosX, ViasPosY;
+    BOOL Ampersand = FALSE;
+    BOOL Result;
+    CHAR Name[0x100];
 
     f = fopen ( FileName, "wt" );
     if ( !f )
@@ -74,8 +98,13 @@ void XmlSave ( char * FileName )
         CellWidth = (float)Pattern->Width / WorkspaceLamda;
         CellHeight = (float)Pattern->Height / WorkspaceLamda;
 
+        strcpy(Name, Pattern->PatternName);
+        Result = RemoveAmpersands(Name);
+        if (Result && !Ampersand)
+            Ampersand = TRUE;
+
         fprintf ( f, "  <Entity>\n" );
-        fprintf ( f, "    <Label>%s</Label>\n", Pattern->PatternName );
+        fprintf ( f, "    <Label>%s</Label>\n", Name);
         fprintf ( f, "    <LambdaWidth>%f</LambdaWidth>\n", CellWidth );
         fprintf ( f, "    <LambdaHeight>%f</LambdaHeight>\n", CellHeight );
         fprintf ( f, "    <LambdaX>%f</LambdaX>\n", CellPosX );
@@ -212,4 +241,12 @@ void XmlSave ( char * FileName )
     fprintf ( f, "</ArrayOfEntity>\n" );
 
     fclose (f);
+
+    if (Ampersand)
+    {
+        MessageBox(NULL, "XmlSaver detected Ampersand (&) characters in some of cell names.\n"
+                         "Ampersands are restricted by XML standard and replaced to (n)",
+                         "Notice",
+                         MB_ICONINFORMATION);
+    }
 }
