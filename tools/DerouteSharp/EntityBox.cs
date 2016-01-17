@@ -2007,7 +2007,7 @@ namespace System.Windows.Forms
             return "Beacon" + NumBeacons.ToString();
         }
 
-        private void AddBeacon(int ScreenX, int ScreenY)
+        private Entity AddBeacon(int ScreenX, int ScreenY)
         {
             Entity item = new Entity();
 
@@ -2033,9 +2033,11 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            return item;
         }
 
-        private void AddVias(EntityType Type, int ScreenX, int ScreenY)
+        private Entity AddVias(EntityType Type, int ScreenX, int ScreenY)
         {
             Entity item = new Entity();
 
@@ -2061,9 +2063,11 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            return item;
         }
 
-        private void AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        private Entity AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY)
         {
             Entity item = new Entity();
 
@@ -2076,7 +2080,7 @@ namespace System.Windows.Forms
             if (len < 1.0F)
             {
                 Invalidate();
-                return;
+                return null;
             }
 
             item.Label = "";
@@ -2101,9 +2105,11 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            return item;
         }
 
-        private void AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        private Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
         {
             Entity item = new Entity();
 
@@ -2121,7 +2127,7 @@ namespace System.Windows.Forms
             if (square < 4.0F)
             {
                 Invalidate();
-                return;
+                return null;
             }
 
             if (point2.X > point1.X)
@@ -2173,6 +2179,8 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            return item;
         }
 
         public static Bitmap ResizeImage(Image image, int width, int height)
@@ -3276,8 +3284,11 @@ namespace System.Windows.Forms
             // Remove selected
             //
 
+            string Label = "";
+
             foreach (Entity entity in selectedWires)
             {
+                Label += entity.Label;
                 _entities.Remove(entity);
             }
 
@@ -3307,7 +3318,12 @@ namespace System.Windows.Forms
                     break;
             }
 
-            AddWire(type, start.X, start.Y, end.X, end.Y);
+            Entity mergedWire = AddWire(type, start.X, start.Y, end.X, end.Y);
+
+            if (mergedWire != null)
+            {
+                mergedWire.Label = Label;
+            }
 
             LastOpWrapper = EntityBoxOperation.EntityMergeWires;
             cancelledOp = EntityBoxOperation.Unknown;
@@ -3783,6 +3799,288 @@ namespace System.Windows.Forms
         {
             if (OnEntityLabelEdit != null)
                 OnEntityLabelEdit(this, entity, EventArgs.Empty);
+        }
+
+        //
+        // Traverse selection
+        //
+
+        private bool IsViasInWire (Entity vias, Entity wire)
+        {
+            float delta = 1F;       // Lambdas
+
+            PointF start = new PointF(wire.LambdaX, wire.LambdaY);
+            PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
+
+            RectangleF rect = new RectangleF(
+                vias.LambdaX - delta, vias.LambdaY - delta,
+                2 * delta, 2 * delta );
+
+            return LineIntersectsRect(start, end, rect);
+        }
+
+        private void SelectTraverse ( Entity source,
+                                      int Tier,
+                                      int TierMax,
+                                      int Depth,
+                                      bool Debug )
+        {
+            PointF[] rect1 = new PointF[4];
+            PointF[] rect2 = new PointF[4];
+            PointF restrictedStart = new PointF(0, 0);
+            PointF restrictedEnd = new PointF(0, 0);
+
+            if (Tier >= TierMax)
+                return;
+
+            if (Debug)
+                source.Label = Depth.ToString();
+
+            //
+            // Wire joint Vias/Wire
+            //
+
+            if ( IsEntityWire(source) )
+            {
+                float maxDist = 1F;
+                float dist;
+                List<Entity> viases = new List<Entity>();
+
+                //
+                // Get not selected entities in delta range for Start point
+                //
+                // Get not selected entities in delta range for End point
+                //
+
+                float dx = Math.Abs (source.LambdaEndX - source.LambdaX);
+                float dy = Math.Abs(source.LambdaEndY - source.LambdaY);
+                bool Vert = dx < dy;
+
+                foreach ( Entity entity in _entities )
+                {
+                    if (entity.Selected == false)
+                    {
+                        //
+                        // Wire -> Vias
+                        // 
+
+                        if (IsEntityVias(entity) )
+                        {
+                            if (IsViasInWire(entity, source))
+                                viases.Add(entity);
+                        }
+
+                        //
+                        // Wire -> Wire
+                        //
+
+                        else if (IsEntityWire(entity))
+                        {
+                            PointF pointStart = new PointF(entity.LambdaX, entity.LambdaY);
+                            PointF pointEnd = new PointF(entity.LambdaEndX, entity.LambdaEndY);
+
+                            dist = (float)Math.Sqrt( Math.Pow(entity.LambdaX - source.LambdaX, 2) +
+                                                     Math.Pow(entity.LambdaY - source.LambdaY, 2));
+
+                            if ( dist < maxDist )
+                            {
+                                entity.Selected = true;
+                                SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                            }
+
+                            dist = (float)Math.Sqrt(Math.Pow(entity.LambdaX - source.LambdaEndX, 2) +
+                                                     Math.Pow(entity.LambdaY - source.LambdaEndY, 2));
+
+                            if (dist < maxDist && entity.Selected == false)
+                            {
+                                entity.Selected = true;
+                                SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                            }
+
+                            dist = (float)Math.Sqrt( Math.Pow(entity.LambdaEndX - source.LambdaEndX, 2) +
+                                                     Math.Pow(entity.LambdaEndY - source.LambdaEndY, 2));
+
+                            if ( dist < maxDist && entity.Selected == false)
+                            {
+                                entity.Selected = true;
+                                SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                            }
+
+                            dist = (float)Math.Sqrt( Math.Pow(entity.LambdaEndX - source.LambdaX, 2) +
+                                                     Math.Pow(entity.LambdaEndY - source.LambdaY, 2));
+
+                            if ( dist < maxDist && entity.Selected == false)
+                            {
+                                entity.Selected = true;
+                                SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                            }
+
+                        }
+                    }
+                }           // foreach
+
+
+                //
+                // Process viases
+                //
+
+                foreach (Entity entity in viases)
+                {
+                    entity.Selected = true;
+                    SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                }
+
+            }
+
+            //
+            // Vias joint Cell/Wire
+            //
+
+            else if ( IsEntityVias(source) )
+            {
+                PointF point = new PointF(source.LambdaX, source.LambdaY);
+                PointF[] rect = new PointF[4];
+                List<Entity> wires = new List<Entity>();
+                List<Entity> cells = new List<Entity>();
+
+                //
+                // Collect all wires/cells by vias intersections
+                //
+
+                foreach ( Entity entity in _entities )
+                {
+                    if ( entity.Selected == false )
+                    {
+                        //
+                        // Vias -> Wire
+                        //
+
+                        if ( IsEntityWire (entity) )
+                        {
+                            if (IsViasInWire (source, entity))
+                                wires.Add(entity);
+                        }
+
+                        //
+                        // Vias -> Cell
+                        //
+
+                        else if ( IsEntityCell (entity) )
+                        {
+                            rect[0].X = entity.LambdaX;
+                            rect[0].Y = entity.LambdaY;
+
+                            rect[1].X = entity.LambdaX;
+                            rect[1].Y = entity.LambdaY + entity.LambdaHeight;
+
+                            rect[2].X = entity.LambdaX + entity.LambdaWidth;
+                            rect[2].Y = entity.LambdaY + entity.LambdaHeight;
+
+                            rect[3].X = entity.LambdaX + entity.LambdaWidth;
+                            rect[3].Y = entity.LambdaY;
+
+                            if (PointInPoly(rect, point))
+                                cells.Add(entity);
+                        }
+                    }
+                }
+
+                //
+                // Process
+                //
+
+                foreach ( Entity entity in wires )
+                {
+                    entity.Selected = true;
+                    SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+
+                    //
+                    // Only single child
+                    //
+
+                    break;
+                }
+
+                foreach (Entity entity in cells)
+                {
+                    entity.Selected = true;
+                    SelectTraverse(entity, Tier+1, TierMax, Depth + 1, Debug);
+
+                    //
+                    // Only single child
+                    //
+
+                    break;
+                }
+
+            }
+
+            //
+            // Cell joint Vias
+            //
+
+            else if ( IsEntityCell(source) )
+            {
+                PointF[] rect = new PointF[4];
+                List<Entity> viases = new List<Entity>();
+
+                rect[0].X = source.LambdaX;
+                rect[0].Y = source.LambdaY;
+
+                rect[1].X = source.LambdaX;
+                rect[1].Y = source.LambdaY + source.LambdaHeight;
+
+                rect[2].X = source.LambdaX + source.LambdaWidth;
+                rect[2].Y = source.LambdaY + source.LambdaHeight;
+
+                rect[3].X = source.LambdaX + source.LambdaWidth;
+                rect[3].Y = source.LambdaY;
+
+                //
+                // Add Output vias intersecting given cell
+                //
+
+                foreach ( Entity entity in _entities )
+                {
+                    if ( entity.Selected == false && 
+                        (entity.Type == EntityType.ViasOutput || entity.Type == EntityType.ViasInout) )
+                    {
+                        PointF point = new PointF(entity.LambdaX, entity.LambdaY);
+
+                        if (PointInPoly(rect, point))
+                            viases.Add(entity);
+                    }
+                }
+
+                //
+                // Process added viases
+                //
+
+                foreach ( Entity entity in viases )
+                {
+                    entity.Selected = true;
+                    SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
+                }
+            }
+        }
+
+        public void TraversalSelection (int TierMax)
+        {
+            List<Entity> selectedEnts = new List<Entity>();
+
+            foreach ( Entity entity in _entities )
+            {
+                if ( (IsEntityCell(entity) || IsEntityVias(entity) || IsEntityWire(entity)) 
+                     && entity.Selected )
+                    selectedEnts.Add(entity);
+            }
+
+            foreach ( Entity entity in selectedEnts)
+            {
+                SelectTraverse(entity, 0, TierMax, 0, false);
+            }
+
+            Invalidate();
         }
 
     }       // EntityBox

@@ -581,5 +581,24 @@ namespace DerouteSharp
             }
         }
 
+        private void traverseTIER1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.TraversalSelection(1);
+        }
+
+        private void traverseTIER2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.TraversalSelection(2);
+        }
+
+        private void traverseTIER3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.TraversalSelection(3);
+        }
+
+        private void traverseTIER5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.TraversalSelection(5);
+        }
     }       // Form1
 }

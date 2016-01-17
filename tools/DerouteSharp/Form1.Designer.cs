@@ -122,6 +122,11 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
@@ -523,6 +528,7 @@
             this.toolStripButton2,
             this.toolStripButton3,
             this.toolStripButton4,
+            this.toolStripDropDownButton5,
             this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
@@ -833,7 +839,8 @@
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton4.Text = "toolStripButton4";
+            this.toolStripButton4.Text = "Connect selected viases";
+            this.toolStripButton4.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             this.toolStripButton4.ToolTipText = "Draw wires between selected viases";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
@@ -969,6 +976,52 @@
             // 
             this.columnHeader2.Text = "Beacon Name";
             this.columnHeader2.Width = 207;
+            // 
+            // toolStripDropDownButton5
+            // 
+            this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.traverseTIER1ToolStripMenuItem,
+            this.traverseTIER2ToolStripMenuItem,
+            this.traverseTIER3ToolStripMenuItem,
+            this.traverseTIER5ToolStripMenuItem});
+            this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
+            this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
+            this.toolStripDropDownButton5.Size = new System.Drawing.Size(45, 36);
+            this.toolStripDropDownButton5.Text = "Traversal selection";
+            // 
+            // traverseTIER1ToolStripMenuItem
+            // 
+            this.traverseTIER1ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER1ToolStripMenuItem.Image")));
+            this.traverseTIER1ToolStripMenuItem.Name = "traverseTIER1ToolStripMenuItem";
+            this.traverseTIER1ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
+            this.traverseTIER1ToolStripMenuItem.Text = "Traverse TIER 1";
+            this.traverseTIER1ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER1ToolStripMenuItem_Click);
+            // 
+            // traverseTIER2ToolStripMenuItem
+            // 
+            this.traverseTIER2ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER2ToolStripMenuItem.Image")));
+            this.traverseTIER2ToolStripMenuItem.Name = "traverseTIER2ToolStripMenuItem";
+            this.traverseTIER2ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
+            this.traverseTIER2ToolStripMenuItem.Text = "Traverse TIER 2";
+            this.traverseTIER2ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER2ToolStripMenuItem_Click);
+            // 
+            // traverseTIER3ToolStripMenuItem
+            // 
+            this.traverseTIER3ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER3ToolStripMenuItem.Image")));
+            this.traverseTIER3ToolStripMenuItem.Name = "traverseTIER3ToolStripMenuItem";
+            this.traverseTIER3ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
+            this.traverseTIER3ToolStripMenuItem.Text = "Traverse TIER 3";
+            this.traverseTIER3ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER3ToolStripMenuItem_Click);
+            // 
+            // traverseTIER5ToolStripMenuItem
+            // 
+            this.traverseTIER5ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER5ToolStripMenuItem.Image")));
+            this.traverseTIER5ToolStripMenuItem.Name = "traverseTIER5ToolStripMenuItem";
+            this.traverseTIER5ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
+            this.traverseTIER5ToolStripMenuItem.Text = "Traverse TIER 5";
+            this.traverseTIER5ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER5ToolStripMenuItem_Click);
             // 
             // entityBox1
             // 
@@ -1189,6 +1242,11 @@
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton5;
+        private System.Windows.Forms.ToolStripMenuItem traverseTIER1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem traverseTIER2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem traverseTIER3ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem traverseTIER5ToolStripMenuItem;
     }
 }
 
