@@ -22,7 +22,7 @@ namespace DerouteSharp.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace DerouteSharp.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DerouteSharp.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace DerouteSharp.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,19 @@ namespace DerouteSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap beacon_entity {
+            get {
+                object obj = ResourceManager.GetObject("beacon_entity", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon deroute {
+        public static System.Drawing.Icon deroute {
             get {
                 object obj = ResourceManager.GetObject("deroute", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -73,7 +83,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon selection {
+        public static System.Drawing.Icon selection {
             get {
                 object obj = ResourceManager.GetObject("selection", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -83,7 +93,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias {
+        public static System.Drawing.Icon vias {
             get {
                 object obj = ResourceManager.GetObject("vias", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -93,7 +103,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_float {
+        public static System.Drawing.Icon vias_float {
             get {
                 object obj = ResourceManager.GetObject("vias_float", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -103,7 +113,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_ground {
+        public static System.Drawing.Icon vias_ground {
             get {
                 object obj = ResourceManager.GetObject("vias_ground", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -113,7 +123,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_inout {
+        public static System.Drawing.Icon vias_inout {
             get {
                 object obj = ResourceManager.GetObject("vias_inout", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -123,7 +133,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_input {
+        public static System.Drawing.Icon vias_input {
             get {
                 object obj = ResourceManager.GetObject("vias_input", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -133,7 +143,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_output {
+        public static System.Drawing.Icon vias_output {
             get {
                 object obj = ResourceManager.GetObject("vias_output", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -143,7 +153,7 @@ namespace DerouteSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon vias_power {
+        public static System.Drawing.Icon vias_power {
             get {
                 object obj = ResourceManager.GetObject("vias_power", resourceCulture);
                 return ((System.Drawing.Icon)(obj));

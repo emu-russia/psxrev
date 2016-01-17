@@ -12,6 +12,40 @@ using System.Linq;
 namespace System.Windows.Forms
 {
     public delegate void EntityBoxEventHandler(object sender, EventArgs e);
+    public delegate void EntityBoxEntityEventHandler(object sender, Entity entity, EventArgs e);
+
+    public enum EntityMode
+    {
+        Selection = 0,
+
+        ImageLayer0,
+        ImageLayer1,
+        ImageLayer2,
+
+        ViasInput = 0x80,
+        ViasOutput,
+        ViasInout,
+        ViasConnect,
+        ViasFloating,
+        ViasPower,
+        ViasGround,
+        WireInterconnect,
+        WirePower,
+        WireGround,
+        CellNot,
+        CellBuffer,
+        CellMux,
+        CellLogic,
+        CellAdder,
+        CellBusSupp,
+        CellFlipFlop,
+        CellLatch,
+        CellOther,
+        UnitRegfile,
+        UnitMemory,
+        UnitCustom,
+        Beacon,
+    }
 
     public enum EntityBoxOperation
     {
@@ -31,6 +65,7 @@ namespace System.Windows.Forms
 
     public partial class EntityBox : Control
     {
+        private Image beaconImage = null;
         private Image[] _imageOrig = new Image[3];
         private float _lambda;
         private int[] _imageZoom = new int[3];
@@ -54,7 +89,7 @@ namespace System.Windows.Forms
         private bool DraggingBegin = false;
         private bool SelectionBegin = false;
         public List<Entity> _entities;
-        private EntityType drawMode = EntityType.Selection;
+        private EntityMode drawMode = EntityMode.Selection;
         private bool hideImage;
         private bool hideVias;
         private bool hideWires;
@@ -83,6 +118,7 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnEntityCountChanged = null;
         public event EntityBoxEventHandler OnLastOperation = null;
         public event EntityBoxEventHandler OnDebug = null;
+        public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
 
         public EntityBox()
         {
@@ -247,6 +283,21 @@ namespace System.Windows.Forms
                     if (PointInPoly(rect, point) == true)
                         return entity;
                 }
+                else if ( entity.Type == EntityType.Beacon )
+                {
+                    Point beaconOrigin = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+
+                    Point imageOrigin = new Point(beaconOrigin.X - (int)((float)(beaconImage.Width * zf) / 2),
+                                                    beaconOrigin.Y - (int)((float)beaconImage.Height * zf));
+
+                    rect[0] = new PointF(imageOrigin.X, imageOrigin.Y);
+                    rect[1] = new PointF(imageOrigin.X, imageOrigin.Y + beaconImage.Height * zf);
+                    rect[2] = new PointF(imageOrigin.X + beaconImage.Width * zf, imageOrigin.Y + beaconImage.Height * zf);
+                    rect[3] = new PointF(imageOrigin.X + beaconImage.Width * zf, imageOrigin.Y);
+
+                    if (PointInPoly(rect, point) == true)
+                        return entity;
+                }
                 else        // Vias
                 {
                     rect[0] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
@@ -299,8 +350,8 @@ namespace System.Windows.Forms
             // Drawing
             //
 
-            if (e.Button == MouseButtons.Left && Mode != EntityType.Selection &&
-                 Mode != EntityType.ImageLayer0 && Mode != EntityType.ImageLayer1 && Mode != EntityType.ImageLayer2 &&
+            if (e.Button == MouseButtons.Left && Mode != EntityMode.Selection &&
+                 Mode != EntityMode.ImageLayer0 && Mode != EntityMode.ImageLayer1 && Mode != EntityMode.ImageLayer2 &&
                  DrawingBegin == false && ScrollingBegin == false)
             {
                 Entity entity;
@@ -313,12 +364,12 @@ namespace System.Windows.Forms
                 Okay = true;
 
                 entity = EntityHitTest(e.X, e.Y);
-                if (entity != null && (Mode == EntityType.CellAdder ||
-                     Mode == EntityType.CellBuffer || Mode == EntityType.CellBusSupp ||
-                     Mode == EntityType.CellFlipFlop || Mode == EntityType.CellLatch ||
-                     Mode == EntityType.CellLogic || Mode == EntityType.CellMux ||
-                     Mode == EntityType.CellNot || Mode == EntityType.CellOther || Mode == EntityType.UnitCustom ||
-                     Mode == EntityType.UnitMemory || Mode == EntityType.UnitRegfile))
+                if (entity != null && (Mode == EntityMode.CellAdder ||
+                     Mode == EntityMode.CellBuffer || Mode == EntityMode.CellBusSupp ||
+                     Mode == EntityMode.CellFlipFlop || Mode == EntityMode.CellLatch ||
+                     Mode == EntityMode.CellLogic || Mode == EntityMode.CellMux ||
+                     Mode == EntityMode.CellNot || Mode == EntityMode.CellOther || Mode == EntityMode.UnitCustom ||
+                     Mode == EntityMode.UnitMemory || Mode == EntityMode.UnitRegfile))
                 {
                     Okay = false;
                 }
@@ -337,7 +388,7 @@ namespace System.Windows.Forms
             // Dragging / selection
             //
 
-            if (e.Button == MouseButtons.Left && Mode == EntityType.Selection
+            if (e.Button == MouseButtons.Left && Mode == EntityMode.Selection
                  && DraggingBegin == false && SelectionBegin == false )
             {
                 selected = GetSelected();
@@ -387,17 +438,17 @@ namespace System.Windows.Forms
             {
                 switch ( Mode )
                 {
-                    case EntityType.ImageLayer0:
+                    case EntityMode.ImageLayer0:
                         LastOpWrapper = EntityBoxOperation.ImageScroll0;
                         lastOpData = (object)_savedImageScroll[0];
                         cancelledOp = EntityBoxOperation.Unknown;
                         break;
-                    case EntityType.ImageLayer1:
+                    case EntityMode.ImageLayer1:
                         LastOpWrapper = EntityBoxOperation.ImageScroll1;
                         lastOpData = (object)_savedImageScroll[1];
                         cancelledOp = EntityBoxOperation.Unknown;
                         break;
-                    case EntityType.ImageLayer2:
+                    case EntityMode.ImageLayer2:
                         LastOpWrapper = EntityBoxOperation.ImageScroll2;
                         lastOpData = (object)_savedImageScroll[2];
                         cancelledOp = EntityBoxOperation.Unknown;
@@ -412,7 +463,7 @@ namespace System.Windows.Forms
             // Select entity
             //
 
-            if (e.Button == MouseButtons.Left && Mode == EntityType.Selection)
+            if (e.Button == MouseButtons.Left && Mode == EntityMode.Selection)
             {
                 //
                 // Catch entities overlapping selection box
@@ -549,11 +600,23 @@ namespace System.Windows.Forms
             //
 
             if (e.Button == MouseButtons.Left &&
-                 (Mode == EntityType.ViasConnect || Mode == EntityType.ViasFloating || Mode == EntityType.ViasGround ||
-                  Mode == EntityType.ViasInout || Mode == EntityType.ViasInput || Mode == EntityType.ViasOutput ||
-                  Mode == EntityType.ViasPower) && DrawingBegin)
+                 (Mode == EntityMode.ViasConnect || Mode == EntityMode.ViasFloating || Mode == EntityMode.ViasGround ||
+                  Mode == EntityMode.ViasInout || Mode == EntityMode.ViasInput || Mode == EntityMode.ViasOutput ||
+                  Mode == EntityMode.ViasPower) && DrawingBegin)
             {
-                AddVias(Mode, e.X, e.Y);
+                AddVias((EntityType)Mode, e.X, e.Y);
+
+                DrawingBegin = false;
+            }
+
+            //
+            // Add beacon
+            //
+
+            if (e.Button == MouseButtons.Left &&
+                Mode == EntityMode.Beacon && DrawingBegin)
+            {
+                AddBeacon(e.X, e.Y);
 
                 DrawingBegin = false;
             }
@@ -562,10 +625,10 @@ namespace System.Windows.Forms
             // Add wire
             //
 
-            if (e.Button == MouseButtons.Left && (Mode == EntityType.WireGround ||
-                  Mode == EntityType.WireInterconnect || Mode == EntityType.WirePower) && DrawingBegin)
+            if (e.Button == MouseButtons.Left && (Mode == EntityMode.WireGround ||
+                  Mode == EntityMode.WireInterconnect || Mode == EntityMode.WirePower) && DrawingBegin)
             {
-                AddWire(Mode, SavedMouseX, SavedMouseY, e.X, e.Y);
+                AddWire((EntityType)Mode, SavedMouseX, SavedMouseY, e.X, e.Y);
 
                 DrawingBegin = false;
             }
@@ -575,21 +638,21 @@ namespace System.Windows.Forms
             //
 
             if (e.Button == MouseButtons.Left && (
-                    Mode == EntityType.CellNot ||
-                    Mode == EntityType.CellBuffer ||
-                    Mode == EntityType.CellMux ||
-                    Mode == EntityType.CellLogic ||
-                    Mode == EntityType.CellAdder ||
-                    Mode == EntityType.CellBusSupp ||
-                    Mode == EntityType.CellFlipFlop ||
-                    Mode == EntityType.CellLatch ||
-                    Mode == EntityType.CellOther ||
-                    Mode == EntityType.UnitRegfile ||
-                    Mode == EntityType.UnitMemory ||
-                    Mode == EntityType.UnitCustom
+                    Mode == EntityMode.CellNot ||
+                    Mode == EntityMode.CellBuffer ||
+                    Mode == EntityMode.CellMux ||
+                    Mode == EntityMode.CellLogic ||
+                    Mode == EntityMode.CellAdder ||
+                    Mode == EntityMode.CellBusSupp ||
+                    Mode == EntityMode.CellFlipFlop ||
+                    Mode == EntityMode.CellLatch ||
+                    Mode == EntityMode.CellOther ||
+                    Mode == EntityMode.UnitRegfile ||
+                    Mode == EntityMode.UnitMemory ||
+                    Mode == EntityMode.UnitCustom
                     ) && DrawingBegin)
             {
-                AddCell(Mode, SavedMouseX, SavedMouseY, e.X, e.Y);
+                AddCell((EntityType)Mode, SavedMouseX, SavedMouseY, e.X, e.Y);
 
                 DrawingBegin = false;
             }
@@ -650,7 +713,7 @@ namespace System.Windows.Forms
             {
                 switch (Mode)
                 {
-                    case EntityType.Selection:
+                    case EntityMode.Selection:
                     default:
                         screenCoord = LambdaToScreen(SavedScrollX, SavedScrollY);
 
@@ -661,7 +724,7 @@ namespace System.Windows.Forms
                         ScrollY = lambdaCoord.Y;
                         break;
 
-                    case EntityType.ImageLayer0:
+                    case EntityMode.ImageLayer0:
                         if (LockScroll0 == false)
                         {
                             screenCoord = LambdaToScreen(_savedImageScroll[0].X, _savedImageScroll[0].Y);
@@ -671,7 +734,7 @@ namespace System.Windows.Forms
                         }
                         break;
 
-                    case EntityType.ImageLayer1:
+                    case EntityMode.ImageLayer1:
                         if (LockScroll1 == false)
                         {
                             screenCoord = LambdaToScreen(_savedImageScroll[1].X, _savedImageScroll[1].Y);
@@ -681,7 +744,7 @@ namespace System.Windows.Forms
                         }
                         break;
 
-                    case EntityType.ImageLayer2:
+                    case EntityMode.ImageLayer2:
                         if (LockScroll2 == false)
                         {
                             screenCoord = LambdaToScreen(_savedImageScroll[2].X, _savedImageScroll[2].Y);
@@ -699,8 +762,8 @@ namespace System.Windows.Forms
             // Wire drawing animation
             //
 
-            if (DrawingBegin && (Mode == EntityType.WireGround ||
-                   Mode == EntityType.WireInterconnect || Mode == EntityType.WirePower))
+            if (DrawingBegin && (Mode == EntityMode.WireGround ||
+                   Mode == EntityMode.WireInterconnect || Mode == EntityMode.WirePower))
             {
                 LastMouseX = e.X;
                 LastMouseY = e.Y;
@@ -712,18 +775,18 @@ namespace System.Windows.Forms
             //
 
             if (DrawingBegin && (
-                    Mode == EntityType.CellNot ||
-                    Mode == EntityType.CellBuffer ||
-                    Mode == EntityType.CellMux ||
-                    Mode == EntityType.CellLogic ||
-                    Mode == EntityType.CellAdder ||
-                    Mode == EntityType.CellBusSupp ||
-                    Mode == EntityType.CellFlipFlop ||
-                    Mode == EntityType.CellLatch ||
-                    Mode == EntityType.CellOther ||
-                    Mode == EntityType.UnitRegfile ||
-                    Mode == EntityType.UnitMemory ||
-                    Mode == EntityType.UnitCustom))
+                    Mode == EntityMode.CellNot ||
+                    Mode == EntityMode.CellBuffer ||
+                    Mode == EntityMode.CellMux ||
+                    Mode == EntityMode.CellLogic ||
+                    Mode == EntityMode.CellAdder ||
+                    Mode == EntityMode.CellBusSupp ||
+                    Mode == EntityMode.CellFlipFlop ||
+                    Mode == EntityMode.CellLatch ||
+                    Mode == EntityMode.CellOther ||
+                    Mode == EntityMode.UnitRegfile ||
+                    Mode == EntityMode.UnitMemory ||
+                    Mode == EntityMode.UnitCustom))
             {
                 LastMouseX = e.X;
                 LastMouseY = e.Y;
@@ -796,12 +859,12 @@ namespace System.Windows.Forms
 
             switch (Mode)
             {
-                case EntityType.Selection:
+                case EntityMode.Selection:
                 default:
                     Zoom += delta;
                     break;
 
-                case EntityType.ImageLayer0:
+                case EntityMode.ImageLayer0:
                     if (LockZoom0 == false)
                     {
                         ZoomImage0 += delta;
@@ -809,7 +872,7 @@ namespace System.Windows.Forms
                     }
                     break;
 
-                case EntityType.ImageLayer1:
+                case EntityMode.ImageLayer1:
                     if (LockZoom1 == false)
                     {
                         ZoomImage1 += delta;
@@ -817,7 +880,7 @@ namespace System.Windows.Forms
                     }
                     break;
 
-                case EntityType.ImageLayer2:
+                case EntityMode.ImageLayer2:
                     if (LockZoom2 == false)
                     {
                         ZoomImage2 += delta;
@@ -971,7 +1034,7 @@ namespace System.Windows.Forms
                     // Label
                     //
 
-                    if (entity.Label != null && entity.Label.Length > 0)
+                    if (entity.Label != null && entity.Label.Length > 0 && Zoom > 50 )
                     {
                         TextAlignment align = entity.LabelAlignment;
 
@@ -985,16 +1048,22 @@ namespace System.Windows.Forms
                         switch (align)
                         {
                             case TextAlignment.Top:
-                            case TextAlignment.TopLeft:
-                            case TextAlignment.TopRight:
                             default:
                                 origin.Y = centerY - radius - (int)(textSize.Height * zf);
                                 break;
 
                             case TextAlignment.Bottom:
-                            case TextAlignment.BottomLeft:
-                            case TextAlignment.BottomRight:
                                 origin.Y = centerY + radius;
+                                break;
+
+                            case TextAlignment.TopLeft:
+                            case TextAlignment.BottomLeft:
+                                origin.Y = centerY + 2 * radius - (int)(textSize.Height * zf);
+                                break;
+
+                            case TextAlignment.TopRight:
+                            case TextAlignment.BottomRight:
+                                origin.Y = centerY + 2 * radius - (int)(textSize.Height * zf);
                                 break;
                         }
 
@@ -1077,7 +1146,7 @@ namespace System.Windows.Forms
                     // Label
                     //
 
-                    if (entity.Label != null && entity.Label.Length > 0)
+                    if (entity.Label != null && entity.Label.Length > 0 && Zoom > 50)
                     {
                         Point start = new Point(startX, startY);
                         Point end = new Point(endX, endY);
@@ -1209,7 +1278,7 @@ namespace System.Windows.Forms
                     // Label
                     //
 
-                    if (entity.Label != null && entity.Label.Length > 0)
+                    if (entity.Label != null && entity.Label.Length > 0 && Zoom > 50)
                     {
                         SizeF textSize = gr.MeasureString(entity.Label, Font);
 
@@ -1260,6 +1329,68 @@ namespace System.Windows.Forms
                         gr.TranslateTransform(topLeft.X, topLeft.Y);
                         gr.ScaleTransform(zf, zf);
                         gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), origin.X, origin.Y);
+                        gr.ResetTransform();
+                    }
+
+                    break;
+
+                case EntityType.Beacon:
+
+                    Point beaconOrigin = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+
+                    Point imageOrigin = new Point(beaconOrigin.X - (int)((float)(beaconImage.Width * zf) / 2),
+                                                    beaconOrigin.Y - (int)((float)beaconImage.Height * zf) );
+
+                    if ( entity.Selected )
+                    {
+                        ColorMatrix colorMatrix = new ColorMatrix(
+                            new float[][]
+                            {
+                                new float[] {.0f, 1f, .0f, 0, 0},
+                                new float[] {.0f, 1f, .0f, 0, 0},
+                                new float[] {.0f, 1f, .0f, 0, 0},
+                                new float[] {0, 0, 0, 1, 0},
+                                new float[] {0, 0, 0, 0, 1}
+                            });
+
+                        ImageAttributes attributes = new ImageAttributes();
+
+                        attributes.SetColorMatrix(colorMatrix);
+
+                        float borderSize = 3F * zf;
+
+                        gr.DrawImage(beaconImage,
+                            new Rectangle(
+                                imageOrigin.X - (int)borderSize,
+                                imageOrigin.Y - (int)borderSize,
+                                (int)((float)beaconImage.Width * zf) + (int)(borderSize * 2F),
+                                (int)((float)beaconImage.Height * zf) + (int)(borderSize * 2F)),
+                            0, 0, beaconImage.Width, beaconImage.Height, GraphicsUnit.Pixel, attributes);
+                    }
+
+                    gr.DrawImage(beaconImage,
+                                  imageOrigin.X, imageOrigin.Y,
+                                  beaconImage.Width * zf,
+                                  beaconImage.Height * zf);
+
+                    // Debug
+                    //Rectangle rect = new Rectangle(beaconOrigin.X, beaconOrigin.Y, 1, 1);
+                    //gr.DrawRectangle(Pens.White, rect);
+
+                    //
+                    // Label
+                    //
+
+                    if (entity.Label != null && entity.Label.Length > 0)
+                    {
+                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+
+                        Point textOrigin = new Point(beaconOrigin.X - (int)(textSize.Width * zf / 2F),
+                                                       imageOrigin.Y - (int)(textSize.Height * zf));
+
+                        gr.TranslateTransform(textOrigin.X, textOrigin.Y);
+                        gr.ScaleTransform(zf, zf);
+                        gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), 0, 0);
                         gr.ResetTransform();
                     }
 
@@ -1373,8 +1504,8 @@ namespace System.Windows.Forms
                 // Wire drawing animation
                 //
 
-                if (WholeScene == false && DrawingBegin && (Mode == EntityType.WireGround ||
-                       Mode == EntityType.WireInterconnect || Mode == EntityType.WirePower))
+                if (WholeScene == false && DrawingBegin && (Mode == EntityMode.WireGround ||
+                       Mode == EntityMode.WireInterconnect || Mode == EntityMode.WirePower))
                 {
                     Entity virtualEntity = new Entity();
 
@@ -1385,7 +1516,7 @@ namespace System.Windows.Forms
                     virtualEntity.LambdaY = point1.Y;
                     virtualEntity.LambdaEndX = point2.X;
                     virtualEntity.LambdaEndY = point2.Y;
-                    virtualEntity.Type = Mode;
+                    virtualEntity.Type = (EntityType)Mode;
                     virtualEntity.Priority = WirePriority;
                     virtualEntity.ColorOverride = Color.Black;
 
@@ -1397,18 +1528,18 @@ namespace System.Windows.Forms
                 //
 
                 if (WholeScene == false && DrawingBegin && (
-                        Mode == EntityType.CellNot ||
-                        Mode == EntityType.CellBuffer ||
-                        Mode == EntityType.CellMux ||
-                        Mode == EntityType.CellLogic ||
-                        Mode == EntityType.CellAdder ||
-                        Mode == EntityType.CellBusSupp ||
-                        Mode == EntityType.CellFlipFlop ||
-                        Mode == EntityType.CellLatch ||
-                        Mode == EntityType.CellOther ||
-                        Mode == EntityType.UnitRegfile ||
-                        Mode == EntityType.UnitMemory ||
-                        Mode == EntityType.UnitCustom
+                        Mode == EntityMode.CellNot ||
+                        Mode == EntityMode.CellBuffer ||
+                        Mode == EntityMode.CellMux ||
+                        Mode == EntityMode.CellLogic ||
+                        Mode == EntityMode.CellAdder ||
+                        Mode == EntityMode.CellBusSupp ||
+                        Mode == EntityMode.CellFlipFlop ||
+                        Mode == EntityMode.CellLatch ||
+                        Mode == EntityMode.CellOther ||
+                        Mode == EntityMode.UnitRegfile ||
+                        Mode == EntityMode.UnitMemory ||
+                        Mode == EntityMode.UnitCustom
                        ))
                 {
                     Entity virtualEntity = new Entity();
@@ -1452,7 +1583,7 @@ namespace System.Windows.Forms
                     virtualEntity.LambdaY = originPos.Y;
                     virtualEntity.LambdaWidth = size.X;
                     virtualEntity.LambdaHeight = size.Y;
-                    virtualEntity.Type = Mode;
+                    virtualEntity.Type = (EntityType)Mode;
                     virtualEntity.Priority = CellPriority;
                     virtualEntity.ColorOverride = Color.Black;
                     virtualEntity.Label = Mode.ToString();
@@ -1549,6 +1680,27 @@ namespace System.Windows.Forms
             source.Dispose();
             GC.Collect();
             return (Image)grayscale;
+        }
+
+        [Category("Appearance"), DefaultValue(null)]
+        [Browsable(false)]
+        public Image BeaconImage
+        {
+            get { return beaconImage; }
+            set
+            {
+                if (beaconImage != value)
+                {
+                    if (beaconImage != null)
+                    {
+                        beaconImage.Dispose();
+                        GC.Collect();
+                    }
+
+                    beaconImage = new Bitmap(value);
+                    Invalidate();
+                }
+            }
         }
 
         [Category("Appearance"), DefaultValue(null)]
@@ -1675,17 +1827,17 @@ namespace System.Windows.Forms
         }
 
         [Category("Logic")]
-        public EntityType Mode
+        public EntityMode Mode
         {
             get { return drawMode; }
             set
             {
                 drawMode = value;
 
-                if (drawMode == EntityType.Selection ||
-                    drawMode == EntityType.ImageLayer0 ||
-                    drawMode == EntityType.ImageLayer1 ||
-                    drawMode == EntityType.ImageLayer2)
+                if (drawMode == EntityMode.Selection ||
+                    drawMode == EntityMode.ImageLayer0 ||
+                    drawMode == EntityMode.ImageLayer1 ||
+                    drawMode == EntityMode.ImageLayer2)
                     DrawingBegin = false;
             }
         }
@@ -1847,6 +1999,40 @@ namespace System.Windows.Forms
         {
             get { return lockZoom[2]; }
             set { lockZoom[2] = value; }
+        }
+
+        private string GenBeaconName ()
+        {
+            int NumBeacons = GetBeaconCount() + 1;
+            return "Beacon" + NumBeacons.ToString();
+        }
+
+        private void AddBeacon(int ScreenX, int ScreenY)
+        {
+            Entity item = new Entity();
+
+            PointF point = ScreenToLambda(ScreenX, ScreenY);
+
+            item.Label = GenBeaconName ();
+            item.LambdaX = point.X;
+            item.LambdaY = point.Y;
+            item.LambdaWidth = 1;
+            item.LambdaHeight = 1;
+            item.Type = EntityType.Beacon;
+            item.ColorOverride = Color.Black;
+            item.Priority = BeaconPriority;
+            item.SetParent(this);
+
+            _entities.Add(item);
+            SortEntities();
+            Invalidate();
+
+            if (OnEntityCountChanged != null)
+                OnEntityCountChanged(this, EventArgs.Empty);
+
+            LastOpWrapper = EntityBoxOperation.EntityAddSingle;
+            lastOpData = (object)item;
+            cancelledOp = EntityBoxOperation.Unknown;
         }
 
         private void AddVias(EntityType Type, int ScreenX, int ScreenY)
@@ -2561,6 +2747,7 @@ namespace System.Windows.Forms
         private int _ViasPriority;
         private int _WirePriority;
         private int _CellPriority;
+        private int _BeaconPriority;
         private bool _AutoPriority;
 
         private void DefaultEntityAppearance()
@@ -2604,6 +2791,7 @@ namespace System.Windows.Forms
             _WireOpacity = 128;
             _CellOpacity = 128;
 
+            _BeaconPriority = 4;
             _ViasPriority = 3;
             _WirePriority = 2;
             _CellPriority = 1;
@@ -2847,6 +3035,17 @@ namespace System.Windows.Forms
         }
 
         [Category("Entity Appearance")]
+        public int BeaconPriority
+        {
+            get { return _BeaconPriority; }
+            set
+            {
+                _BeaconPriority = value;
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
         public int ViasPriority
         {
             get { return _ViasPriority; }
@@ -2918,7 +3117,7 @@ namespace System.Windows.Forms
             else if ((e.KeyCode == Keys.Right ||
                         e.KeyCode == Keys.Left ||
                         e.KeyCode == Keys.Up ||
-                        e.KeyCode == Keys.Down) && Mode == EntityType.Selection)
+                        e.KeyCode == Keys.Down) && Mode == EntityMode.Selection)
             {
                 bool NeedUpdate = false;
                 float deltaX = 0;
@@ -3212,14 +3411,14 @@ namespace System.Windows.Forms
         {
             switch (drawMode)
             {
-                case EntityType.ImageLayer0:
+                case EntityMode.ImageLayer0:
                 default:
                     Image0 = image;
                     break;
-                case EntityType.ImageLayer1:
+                case EntityMode.ImageLayer1:
                     Image1 = image;
                     break;
-                case EntityType.ImageLayer2:
+                case EntityMode.ImageLayer2:
                     Image2 = image;
                     break;
             }
@@ -3478,6 +3677,114 @@ namespace System.Windows.Forms
             }
         }
 
+        public void DrawWireBetweenSelectedViases ()
+        {
+            List<Entity> selectedVias = new List<Entity>();
+
+            //
+            // Grab selected viases
+            //
+
+            foreach ( Entity entity in _entities )
+            {
+                if ( IsEntityVias(entity) && entity.Selected )
+                {
+                    selectedVias.Add(entity);
+                }
+            }
+
+            //
+            // Sort by select timestamp
+            //
+
+            selectedVias = selectedVias.OrderBy(o => o.SelectTimeStamp).ToList();
+
+            //
+            // Connect viases by wires
+            //
+
+            if ( selectedVias.Count >= 2 )
+            {
+                Entity prevVias = null;
+
+                foreach ( Entity vias in selectedVias )
+                {
+                    if (prevVias == null)
+                    {
+                        prevVias = vias;
+                        continue;
+                    }
+
+                    //
+                    // Connect prevVias with current
+                    //
+
+                    Point Start = LambdaToScreen(prevVias.LambdaX, prevVias.LambdaY);
+                    Point End = LambdaToScreen(vias.LambdaX, vias.LambdaY);
+
+                    AddWire( EntityType.WireInterconnect,
+                             Start.X, Start.Y, End.X, End.Y);
+
+                    //
+                    // Replace prev vias
+                    //
+
+                    prevVias = vias;
+                }
+
+                Invalidate();
+            }
+        }
+
+        public int GetBeaconCount ()
+        {
+            int NumBeacons = 0;
+            foreach (Entity entity in _entities)
+            {
+                if (entity.Type == EntityType.Beacon)
+                    NumBeacons++;
+            }
+            return NumBeacons;
+        }
+
+        public List<Entity> GetBeacons ()
+        {
+            List<Entity> beacons = new List<Entity>();
+            foreach (Entity entity in _entities)
+            {
+                if (entity.Type == EntityType.Beacon)
+                    beacons.Add(entity);
+            }
+            return beacons;
+        }
+
+        public void ScrollToBeacon (Entity beacon)
+        {
+            _ScrollX = 0;
+            _ScrollY = 0;
+
+            Point screen = LambdaToScreen(beacon.LambdaX, beacon.LambdaY);
+
+            screen.X -= Width / 2;
+            screen.Y -= Height / 2;
+
+            PointF lambda = ScreenToLambda(screen.X, screen.Y);
+
+            _ScrollX = -lambda.X;
+            _ScrollY = -lambda.Y;
+
+            Invalidate();
+
+            if (OnScrollChanged != null)
+                OnScrollChanged(this, EventArgs.Empty);
+        }
+
+        public void LabelEdited (Entity entity)
+        {
+            if (OnEntityLabelEdit != null)
+                OnEntityLabelEdit(this, entity, EventArgs.Empty);
+        }
+
     }       // EntityBox
 
     #region Workspace stuff
@@ -3557,7 +3864,7 @@ namespace System.Windows.Forms
         public float ScrollX;
         public float ScrollY;
         public List<Entity> entities;
-        public EntityType drawMode;
+        public EntityMode drawMode;
         public bool hideImage;
         public bool hideVias;
         public bool hideWires;
@@ -3604,6 +3911,7 @@ namespace System.Windows.Forms
         public int ViasPriority;
         public int WirePriority;
         public int CellPriority;
+        public int BeaconPriority;
         public bool AutoPriority;
 
         [XmlElement("ForeColor")]
@@ -3879,6 +4187,7 @@ namespace System.Windows.Forms
             WirePriority = parent.WirePriority;
             CellPriority = parent.CellPriority;
             AutoPriority = parent.AutoPriority;
+            BeaconPriority = parent.BeaconPriority;
         }
 
         public void LoadSnapshot ( EntityBox parent )
@@ -3955,6 +4264,7 @@ namespace System.Windows.Forms
             parent.WirePriority = WirePriority;
             parent.CellPriority = CellPriority;
             parent.AutoPriority = AutoPriority;
+            parent.BeaconPriority = BeaconPriority;
 
             GC.Collect();
             parent.Invalidate();

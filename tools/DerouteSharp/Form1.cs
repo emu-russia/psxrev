@@ -20,7 +20,7 @@ namespace DerouteSharp
         {
             entityBox1.AssociateSelectionPropertyGrid(propertyGrid2);
 
-            entityBox1.Mode = EntityType.Selection;
+            entityBox1.Mode = EntityMode.Selection;
 
             SelectionButtonHighlight();
 
@@ -29,6 +29,9 @@ namespace DerouteSharp
             entityBox1.OnEntityCountChanged += EntityCountChanged;
             entityBox1.OnLastOperation += LastOperation;
             entityBox1.OnDebug += DebugCallback;
+            entityBox1.OnEntityLabelEdit += EntityLabelChanged;
+
+            entityBox1.BeaconImage = Properties.Resources.beacon_entity;
         }
 
         private void ScrollChanged(object sender, EventArgs e)
@@ -53,6 +56,15 @@ namespace DerouteSharp
             toolStripStatusLabel6.Text = entityBox.GetViasCount().ToString();
             toolStripStatusLabel8.Text = entityBox.GetWireCount().ToString();
             toolStripStatusLabel10.Text = entityBox.GetCellCount().ToString();
+
+            //
+            // Update beacon list
+            //
+
+            if ( listView1.Items.Count != entityBox1.GetBeaconCount() )
+            {
+                RebuildBeaconList();
+            }
         }
 
         private void LastOperation(object sender, EventArgs e)
@@ -67,6 +79,14 @@ namespace DerouteSharp
             EntityBox entityBox = (EntityBox)sender;
 
             label1.Text = "Dragging Distance (px): " + entityBox.GetDragDistance().ToString();
+        }
+
+        private void EntityLabelChanged(object sender, Entity entity, EventArgs e)
+        {
+            if (entity.Type == EntityType.Beacon)
+            {
+                RebuildBeaconList();
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -132,6 +152,7 @@ namespace DerouteSharp
             toolStripDropDownButton1.BackColor = SystemColors.Control;
             toolStripDropDownButton2.BackColor = SystemColors.Control;
             toolStripDropDownButton3.BackColor = SystemColors.Control;
+            toolStripButton5.BackColor = SystemColors.Control;
         }
 
         private void ViasButtonHighlight()
@@ -140,6 +161,7 @@ namespace DerouteSharp
             toolStripDropDownButton1.BackColor = SystemColors.ActiveCaption;
             toolStripDropDownButton2.BackColor = SystemColors.Control;
             toolStripDropDownButton3.BackColor = SystemColors.Control;
+            toolStripButton5.BackColor = SystemColors.Control;
         }
 
         private void WiresButtonHighlight()
@@ -148,6 +170,7 @@ namespace DerouteSharp
             toolStripDropDownButton1.BackColor = SystemColors.Control;
             toolStripDropDownButton2.BackColor = SystemColors.ActiveCaption;
             toolStripDropDownButton3.BackColor = SystemColors.Control;
+            toolStripButton5.BackColor = SystemColors.Control;
         }
 
         private void CellsButtonHighlight()
@@ -156,6 +179,16 @@ namespace DerouteSharp
             toolStripDropDownButton1.BackColor = SystemColors.Control;
             toolStripDropDownButton2.BackColor = SystemColors.Control;
             toolStripDropDownButton3.BackColor = SystemColors.ActiveCaption;
+            toolStripButton5.BackColor = SystemColors.Control;
+        }
+
+        private void BeaconButtonHighlight ()
+        {
+            toolStripDropDownButton4.BackColor = SystemColors.Control;
+            toolStripDropDownButton1.BackColor = SystemColors.Control;
+            toolStripDropDownButton2.BackColor = SystemColors.Control;
+            toolStripDropDownButton3.BackColor = SystemColors.Control;
+            toolStripButton5.BackColor = SystemColors.ActiveCaption;
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -170,182 +203,182 @@ namespace DerouteSharp
 
         private void wireInterconnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.WireInterconnect;
+            entityBox1.Mode = EntityMode.WireInterconnect;
             propertyGrid1.Refresh();
             WiresButtonHighlight();
         }
 
         private void wirePowerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.WirePower;
+            entityBox1.Mode = EntityMode.WirePower;
             propertyGrid1.Refresh();
             WiresButtonHighlight();
         }
 
         private void wireGroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.WireGround;
+            entityBox1.Mode = EntityMode.WireGround;
             propertyGrid1.Refresh();
             WiresButtonHighlight();
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasConnect;
+            entityBox1.Mode = EntityMode.ViasConnect;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasPowerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasPower;
+            entityBox1.Mode = EntityMode.ViasPower;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasGroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasGround;
+            entityBox1.Mode = EntityMode.ViasGround;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasInputToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasInput;
+            entityBox1.Mode = EntityMode.ViasInput;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasOutputToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasOutput;
+            entityBox1.Mode = EntityMode.ViasOutput;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasInoutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasInout;
+            entityBox1.Mode = EntityMode.ViasInout;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void viasFloatingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasFloating;
+            entityBox1.Mode = EntityMode.ViasFloating;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void cellNotToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellNot;
+            entityBox1.Mode = EntityMode.CellNot;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellBufferToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellBuffer;
+            entityBox1.Mode = EntityMode.CellBuffer;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellMuxToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellMux;
+            entityBox1.Mode = EntityMode.CellMux;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellLogicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellLogic;
+            entityBox1.Mode = EntityMode.CellLogic;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellAdderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellAdder;
+            entityBox1.Mode = EntityMode.CellAdder;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellBusSupportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellBusSupp;
+            entityBox1.Mode = EntityMode.CellBusSupp;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellFlipFlopToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellFlipFlop;
+            entityBox1.Mode = EntityMode.CellFlipFlop;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellLatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellLatch;
+            entityBox1.Mode = EntityMode.CellLatch;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void cellOtherToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.CellOther;
+            entityBox1.Mode = EntityMode.CellOther;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void unitRegisterFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.UnitRegfile;
+            entityBox1.Mode = EntityMode.UnitRegfile;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void unitMemoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.UnitMemory;
+            entityBox1.Mode = EntityMode.UnitMemory;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void unitCustomToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.UnitCustom;
+            entityBox1.Mode = EntityMode.UnitCustom;
             propertyGrid1.Refresh();
             CellsButtonHighlight();
         }
 
         private void sceneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.Selection;
+            entityBox1.Mode = EntityMode.Selection;
             propertyGrid1.Refresh();
             SelectionButtonHighlight();
         }
 
         private void image0ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ImageLayer0;
+            entityBox1.Mode = EntityMode.ImageLayer0;
             propertyGrid1.Refresh();
             SelectionButtonHighlight();
         }
 
         private void image1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ImageLayer1;
+            entityBox1.Mode = EntityMode.ImageLayer1;
             propertyGrid1.Refresh();
             SelectionButtonHighlight();
         }
 
         private void image2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ImageLayer2;
+            entityBox1.Mode = EntityMode.ImageLayer2;
             propertyGrid1.Refresh();
             SelectionButtonHighlight();
         }
@@ -357,21 +390,21 @@ namespace DerouteSharp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.Selection;
+            entityBox1.Mode = EntityMode.Selection;
             propertyGrid1.Refresh();
             SelectionButtonHighlight();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.ViasConnect;
+            entityBox1.Mode = EntityMode.ViasConnect;
             propertyGrid1.Refresh();
             ViasButtonHighlight();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            entityBox1.Mode = EntityType.WireInterconnect;
+            entityBox1.Mode = EntityMode.WireInterconnect;
             propertyGrid1.Refresh();
             WiresButtonHighlight();
         }
@@ -380,19 +413,19 @@ namespace DerouteSharp
         {
             if (e.KeyCode == Keys.F1 )
             {
-                entityBox1.Mode = EntityType.Selection;
+                entityBox1.Mode = EntityMode.Selection;
                 propertyGrid1.Refresh();
                 SelectionButtonHighlight();
             }
             else if (e.KeyCode == Keys.F2 )
             {
-                entityBox1.Mode = EntityType.ViasConnect;
+                entityBox1.Mode = EntityMode.ViasConnect;
                 propertyGrid1.Refresh();
                 ViasButtonHighlight();
             }
             else if (e.KeyCode == Keys.F3 )
             {
-                entityBox1.Mode = EntityType.WireInterconnect;
+                entityBox1.Mode = EntityMode.WireInterconnect;
                 propertyGrid1.Refresh();
                 WiresButtonHighlight();
             }
@@ -410,16 +443,16 @@ namespace DerouteSharp
         {
             switch (entityBox1.Mode)
             {
-                case EntityType.ImageLayer0:
+                case EntityMode.ImageLayer0:
                 default:
                     entityBox1.ImageOpacity0 = opacity;
                     entityBox1.Invalidate();
                     break;
-                case EntityType.ImageLayer1:
+                case EntityMode.ImageLayer1:
                     entityBox1.ImageOpacity1 = opacity;
                     entityBox1.Invalidate();
                     break;
-                case EntityType.ImageLayer2:
+                case EntityMode.ImageLayer2:
                     entityBox1.ImageOpacity2 = opacity;
                     entityBox1.Invalidate();
                     break;
@@ -432,16 +465,16 @@ namespace DerouteSharp
 
             switch (entityBox1.Mode)
             {
-                case EntityType.ImageLayer0:
+                case EntityMode.ImageLayer0:
                 default:
                     entityBox1.ScrollImage0 = zero;
                     entityBox1.Invalidate();
                     break;
-                case EntityType.ImageLayer1:
+                case EntityMode.ImageLayer1:
                     entityBox1.ScrollImage1 = zero;
                     entityBox1.Invalidate();
                     break;
-                case EntityType.ImageLayer2:
+                case EntityMode.ImageLayer2:
                     entityBox1.ScrollImage2 = zero;
                     entityBox1.Invalidate();
                     break;
@@ -497,5 +530,56 @@ namespace DerouteSharp
         {
             entityBox1.RetryCancelledOperation();
         }
-    }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            entityBox1.DrawWireBetweenSelectedViases();
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityMode.Beacon;
+            propertyGrid1.Refresh();
+            BeaconButtonHighlight();
+        }
+
+        private void listView1_DoubleClick(object sender, EventArgs e)
+        {
+            ListView listView = (ListView)sender;
+
+            if (listView.SelectedItems.Count > 0)
+            {
+                ListViewItem selected = listView.SelectedItems[0];
+                Entity beacon = (Entity)selected.Tag;
+                entityBox1.ScrollToBeacon(beacon);
+
+                //
+                // Switch to selection mode
+                //
+
+                entityBox1.Mode = EntityMode.Selection;
+                propertyGrid1.Refresh();
+                SelectionButtonHighlight();
+            }
+        }
+
+        private void RebuildBeaconList ()
+        {
+            listView1.Items.Clear();
+            List<Entity> beacons = entityBox1.GetBeacons();
+
+            int id = 0;
+
+            foreach (Entity beacon in beacons)
+            {
+                ListViewItem item = new ListViewItem(id.ToString());
+                item.Tag = beacon;
+                item.SubItems.Add(beacon.Label);
+                listView1.Items.Add(item);
+
+                id++;
+            }
+        }
+
+    }       // Form1
 }

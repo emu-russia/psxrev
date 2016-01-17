@@ -52,7 +52,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.entityBox1 = new System.Windows.Forms.EntityBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button5 = new System.Windows.Forms.Button();
@@ -60,8 +60,11 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
@@ -98,8 +101,10 @@
             this.unitRegisterFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unitMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unitCustomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -114,7 +119,11 @@
             this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.entityBox1 = new System.Windows.Forms.EntityBox();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -124,6 +133,10 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -296,8 +309,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid2);
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(1040, 480);
             this.splitContainer1.SplitterDistance = 743;
             this.splitContainer1.TabIndex = 1;
@@ -327,77 +339,14 @@
             this.splitContainer2.SplitterDistance = 414;
             this.splitContainer2.TabIndex = 0;
             // 
-            // entityBox1
+            // label1
             // 
-            this.entityBox1.AutoPriority = true;
-            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
-            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
-            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
-            this.entityBox1.CellLatchColor = System.Drawing.Color.SpringGreen;
-            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
-            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
-            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellOpacity = 128;
-            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
-            this.entityBox1.CellPriority = 1;
-            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBox1.HideCells = false;
-            this.entityBox1.HideGrid = false;
-            this.entityBox1.HideImage = false;
-            this.entityBox1.HideVias = false;
-            this.entityBox1.HideWires = false;
-            this.entityBox1.ImageOpacity0 = 100;
-            this.entityBox1.ImageOpacity1 = 100;
-            this.entityBox1.ImageOpacity2 = 100;
-            this.entityBox1.Lambda = 5F;
-            this.entityBox1.Location = new System.Drawing.Point(0, 0);
-            this.entityBox1.LockScroll0 = false;
-            this.entityBox1.LockScroll1 = false;
-            this.entityBox1.LockScroll2 = false;
-            this.entityBox1.LockZoom0 = false;
-            this.entityBox1.LockZoom1 = false;
-            this.entityBox1.LockZoom2 = false;
-            this.entityBox1.Mode = EntityType.Selection;
-            this.entityBox1.Name = "entityBox1";
-            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
-            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
-            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
-            this.entityBox1.ScrollX = 0;
-            this.entityBox1.ScrollY = 0;
-            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
-            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(743, 414);
-            this.entityBox1.TabIndex = 0;
-            this.entityBox1.Text = "entityBox1";
-            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox1.ViasBaseSize = 4;
-            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
-            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
-            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
-            this.entityBox1.ViasOpacity = 255;
-            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
-            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPriority = 3;
-            this.entityBox1.ViasShape = ViasShape.Round;
-            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox1.WireBaseSize = 5;
-            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
-            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
-            this.entityBox1.WireOpacity = 128;
-            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
-            this.entityBox1.WirePriority = 2;
-            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Zoom = 100;
-            this.entityBox1.ZoomImage0 = 100;
-            this.entityBox1.ZoomImage1 = 100;
-            this.entityBox1.ZoomImage2 = 100;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(359, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(39, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Debug";
             // 
             // button6
             // 
@@ -488,22 +437,58 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(293, 480);
+            this.tabControl1.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.propertyGrid2);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(285, 452);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Entity Props";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // propertyGrid2
             // 
-            this.propertyGrid2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.propertyGrid2.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid2.Location = new System.Drawing.Point(3, 3);
             this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(293, 321);
-            this.propertyGrid2.TabIndex = 1;
+            this.propertyGrid2.Size = new System.Drawing.Size(279, 446);
+            this.propertyGrid2.TabIndex = 2;
             // 
-            // propertyGrid1
+            // tabPage2
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 132);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.SelectedObject = this.entityBox1;
-            this.propertyGrid1.Size = new System.Drawing.Size(293, 348);
-            this.propertyGrid1.TabIndex = 0;
+            this.tabPage2.Controls.Add(this.propertyGrid1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(285, 452);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Scene Control";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.listView1);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(285, 452);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Beacons";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // openFileDialog1
             // 
@@ -534,8 +519,10 @@
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
             this.toolStripDropDownButton3,
+            this.toolStripButton5,
             this.toolStripButton2,
             this.toolStripButton3,
+            this.toolStripButton4,
             this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
@@ -808,6 +795,16 @@
             this.unitCustomToolStripMenuItem.Text = "Unit Custom";
             this.unitCustomToolStripMenuItem.Click += new System.EventHandler(this.unitCustomToolStripMenuItem_Click);
             // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton5.Text = "Beacon";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
             // toolStripButton2
             // 
             this.toolStripButton2.BackColor = System.Drawing.SystemColors.Control;
@@ -828,6 +825,17 @@
             this.toolStripButton3.Size = new System.Drawing.Size(36, 36);
             this.toolStripButton3.Text = "Merge Vertical Wires";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton4.Text = "toolStripButton4";
+            this.toolStripButton4.ToolTipText = "Draw wires between selected viases";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // toolStripButton1
             // 
@@ -937,14 +945,114 @@
             this.toolStripStatusLabel12.Size = new System.Drawing.Size(16, 19);
             this.toolStripStatusLabel12.Text = "   ";
             // 
-            // label1
+            // listView1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(359, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(39, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Debug";
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(285, 452);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "ID";
+            this.columnHeader1.Width = 42;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Beacon Name";
+            this.columnHeader2.Width = 207;
+            // 
+            // entityBox1
+            // 
+            this.entityBox1.AutoPriority = true;
+            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.entityBox1.BeaconPriority = 4;
+            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
+            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
+            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
+            this.entityBox1.CellLatchColor = System.Drawing.Color.SpringGreen;
+            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
+            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
+            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellOpacity = 128;
+            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox1.CellPriority = 1;
+            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox1.HideCells = false;
+            this.entityBox1.HideGrid = false;
+            this.entityBox1.HideImage = false;
+            this.entityBox1.HideVias = false;
+            this.entityBox1.HideWires = false;
+            this.entityBox1.ImageOpacity0 = 100;
+            this.entityBox1.ImageOpacity1 = 100;
+            this.entityBox1.ImageOpacity2 = 100;
+            this.entityBox1.Lambda = 5F;
+            this.entityBox1.Location = new System.Drawing.Point(0, 0);
+            this.entityBox1.LockScroll0 = false;
+            this.entityBox1.LockScroll1 = false;
+            this.entityBox1.LockScroll2 = false;
+            this.entityBox1.LockZoom0 = false;
+            this.entityBox1.LockZoom1 = false;
+            this.entityBox1.LockZoom2 = false;
+            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
+            this.entityBox1.Name = "entityBox1";
+            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
+            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
+            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
+            this.entityBox1.ScrollX = 0F;
+            this.entityBox1.ScrollY = 0F;
+            this.entityBox1.SelectEntitiesAfterAdd = true;
+            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
+            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
+            this.entityBox1.Size = new System.Drawing.Size(743, 414);
+            this.entityBox1.TabIndex = 0;
+            this.entityBox1.Text = "entityBox1";
+            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
+            this.entityBox1.ViasBaseSize = 4;
+            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox1.ViasOpacity = 255;
+            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPriority = 3;
+            this.entityBox1.ViasShape = ViasShape.Round;
+            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
+            this.entityBox1.WireBaseSize = 5;
+            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox1.WireOpacity = 128;
+            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
+            this.entityBox1.WirePriority = 2;
+            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Zoom = 100;
+            this.entityBox1.ZoomImage0 = 100;
+            this.entityBox1.ZoomImage1 = 100;
+            this.entityBox1.ZoomImage2 = 100;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.SelectedObject = this.entityBox1;
+            this.propertyGrid1.Size = new System.Drawing.Size(279, 446);
+            this.propertyGrid1.TabIndex = 1;
             // 
             // Form1
             // 
@@ -972,6 +1080,10 @@
             this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -991,8 +1103,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.EntityBox entityBox1;
-        private System.Windows.Forms.PropertyGrid propertyGrid2;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllEntitiesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadImageToolStripMenuItem;
@@ -1068,6 +1178,17 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel11;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel12;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.PropertyGrid propertyGrid2;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }
 

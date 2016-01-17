@@ -1,23 +1,17 @@
+using System;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Xml.Serialization;
-
-//
-// Japan coding style.
-//
-// We use this enumeration for Mode and entity type at same time.
-//
+using System.Linq;
 
 public enum EntityType
 {
-    Selection = 0,
-
-    ImageLayer0,
-    ImageLayer1,
-    ImageLayer2,
-
-    ViasInput = 10,
+    ViasInput = 0x80,
     ViasOutput,
     ViasInout,
     ViasConnect,
@@ -39,6 +33,7 @@ public enum EntityType
     UnitRegfile,
     UnitMemory,
     UnitCustom,
+    Beacon,
 }
 
 public enum ViasShape
@@ -75,6 +70,9 @@ public class Entity
     private int _Priority;
 
     [XmlIgnore]
+    public long SelectTimeStamp;
+
+    [XmlIgnore]
     public float SavedLambdaX;
     [XmlIgnore]
     public float SavedLambdaY;
@@ -87,8 +85,16 @@ public class Entity
     public string Label
     {
         get { return _Label; }
-        set { _Label = value;
-              if (parentBox != null) parentBox.Invalidate(); }
+        set
+        {
+            _Label = value;
+
+            if (parentBox != null)
+            {
+                parentBox.LabelEdited(this);
+                parentBox.Invalidate();
+            }
+        }
     }
 
     [Category("Entity Properties")]
@@ -152,8 +158,15 @@ public class Entity
     public bool Selected
     {
         get { return _Selected; }
-        set { _Selected = value;
-            if (parentBox != null) parentBox.Invalidate(); }
+        set
+        {
+            _Selected = value;
+
+            SelectTimeStamp = DateTime.Now.Ticks;
+
+            if (parentBox != null)
+                parentBox.Invalidate();
+        }
     }
 
     [Category("Entity Properties")]

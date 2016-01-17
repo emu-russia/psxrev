@@ -205,7 +205,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -218,7 +218,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasOutput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -283,7 +283,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -296,7 +296,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasOutput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -322,7 +322,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -413,7 +413,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -491,7 +491,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -569,7 +569,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -595,7 +595,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -608,7 +608,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasOutput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -647,7 +647,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasInput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>
@@ -660,7 +660,7 @@
     <LambdaEndY>1</LambdaEndY>
     <Type>ViasOutput</Type>
     <ColorOverride>Black</ColorOverride>
-    <LabelAlignment>GlobalSettings</LabelAlignment>
+    <LabelAlignment>TopRight</LabelAlignment>
     <Priority>3</Priority>
   </Entity>
   <Entity>

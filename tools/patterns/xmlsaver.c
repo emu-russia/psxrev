@@ -229,7 +229,7 @@ void XmlSave ( char * FileName )
                 fprintf ( f, "</Type>\n" );
 
                 fprintf ( f, "    <ColorOverride>Black</ColorOverride>\n" );
-                fprintf ( f, "    <LabelAlignment>GlobalSettings</LabelAlignment>\n" );
+                fprintf ( f, "    <LabelAlignment>TopRight</LabelAlignment>\n" );
                 fprintf ( f, "    <Priority>%i</Priority>\n", VIAS_PRIORITY );
                 fprintf ( f, "  </Entity>\n" );
 
