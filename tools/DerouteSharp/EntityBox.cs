@@ -232,7 +232,7 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in _entities)
             {
-                if (IsEntityWire(entity))
+                if (IsEntityWire(entity) && HideWires == false)
                 {
                     PointF start = LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     PointF end = LambdaToScreen(entity.LambdaEndX, entity.LambdaEndY);
@@ -273,7 +273,7 @@ namespace System.Windows.Forms
                     if (PointInPoly(rect, point) == true)
                         return entity;
                 }
-                else if (IsEntityCell(entity))
+                else if (IsEntityCell(entity) && HideCells == false)
                 {
                     rect[0] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     rect[1] = LambdaToScreen(entity.LambdaX, entity.LambdaY + entity.LambdaHeight);
@@ -298,7 +298,7 @@ namespace System.Windows.Forms
                     if (PointInPoly(rect, point) == true)
                         return entity;
                 }
-                else        // Vias
+                else if ( IsEntityVias(entity) && HideVias == false )
                 {
                     rect[0] = LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     rect[0].X -= ((float)ViasBaseSize * zf);
