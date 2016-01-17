@@ -3394,10 +3394,14 @@ namespace System.Windows.Forms
                     {
                         for (ic = oc = 0; oc < w; ic += 3, ++oc)
                         {
-                            outputPtr[r * outputStride + oc] = (byte)(int)
+                            int yc = (int)
                             (0.2126f * (float)bmpPtr[r * bmpStride + ic + 1] +
                             0.752f * (float)bmpPtr[r * bmpStride + ic + 2] +
                             0.0722f * (float)bmpPtr[r * bmpStride + ic + 3]);
+
+                            yc = Math.Max(0, Math.Min(yc, 255));
+
+                            outputPtr[r * outputStride + oc] = (byte)yc;
                         }
                     }
                 }
@@ -3407,10 +3411,14 @@ namespace System.Windows.Forms
                     {
                         for (ic = oc = 0; oc < w; ic += 4, ++oc)
                         {
-                            outputPtr[r * outputStride + oc] = (byte)(int)
+                            int yc = (int)
                             (0.2126f * (float)bmpPtr[r * bmpStride + ic + 1] +
                             0.752f * (float)bmpPtr[r * bmpStride + ic + 2] +
                             0.0722f * (float)bmpPtr[r * bmpStride + ic + 3]);
+
+                            yc = Math.Max(0, Math.Min(yc, 255));
+
+                            outputPtr[r * outputStride + oc] = (byte)yc;
                         }
                     }
                 }

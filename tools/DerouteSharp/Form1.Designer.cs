@@ -995,31 +995,31 @@
             // 
             this.traverseTIER1ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER1ToolStripMenuItem.Image")));
             this.traverseTIER1ToolStripMenuItem.Name = "traverseTIER1ToolStripMenuItem";
-            this.traverseTIER1ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
-            this.traverseTIER1ToolStripMenuItem.Text = "Traverse TIER 1";
+            this.traverseTIER1ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
+            this.traverseTIER1ToolStripMenuItem.Text = "Traverse TIER 1 (F10)";
             this.traverseTIER1ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER1ToolStripMenuItem_Click);
             // 
             // traverseTIER2ToolStripMenuItem
             // 
             this.traverseTIER2ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER2ToolStripMenuItem.Image")));
             this.traverseTIER2ToolStripMenuItem.Name = "traverseTIER2ToolStripMenuItem";
-            this.traverseTIER2ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
-            this.traverseTIER2ToolStripMenuItem.Text = "Traverse TIER 2";
+            this.traverseTIER2ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
+            this.traverseTIER2ToolStripMenuItem.Text = "Traverse TIER 2 (F11)";
             this.traverseTIER2ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER2ToolStripMenuItem_Click);
             // 
             // traverseTIER3ToolStripMenuItem
             // 
             this.traverseTIER3ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER3ToolStripMenuItem.Image")));
             this.traverseTIER3ToolStripMenuItem.Name = "traverseTIER3ToolStripMenuItem";
-            this.traverseTIER3ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
-            this.traverseTIER3ToolStripMenuItem.Text = "Traverse TIER 3";
+            this.traverseTIER3ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
+            this.traverseTIER3ToolStripMenuItem.Text = "Traverse TIER 3 (F12)";
             this.traverseTIER3ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER3ToolStripMenuItem_Click);
             // 
             // traverseTIER5ToolStripMenuItem
             // 
             this.traverseTIER5ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER5ToolStripMenuItem.Image")));
             this.traverseTIER5ToolStripMenuItem.Name = "traverseTIER5ToolStripMenuItem";
-            this.traverseTIER5ToolStripMenuItem.Size = new System.Drawing.Size(168, 38);
+            this.traverseTIER5ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
             this.traverseTIER5ToolStripMenuItem.Text = "Traverse TIER 5";
             this.traverseTIER5ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER5ToolStripMenuItem_Click);
             // 

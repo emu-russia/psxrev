@@ -437,6 +437,18 @@ namespace DerouteSharp
             {
                 entityBox1.RetryCancelledOperation();
             }
+            else if ( e.KeyCode == Keys.F10 )
+            {
+                entityBox1.TraversalSelection(1);
+            }
+            else if (e.KeyCode == Keys.F11)
+            {
+                entityBox1.TraversalSelection(2);
+            }
+            else if (e.KeyCode == Keys.F12)
+            {
+                entityBox1.TraversalSelection(3);
+            }
         }
 
         private void SetLayerOpacity (int opacity)
