@@ -91,15 +91,36 @@ sub 1XXX_X1XX:
     clk21 - сделать 1 тик Q_SCALE_DIVIDER
 
 ЭТАП 3
-
 Такт XXX0_1XXX:
     clk36 - записать результат на финальные триггеры:
         если ndirect_s == 0 то результат берется с прямых данных (если lc_0_s == 0 то результат прямых данных обнуляется)
         если ndirect_s != 0 то результат берется с SUMMATOR2 (через финальные округления))
-    если ac5_d_nfull == 0 то на следующий такт это переключит выходной триггер данных A5 для unit5 на 1.
 
 Такт XX1X_1XXX:
     устанавливает IE1 или IE2 у UNIT05 для того чтобы записать результат с финальных триггеров.
+
+Такт X1XX_1XXX:
+    если clk38 == 0 || /res == 0 сбросить len_counter
+    если ac5_d_nfull == 0 то переключить выходной триггер данных A5 для unit5 на противоположный (1 или 0).
+        для этого clk38 должен переключится с 0 на 1 (а триггер с 1 на 0). У триггера 1 на вxоде если ac5_d_nfull == 0 && этап XXX0_1XXX
+        сгенерировать u10 если декодирование блока завершено.
+            43112 nand - на сброс len_counter
+            4894 nand - looks like start upload new data
+            4993 3-and - change quant block
+            4890 3-and - C-control
+            4784 nand - C-control
+            4851 nand - G-control
+            4850 nand - G-control
+            5080 and - not traced
+            4849 not
+            4859 not
+                4986 and - not traced
+                4891 3-nand - C-control
+                4963 3-nand - G-control
+                4854 nand - G-control
+                4853 nand - G-control
+                4960 imux - G-control
+                4845 imux - G-control
 
 Такт 1XXX_1XXX:
     clk35 - увеличить значение ADDRESS_COUNTER_5_D на 1.
@@ -110,13 +131,11 @@ sub 1XXX_X1XX:
 
 
 
-
-
 SUMMATOR1
 
 Q_SCALE_DIVIDER
 
-QUANT_DIVIDER (10bit data signed (svvvvvvvvv) * 8bit quant unsigned (vvvvvvvv))
+QUANT_DIVIDER (10bit data signed (svvvvvvvvv) * 8bit quant unsigned (vvvvvvvv)(101111111 011111100 011110000 011000000 000000000 ))
 4 суммы x + y + c
 
 c = 1bit 
@@ -125,14 +144,14 @@ y = 11bit (ssvvvvvvvvv)
 
 1 контрольный бит Y - если 1, то число как есть, 0 - число обнуляется.
 
-111: x = 0 + 00000000000
-110: x = 0 + 0XXXXXXXXXS
-101: x = 1 + XXXXXXXXXSSi
-100: x = 0 + XXXXXXXXXSS
-011: x = 1 + XXXXXXXXXSSi
-010: x = 0 + XXXXXXXXXSS
-001: x = 1 + 1XXXXXXXXXSi
 000: x = 0 + 00000000000
+100: x = 0 + XXXXXXXXXSS
+010: x = 0 + XXXXXXXXXSS
+110: x = 0 + 0XXXXXXXXXS
+001: x = 1 + 1XXXXXXXXXSi
+101: x = 1 + XXXXXXXXXSSi
+011: x = 1 + XXXXXXXXXSSi
+111: x = 0 + 00000000000
 
 1 * XXXXXXXXXS      0 + 0 + XXXXXXXXXS              0 + 0 + RRRRRRRRRS              0 + 0 + RRRRRRRRRS      0 + 0 + RRRRRRRRRS
 2 * XXXXXXXXXS      0 + 2*XXXXXXXXXS + 0            0 + 0 + RRRRRRRRRS              0 + 0 + RRRRRRRRRS      0 + 0 + RRRRRRRRRS

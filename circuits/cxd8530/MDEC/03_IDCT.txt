@@ -1,39 +1,16 @@
 PASS1
-//set address for scaletable data
-//set address for rle data
-stm_sel1 - select 13 bit of scaletable from 26 bit from UNIT00
-clk2 - read scaletable and rle data to start triggers.
-
-rle_sel - select lower or upper rle data.
+unit05_a_sel (0 - write address, 1 - read address) C-contoler. Set to read from unit 05.
+unit05 output enable always active.
+use cnt2 78123 bits to select unit00 read scaletable data address (last address bit always 0). g11==1 and g12==0.
+use cnt2 451239 bits to select unit05 read rle data address.
+stm_sel1 - select 13 bit of scaletable from 26 bit from unit00.
+clk2 - read scale_data and rle_data to start triggers.
+rle_sel - select 12 bit of rle data scale_data start triggers 1.
 result1 - use previous result in summation.
 clk1 - read sum result to middle triggers.
-
 clk3 - read weightened sum result to result triggers.
-
-
-
-PASS2
-//set address for scaletable data
-//set address for rle data
-clk4 - read scaletable and UNIT1 data to start triggers.
-
-stm_sel2 - select 12 bit of scaletable from 24 bit from start triggers 1.
-result2 - use previous result in summation.
-clk6 - read sum result to middle triggers.
-
-clk7 - read weightened sum result to result triggers.
-
-clk8 - store clamped value to final triggers.
-
-
-берем данные каждый такт (так как каждый раз перемножаютс€ и суммируютс€ разные числа)
-в первый раз не используем сумму, потом используем
-0-7 - перемножаем один столбец на одну строку
-сохран€ем в юнит 1
-
-
-
-
+use cnt1 1456 bits to select unit01 write result address.
+unit01_ie - enable write to unit 1
 
 00 01 02 03 04 05 06 07
 08 09 0a 0b 0c 0d 0e 0f
@@ -45,9 +22,120 @@ clk8 - store clamped value to final triggers.
 38 39 3a 3b 3c 3d 3e 3f
 
 STM
-00 00 08 08 10 10 18 18
-20 20
+00 01 08 09 10 11 18 19 20 21 28 29 30 31 38 39
 
 RLE
-00 01 08 09 10 11 18 19
-20 21
+00 01 08 09 10 11 18 19 20 21 28 29 30 31 38 39
+
+CALCULATING 1ST PASS: write stm and rle data to start triggers every 2 clk.
+                      Decode data in 2 streams and calculate two matrix cell value simultaneously.
+                      When data go to middle result triggers we read next portion of data to start triggers.
+                      Multiplication is done column by column.
+
+    clk11 - increment cnt2 on edge up:
+        1)  ( cnt2_ovfl == 0 )
+            and
+            ( ( ctrl4 == 1 ) or ( any of cnt2 bits 123 == 1 ) )
+            and
+            ( cnt2_run == 1 ) or ( cnt2_0 == 0 )
+
+        2)  ( cnt2 bits 012345678 == 1 )
+            and
+            ( cnt2_run == 1 )
+
+    stm_sel1 - enabled if cnt2 bit 6 == 1.
+
+    clk2 - if ( /cnt2_ovfl == 1 ) and ( cnt2_0_s == 1 ) and ( cnt2_0 == 0 ).
+
+    scale_data1 - use cnt2 78123 bits and stm_sel1 (bit 6) to select scaletable data from unit00.
+
+    rle_data1 - use cnt2 451239 bits to select rle data from unit05.
+
+    rle_sel - set to cnt2 bit 0 on next mclk (cnt2_0_s)
+
+    result1 - enabled if ( cnt2 bit 0 == cnt2 bit 1 ) or ( cnt2 bit 2 == 1 ) or ( cnt2 bit 3 == 1) or ( cnt2_ovfl == 1 )
+              enabled on next cnt2 tick because result used on second clk.
+              0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111 0000
+
+    clk1 - if ( ( cnt1 bits 123 == 0 ) and ( cnt1_0 != cnt1_0_s ) ) or ( ( cnt1 bits 123 != 0 ) and ( cnt2_0 != cnt2_0_s ) )
+
+    middle_result1 - 
+
+    clk3 - if ( ( cnt1 bits 123 == 0 ) and ( cnt1_0 != cnt1_0_s ) ) or ( ( cnt1 bits 123 != 0 ) and ( cnt2_0 != cnt2_0_s ) )
+
+    final_result1 - 
+
+    u9 - set to 0 if ( cnt2_ovfl == 0 ) and ( cnt2 bits 012345 == 1 )
+
+    /cnt2_ovfl
+
+STORING DATA: starts cnt1 when first data calculated using cnt2 and then continue to work until.
+              input works on cnt1 bit 1 (0 and then 1 and stops until bits 1 2 3 are 0 again).
+
+    ie_ready_s - stored by mclk (on edge up):
+        1) equal 1 if cnt1 increment condition fulfilled and cnt1 123 bits == 0
+
+    unit1_ie - enabled by mclk (on edge down):
+        when ie_ready_s == 1
+
+    clk10 - increment cnt1 on edge up:
+        1)  start of count - calculation of PASS1 finished.
+            ( cnt2 0123 bits == 1 ) and ( cnt2_run == 1 ) and ( cnt2_ovfl == 0 )
+
+        2)  continue to count - works until cnt1 bits 123 != 0 (and some other conditions)
+            ( cnt2_ovfl_s == 0 ) and ( cnt1_ovfl == 0 )
+            and
+            (
+                ( cnt2_ovfl == 1 )
+                or
+                ( ( cnt2_ovfl == 1 ) and ( ( ctrl4 == 1 ) or ( ny of cnt1 123 bits == 1 ) ) )
+                or
+                ( ( ( cnt2_run == 1 ) or ( cnt1_0 == 0 ) ) and ( ( ctrl4 == 1 ) or ( any of cnt1 123 bits == 1 ) ) )
+            )
+
+
+
+PASS2
+use cnt0 1236 bits to select unit01 read result address.
+unit01 output enable always active.
+use cnt0 45123 bits to select unit00 read scaletable data address (last address bit always 0). g11==1 and g12==1.
+clk4 - read scale_data and UNIT1 rle_data to start triggers 2.
+stm_sel2 - select 12 bit of scale_data from 24 bit from start triggers 2.
+result2 - use previous result in summation.
+clk6 - read sum result to middle triggers.
+clk7 - read weightened sum result to result triggers.
+clk8 - store clamped value to final triggers.
+use cnt3 045678 bits to select unit20 write result address.
+unit20_ie1 or 2 to write data to unit20.
+
+clk51 - 
+clk53 - 
+clk55 - 
+
+CALCULATING 2ND PASS:
+
+    clk9
+
+    stm_sel2 - set to cnt0 bit 0 on next mclk (cnt0_0_s)
+
+    clk4 - if ( /cnt0_ovfl == 1 ) and ( cnt0_0_s == 1 ) and ( cnt0_0 == 0 ).
+
+    scale_data2
+
+    pass1_res
+
+    result2 - enabled if ( cnt0 bit 0 == cnt0 bit 1 ) or ( cnt0 bit 2 == 1 ) or ( cnt0 bit 3 == 1) or ( cnt0_ovfl == 1 )
+              enabled on next cnt0 tick because result used on second clk.
+              0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111 0000
+
+    clk6 - if ( ( cnt3 bits 123 == 0 ) and ( cnt3_0 != cnt3_0_s ) ) or ( ( cnt3 bits 123 != 0 ) and ( cnt0_0 != cnt0_0_s ) )
+
+    middle_result2
+
+    clk7 - if ( ( cnt3 bits 123 == 0 ) and ( cnt3_0 != cnt3_0_s ) ) or ( ( cnt3 bits 123 != 0 ) and ( cnt0_0 != cnt0_0_s ) )
+
+    final_result2
+
+    clk8
+
+    idct_data
