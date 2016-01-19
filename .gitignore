@@ -13,6 +13,5 @@ gte_units
 tools/DerouteSharp/bin
 tools/DerouteSharp/obj
 tools/DerouteSharp/.vs
-tools/patterns/Build/patterns_x86.iobj
 *.iobj
 *.suo
