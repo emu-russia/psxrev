@@ -434,7 +434,13 @@ static void GL_init(void)
     MakeCheckImage();
 }
 
-static void GL_Printf(int x, int y, char *Fmt, ...)
+static void GL_Printf( int x,
+                       int y,
+                       int CharWidth,
+                       int CharHeight,
+                       BOOL Blend,
+                       RGBQUAD Color,
+                       char *Fmt, ...)
 {
     va_list Arg;
     int x0 = x;
@@ -449,19 +455,23 @@ static void GL_Printf(int x, int y, char *Fmt, ...)
     va_end(Arg);
 
     glEnable(GL_TEXTURE_2D);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
+
+    if ( Blend )
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
+    }
 
     glBindTexture(GL_TEXTURE_2D, GlFontTextureId);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glColor3ub(255, 255, 255);
+    glColor3ub(Color.rgbRed, Color.rgbGreen, Color.rgbBlue);
 
     while (Length--)
     {
         c = *ptr++;
 
         if (c == '\0') break;
-        if (c == '\n') { y += 16; x = x0; continue; }
+        if (c == '\n') { y += CharHeight; x = x0; continue; }
         if (c < ' ') continue;
 
         c -= 0x20;
@@ -475,19 +485,21 @@ static void GL_Printf(int x, int y, char *Fmt, ...)
             glTexCoord2f(cx, cy);
             glVertex2i(x + 0, y + 0);
             glTexCoord2f(cx, cy + 0.0625f);
-            glVertex2i(x, y + 16);
+            glVertex2i(x, y + CharHeight);
             glTexCoord2f(cx + 0.0625f, cy + 0.0625f);
-            glVertex2i(x + 16, y + 16);
+            glVertex2i(x + CharWidth, y + CharHeight);
             glTexCoord2f(cx + 0.0625f, cy);
-            glVertex2i(x + 16, y + 0);
+            glVertex2i(x + CharWidth, y + 0);
         }
         glEnd();
 
-        x += 12;
+        x += (CharWidth * 3) / 4;
     }
 
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
+
+    if ( Blend )
+        glDisable(GL_BLEND);
 }
 
 static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
@@ -505,6 +517,23 @@ static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
     float * TexCoordX;
     float * TexCoordY;
     int RemoveButtonWidth = 2 * REMOVE_BITMAP_WIDTH;
+    PViasCollectionEntry Coll;
+    PLIST_ENTRY Entry;
+    PViasEntry Vias;
+    RGBQUAD LabelColor;
+    unsigned long ViasRgba;
+    RGBQUAD ViasLabelColor;
+    #define VIAS_SIZE 8
+    int ViasPosX, ViasPosY;
+
+    LabelColor.rgbRed = 255;
+    LabelColor.rgbGreen = 255;
+    LabelColor.rgbBlue = 255;
+
+    ViasLabelColor.rgbRed = 255;
+    ViasLabelColor.rgbGreen = 255;
+    ViasLabelColor.rgbBlue = 255;
+
 
     Width = Pattern->Width;
     Height = Pattern->Height;
@@ -564,7 +593,99 @@ static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
     // Cell name
     //
 
-    GL_Printf(Pattern->PosX, Pattern->PosY, Pattern->PatternName);
+    GL_Printf ( Pattern->PosX,
+                Pattern->PosY,
+                16,
+                16,
+                FALSE,
+                LabelColor,
+                Pattern->PatternName);
+
+    //
+    // Viases
+    //
+
+    Coll = GetViasCollection ( Pattern->PatternName );
+
+    if ( Coll )
+    {
+        Entry = Coll->ViasHead.Flink;
+
+        while ( Entry != &Coll->ViasHead )
+        {
+            Vias = (PViasEntry) Entry;
+
+            ViasPosX = (int)(Vias->OffsetX * WorkspaceLamda);
+            ViasPosY = (int)(Vias->OffsetY * WorkspaceLamda);
+
+            switch (Pattern->Flag & 3)
+            {
+                case 0:
+                default:
+                    ViasPosX -= VIAS_SIZE / 2;
+                    ViasPosY -= VIAS_SIZE / 2;
+                    break;
+                case 1:
+                    ViasPosX = Width - ViasPosX - VIAS_SIZE / 2;
+                    ViasPosY = Height - ViasPosY - VIAS_SIZE / 2;
+                    break;
+                case 2:
+                    ViasPosX = Width - ViasPosX - VIAS_SIZE / 2;
+                    break;
+                case 3:
+                    ViasPosY = Height - ViasPosY - VIAS_SIZE / 2;
+                    break;
+            }
+
+            ViasPosX += Pattern->PosX;
+            ViasPosY += Pattern->PosY;
+
+            //
+            // Entity
+            //
+
+            switch ( Vias->Type )
+            {
+                case ViasInput:
+                    ViasRgba = 0x00ff00ff;      // Green
+                    break;
+                case ViasOutput:
+                    ViasRgba = 0xff0000ff;      // Red
+                    break;
+                case ViasInout:
+                    ViasRgba = 0xffff00ff;      // Yellow
+                    break;
+                default:
+                    ViasRgba = 0x7f7f7fff;      // Gray
+                    break;
+            }
+
+            glBegin ( GL_QUADS );
+            glColor4f ( ((ViasRgba >> 24) & 0xff) / 255.0f, 
+                        ((ViasRgba >> 16) & 0xff) / 255.0f, 
+                        ((ViasRgba >> 8) & 0xff) / 255.0f, 
+                        (ViasRgba & 0xff) / 255.0f );
+            glVertex2i ( ViasPosX, ViasPosY );
+            glVertex2i ( ViasPosX + VIAS_SIZE, ViasPosY );
+            glVertex2i ( ViasPosX + VIAS_SIZE, ViasPosY + VIAS_SIZE );
+            glVertex2i ( ViasPosX, ViasPosY + VIAS_SIZE );
+            glEnd ();
+
+            //
+            // Label
+            //
+
+            GL_Printf ( ViasPosX + VIAS_SIZE,
+                        ViasPosY,
+                        12,
+                        12,
+                        TRUE,
+                        ViasLabelColor,
+                        Vias->ViasName );
+
+            Entry = Entry->Flink;
+        }
+    }
 
     //
     // Selection
@@ -1159,7 +1280,8 @@ static LRESULT CALLBACK PatternEntryProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
                           (Entry->Flag & FLAG_MIRROR) ? TRUE : FALSE,
                           TRUE,
                           TRUE,
-                          Entry == SelectedPattern );
+                          Entry == SelectedPattern,
+                          TRUE );
 
             //
             // Pattern remove button.
@@ -1763,7 +1885,7 @@ ULONG JpegLoadImage(char *filename, BOOL Silent)
 
     _splitpath(filename, disk, dir, fname, ext);
 
-    sprintf(Text, "Source Image : %s.%s", fname, ext);
+    sprintf(Text, "Source Image : %s%s", fname, ext);
     SetStatusText(STATUS_SOURCE_IMAGE, Text);
 
     ScrollX = ScrollY = 0;

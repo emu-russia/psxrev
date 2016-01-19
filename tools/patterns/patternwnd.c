@@ -13,6 +13,7 @@
 #include "statuswnd.h"
 #include "patternwnd.h"
 #include "profiler.h"
+#include "listutils.h"
 
 #define FLIP_BUTTON_HEIGHT  30
 
@@ -29,9 +30,126 @@ static int NumPatterns;
 
 static HWND *PatternTiles;
 
+static LIST_ENTRY ViasCollectionHead = { &ViasCollectionHead, &ViasCollectionHead };
+
 #define PATTERN_TILE_CLASS "PatternTile"
 
 static HGDIOBJ PatternFont;
+static HGDIOBJ ViasFont;
+
+static HBRUSH GreenBrush;
+static HBRUSH RedBrush;
+static HBRUSH YellowBrush;
+static HBRUSH GrayBrush;
+
+//
+// Vias stuff
+//
+
+static void ViasClenupCollection ( PViasCollectionEntry Coll )
+{
+    PViasEntry Vias;
+
+    while ( !IsListEmpty ( &Coll->ViasHead ) )
+    {
+        Vias = (PViasEntry) Coll->ViasHead.Flink;
+
+        RemoveEntryList ( (PLIST_ENTRY)Vias );
+
+        free (Vias);
+    }
+}
+
+static void ViasCleanup (void)
+{
+    PViasCollectionEntry CollEntry;
+
+    while ( !IsListEmpty ( &ViasCollectionHead ) )
+    {
+        CollEntry = (PViasCollectionEntry)ViasCollectionHead.Flink;
+        
+        ViasClenupCollection (CollEntry);
+
+        RemoveEntryList ( (PLIST_ENTRY)CollEntry );
+
+        free ( CollEntry );
+    }
+}
+
+PViasCollectionEntry GetViasCollection ( char * PatternName )
+{
+    PLIST_ENTRY Entry;
+    PViasCollectionEntry CollEntry;
+
+    Entry = ViasCollectionHead.Flink;
+
+    while ( Entry != &ViasCollectionHead )
+    {
+        CollEntry = (PViasCollectionEntry)Entry;
+
+        if ( !_stricmp ( CollEntry->PatternName, PatternName ) )
+            return CollEntry;
+
+        Entry = Entry->Flink;
+    }
+
+    return NULL;
+}
+
+static PViasCollectionEntry CreateViasCollection ( char * PatternName )
+{
+    PViasCollectionEntry Coll;
+
+    Coll = (PViasCollectionEntry) malloc ( sizeof(ViasCollectionEntry) );
+    if ( Coll == NULL )
+        return NULL;
+
+    memset ( Coll, 0, sizeof(ViasCollectionEntry) );
+
+    strcpy ( Coll->PatternName, PatternName );
+
+    InitializeListHead ( &Coll->ViasHead );
+
+    InsertTailList ( &ViasCollectionHead, (PLIST_ENTRY)Coll );
+
+    return Coll;
+}
+
+PViasEntry AddVias ( char * PatternName, char * ViasName, float OffsetX, float OffsetY, long Type )
+{
+    PViasCollectionEntry Coll;
+    PViasEntry Vias;
+
+    //
+    // Open/create vias collection
+    //
+
+    Coll = GetViasCollection (PatternName);
+    if ( Coll == NULL )
+        Coll = CreateViasCollection ( PatternName );
+
+    if ( Coll == NULL )
+        return NULL;
+
+    //
+    // Allocate and insert Vias Entry
+    //
+
+    Vias = (PViasEntry) malloc ( sizeof(ViasEntry) );
+    if ( Vias == NULL )
+        return NULL;
+
+    memset ( Vias, 0, sizeof(ViasEntry) );
+
+    strcpy ( Vias->ViasName, ViasName );
+    Vias->OffsetX = OffsetX;
+    Vias->OffsetY = OffsetY;
+    Vias->Type = Type;
+
+    InsertTailList ( &Coll->ViasHead, (PLIST_ENTRY)Vias );
+
+    return Vias;
+}
 
 // DEBUG
 static void DumpPatterns(void)
@@ -57,7 +175,15 @@ int GetPatternIndexByHwnd(HWND hwnd)
     return -1;
 }
 
-void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, BOOL Flipped, BOOL Mirrored, BOOL Box, BOOL Label, BOOL SelectHint)
+void DrawPattern ( PatternItem *Item,
+                   HDC hdc,
+                   LPRECT Rect,
+                   BOOL Flipped,
+                   BOOL Mirrored,
+                   BOOL Box,
+                   BOOL Label,
+                   BOOL SelectHint,
+                   BOOL ViasEnable )
 {
     HGDIOBJ oldBitmap;
     HDC hdcMem;
@@ -76,6 +202,13 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, BOOL Flipped, BOOL Mir
     int Width;
     int Height;
     int Flags;
+    PViasCollectionEntry Coll;
+    PLIST_ENTRY Entry;
+    PViasEntry Vias;
+    #define VIAS_SIZE 8
+    int ViasPosX, ViasPosY;
+    RECT ViasRect;
+    HBRUSH ViasBrush;
 
     if (Item)
     {
@@ -198,6 +331,80 @@ void DrawPattern(PatternItem *Item, HDC hdc, LPRECT Rect, BOOL Flipped, BOOL Mir
             SelectObject(hdc, PatternFont);
             TextOut(hdc, 0, 0, Item->Name, (int)strlen(Item->Name));
         }
+
+        //
+        // Viases
+        //
+
+        Coll = GetViasCollection ( Item->Name );
+
+        if ( Coll && ViasEnable )
+        {
+            Entry = Coll->ViasHead.Flink;
+
+            while ( Entry != &Coll->ViasHead )
+            {
+                Vias = (PViasEntry) Entry;
+
+                ViasPosX = (int)(Vias->OffsetX * WorkspaceLamda);
+                ViasPosY = (int)(Vias->OffsetY * WorkspaceLamda);
+
+                switch (Flags)
+                {
+                    case 0:
+                    default:
+                        ViasPosX -= VIAS_SIZE / 2;
+                        ViasPosY -= VIAS_SIZE / 2;
+                        break;
+                    case 1:
+                        ViasPosX = Width - ViasPosX - VIAS_SIZE / 2;
+                        ViasPosY = Height - ViasPosY - VIAS_SIZE / 2;
+                        break;
+                    case 2:
+                        ViasPosX = Width - ViasPosX - VIAS_SIZE / 2;
+                        break;
+                    case 3:
+                        ViasPosY = Height - ViasPosY - VIAS_SIZE / 2;
+                        break;
+                }
+
+                //
+                // Entity
+                //
+
+                switch ( Vias->Type )
+                {
+                    case ViasInput:
+                        ViasBrush = GreenBrush;
+                        break;
+                    case ViasOutput:
+                        ViasBrush = RedBrush;
+                        break;
+                    case ViasInout:
+                        ViasBrush = YellowBrush;
+                        break;
+                    default:
+                        ViasBrush = GrayBrush;
+                        break;
+                }
+
+                SetRect ( &ViasRect,
+                          ViasPosX, ViasPosY,
+                          ViasPosX + VIAS_SIZE, ViasPosY + VIAS_SIZE);
+
+                FillRect ( hdc, &ViasRect, ViasBrush );
+
+                //
+                // Label
+                //
+
+                SelectObject(hdc, ViasFont);
+                TextOut(hdc, ViasPosX + VIAS_SIZE, ViasPosY,
+                             Vias->ViasName, (int)strlen(Vias->ViasName) );
+
+                Entry = Entry->Flink;
+            }
+        }
     }
     else
     {
@@ -251,7 +458,7 @@ LRESULT CALLBACK PatternTileProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
             Item = &Patterns[PatternIndex];
             Flipped = Button_GetCheck(FlipWnd) == BST_CHECKED;
             Mirrored = Button_GetCheck(MirrorWnd) == BST_CHECKED;
-            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, Mirrored, FALSE, FALSE, FALSE);
+            if (!Item->Hidden) DrawPattern(Item, hdc, &Rect, Flipped, Mirrored, FALSE, FALSE, FALSE, FALSE);
         }
 
         EndPaint(hwnd, &ps);
@@ -391,7 +598,7 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
 }
 
 // Add new pattern.
-void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int ncount)
+void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int ncount, long type)
 {
     PatternItem Item;
     char buffer[1024];
@@ -406,6 +613,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int nco
     Item.pcount = pcount;
     Item.ncount = ncount;
     Item.Hidden = FALSE;
+    Item.Type = type;
 
     sprintf(FullPath, "%s\\%s", CurrentWorkingDir, jpeg_path);
 
@@ -491,10 +699,13 @@ void ParseLine(char *line)
     char c;
     char command[32];
     char name[128];
-    char lamda[16];
-    char pcount[16];
-    char ncount[16];
-    char path[256];
+    char typeStr[128];      // vias_name
+    char *typeStrPtr;
+    long type;
+    char lamda[32];         // offset_x
+    char pcount[32];        // offset_y
+    char ncount[32];        // type
+    char path[256];         // reserved
     char buffer[1024];
 
     // Skip whitespaces.
@@ -511,11 +722,63 @@ void ParseLine(char *line)
     // Check comments
     if (*line == '#') return;
 
-    sscanf(line, "%s %[^','],%[^','],%[^','],%[^','],%s", command, name, lamda, pcount, ncount, path);
+    sscanf(line, "%s %[^','],%[^','],%[^','],%[^','],%[^','],%s", command, name, typeStr, lamda, pcount, ncount, path);
 
     if (!_stricmp(command, "pattern"))
     {
-        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lamda), atoi(pcount), atoi(ncount));
+        typeStrPtr = typeStr;
+        while ( *typeStrPtr <= ' ' && *typeStrPtr )
+            typeStrPtr++;
+
+        if ( !_stricmp ( typeStrPtr, "CellNot" ) )
+            type = CellNot;
+        else if ( !_stricmp ( typeStrPtr, "CellBuffer" ) )
+            type = CellBuffer;
+        else if ( !_stricmp ( typeStrPtr, "CellMux" ) )
+            type = CellMux;
+        else if ( !_stricmp ( typeStrPtr, "CellLogic" ) )
+            type = CellLogic;
+        else if ( !_stricmp ( typeStrPtr, "CellAdder" ) )
+            type = CellAdder;
+        else if ( !_stricmp ( typeStrPtr, "CellBusSupp" ) )
+            type = CellBusSupp;
+        else if ( !_stricmp ( typeStrPtr, "CellFlipFlop" ) )
+            type = CellFlipFlop;
+        else if ( !_stricmp ( typeStrPtr, "CellLatch" ) )
+            type = CellLatch;
+        else if ( !_stricmp ( typeStrPtr, "CellOther" ) )
+            type = CellOther;
+        else
+        {
+            MessageBox ( NULL, typeStr, "Unknown pattern type!", MB_ICONASTERISK );
+            return;
+        }
+
+        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lamda), atoi(pcount), atoi(ncount), type);
+    }
+    else if (!_stricmp(command, "vias") )
+    {
+        typeStrPtr = ncount;
+        while ( *typeStrPtr <= ' ' && *typeStrPtr )
+            typeStrPtr++;
+
+        if ( !_stricmp ( typeStrPtr, "ViasInput" ) )
+            type = ViasInput;
+        else if ( !_stricmp ( typeStrPtr, "ViasOutput" ) )
+            type = ViasOutput;
+        else if ( !_stricmp ( typeStrPtr, "ViasInout" ) )
+            type = ViasInout;
+        else
+        {
+            MessageBox ( NULL, typeStr, "Unknown vias type!", MB_ICONASTERISK );
+            return;
+        }
+
+        AddVias ( TrimString(name), 
+                  TrimString(typeStr),
+                  (float)atof(lamda),
+                  (float)atof(pcount),
+                  type );
     }
 
     // DEBUG.
@@ -735,13 +998,48 @@ void PatternInit(HWND Parent, char * dbfile)
     // Create pattern label font
     //
 
-    memset(&LogFont, 0, sizeof(LogFont));
+    if ( PatternFont == NULL )
+    {
+        memset(&LogFont, 0, sizeof(LogFont));
 
-    strcpy(LogFont.lfFaceName, "Calibri");
-    LogFont.lfWeight = FW_NORMAL;
-    LogFont.lfEscapement = 0;
+        strcpy(LogFont.lfFaceName, "Calibri");
+        LogFont.lfWeight = FW_NORMAL;
+        LogFont.lfEscapement = 0;
 
-    PatternFont = CreateFontIndirect(&LogFont);
+        PatternFont = CreateFontIndirect(&LogFont);
+    }
+
+    //
+    // Create vias label font
+    //
+
+    if ( ViasFont == NULL )
+    {
+        memset(&LogFont, 0, sizeof(LogFont));
+
+        strcpy(LogFont.lfFaceName, "Calibri");
+        LogFont.lfWeight = FW_NORMAL;
+        LogFont.lfHeight = 10;
+        LogFont.lfEscapement = 0;
+
+        ViasFont = CreateFontIndirect(&LogFont);
+    }
+
+    //
+    // Brushes
+    //
+
+    if ( GreenBrush == NULL )
+        GreenBrush = CreateSolidBrush ( RGB(0,255,0) );
+
+    if ( RedBrush == NULL )
+        RedBrush = CreateSolidBrush ( RGB(255,0,0) );
+
+    if ( YellowBrush == NULL )
+        YellowBrush = CreateSolidBrush ( RGB(255,255,0) );
+
+    if ( GrayBrush == NULL )
+        GrayBrush = CreateSolidBrush ( RGB(0x7f,0x7f,0x7f) );
 
     // Load and parse pattern database.
     f = fopen(dbfile, "rb");
@@ -823,6 +1121,12 @@ void PatternDestroy(void)
         Patterns = NULL;
     }
     NumPatterns = 0;
+
+    //
+    // Vias
+    //
+
+    ViasCleanup ();
 
     PatternRedraw();
 }

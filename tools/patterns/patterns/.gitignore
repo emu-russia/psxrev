@@ -4,5 +4,5 @@ x64
 patterns.opensdf
 patterns.sdf
 patterns.v12.suo
-
-
+.vs
+*.suo
