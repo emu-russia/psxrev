@@ -49,10 +49,10 @@
             this.deleteAllEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setLayerScrollToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyBindingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.label1 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button5 = new System.Windows.Forms.Button();
@@ -65,6 +65,9 @@
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
@@ -105,6 +108,11 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseTIER5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -119,14 +127,6 @@
             this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.traverseTIER2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.traverseTIER3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.traverseTIER5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
@@ -281,21 +281,29 @@
             // 
             this.setLayerScrollToOriginToolStripMenuItem.Name = "setLayerScrollToOriginToolStripMenuItem";
             this.setLayerScrollToOriginToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
-            this.setLayerScrollToOriginToolStripMenuItem.Text = "Set layer scroll to origin";
+            this.setLayerScrollToOriginToolStripMenuItem.Text = "Set image layer scroll to origin";
             this.setLayerScrollToOriginToolStripMenuItem.Click += new System.EventHandler(this.setLayerScrollToOriginToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.keyBindingsToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
+            // keyBindingsToolStripMenuItem
+            // 
+            this.keyBindingsToolStripMenuItem.Name = "keyBindingsToolStripMenuItem";
+            this.keyBindingsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.keyBindingsToolStripMenuItem.Text = "Key Bindings";
+            this.keyBindingsToolStripMenuItem.Click += new System.EventHandler(this.keyBindingsToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -333,7 +341,6 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.label1);
             this.splitContainer2.Panel2.Controls.Add(this.button6);
             this.splitContainer2.Panel2.Controls.Add(this.button5);
             this.splitContainer2.Panel2.Controls.Add(this.button4);
@@ -343,15 +350,6 @@
             this.splitContainer2.Size = new System.Drawing.Size(743, 480);
             this.splitContainer2.SplitterDistance = 414;
             this.splitContainer2.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(359, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(39, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Debug";
             // 
             // button6
             // 
@@ -494,6 +492,31 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Beacons";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(285, 452);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "ID";
+            this.columnHeader1.Width = 42;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Beacon Name";
+            this.columnHeader2.Width = 207;
             // 
             // openFileDialog1
             // 
@@ -844,6 +867,52 @@
             this.toolStripButton4.ToolTipText = "Draw wires between selected viases";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
+            // toolStripDropDownButton5
+            // 
+            this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.traverseTIER1ToolStripMenuItem,
+            this.traverseTIER2ToolStripMenuItem,
+            this.traverseTIER3ToolStripMenuItem,
+            this.traverseTIER5ToolStripMenuItem});
+            this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
+            this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
+            this.toolStripDropDownButton5.Size = new System.Drawing.Size(45, 36);
+            this.toolStripDropDownButton5.Text = "Traversal selection";
+            // 
+            // traverseTIER1ToolStripMenuItem
+            // 
+            this.traverseTIER1ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER1ToolStripMenuItem.Image")));
+            this.traverseTIER1ToolStripMenuItem.Name = "traverseTIER1ToolStripMenuItem";
+            this.traverseTIER1ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.traverseTIER1ToolStripMenuItem.Text = "Traverse TIER 1 (F10)";
+            this.traverseTIER1ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER1ToolStripMenuItem_Click);
+            // 
+            // traverseTIER2ToolStripMenuItem
+            // 
+            this.traverseTIER2ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER2ToolStripMenuItem.Image")));
+            this.traverseTIER2ToolStripMenuItem.Name = "traverseTIER2ToolStripMenuItem";
+            this.traverseTIER2ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.traverseTIER2ToolStripMenuItem.Text = "Traverse TIER 2 (F11)";
+            this.traverseTIER2ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER2ToolStripMenuItem_Click);
+            // 
+            // traverseTIER3ToolStripMenuItem
+            // 
+            this.traverseTIER3ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER3ToolStripMenuItem.Image")));
+            this.traverseTIER3ToolStripMenuItem.Name = "traverseTIER3ToolStripMenuItem";
+            this.traverseTIER3ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.traverseTIER3ToolStripMenuItem.Text = "Traverse TIER 3 (F12)";
+            this.traverseTIER3ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER3ToolStripMenuItem_Click);
+            // 
+            // traverseTIER5ToolStripMenuItem
+            // 
+            this.traverseTIER5ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER5ToolStripMenuItem.Image")));
+            this.traverseTIER5ToolStripMenuItem.Name = "traverseTIER5ToolStripMenuItem";
+            this.traverseTIER5ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.traverseTIER5ToolStripMenuItem.Text = "Traverse TIER 5";
+            this.traverseTIER5ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER5ToolStripMenuItem_Click);
+            // 
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -952,77 +1021,6 @@
             this.toolStripStatusLabel12.Size = new System.Drawing.Size(16, 19);
             this.toolStripStatusLabel12.Text = "   ";
             // 
-            // listView1
-            // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(285, 452);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "ID";
-            this.columnHeader1.Width = 42;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Beacon Name";
-            this.columnHeader2.Width = 207;
-            // 
-            // toolStripDropDownButton5
-            // 
-            this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.traverseTIER1ToolStripMenuItem,
-            this.traverseTIER2ToolStripMenuItem,
-            this.traverseTIER3ToolStripMenuItem,
-            this.traverseTIER5ToolStripMenuItem});
-            this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
-            this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
-            this.toolStripDropDownButton5.Size = new System.Drawing.Size(45, 36);
-            this.toolStripDropDownButton5.Text = "Traversal selection";
-            // 
-            // traverseTIER1ToolStripMenuItem
-            // 
-            this.traverseTIER1ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER1ToolStripMenuItem.Image")));
-            this.traverseTIER1ToolStripMenuItem.Name = "traverseTIER1ToolStripMenuItem";
-            this.traverseTIER1ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
-            this.traverseTIER1ToolStripMenuItem.Text = "Traverse TIER 1 (F10)";
-            this.traverseTIER1ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER1ToolStripMenuItem_Click);
-            // 
-            // traverseTIER2ToolStripMenuItem
-            // 
-            this.traverseTIER2ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER2ToolStripMenuItem.Image")));
-            this.traverseTIER2ToolStripMenuItem.Name = "traverseTIER2ToolStripMenuItem";
-            this.traverseTIER2ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
-            this.traverseTIER2ToolStripMenuItem.Text = "Traverse TIER 2 (F11)";
-            this.traverseTIER2ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER2ToolStripMenuItem_Click);
-            // 
-            // traverseTIER3ToolStripMenuItem
-            // 
-            this.traverseTIER3ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER3ToolStripMenuItem.Image")));
-            this.traverseTIER3ToolStripMenuItem.Name = "traverseTIER3ToolStripMenuItem";
-            this.traverseTIER3ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
-            this.traverseTIER3ToolStripMenuItem.Text = "Traverse TIER 3 (F12)";
-            this.traverseTIER3ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER3ToolStripMenuItem_Click);
-            // 
-            // traverseTIER5ToolStripMenuItem
-            // 
-            this.traverseTIER5ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("traverseTIER5ToolStripMenuItem.Image")));
-            this.traverseTIER5ToolStripMenuItem.Name = "traverseTIER5ToolStripMenuItem";
-            this.traverseTIER5ToolStripMenuItem.Size = new System.Drawing.Size(197, 38);
-            this.traverseTIER5ToolStripMenuItem.Text = "Traverse TIER 5";
-            this.traverseTIER5ToolStripMenuItem.Click += new System.EventHandler(this.traverseTIER5ToolStripMenuItem_Click);
-            // 
             // entityBox1
             // 
             this.entityBox1.AutoPriority = true;
@@ -1130,7 +1128,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -1230,7 +1227,6 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel10;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel11;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel12;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -1247,6 +1243,7 @@
         private System.Windows.Forms.ToolStripMenuItem traverseTIER2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem traverseTIER3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem traverseTIER5ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyBindingsToolStripMenuItem;
     }
 }
 

@@ -28,7 +28,6 @@ namespace DerouteSharp
             entityBox1.OnZoomChanged += ZoomChanged;
             entityBox1.OnEntityCountChanged += EntityCountChanged;
             entityBox1.OnLastOperation += LastOperation;
-            entityBox1.OnDebug += DebugCallback;
             entityBox1.OnEntityLabelEdit += EntityLabelChanged;
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
@@ -72,13 +71,6 @@ namespace DerouteSharp
             EntityBox entityBox = (EntityBox)sender;
 
             toolStripStatusLabel12.Text = entityBox.GetLastOperation().ToString();
-        }
-
-        private void DebugCallback (object sender, EventArgs e)
-        {
-            EntityBox entityBox = (EntityBox)sender;
-
-            label1.Text = "Dragging Distance (px): " + entityBox.GetDragDistance().ToString();
         }
 
         private void EntityLabelChanged(object sender, Entity entity, EventArgs e)
@@ -611,6 +603,12 @@ namespace DerouteSharp
         private void traverseTIER5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             entityBox1.TraversalSelection(5);
+        }
+
+        private void keyBindingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            KeyBind keyBindDialog = new KeyBind();
+            keyBindDialog.Show();
         }
     }       // Form1
 }

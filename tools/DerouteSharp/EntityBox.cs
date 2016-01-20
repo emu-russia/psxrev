@@ -826,9 +826,6 @@ namespace System.Windows.Forms
 
                     draggingDist = (float)Math.Sqrt( Math.Pow(dist.X, 2) +
                                                      Math.Pow(dist.Y, 2) );
-
-                    if (OnDebug != null)
-                        OnDebug(this, EventArgs.Empty);
                 }
 
                 Invalidate();
@@ -3200,7 +3197,7 @@ namespace System.Windows.Forms
                 }
             }
 
-            if (selectedWires.Count == 0)
+            if (selectedWires.Count <= 1)
                 return;
 
             lastEntities = new List<Entity>();
@@ -3281,7 +3278,7 @@ namespace System.Windows.Forms
             }
 
             //
-            // Remove selected
+            // Remove selected / join label names
             //
 
             string Label = "";
