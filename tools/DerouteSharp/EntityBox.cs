@@ -112,6 +112,7 @@ namespace System.Windows.Forms
         private bool[] lockZoom = new bool[3];
         private bool selectEntitiesAfterAdd;
         private long UnserializeLastStamp = 0;
+        private bool grayscale = false;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -1671,12 +1672,17 @@ namespace System.Windows.Forms
             set { base.BackgroundImageLayout = value; }
         }
 
-        private static Image ToGrayscale(Image source)
+        private Image ToGrayscale(Image source)
         {
-            Bitmap grayscale = ColorToGrayscale( new Bitmap(source) );
-            source.Dispose();
-            GC.Collect();
-            return (Image)grayscale;
+            if (grayscale == true)
+            {
+                Bitmap grayscaleBitmap = ColorToGrayscale(new Bitmap(source));
+                source.Dispose();
+                GC.Collect();
+                return (Image)grayscaleBitmap;
+            }
+            else
+                return source;
         }
 
         [Category("Appearance"), DefaultValue(null)]
@@ -1806,6 +1812,13 @@ namespace System.Windows.Forms
         {
             get { return selectEntitiesAfterAdd; }
             set { selectEntitiesAfterAdd = value; }
+        }
+
+        [Category("Logic")]
+        public bool Grayscale
+        {
+            get { return grayscale; }
+            set { grayscale = value; }
         }
 
         [Category("Logic")]
@@ -4092,20 +4105,26 @@ namespace System.Windows.Forms
         // Wire extend
         //
 
+        private Entity FirstSelectedWire ()
+        {
+            Entity wire = null;
+
+            foreach (Entity entity in _entities)
+            {
+                if (IsEntityWire(entity) && entity.Selected)
+                {
+                    wire = entity;
+                    break;
+                }
+            }
+
+            return wire;
+        }
+
         private float WireTangentInclination (Entity wire)
         {
             PointF start = new PointF(wire.LambdaX, wire.LambdaY);
             PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
-
-            //
-            // Reject too small wires
-            //
-
-            float wireLength = (float)( Math.Sqrt( Math.Pow(end.X - start.X, 2) +
-                                                   Math.Pow(end.Y - start.Y, 2)) );
-
-            if (wireLength < 1F)
-                return -1;
 
             //
             // Calculate tangent inclination 
@@ -4118,20 +4137,7 @@ namespace System.Windows.Forms
 
         public void WireExtendHead ()
         {
-            Entity wire = null;
-
-            //
-            // Grab first selected wire
-            //
-
-            foreach (Entity entity in _entities)
-            {
-                if ( IsEntityWire(entity) && entity.Selected )
-                {
-                    wire = entity;
-                    break;
-                }
-            }
+            Entity wire = FirstSelectedWire ();
 
             if (wire == null)
                 return;
@@ -4156,20 +4162,7 @@ namespace System.Windows.Forms
 
         public void WireExtendTail ()
         {
-            Entity wire = null;
-
-            //
-            // Grab first selected wire
-            //
-
-            foreach (Entity entity in _entities)
-            {
-                if (IsEntityWire(entity) && entity.Selected)
-                {
-                    wire = entity;
-                    break;
-                }
-            }
+            Entity wire = FirstSelectedWire();
 
             if (wire == null)
                 return;
@@ -4207,9 +4200,12 @@ namespace System.Windows.Forms
             if (srcRect.Y + srcRect.Height > image.Height)
                 return 0;
 
+            if (srcRect.X < 0 || srcRect.Y < 0)
+                return 0;
+
             using ( Graphics gr = Graphics.FromImage(bmp) )
             {
-                gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                gr.InterpolationMode = InterpolationMode.NearestNeighbor;
                 gr.DrawImage(image, new Rectangle(0, 0, 1, 1), srcRect, GraphicsUnit.Pixel);
                 pixel = bmp.GetPixel(0, 0);
                 gr.Dispose();
@@ -4222,28 +4218,145 @@ namespace System.Windows.Forms
             return yc;
         }
 
-        private Point LambdaToImageCoords ( PointF imageScroll, int imageZoom, PointF lambda )
+        private Point LambdaToImage(PointF imageScroll, PointF origin)
         {
-            float zf = (float)imageZoom / 100F;
-            Point coords = new Point();
-            coords.X = (int)((lambda.X + imageScroll.X) * Lambda * zf);
-            coords.Y = (int)((lambda.Y + imageScroll.Y) * Lambda * zf);
-            return coords;
+            Point dest = new Point();
+            dest.X = (int)((origin.X - imageScroll.X) * Lambda);
+            dest.Y = (int)((origin.Y - imageScroll.Y) * Lambda);
+            return dest;
+        }
+
+        private PointF ImageToLamda(PointF imageScroll, Point origin)
+        {
+            PointF dest = new PointF();
+            dest.X = (float)origin.X / Lambda + imageScroll.X;
+            dest.Y = (float)origin.Y / Lambda + imageScroll.Y;
+            return dest;
         }
 
         public void WireRecognize ()
         {
+            Image sourceImage = null;
+            PointF imageScroll = new PointF();
+            int imageZoom;
+            int gate = 10;
+
             //
             // Lock current image
             //
+
+            switch ( Mode )
+            {
+                default:
+                    sourceImage = _imageOrig[0];
+                    imageScroll = _imageScroll[0];
+                    imageZoom = _imageZoom[0];
+                    break;
+                case EntityMode.ImageLayer1:
+                    sourceImage = _imageOrig[1];
+                    imageScroll = _imageScroll[1];
+                    imageZoom = _imageZoom[1];
+                    break;
+                case EntityMode.ImageLayer2:
+                    sourceImage = _imageOrig[2];
+                    imageScroll = _imageScroll[2];
+                    imageZoom = _imageZoom[2];
+                    break;
+            }
+
+            if ( sourceImage == null )
+            {
+                MessageBox.Show("Image not loaded");
+                return;
+            }
 
             //
             // Grab first selected wire
             //
 
+            Entity wire = FirstSelectedWire();
+
+            if (wire == null)
+            {
+                MessageBox.Show("No wire selected");
+                return;
+            }
+
             //
             // Determine initial conditions
             //
+
+            float dx = Math.Abs(wire.LambdaEndX - wire.LambdaX);
+            float dy = Math.Abs(wire.LambdaEndY - wire.LambdaY);
+            bool Horz = dx > dy;
+
+            PointF startLambda = new PointF(wire.LambdaX, wire.LambdaY);
+            Point start = LambdaToImage(imageScroll, startLambda);
+
+            PointF endLambda = new PointF(wire.LambdaEndX, wire.LambdaEndY);
+            Point end = LambdaToImage(imageScroll, endLambda);
+
+            Rectangle sourceRect = new Rectangle(start.X,
+                                         start.Y - 1,
+                                         end.X - start.X,
+                                         2);
+
+            int avgColor = AverageSubImageColor(sourceImage, sourceRect);
+
+            //MessageBox.Show("Rect: " + sourceRect.ToString() + "\n" + "Avg Color: " + avgColor.ToString());
+
+            //
+            // Propagate end
+            //
+
+            int saved_x = sourceRect.X;
+
+            while (true)
+            {
+                sourceRect.X += WireBaseSize;
+
+                int col = AverageSubImageColor(sourceImage, sourceRect);
+
+                int diff = Math.Abs(avgColor - col);
+                if (diff > gate)
+                    break;
+
+                //
+                // Other wire hit test
+                //
+            }
+
+            Point endPoint = new Point(sourceRect.X, sourceRect.Y);
+            PointF lambda = ImageToLamda(imageScroll, endPoint);
+            wire.LambdaEndX = lambda.X;
+
+            //
+            // Propagate start
+            //
+
+            sourceRect.X = saved_x;
+
+            while (true)
+            {
+                sourceRect.X -= WireBaseSize;
+
+                int col = AverageSubImageColor(sourceImage, sourceRect);
+
+                int diff = Math.Abs(avgColor - col);
+                if (diff > gate)
+                    break;
+
+                //
+                // Other wire hit test
+                //
+            }
+
+            endPoint.X = sourceRect.X;
+            endPoint.Y = sourceRect.Y;
+            lambda = ImageToLamda(imageScroll, endPoint);
+            wire.LambdaX = lambda.X;
+
+            Invalidate();
         }
 
     }       // EntityBox
@@ -4336,6 +4449,7 @@ namespace System.Windows.Forms
         public int[] imageOpacity = new int[3];
         public bool[] lockScroll = new bool[3];
         public bool[] lockZoom = new bool[3];
+        public bool grayscale;
 
         [XmlIgnore] public Color ViasInputColor;
         [XmlIgnore] public Color ViasOutputColor;
@@ -4611,6 +4725,7 @@ namespace System.Windows.Forms
             lockZoom[0] = parent.LockZoom0;
             lockZoom[1] = parent.LockZoom1;
             lockZoom[2] = parent.LockZoom2;
+            grayscale = parent.Grayscale;
 
             ViasInputColor = parent.ViasInputColor;
             ViasOutputColor = parent.ViasOutputColor;
@@ -4688,6 +4803,7 @@ namespace System.Windows.Forms
             parent.LockZoom0 = lockZoom[0];
             parent.LockZoom1 = lockZoom[1];
             parent.LockZoom2 = lockZoom[2];
+            parent.Grayscale = grayscale;
 
             parent.ViasInputColor = ViasInputColor;
             parent.ViasOutputColor = ViasOutputColor;
