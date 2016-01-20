@@ -74,6 +74,12 @@
     <Compile Include="KeyBind.Designer.cs">
       <DependentUpon>KeyBind.cs</DependentUpon>
     </Compile>
+    <Compile Include="LambdaScale.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LambdaScale.Designer.cs">
+      <DependentUpon>LambdaScale.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="About.resx">
@@ -84,6 +90,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="KeyBind.resx">
       <DependentUpon>KeyBind.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LambdaScale.resx">
+      <DependentUpon>LambdaScale.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

@@ -441,6 +441,12 @@ namespace DerouteSharp
             {
                 entityBox1.TraversalSelection(3);
             }
+            else if (e.KeyCode == Keys.T && e.Control)
+            {
+                LambdaScale form = new LambdaScale();
+                form.FormClosing += form_FormClosing;
+                form.ShowDialog();                
+            }
         }
 
         private void SetLayerOpacity (int opacity)
@@ -624,6 +630,20 @@ namespace DerouteSharp
         private void toolStripButton10_Click(object sender, EventArgs e)
         {
             entityBox1.WireExtendTail();
+        }
+
+        private void lambdaTransformToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LambdaScale form = new LambdaScale();
+            form.FormClosing += form_FormClosing;
+            form.ShowDialog();
+        }
+
+        private void form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            LambdaScale form = (LambdaScale)sender;
+            if (form.ScaleValue != float.NaN)
+                entityBox1.LambdaScale(form.ScaleValue);
         }
     }       // Form1
 }

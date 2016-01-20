@@ -4359,6 +4359,44 @@ namespace System.Windows.Forms
             Invalidate();
         }
 
+        //
+        // Lambda Transformation
+        //
+
+        public void LambdaScale(float scale)
+        {
+            List<Entity> sourceList = new List<Entity>();
+
+            //
+            // Grab selected entities
+            //
+
+            foreach ( Entity entity in _entities )
+            {
+                if (entity.Selected)
+                    sourceList.Add(entity);
+            }
+
+            if (sourceList.Count == 0)
+                return;
+
+            //
+            // Scale
+            //
+
+            foreach (Entity entity in sourceList )
+            {
+                entity.LambdaX *= scale;
+                entity.LambdaY *= scale;
+                entity.LambdaEndX *= scale;
+                entity.LambdaEndY *= scale;
+                entity.LambdaWidth *= scale;
+                entity.LambdaHeight *= scale;
+            }
+
+            Invalidate();
+        }
+
     }       // EntityBox
 
     #region Workspace stuff

@@ -140,6 +140,7 @@
             this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.lambdaTransformToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -260,7 +261,8 @@
             this.repeatCancelledOperationCtrlYToolStripMenuItem,
             this.toolStripSeparator5,
             this.deleteAllEntitiesToolStripMenuItem,
-            this.setLayerScrollToOriginToolStripMenuItem});
+            this.setLayerScrollToOriginToolStripMenuItem,
+            this.lambdaTransformToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -1142,6 +1144,7 @@
             this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
             this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.entityBox1.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox1.Grayscale = false;
             this.entityBox1.HideCells = false;
             this.entityBox1.HideGrid = false;
             this.entityBox1.HideImage = false;
@@ -1206,6 +1209,13 @@
             this.propertyGrid1.SelectedObject = this.entityBox1;
             this.propertyGrid1.Size = new System.Drawing.Size(279, 446);
             this.propertyGrid1.TabIndex = 1;
+            // 
+            // lambdaTransformToolStripMenuItem
+            // 
+            this.lambdaTransformToolStripMenuItem.Name = "lambdaTransformToolStripMenuItem";
+            this.lambdaTransformToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.lambdaTransformToolStripMenuItem.Text = "Lambda Transform";
+            this.lambdaTransformToolStripMenuItem.Click += new System.EventHandler(this.lambdaTransformToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1357,6 +1367,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripButton toolStripButton9;
         private System.Windows.Forms.ToolStripButton toolStripButton10;
+        private System.Windows.Forms.ToolStripMenuItem lambdaTransformToolStripMenuItem;
     }
 }
 
