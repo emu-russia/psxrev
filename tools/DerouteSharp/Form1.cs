@@ -610,5 +610,10 @@ namespace DerouteSharp
             KeyBind keyBindDialog = new KeyBind();
             keyBindDialog.Show();
         }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            entityBox1.WireRecognize();
+        }
     }       // Form1
 }

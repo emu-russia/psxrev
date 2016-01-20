@@ -2783,7 +2783,7 @@ namespace System.Windows.Forms
             _CellAdderColor = Color.Red;
             _CellBusSuppColor = Color.DarkViolet;
             _CellFlipFlopColor = Color.Lime;
-            _CellLatchColor = Color.SpringGreen;
+            _CellLatchColor = Color.Cyan;
             _CellOtherColor = Color.Snow;
 
             _UnitRegfileColor = Color.Snow;
@@ -4086,6 +4086,60 @@ namespace System.Windows.Forms
             }
 
             Invalidate();
+        }
+
+        //
+        // Wire Recognition
+        //
+
+        private int AverageSubImageColor ( Image image, Rectangle srcRect)
+        {
+            Bitmap bmp = new Bitmap(1, 1);
+            Color pixel = new Color();
+
+            if (srcRect.X + srcRect.Width > image.Width)
+                return 0;
+
+            if (srcRect.Y + srcRect.Height > image.Height)
+                return 0;
+
+            using ( Graphics gr = Graphics.FromImage(bmp) )
+            {
+                gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                gr.DrawImage(image, new Rectangle(0, 0, 1, 1), srcRect, GraphicsUnit.Pixel);
+                pixel = bmp.GetPixel(0, 0);
+                gr.Dispose();
+            }
+
+            int yc = (int) (0.2126f * (float)pixel.R +
+                            0.752f * (float)pixel.G +
+                            0.0722f * (float)pixel.B);
+            yc = Math.Max(0, Math.Min(yc, 255));
+            return yc;
+        }
+
+        private Point LambdaToImageCoords ( PointF imageScroll, int imageZoom, PointF lambda )
+        {
+            float zf = (float)imageZoom / 100F;
+            Point coords = new Point();
+            coords.X = (int)((lambda.X + imageScroll.X) * Lambda * zf);
+            coords.Y = (int)((lambda.Y + imageScroll.Y) * Lambda * zf);
+            return coords;
+        }
+
+        public void WireRecognize ()
+        {
+            //
+            // Lock current image
+            //
+
+            //
+            // Grab first selected wire
+            //
+
+            //
+            // Determine initial conditions
+            //
         }
 
     }       // EntityBox
