@@ -615,5 +615,15 @@ namespace DerouteSharp
         {
             entityBox1.WireRecognize();
         }
+
+        private void toolStripButton9_Click(object sender, EventArgs e)
+        {
+            entityBox1.WireExtendHead();
+        }
+
+        private void toolStripButton10_Click(object sender, EventArgs e)
+        {
+            entityBox1.WireExtendTail();
+        }
     }       // Form1
 }

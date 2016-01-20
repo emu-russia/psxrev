@@ -4089,6 +4089,110 @@ namespace System.Windows.Forms
         }
 
         //
+        // Wire extend
+        //
+
+        private float WireTangentInclination (Entity wire)
+        {
+            PointF start = new PointF(wire.LambdaX, wire.LambdaY);
+            PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
+
+            //
+            // Reject too small wires
+            //
+
+            float wireLength = (float)( Math.Sqrt( Math.Pow(end.X - start.X, 2) +
+                                                   Math.Pow(end.Y - start.Y, 2)) );
+
+            if (wireLength < 1F)
+                return -1;
+
+            //
+            // Calculate tangent inclination 
+            //
+
+            float a = end.Y - start.Y;
+            float b = end.X - start.X;
+            return (float)Math.Atan(a / b);
+        }
+
+        public void WireExtendHead ()
+        {
+            Entity wire = null;
+
+            //
+            // Grab first selected wire
+            //
+
+            foreach (Entity entity in _entities)
+            {
+                if ( IsEntityWire(entity) && entity.Selected )
+                {
+                    wire = entity;
+                    break;
+                }
+            }
+
+            if (wire == null)
+                return;
+
+            //
+            // Extend
+            //
+
+            float alpha = WireTangentInclination(wire);
+
+            if (wire.LambdaEndX < wire.LambdaX)
+            {
+                wire.LambdaX += (float)Math.Cos(alpha);
+                wire.LambdaY += (float)Math.Sin(alpha);
+            }
+            else
+            {
+                wire.LambdaX -= (float)Math.Cos(alpha);
+                wire.LambdaY -= (float)Math.Sin(alpha);
+            }
+        }
+
+        public void WireExtendTail ()
+        {
+            Entity wire = null;
+
+            //
+            // Grab first selected wire
+            //
+
+            foreach (Entity entity in _entities)
+            {
+                if (IsEntityWire(entity) && entity.Selected)
+                {
+                    wire = entity;
+                    break;
+                }
+            }
+
+            if (wire == null)
+                return;
+
+            //
+            // Extend
+            //
+
+            float alpha = WireTangentInclination(wire);
+
+            if (wire.LambdaEndX < wire.LambdaX)
+            {
+                wire.LambdaEndX -= (float)Math.Cos(alpha);
+                wire.LambdaEndY -= (float)Math.Sin(alpha);
+            }
+            else
+            {
+                wire.LambdaEndX += (float)Math.Cos(alpha);
+                wire.LambdaEndY += (float)Math.Sin(alpha);
+            }
+        }
+
+        //
         // Wire Recognition
         //
 
