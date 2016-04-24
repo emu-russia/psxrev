@@ -83,6 +83,7 @@
     <Compile Include="LambdaScale.Designer.cs">
       <DependentUpon>LambdaScale.cs</DependentUpon>
     </Compile>
+    <Compile Include="PointFConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="About.resx">

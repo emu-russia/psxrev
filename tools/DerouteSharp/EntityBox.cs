@@ -1862,6 +1862,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
+        [TypeConverter(typeof(PointFConverter))]
         public PointF ScrollImage0
         {
             get { return _imageScroll[0]; }
@@ -1869,6 +1870,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
+        [TypeConverter(typeof(PointFConverter))]
         public PointF ScrollImage1
         {
             get { return _imageScroll[1]; }
@@ -1876,6 +1878,7 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
+        [TypeConverter(typeof(PointFConverter))]
         public PointF ScrollImage2
         {
             get { return _imageScroll[2]; }
@@ -2499,7 +2502,7 @@ namespace System.Windows.Forms
                 if (IsEntityWire(entity))
                 {
                     float len = (float)Math.Sqrt(Math.Pow(entity.LambdaEndX - entity.LambdaX, 2) +
-                                                   Math.Pow(entity.SavedLambdaEndY - entity.LambdaY, 2));
+                                                   Math.Pow(entity.LambdaEndY - entity.LambdaY, 2));
 
                     if (len < 1.0F)
                         pendingDelete.Add(entity);
