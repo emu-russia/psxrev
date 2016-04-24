@@ -29,8 +29,14 @@ namespace DerouteSharp
             entityBox1.OnEntityCountChanged += EntityCountChanged;
             entityBox1.OnLastOperation += LastOperation;
             entityBox1.OnEntityLabelEdit += EntityLabelChanged;
+            entityBox1.OnFrameDone += entityBox1_OnFrameDone;
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
+        }
+
+        void entityBox1_OnFrameDone(object sender, long ms_time, EventArgs e)
+        {
+            toolStripStatusLabel14.Text = ms_time.ToString() + " ms";
         }
 
         private void ScrollChanged(object sender, EventArgs e)
@@ -644,6 +650,16 @@ namespace DerouteSharp
             LambdaScale form = (LambdaScale)sender;
             if (form.ScaleValue != float.NaN)
                 entityBox1.LambdaScale(form.ScaleValue);
+        }
+
+        private void toolStripButton12_Click(object sender, EventArgs e)
+        {
+            entityBox1.WireShortenHead();
+        }
+
+        private void toolStripButton11_Click(object sender, EventArgs e)
+        {
+            entityBox1.WireShortenTail();
         }
     }       // Form1
 }

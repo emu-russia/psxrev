@@ -13,6 +13,7 @@ namespace System.Windows.Forms
 {
     public delegate void EntityBoxEventHandler(object sender, EventArgs e);
     public delegate void EntityBoxEntityEventHandler(object sender, Entity entity, EventArgs e);
+    public delegate void EntityBoxFrameDoneHandler(object sender, long ms_time, EventArgs e);
 
     public enum EntityMode
     {
@@ -120,6 +121,7 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnLastOperation = null;
         public event EntityBoxEventHandler OnDebug = null;
         public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
+        public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
         public EntityBox()
         {
@@ -1638,10 +1640,17 @@ namespace System.Windows.Forms
             if (gfx == null)
                 ReallocateGraphics();
 
+            long beginTime = DateTime.Now.Ticks;
+
             Point origin = new Point(0, 0);
             DrawScene(gfx.Graphics, Width, Height, false, origin);
 
             gfx.Render(e.Graphics);
+
+            long endTime = DateTime.Now.Ticks;
+
+            if (OnFrameDone != null)
+                OnFrameDone(this, (endTime - beginTime) / 10000, EventArgs.Empty);
         }
 
         protected override void OnSizeChanged(EventArgs e)
@@ -4182,6 +4191,56 @@ namespace System.Windows.Forms
             {
                 wire.LambdaEndX += (float)Math.Cos(alpha);
                 wire.LambdaEndY += (float)Math.Sin(alpha);
+            }
+        }
+
+        public void WireShortenHead()
+        {
+            Entity wire = FirstSelectedWire();
+
+            if (wire == null)
+                return;
+
+            //
+            // Extend
+            //
+
+            float alpha = WireTangentInclination(wire);
+
+            if (wire.LambdaEndX < wire.LambdaX)
+            {
+                wire.LambdaX -= (float)Math.Cos(alpha);
+                wire.LambdaY -= (float)Math.Sin(alpha);
+            }
+            else
+            {
+                wire.LambdaX += (float)Math.Cos(alpha);
+                wire.LambdaY += (float)Math.Sin(alpha);
+            }
+        }
+
+        public void WireShortenTail()
+        {
+            Entity wire = FirstSelectedWire();
+
+            if (wire == null)
+                return;
+
+            //
+            // Extend
+            //
+
+            float alpha = WireTangentInclination(wire);
+
+            if (wire.LambdaEndX < wire.LambdaX)
+            {
+                wire.LambdaEndX += (float)Math.Cos(alpha);
+                wire.LambdaEndY += (float)Math.Sin(alpha);
+            }
+            else
+            {
+                wire.LambdaEndX -= (float)Math.Cos(alpha);
+                wire.LambdaEndY -= (float)Math.Sin(alpha);
             }
         }
 
