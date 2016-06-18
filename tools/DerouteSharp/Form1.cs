@@ -453,6 +453,10 @@ namespace DerouteSharp
                 form.FormClosing += form_FormClosing;
                 form.ShowDialog();                
             }
+            else if (e.KeyCode == Keys.A && e.Control)
+            {
+                entityBox1.SelectAll();
+            }
         }
 
         private void SetLayerOpacity (int opacity)
@@ -660,6 +664,31 @@ namespace DerouteSharp
         private void toolStripButton11_Click(object sender, EventArgs e)
         {
             entityBox1.WireShortenTail();
+        }
+
+        private void selectAllViasesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.SelectAll(EntitySelection.Vias);
+        }
+
+        private void selectAllWiresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.SelectAll(EntitySelection.Wire);
+        }
+
+        private void selectAllCellsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.SelectAll(EntitySelection.Cell);
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.SelectAll();
+        }
+
+        private void toolStripButton13_Click(object sender, EventArgs e)
+        {
+            entityBox1.DrawRegionBetweenSelectedViases();
         }
     }       // Form1
 }

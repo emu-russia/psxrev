@@ -34,6 +34,7 @@ public enum EntityType
     UnitMemory,
     UnitCustom,
     Beacon,
+    Region,
 }
 
 public enum ViasShape
@@ -68,6 +69,9 @@ public class Entity
     private Color _ColorOverride;
     private TextAlignment labelAlignment;
     private int _Priority;
+    private List<PointF> _pathPoints = null;
+    [XmlIgnore]
+    public List<PointF> SavedPathPoints = null;
 
     [XmlIgnore]
     public long SelectTimeStamp;
@@ -213,6 +217,17 @@ public class Entity
                 parentBox.SortEntities();
                 parentBox.Invalidate();
             }
+        }
+    }
+
+    [Category("Entity Properties")]
+    public List<PointF> PathPoints
+    {
+        get { return _pathPoints; }
+        set
+        {
+            _pathPoints = value;
+            if (parentBox != null) parentBox.Invalidate();
         }
     }
 

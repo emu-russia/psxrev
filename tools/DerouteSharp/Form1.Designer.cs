@@ -114,6 +114,8 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
@@ -139,10 +141,15 @@
             this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.selectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllViasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
@@ -166,6 +173,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.selectionToolStripMenuItem,
             this.editToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -601,6 +609,7 @@
             this.toolStripButton11,
             this.toolStripSeparator6,
             this.toolStripButton4,
+            this.toolStripButton13,
             this.toolStripButton6,
             this.toolStripDropDownButton5,
             this.toolStripSeparator7,
@@ -934,6 +943,26 @@
             this.toolStripButton10.Text = "Extend wire tail";
             this.toolStripButton10.Click += new System.EventHandler(this.toolStripButton10_Click);
             // 
+            // toolStripButton12
+            // 
+            this.toolStripButton12.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton12.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton12.Image")));
+            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton12.Name = "toolStripButton12";
+            this.toolStripButton12.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton12.Text = "Shorten wire head";
+            this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
+            // 
+            // toolStripButton11
+            // 
+            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton11.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton11.Image")));
+            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton11.Name = "toolStripButton11";
+            this.toolStripButton11.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton11.Text = "Shorten wire tail";
+            this.toolStripButton11.Click += new System.EventHandler(this.toolStripButton11_Click);
+            // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
@@ -1141,26 +1170,6 @@
             this.toolStripStatusLabel12.Size = new System.Drawing.Size(20, 19);
             this.toolStripStatusLabel12.Text = "   ";
             // 
-            // toolStripButton11
-            // 
-            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton11.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton11.Image")));
-            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton11.Name = "toolStripButton11";
-            this.toolStripButton11.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton11.Text = "Shorten wire tail";
-            this.toolStripButton11.Click += new System.EventHandler(this.toolStripButton11_Click);
-            // 
-            // toolStripButton12
-            // 
-            this.toolStripButton12.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton12.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton12.Image")));
-            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton12.Name = "toolStripButton12";
-            this.toolStripButton12.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton12.Text = "Shorten wire head";
-            this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
-            // 
             // toolStripStatusLabel13
             // 
             this.toolStripStatusLabel13.Name = "toolStripStatusLabel13";
@@ -1172,6 +1181,61 @@
             this.toolStripStatusLabel14.Name = "toolStripStatusLabel14";
             this.toolStripStatusLabel14.Size = new System.Drawing.Size(36, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
+            // 
+            // selectionToolStripMenuItem
+            // 
+            this.selectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectAllViasesToolStripMenuItem,
+            this.selectAllWiresToolStripMenuItem,
+            this.selectAllCellsToolStripMenuItem,
+            this.toolStripSeparator10,
+            this.selectAllToolStripMenuItem});
+            this.selectionToolStripMenuItem.Name = "selectionToolStripMenuItem";
+            this.selectionToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
+            this.selectionToolStripMenuItem.Text = "Selection";
+            // 
+            // selectAllViasesToolStripMenuItem
+            // 
+            this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
+            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
+            this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
+            // 
+            // selectAllWiresToolStripMenuItem
+            // 
+            this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
+            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
+            this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
+            // 
+            // selectAllCellsToolStripMenuItem
+            // 
+            this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
+            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
+            this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // toolStripButton13
+            // 
+            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
+            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton13.Name = "toolStripButton13";
+            this.toolStripButton13.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton13.Text = "Draw region between selected viases";
+            this.toolStripButton13.Click += new System.EventHandler(this.toolStripButton13_Click);
             // 
             // entityBox1
             // 
@@ -1413,6 +1477,13 @@
         private System.Windows.Forms.ToolStripButton toolStripButton11;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel13;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel14;
+        private System.Windows.Forms.ToolStripMenuItem selectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllViasesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllWiresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllCellsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton13;
     }
 }
 

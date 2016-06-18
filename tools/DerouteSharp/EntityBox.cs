@@ -15,6 +15,14 @@ namespace System.Windows.Forms
     public delegate void EntityBoxEntityEventHandler(object sender, Entity entity, EventArgs e);
     public delegate void EntityBoxFrameDoneHandler(object sender, long ms_time, EventArgs e);
 
+    public enum EntitySelection
+    {
+        Vias,
+        Wire,
+        Cell,
+        All,
+    }
+
     public enum EntityMode
     {
         Selection = 0,
@@ -181,6 +189,11 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.UnitCustom);
         }
 
+        private bool IsEntityRegion(Entity entity)
+        {
+            return (entity.Type == EntityType.Region );
+        }
+
         //
         // Coordinate space convertion
         //
@@ -233,7 +246,11 @@ namespace System.Windows.Forms
             PointF[] rect = new PointF[4];
             float zf = (float)Zoom / 100.0F;
 
-            foreach (Entity entity in _entities)
+            List<Entity> reversed = new List<Entity>();
+
+            reversed = _entities.OrderByDescending(o => o.Priority).ToList();
+
+            foreach (Entity entity in reversed)
             {
                 if (IsEntityWire(entity) && HideWires == false)
                 {
@@ -322,6 +339,19 @@ namespace System.Windows.Forms
                     if (PointInPoly(rect, point) == true)
                         return entity;
                 }
+                else if ( IsEntityRegion(entity))
+                {
+                    PointF[] poly = new PointF[entity.PathPoints.Count];
+
+                    int idx = 0;
+                    foreach ( PointF pathPoint in entity.PathPoints )
+                    {
+                        poly[idx++] = (PointF) LambdaToScreen ( pathPoint.X, pathPoint.Y );
+                    }
+
+                    if (PointInPoly(poly, point) == true)
+                        return entity;
+                }
             }
 
             return null;
@@ -400,11 +430,18 @@ namespace System.Windows.Forms
                 {
                     foreach (Entity entity in selected)
                     {
-                        entity.SavedLambdaX = entity.LambdaX;
-                        entity.SavedLambdaY = entity.LambdaY;
+                        if (IsEntityRegion(entity))
+                        {
+                            entity.SavedPathPoints = new List<PointF>(entity.PathPoints);
+                        }
+                        else
+                        {
+                            entity.SavedLambdaX = entity.LambdaX;
+                            entity.SavedLambdaY = entity.LambdaY;
 
-                        entity.SavedLambdaEndX = entity.LambdaEndX;
-                        entity.SavedLambdaEndY = entity.LambdaEndY;
+                            entity.SavedLambdaEndX = entity.LambdaEndX;
+                            entity.SavedLambdaEndY = entity.LambdaEndY;
+                        }
                     }
 
                     lastEntities = new List<Entity>();
@@ -553,7 +590,7 @@ namespace System.Windows.Forms
                                     CatchSomething = true;
                                 }
                             }
-                            else    // Vias
+                            else if (IsEntityVias(ent))
                             {
                                 PointF point1 = new PointF(ent.LambdaX, ent.LambdaY);
 
@@ -563,6 +600,8 @@ namespace System.Windows.Forms
                                     CatchSomething = true;
                                 }
                             }
+
+                            // Regions are selected by HitTest only.
                         }
 
                         if (CatchSomething == true)
@@ -804,25 +843,41 @@ namespace System.Windows.Forms
             {
                 foreach (Entity entity in selected)
                 {
-                    Point point = LambdaToScreen(entity.SavedLambdaX, entity.SavedLambdaY);
+                    if (IsEntityRegion(entity))
+                    {
+                        for (int i = 0; i < entity.PathPoints.Count; i++ )
+                        {
+                            Point point = LambdaToScreen( entity.SavedPathPoints[i].X,
+                                                          entity.SavedPathPoints[i].Y);
 
-                    point.X += e.X - DragStartMouseX;
-                    point.Y += e.Y - DragStartMouseY;
+                            point.X += e.X - DragStartMouseX;
+                            point.Y += e.Y - DragStartMouseY;
 
-                    PointF lambda = ScreenToLambda(point.X, point.Y);
+                            entity.PathPoints[i] = ScreenToLambda(point.X, point.Y);
+                        }
+                    }
+                    else
+                    {
+                        Point point = LambdaToScreen(entity.SavedLambdaX, entity.SavedLambdaY);
 
-                    entity.LambdaX = lambda.X;
-                    entity.LambdaY = lambda.Y;
+                        point.X += e.X - DragStartMouseX;
+                        point.Y += e.Y - DragStartMouseY;
 
-                    point = LambdaToScreen(entity.SavedLambdaEndX, entity.SavedLambdaEndY);
+                        PointF lambda = ScreenToLambda(point.X, point.Y);
 
-                    point.X += e.X - DragStartMouseX;
-                    point.Y += e.Y - DragStartMouseY;
+                        entity.LambdaX = lambda.X;
+                        entity.LambdaY = lambda.Y;
 
-                    lambda = ScreenToLambda(point.X, point.Y);
+                        point = LambdaToScreen(entity.SavedLambdaEndX, entity.SavedLambdaEndY);
 
-                    entity.LambdaEndX = lambda.X;
-                    entity.LambdaEndY = lambda.Y;
+                        point.X += e.X - DragStartMouseX;
+                        point.Y += e.Y - DragStartMouseY;
+
+                        lambda = ScreenToLambda(point.X, point.Y);
+
+                        entity.LambdaEndX = lambda.X;
+                        entity.LambdaEndY = lambda.Y;
+                    }
 
                     Point dist = new Point(Math.Abs(e.X - DragStartMouseX),
                                              Math.Abs(e.Y - DragStartMouseY));
@@ -923,6 +978,9 @@ namespace System.Windows.Forms
         private void DrawLambdaGrid(Graphics gr)
         {
             float x, y;
+
+            if (Zoom <= 50)
+                return;
 
             float scaleWidth = (int)Lambda * 5;
             scaleWidth *= (float)Zoom / 100.0F;
@@ -1334,6 +1392,10 @@ namespace System.Windows.Forms
 
                     break;
 
+                //
+                // Beacon
+                //
+
                 case EntityType.Beacon:
 
                     Point beaconOrigin = LambdaToScreen(entity.LambdaX, entity.LambdaY);
@@ -1393,6 +1455,45 @@ namespace System.Windows.Forms
                         gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), 0, 0);
                         gr.ResetTransform();
                     }
+
+                    break;
+
+                //
+                // Region
+                //
+
+                case EntityType.Region:
+
+                    Brush brush = new SolidBrush(Color.FromArgb(RegionOpacity, entity.ColorOverride));
+
+                    GraphicsPath gp = new GraphicsPath();
+
+                    PointF prev = (PointF) LambdaToScreen ( entity.PathPoints[0].X, entity.PathPoints[0].Y );
+                    PointF first = prev;
+
+                    foreach (PointF pathPoint in entity.PathPoints)
+                    {
+                        PointF translated = (PointF)LambdaToScreen(pathPoint.X, pathPoint.Y);
+
+                        if (translated == prev)
+                            continue;
+
+                        gp.AddLine(prev, translated);
+
+                        prev = translated;
+                    }
+
+                    gp.AddLine(prev, first);
+
+                    if ( entity.Selected == true )
+                    {
+                        gr.DrawPath(new Pen(SelectionColor, (float)WireBaseSize * zf + (int)Lambda),
+                                      gp);
+                    }
+
+                    gr.FillPath(brush, gp);
+
+                    // TODO: Label
 
                     break;
             }
@@ -2064,6 +2165,22 @@ namespace System.Windows.Forms
             Entity item = new Entity();
 
             PointF point = ScreenToLambda(ScreenX, ScreenY);
+
+            //
+            // Get rid of clutching viases
+            //
+
+            foreach ( Entity entity in _entities )
+            {
+                if ( IsEntityVias(entity) )
+                {
+                    float dist = (float)Math.Sqrt( Math.Pow(entity.LambdaX - point.X, 2) + 
+                                                   Math.Pow(entity.LambdaY - point.Y, 2));
+
+                    if (dist <= 1.5F)
+                        return null;
+                }
+            }
 
             item.Label = "";
             item.LambdaX = point.X;
@@ -2774,10 +2891,12 @@ namespace System.Windows.Forms
         private int _ViasOpacity;
         private int _WireOpacity;
         private int _CellOpacity;
+        private int _RegionOpacity;
         private int _ViasPriority;
         private int _WirePriority;
         private int _CellPriority;
         private int _BeaconPriority;
+        private int _RegionPriority;
         private bool _AutoPriority;
 
         private void DefaultEntityAppearance()
@@ -2820,11 +2939,13 @@ namespace System.Windows.Forms
             _ViasOpacity = 255;
             _WireOpacity = 128;
             _CellOpacity = 128;
+            _RegionOpacity = 128;
 
             _BeaconPriority = 4;
             _ViasPriority = 3;
             _WirePriority = 2;
             _CellPriority = 1;
+            _RegionPriority = 0;
             _AutoPriority = true;
         }
 
@@ -3065,6 +3186,17 @@ namespace System.Windows.Forms
         }
 
         [Category("Entity Appearance")]
+        public int RegionOpacity
+        {
+            get { return _RegionOpacity; }
+            set
+            {
+                _RegionOpacity = Math.Max(0, Math.Min(255, value));
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
         public int BeaconPriority
         {
             get { return _BeaconPriority; }
@@ -3116,6 +3248,17 @@ namespace System.Windows.Forms
             {
                 _AutoPriority = value;
                 SortEntities();
+                Invalidate();
+            }
+        }
+
+        [Category("Entity Appearance")]
+        public int RegionPriority
+        {
+            get { return _RegionPriority; }
+            set
+            {
+                _RegionPriority = value;
                 Invalidate();
             }
         }
@@ -4448,15 +4591,125 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in sourceList )
             {
-                entity.LambdaX *= scale;
-                entity.LambdaY *= scale;
-                entity.LambdaEndX *= scale;
-                entity.LambdaEndY *= scale;
-                entity.LambdaWidth *= scale;
-                entity.LambdaHeight *= scale;
+                if (IsEntityRegion(entity))
+                {
+                    for (int i = 0; i < entity.PathPoints.Count; i++ )
+                    {
+                        PointF scaled = new PointF();
+
+                        scaled.X = entity.PathPoints[i].X * scale;
+                        scaled.Y = entity.PathPoints[i].Y * scale;
+
+                        entity.PathPoints[i] = scaled;
+                    }
+                }
+                else
+                {
+                    entity.LambdaX *= scale;
+                    entity.LambdaY *= scale;
+                    entity.LambdaEndX *= scale;
+                    entity.LambdaEndY *= scale;
+                    entity.LambdaWidth *= scale;
+                    entity.LambdaHeight *= scale;
+                }
             }
 
             Invalidate();
+        }
+
+        //
+        // Select All
+        //
+
+        public void SelectAll(EntitySelection kind = EntitySelection.All)
+        {
+            foreach ( Entity entity in _entities )
+            {
+                switch (kind)
+                {
+                    case EntitySelection.Vias:
+                        if (IsEntityVias(entity))
+                            entity.Selected = true;
+                        break;
+
+                    case EntitySelection.Wire:
+                        if (IsEntityWire(entity))
+                            entity.Selected = true;
+                        break;
+
+                    case EntitySelection.Cell:
+                        if (IsEntityCell(entity))
+                            entity.Selected = true;
+                        break;
+
+                    default:
+                    case EntitySelection.All:
+                        entity.Selected = true;
+                        break;
+                }
+            }
+
+            Invalidate();
+        }
+
+        //
+        // Draw region between selected viases
+        //
+
+        public void DrawRegionBetweenSelectedViases ()
+        {
+            List<Entity> selected = new List<Entity>();
+
+            //
+            // Grab selected viases (minimum 3)
+            //
+
+            foreach ( Entity entity in _entities)
+            {
+                if ( IsEntityVias(entity) && entity.Selected )
+                {
+                    selected.Add(entity);
+                }
+            }
+
+            if (selected.Count < 3)
+                return;
+
+            //
+            // Fill path
+            //
+
+            List<PointF> path = new List<PointF>();
+
+            foreach ( Entity entity in selected )
+            {
+                PointF point = new PointF();
+
+                point.X = entity.LambdaX;
+                point.Y = entity.LambdaY;
+
+                path.Add ( point );
+            }
+
+            //
+            // Add new region entity
+            //
+
+            Entity region = new Entity();
+
+            region.Type = EntityType.Region;
+            region.Label = "Region";
+            region.LabelAlignment = TextAlignment.GlobalSettings;
+            region.Priority = RegionPriority;
+            region.Selected = false;
+            region.PathPoints = path;
+            region.ColorOverride = Color.Green;
+            region.SetParent (this);
+
+            _entities.Add ( region );
+            SortEntities();
+
+            Invalidate ();
         }
 
     }       // EntityBox
@@ -4583,10 +4836,12 @@ namespace System.Windows.Forms
         public int ViasOpacity;
         public int WireOpacity;
         public int CellOpacity;
+        public int RegionOpacity;
         public int ViasPriority;
         public int WirePriority;
         public int CellPriority;
         public int BeaconPriority;
+        public int RegionPriority;
         public bool AutoPriority;
 
         [XmlElement("ForeColor")]
@@ -4859,11 +5114,13 @@ namespace System.Windows.Forms
             ViasOpacity = parent.ViasOpacity;
             WireOpacity = parent.WireOpacity;
             CellOpacity = parent.CellOpacity;
+            RegionOpacity = parent.RegionOpacity;
             ViasPriority = parent.ViasPriority;
             WirePriority = parent.WirePriority;
             CellPriority = parent.CellPriority;
             AutoPriority = parent.AutoPriority;
             BeaconPriority = parent.BeaconPriority;
+            RegionPriority = parent.RegionPriority;
         }
 
         public void LoadSnapshot ( EntityBox parent )
@@ -4937,11 +5194,13 @@ namespace System.Windows.Forms
             parent.ViasOpacity = ViasOpacity;
             parent.WireOpacity = WireOpacity;
             parent.CellOpacity = CellOpacity;
+            parent.RegionOpacity = RegionOpacity;
             parent.ViasPriority = ViasPriority;
             parent.WirePriority = WirePriority;
             parent.CellPriority = CellPriority;
             parent.AutoPriority = AutoPriority;
             parent.BeaconPriority = BeaconPriority;
+            parent.RegionPriority = RegionPriority;
 
             GC.Collect();
             parent.Invalidate();
