@@ -156,14 +156,14 @@ namespace System.Windows.Forms
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        private bool IsEntityWire(Entity entity)
+        public bool IsEntityWire(Entity entity)
         {
             return (entity.Type == EntityType.WireGround ||
                      entity.Type == EntityType.WireInterconnect ||
                      entity.Type == EntityType.WirePower);
         }
 
-        private bool IsEntityVias(Entity entity)
+        public bool IsEntityVias(Entity entity)
         {
             return (entity.Type == EntityType.ViasConnect ||
                      entity.Type == EntityType.ViasFloating ||
@@ -174,7 +174,7 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.ViasPower);
         }
 
-        private bool IsEntityCell(Entity entity)
+        public bool IsEntityCell(Entity entity)
         {
             return (entity.Type == EntityType.CellNot ||
                      entity.Type == EntityType.CellBuffer ||
@@ -190,7 +190,7 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.UnitCustom);
         }
 
-        private bool IsEntityRegion(Entity entity)
+        public bool IsEntityRegion(Entity entity)
         {
             return (entity.Type == EntityType.Region );
         }
@@ -203,7 +203,7 @@ namespace System.Windows.Forms
         // sx = lx * zoom * lambda + scroll
         //
 
-        private PointF ScreenToLambda(int ScreenX, int ScreenY)
+        public PointF ScreenToLambda(int ScreenX, int ScreenY)
         {
             PointF point = new PointF(0.0F, 0.0F);
             float zf = (float)Zoom / 100F;
@@ -214,7 +214,7 @@ namespace System.Windows.Forms
             return point;
         }
 
-        private Point LambdaToScreen(float LambdaX, float LambdaY)
+        public Point LambdaToScreen(float LambdaX, float LambdaY)
         {
             Point point = new Point(0, 0);
             float zf = (float)Zoom / 100F;
@@ -667,7 +667,7 @@ namespace System.Windows.Forms
                   Mode == EntityMode.ViasInout || Mode == EntityMode.ViasInput || Mode == EntityMode.ViasOutput ||
                   Mode == EntityMode.ViasPower) && DrawingBegin)
             {
-                AddVias((EntityType)Mode, e.X, e.Y);
+                AddVias((EntityType)Mode, e.X, e.Y, Color.Black);
 
                 DrawingBegin = false;
             }
@@ -2315,7 +2315,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        private Entity AddVias(EntityType Type, int ScreenX, int ScreenY)
+        public Entity AddVias(EntityType Type, int ScreenX, int ScreenY, Color debugColor)
         {
             Entity item = new Entity();
 
@@ -2325,15 +2325,18 @@ namespace System.Windows.Forms
             // Get rid of clutching viases
             //
 
-            foreach ( Entity entity in _entities )
+            if (debugColor == Color.Black)
             {
-                if ( IsEntityVias(entity) )
+                foreach (Entity entity in _entities)
                 {
-                    float dist = (float)Math.Sqrt( Math.Pow(entity.LambdaX - point.X, 2) + 
-                                                   Math.Pow(entity.LambdaY - point.Y, 2));
+                    if (IsEntityVias(entity))
+                    {
+                        float dist = (float)Math.Sqrt(Math.Pow(entity.LambdaX - point.X, 2) +
+                                                       Math.Pow(entity.LambdaY - point.Y, 2));
 
-                    if (dist <= 1.5F)
-                        return null;
+                        if (dist <= 1.5F)
+                            return null;
+                    }
                 }
             }
 
@@ -2343,7 +2346,7 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
-            item.ColorOverride = ViasOverrideColor;
+            item.ColorOverride = debugColor == Color.Black ? ViasOverrideColor : debugColor;
             item.Priority = ViasPriority;
             item.FontOverride = null;
             item.WidthOverride = 0;
