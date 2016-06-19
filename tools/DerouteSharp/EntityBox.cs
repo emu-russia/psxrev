@@ -123,6 +123,7 @@ namespace System.Windows.Forms
         private bool selectEntitiesAfterAdd;
         private long UnserializeLastStamp = 0;
         private bool grayscale = false;
+        private Point LastRMB = new Point(-1, -1);
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -473,6 +474,17 @@ namespace System.Windows.Forms
 
             if ((timeStampNow - UnserializeLastStamp) < 500)
                 return;
+
+            if ( e.Button == MouseButtons.Right )
+            {
+                LastRMB.X = e.X;
+                LastRMB.Y = e.Y;
+            }
+            else
+            {
+                LastRMB.X = -1;
+                LastRMB.Y = -1;
+            }
 
             if (e.Button == MouseButtons.Right && ScrollingBegin)
             {
@@ -907,6 +919,9 @@ namespace System.Windows.Forms
         {
             int delta;
 
+            LastRMB.X = -1;
+            LastRMB.Y = -1;
+
             if (e.Delta > 0)
                 delta = +10;
             else
@@ -921,7 +936,7 @@ namespace System.Windows.Forms
                     PointF oldMouse = ScreenToLambda(e.X, e.Y);
 
                     // Teh zoom
-                    _zoom += delta;
+                    Zoom += delta;
 
                     // Get new mouse pos in lambda
                     PointF mousePos = ScreenToLambda(e.X, e.Y);
@@ -1021,6 +1036,21 @@ namespace System.Windows.Forms
             gr.FillEllipse( new SolidBrush(Color.Red),
                             centerX - radius, centerY - radius,
                             radius + radius, radius + radius);
+        }
+
+        private void DrawRightMouseCross(Graphics gr)
+        {
+            int crossWidth = 16;
+
+            if (LastRMB.X < 0 || LastRMB.Y < 0)
+                return;
+
+            Pen pen = new Pen(new SolidBrush(Color.Black));
+
+            gr.DrawLine(pen, new Point(LastRMB.X - crossWidth / 2, LastRMB.Y - crossWidth / 2),
+                            new Point(LastRMB.X + crossWidth / 2, LastRMB.Y + crossWidth / 2));
+            gr.DrawLine(pen, new Point(LastRMB.X - crossWidth / 2, LastRMB.Y + crossWidth / 2),
+                            new Point(LastRMB.X + crossWidth / 2, LastRMB.Y - crossWidth / 2));
         }
 
         private void DrawEntity(Entity entity, Graphics gr)
@@ -1792,6 +1822,13 @@ namespace System.Windows.Forms
 #if DEBUG
                 DrawOrigin (gr);
 #endif
+
+                //
+                // RMB
+                //
+
+                if (WholeScene == false)
+                    DrawRightMouseCross(gr);
             }
 
             //
