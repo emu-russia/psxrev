@@ -67,6 +67,7 @@ public class Entity
     private bool _Selected;
     private EntityBox parentBox = null;
     private Color _ColorOverride;
+    private Font _FontOverride;
     private TextAlignment labelAlignment;
     private int _Priority;
     private List<PointF> _pathPoints = null;
@@ -192,6 +193,27 @@ public class Entity
     {
         get { return ColorTranslator.ToHtml(_ColorOverride); }
         set { _ColorOverride = ColorTranslator.FromHtml(value); }
+    }
+
+    [Category("Entity Properties")]
+    [Description("Set font other than null to override it.")]
+    [XmlIgnore]
+    public Font FontOverride
+    {
+        get { return _FontOverride; }
+        set
+        {
+            _FontOverride = value;
+            if (parentBox != null) parentBox.Invalidate();
+        }
+    }
+
+    [XmlElement("FontOverride")]
+    [Browsable(false)]
+    public string FontGridHtml
+    {
+        get { return FontXmlConverter.ConvertToString(_FontOverride); }
+        set { _FontOverride = FontXmlConverter.ConvertToFont(value); }
     }
 
     [Category("Entity Properties")]

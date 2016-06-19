@@ -7,10 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using System.Runtime.InteropServices;
+
 namespace DerouteSharp
 {
     public partial class Form1 : Form
     {
+        [DllImport("kernel32")]
+        static extern bool AllocConsole();
+
         public Form1()
         {
             InitializeComponent();
@@ -32,6 +37,10 @@ namespace DerouteSharp
             entityBox1.OnFrameDone += entityBox1_OnFrameDone;
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
+
+#if DEBUG
+            AllocConsole ();
+#endif
         }
 
         void entityBox1_OnFrameDone(object sender, long ms_time, EventArgs e)

@@ -104,6 +104,7 @@ namespace System.Windows.Forms
         private bool hideWires;
         private bool hideCells;
         private bool hideGrid;
+        private bool hideRegions;
         private PropertyGrid entityGrid;
         private List<Entity> selected;
         private float draggingDist;
@@ -127,7 +128,6 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnZoomChanged = null;
         public event EntityBoxEventHandler OnEntityCountChanged = null;
         public event EntityBoxEventHandler OnLastOperation = null;
-        public event EntityBoxEventHandler OnDebug = null;
         public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
         public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
@@ -916,7 +916,22 @@ namespace System.Windows.Forms
             {
                 case EntityMode.Selection:
                 default:
-                    Zoom += delta;
+
+                    // Get old mouse pos in lambda space
+                    PointF oldMouse = ScreenToLambda(e.X, e.Y);
+
+                    // Teh zoom
+                    _zoom += delta;
+
+                    // Get new mouse pos in lambda
+                    PointF mousePos = ScreenToLambda(e.X, e.Y);
+
+                    // Adjust Scroll
+                    _ScrollX += mousePos.X - oldMouse.X;
+                    _ScrollY += mousePos.Y - oldMouse.Y;
+
+                    Invalidate();
+
                     break;
 
                 case EntityMode.ImageLayer0:
@@ -992,6 +1007,20 @@ namespace System.Windows.Forms
                     gr.FillRectangle(Brushes.LightGray, x, y, 1, 1);
                 }
             }
+        }
+
+        private void DrawOrigin (Graphics gr)
+        {
+            float zf = (float)Zoom / 100.0F;
+            Point point = LambdaToScreen(0, 0);
+
+            int centerX = point.X;
+            int centerY = point.Y;
+            int radius = (int)((float)ViasBaseSize * zf);
+
+            gr.FillEllipse( new SolidBrush(Color.Red),
+                            centerX - radius, centerY - radius,
+                            radius + radius, radius + radius);
         }
 
         private void DrawEntity(Entity entity, Graphics gr)
@@ -1099,7 +1128,11 @@ namespace System.Windows.Forms
                         if (align == TextAlignment.GlobalSettings)
                             align = ViasTextAlignment;
 
-                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+                        Font font = Font;
+                        if (entity.FontOverride != null)
+                            font = entity.FontOverride;
+
+                        SizeF textSize = gr.MeasureString(entity.Label, font);
 
                         Point origin = new Point(centerX, centerY);
 
@@ -1146,7 +1179,7 @@ namespace System.Windows.Forms
 
                         gr.TranslateTransform(origin.X, origin.Y);
                         gr.ScaleTransform(zf, zf);
-                        gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), 0, 0);
+                        gr.DrawString(entity.Label, font, new SolidBrush(ForeColor), 0, 0);
                         gr.ResetTransform();
                     }
 
@@ -1228,7 +1261,11 @@ namespace System.Windows.Forms
                         int wireLength = (int)(Math.Sqrt(Math.Pow(end.X - start.X, 2) +
                                                          Math.Pow(end.Y - start.Y, 2)) / (double)zf);
 
-                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+                        Font font = Font;
+                        if (entity.FontOverride != null)
+                            font = entity.FontOverride;
+
+                        SizeF textSize = gr.MeasureString(entity.Label, font);
 
                         int origin;
 
@@ -1257,7 +1294,7 @@ namespace System.Windows.Forms
                         gr.TranslateTransform(start.X, start.Y);
                         gr.RotateTransform((float)(180.0F * alpha / Math.PI));
                         gr.ScaleTransform(zf, zf);
-                        gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor),
+                        gr.DrawString(entity.Label, font, new SolidBrush(ForeColor),
                                        origin, -textSize.Height / 2);
                         gr.ResetTransform();
                     }
@@ -1338,7 +1375,11 @@ namespace System.Windows.Forms
 
                     if (entity.Label != null && entity.Label.Length > 0 && Zoom > 50)
                     {
-                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+                        Font font = Font;
+                        if (entity.FontOverride != null)
+                            font = entity.FontOverride;
+
+                        SizeF textSize = gr.MeasureString(entity.Label, font);
 
                         Point origin = new Point(0, 0);
 
@@ -1386,7 +1427,7 @@ namespace System.Windows.Forms
 
                         gr.TranslateTransform(topLeft.X, topLeft.Y);
                         gr.ScaleTransform(zf, zf);
-                        gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), origin.X, origin.Y);
+                        gr.DrawString(entity.Label, font, new SolidBrush(ForeColor), origin.X, origin.Y);
                         gr.ResetTransform();
                     }
 
@@ -1445,14 +1486,18 @@ namespace System.Windows.Forms
 
                     if (entity.Label != null && entity.Label.Length > 0)
                     {
-                        SizeF textSize = gr.MeasureString(entity.Label, Font);
+                        Font font = Font;
+                        if (entity.FontOverride != null)
+                            font = entity.FontOverride;
+
+                        SizeF textSize = gr.MeasureString(entity.Label, font);
 
                         Point textOrigin = new Point(beaconOrigin.X - (int)(textSize.Width * zf / 2F),
                                                        imageOrigin.Y - (int)(textSize.Height * zf));
 
                         gr.TranslateTransform(textOrigin.X, textOrigin.Y);
                         gr.ScaleTransform(zf, zf);
-                        gr.DrawString(entity.Label, Font, new SolidBrush(ForeColor), 0, 0);
+                        gr.DrawString(entity.Label, font, new SolidBrush(ForeColor), 0, 0);
                         gr.ResetTransform();
                     }
 
@@ -1463,6 +1508,9 @@ namespace System.Windows.Forms
                 //
 
                 case EntityType.Region:
+
+                    if (hideRegions)
+                        break;
 
                     Brush brush = new SolidBrush(Color.FromArgb(RegionOpacity, entity.ColorOverride));
 
@@ -1493,7 +1541,45 @@ namespace System.Windows.Forms
 
                     gr.FillPath(brush, gp);
 
-                    // TODO: Label
+                    //
+                    // Label
+                    //
+
+                    if (entity.Label != null && entity.Label.Length > 0)
+                    {
+                        Point p0 = LambdaToScreen(entity.PathPoints[0].X, entity.PathPoints[0].Y);
+                        Point p1 = LambdaToScreen(entity.PathPoints[1].X, entity.PathPoints[1].Y);
+
+                        Point start = new Point(p0.X, p0.Y);
+                        Point end = new Point(p1.X, p1.Y);
+                        Point temp;
+
+                        if (p0.X == p1.X && p0.Y == p1.Y)
+                            break;
+
+                        if (end.X < start.X)
+                        {
+                            temp = start;
+                            start = end;
+                            end = temp;
+                        }
+
+                        int a = end.Y - start.Y;
+                        int b = end.X - start.X;
+                        float Tga = (float)a / (float)b;
+                        float alpha = (float)Math.Atan(Tga);
+
+                        Font font = Font;
+                        if (entity.FontOverride != null)
+                            font = entity.FontOverride;
+
+                        gr.TranslateTransform(start.X, start.Y);
+                        gr.RotateTransform((float)(180.0F * alpha / Math.PI));
+                        gr.ScaleTransform(zf, zf);
+                        gr.DrawString(entity.Label, font, new SolidBrush(ForeColor),
+                                       0, 0);
+                        gr.ResetTransform();
+                    }
 
                     break;
             }
@@ -1698,6 +1784,14 @@ namespace System.Windows.Forms
 
                 if (WholeScene == false)
                     DrawLambdaScale(gr);
+
+                //
+                // Origin
+                //
+
+#if DEBUG
+                DrawOrigin (gr);
+#endif
             }
 
             //
@@ -2076,6 +2170,13 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
+        public bool HideRegions
+        {
+            get { return hideRegions; }
+            set { hideRegions = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
         public Color SelectionBoxColor
         {
             get { return selectionBoxColor; }
@@ -2144,6 +2245,7 @@ namespace System.Windows.Forms
             item.Type = EntityType.Beacon;
             item.ColorOverride = Color.Black;
             item.Priority = BeaconPriority;
+            item.FontOverride = null;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -2190,6 +2292,7 @@ namespace System.Windows.Forms
             item.Type = Type;
             item.ColorOverride = Color.Black;
             item.Priority = ViasPriority;
+            item.FontOverride = null;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -2232,6 +2335,7 @@ namespace System.Windows.Forms
             item.Type = Type;
             item.ColorOverride = Color.Black;
             item.Priority = WirePriority;
+            item.FontOverride = null;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -2306,6 +2410,7 @@ namespace System.Windows.Forms
             item.Type = Type;
             item.ColorOverride = Color.Black;
             item.Priority = CellPriority;
+            item.FontOverride = null;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -4695,18 +4800,19 @@ namespace System.Windows.Forms
             // Add new region entity
             //
 
-            Entity region = new Entity();
+            Entity item = new Entity();
 
-            region.Type = EntityType.Region;
-            region.Label = "Region";
-            region.LabelAlignment = TextAlignment.GlobalSettings;
-            region.Priority = RegionPriority;
-            region.Selected = false;
-            region.PathPoints = path;
-            region.ColorOverride = Color.Green;
-            region.SetParent (this);
+            item.Type = EntityType.Region;
+            item.Label = "Region";
+            item.LabelAlignment = TextAlignment.GlobalSettings;
+            item.Priority = RegionPriority;
+            item.Selected = false;
+            item.PathPoints = path;
+            item.ColorOverride = Color.Green;
+            item.FontOverride = null;
+            item.SetParent(this);
 
-            _entities.Add ( region );
+            _entities.Add(item);
             SortEntities();
 
             Invalidate ();
@@ -4797,6 +4903,7 @@ namespace System.Windows.Forms
         public bool hideWires;
         public bool hideCells;
         public bool hideGrid;
+        public bool hideRegions;
         [XmlIgnore] public Color selectionBoxColor;
         [XmlIgnore] public Color ForeColor;
         public int[] imageOpacity = new int[3];
@@ -5069,6 +5176,7 @@ namespace System.Windows.Forms
             hideWires = parent.HideWires;
             hideCells = parent.HideCells;
             hideGrid = parent.HideGrid;
+            hideRegions = parent.HideRegions;
             selectionBoxColor = parent.SelectionBoxColor;
             ForeColor = parent.ForeColor;
             imageOpacity[0] = parent.ImageOpacity0;
@@ -5149,6 +5257,7 @@ namespace System.Windows.Forms
             parent.HideWires = hideWires;
             parent.HideCells = hideCells;
             parent.HideGrid = hideGrid;
+            parent.HideRegions = hideRegions;
             parent.SelectionBoxColor = selectionBoxColor;
             parent.ForeColor = ForeColor;
             parent.ImageOpacity0 = imageOpacity[0];

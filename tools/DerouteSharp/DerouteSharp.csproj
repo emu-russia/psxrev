@@ -65,6 +65,7 @@
     <Compile Include="EntityBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FontXmlConverter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
