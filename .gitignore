@@ -16,3 +16,4 @@ tools/DerouteSharp/.vs
 *.iobj
 *.suo
 m1_cells/3mux
+cells_traced

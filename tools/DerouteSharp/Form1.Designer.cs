@@ -42,6 +42,12 @@
             this.saveWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllViasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyCtrlCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteCtrlVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +63,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.button6 = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button5 = new System.Windows.Forms.Button();
@@ -68,6 +75,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -118,6 +126,7 @@
             this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
             this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,15 +152,7 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.selectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllViasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
-            this.entityBox1 = new System.Windows.Forms.EntityBox();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.unloadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -186,6 +187,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadImageToolStripMenuItem,
+            this.unloadImageToolStripMenuItem,
             this.saveSceneAsImageToolStripMenuItem,
             this.toolStripSeparator1,
             this.loadEntitiesToolStripMenuItem,
@@ -262,6 +264,51 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // selectionToolStripMenuItem
+            // 
+            this.selectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectAllViasesToolStripMenuItem,
+            this.selectAllWiresToolStripMenuItem,
+            this.selectAllCellsToolStripMenuItem,
+            this.toolStripSeparator10,
+            this.selectAllToolStripMenuItem});
+            this.selectionToolStripMenuItem.Name = "selectionToolStripMenuItem";
+            this.selectionToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
+            this.selectionToolStripMenuItem.Text = "Selection";
+            // 
+            // selectAllViasesToolStripMenuItem
+            // 
+            this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
+            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
+            this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
+            // 
+            // selectAllWiresToolStripMenuItem
+            // 
+            this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
+            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
+            this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
+            // 
+            // selectAllCellsToolStripMenuItem
+            // 
+            this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
+            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
+            this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -403,6 +450,85 @@
             this.splitContainer2.SplitterDistance = 414;
             this.splitContainer2.TabIndex = 0;
             // 
+            // entityBox1
+            // 
+            this.entityBox1.AutoPriority = true;
+            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.entityBox1.BeaconPriority = 4;
+            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
+            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
+            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
+            this.entityBox1.CellLatchColor = System.Drawing.Color.SpringGreen;
+            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
+            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
+            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellOpacity = 128;
+            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox1.CellPriority = 1;
+            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox1.Grayscale = false;
+            this.entityBox1.HideCells = false;
+            this.entityBox1.HideGrid = false;
+            this.entityBox1.HideImage = false;
+            this.entityBox1.HideRegions = false;
+            this.entityBox1.HideVias = false;
+            this.entityBox1.HideWires = false;
+            this.entityBox1.ImageOpacity0 = 100;
+            this.entityBox1.ImageOpacity1 = 100;
+            this.entityBox1.ImageOpacity2 = 100;
+            this.entityBox1.Lambda = 5F;
+            this.entityBox1.Location = new System.Drawing.Point(0, 0);
+            this.entityBox1.LockScroll0 = false;
+            this.entityBox1.LockScroll1 = false;
+            this.entityBox1.LockScroll2 = false;
+            this.entityBox1.LockZoom0 = false;
+            this.entityBox1.LockZoom1 = false;
+            this.entityBox1.LockZoom2 = false;
+            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
+            this.entityBox1.Name = "entityBox1";
+            this.entityBox1.RegionOpacity = 128;
+            this.entityBox1.RegionPriority = 0;
+            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
+            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
+            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
+            this.entityBox1.ScrollX = 0F;
+            this.entityBox1.ScrollY = 0F;
+            this.entityBox1.SelectEntitiesAfterAdd = true;
+            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
+            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
+            this.entityBox1.Size = new System.Drawing.Size(743, 414);
+            this.entityBox1.TabIndex = 0;
+            this.entityBox1.Text = "entityBox1";
+            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
+            this.entityBox1.ViasBaseSize = 4;
+            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox1.ViasOpacity = 255;
+            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPriority = 3;
+            this.entityBox1.ViasShape = ViasShape.Round;
+            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
+            this.entityBox1.WireBaseSize = 5;
+            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox1.WireOpacity = 128;
+            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
+            this.entityBox1.WirePriority = 2;
+            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Zoom = 100;
+            this.entityBox1.ZoomImage0 = 100;
+            this.entityBox1.ZoomImage1 = 100;
+            this.entityBox1.ZoomImage2 = 100;
+            // 
             // button6
             // 
             this.button6.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -534,6 +660,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Scene Control";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.SelectedObject = this.entityBox1;
+            this.propertyGrid1.Size = new System.Drawing.Size(279, 446);
+            this.propertyGrid1.TabIndex = 1;
             // 
             // tabPage3
             // 
@@ -980,6 +1115,16 @@
             this.toolStripButton4.ToolTipText = "Draw wires between selected viases";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
+            // toolStripButton13
+            // 
+            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
+            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton13.Name = "toolStripButton13";
+            this.toolStripButton13.Size = new System.Drawing.Size(36, 36);
+            this.toolStripButton13.Text = "Draw region between selected viases";
+            this.toolStripButton13.Click += new System.EventHandler(this.toolStripButton13_Click);
+            // 
             // toolStripButton6
             // 
             this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1182,145 +1327,12 @@
             this.toolStripStatusLabel14.Size = new System.Drawing.Size(36, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
             // 
-            // selectionToolStripMenuItem
+            // unloadImageToolStripMenuItem
             // 
-            this.selectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectAllViasesToolStripMenuItem,
-            this.selectAllWiresToolStripMenuItem,
-            this.selectAllCellsToolStripMenuItem,
-            this.toolStripSeparator10,
-            this.selectAllToolStripMenuItem});
-            this.selectionToolStripMenuItem.Name = "selectionToolStripMenuItem";
-            this.selectionToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
-            this.selectionToolStripMenuItem.Text = "Selection";
-            // 
-            // selectAllViasesToolStripMenuItem
-            // 
-            this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
-            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
-            this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
-            // 
-            // selectAllWiresToolStripMenuItem
-            // 
-            this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
-            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
-            this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
-            // 
-            // selectAllCellsToolStripMenuItem
-            // 
-            this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
-            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
-            this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
-            // 
-            // selectAllToolStripMenuItem
-            // 
-            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
-            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
-            // 
-            // toolStripButton13
-            // 
-            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
-            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton13.Name = "toolStripButton13";
-            this.toolStripButton13.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton13.Text = "Draw region between selected viases";
-            this.toolStripButton13.Click += new System.EventHandler(this.toolStripButton13_Click);
-            // 
-            // entityBox1
-            // 
-            this.entityBox1.AutoPriority = true;
-            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.entityBox1.BeaconPriority = 4;
-            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
-            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
-            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
-            this.entityBox1.CellLatchColor = System.Drawing.Color.SpringGreen;
-            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
-            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
-            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellOpacity = 128;
-            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
-            this.entityBox1.CellPriority = 1;
-            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
-            this.entityBox1.Grayscale = false;
-            this.entityBox1.HideCells = false;
-            this.entityBox1.HideGrid = false;
-            this.entityBox1.HideImage = false;
-            this.entityBox1.HideVias = false;
-            this.entityBox1.HideWires = false;
-            this.entityBox1.ImageOpacity0 = 100;
-            this.entityBox1.ImageOpacity1 = 100;
-            this.entityBox1.ImageOpacity2 = 100;
-            this.entityBox1.Lambda = 5F;
-            this.entityBox1.Location = new System.Drawing.Point(0, 0);
-            this.entityBox1.LockScroll0 = false;
-            this.entityBox1.LockScroll1 = false;
-            this.entityBox1.LockScroll2 = false;
-            this.entityBox1.LockZoom0 = false;
-            this.entityBox1.LockZoom1 = false;
-            this.entityBox1.LockZoom2 = false;
-            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
-            this.entityBox1.Name = "entityBox1";
-            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
-            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
-            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
-            this.entityBox1.ScrollX = 0F;
-            this.entityBox1.ScrollY = 0F;
-            this.entityBox1.SelectEntitiesAfterAdd = true;
-            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
-            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(743, 414);
-            this.entityBox1.TabIndex = 0;
-            this.entityBox1.Text = "entityBox1";
-            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox1.ViasBaseSize = 4;
-            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
-            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
-            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
-            this.entityBox1.ViasOpacity = 255;
-            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
-            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPriority = 3;
-            this.entityBox1.ViasShape = ViasShape.Round;
-            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox1.WireBaseSize = 5;
-            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
-            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
-            this.entityBox1.WireOpacity = 128;
-            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
-            this.entityBox1.WirePriority = 2;
-            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Zoom = 100;
-            this.entityBox1.ZoomImage0 = 100;
-            this.entityBox1.ZoomImage1 = 100;
-            this.entityBox1.ZoomImage2 = 100;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.SelectedObject = this.entityBox1;
-            this.propertyGrid1.Size = new System.Drawing.Size(279, 446);
-            this.propertyGrid1.TabIndex = 1;
+            this.unloadImageToolStripMenuItem.Name = "unloadImageToolStripMenuItem";
+            this.unloadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.unloadImageToolStripMenuItem.Text = "Unload Image";
+            this.unloadImageToolStripMenuItem.Click += new System.EventHandler(this.unloadImageToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1484,6 +1496,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton13;
+        private System.Windows.Forms.ToolStripMenuItem unloadImageToolStripMenuItem;
     }
 }
 

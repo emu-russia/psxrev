@@ -612,8 +612,17 @@ namespace System.Windows.Forms
                                     CatchSomething = true;
                                 }
                             }
-
-                            // Regions are selected by HitTest only.
+                            else if (IsEntityRegion(ent) && ent.Selected == false)
+                            {
+                                foreach ( PointF point in ent.PathPoints )
+                                {
+                                    if ( rect.Contains(point))
+                                    {
+                                        ent.Selected = true;
+                                        CatchSomething = true;
+                                    }
+                                }
+                            }
                         }
 
                         if (CatchSomething == true)
@@ -1110,7 +1119,10 @@ namespace System.Windows.Forms
 
                     centerX = point.X;
                     centerY = point.Y;
-                    radius = (int)((float)ViasBaseSize * zf);
+                    int viasSize = ViasBaseSize;
+                    if (entity.WidthOverride > 0)
+                        viasSize = entity.WidthOverride;
+                    radius = (int)((float)viasSize * zf);
 
                     if (ViasShape == ViasShape.Round)
                     {
@@ -1248,18 +1260,22 @@ namespace System.Windows.Forms
                     endX = point2.X;
                     endY = point2.Y;
 
+                    int wireSize = WireBaseSize;
+                    if (entity.WidthOverride > 0)
+                        wireSize = entity.WidthOverride;
+
                     if (entity.Selected == true)
                     {
-                        gr.DrawLine(new Pen(SelectionColor, (float)WireBaseSize * zf + (int)Lambda),
+                        gr.DrawLine(new Pen(SelectionColor, (float)wireSize * zf + (int)Lambda),
                                      startX, startY,
                                      endX, endY);
                     }
 
                     //gr.CompositingQuality = CompositingQuality;
                     //gr.CompositingMode = CompositingMode.SourceCopy;
-                    
 
-                    gr.DrawLine(new Pen(wireColor, (float)WireBaseSize * zf),
+
+                    gr.DrawLine(new Pen(wireColor, (float)wireSize * zf),
                                  startX, startY,
                                  endX, endY);
 
@@ -2327,9 +2343,10 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
-            item.ColorOverride = Color.Black;
+            item.ColorOverride = ViasOverrideColor;
             item.Priority = ViasPriority;
             item.FontOverride = null;
+            item.WidthOverride = 0;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -2370,9 +2387,10 @@ namespace System.Windows.Forms
             item.LambdaWidth = 1;
             item.LambdaHeight = 1;
             item.Type = Type;
-            item.ColorOverride = Color.Black;
+            item.ColorOverride = WireOverrideColor;
             item.Priority = WirePriority;
             item.FontOverride = null;
+            item.WidthOverride = 0;
             item.SetParent(this);
 
             _entities.Add(item);
@@ -2445,7 +2463,7 @@ namespace System.Windows.Forms
             item.LambdaWidth = size.X;
             item.LambdaHeight = size.Y;
             item.Type = Type;
-            item.ColorOverride = Color.Black;
+            item.ColorOverride = CellOverrideColor;
             item.Priority = CellPriority;
             item.FontOverride = null;
             item.SetParent(this);
@@ -3024,6 +3042,10 @@ namespace System.Windows.Forms
         private Color _UnitMemoryColor;
         private Color _UnitCustomColor;
         private Color _SelectionColor;
+        private Color _ViasOverrideColor;
+        private Color _WireOverrideColor;
+        private Color _CellOverrideColor;
+        private Color _RegionOverrideColor;
         private ViasShape _viasShape;
         private int _viasBaseSize;
         private int _wireBaseSize;
@@ -3077,6 +3099,11 @@ namespace System.Windows.Forms
             _UnitCustomColor = Color.Snow;
 
             _SelectionColor = Color.LimeGreen;
+
+            _ViasOverrideColor = Color.Black;
+            _WireOverrideColor = Color.Black;
+            _CellOverrideColor = Color.Black;
+            _RegionOverrideColor = Color.Black;
 
             _ViasOpacity = 255;
             _WireOpacity = 128;
@@ -3292,6 +3319,34 @@ namespace System.Windows.Forms
         {
             get { return _SelectionColor; }
             set { _SelectionColor = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public Color ViasOverrideColor
+        {
+            get { return _ViasOverrideColor; }
+            set { _ViasOverrideColor = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public Color WireOverrideColor
+        {
+            get { return _WireOverrideColor; }
+            set { _WireOverrideColor = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public Color CellOverrideColor
+        {
+            get { return _CellOverrideColor; }
+            set { _CellOverrideColor = value; Invalidate(); }
+        }
+
+        [Category("Entity Appearance")]
+        public Color RegionOverrideColor
+        {
+            get { return _RegionOverrideColor; }
+            set { _RegionOverrideColor = value; Invalidate(); }
         }
 
         [Category("Entity Appearance")]
@@ -3751,6 +3806,32 @@ namespace System.Windows.Forms
                     break;
                 case EntityMode.ImageLayer2:
                     Image2 = image;
+                    break;
+            }
+        }
+
+        public void UnloadImage ()
+        {
+            switch (drawMode)
+            {
+                case EntityMode.ImageLayer0:
+                default:
+                    _imageOrig[0].Dispose();
+                    _imageOrig[0] = null;
+                    GC.Collect();
+                    Invalidate();
+                    break;
+                case EntityMode.ImageLayer1:
+                    _imageOrig[1].Dispose();
+                    _imageOrig[1] = null;
+                    GC.Collect();
+                    Invalidate();
+                    break;
+                case EntityMode.ImageLayer2:
+                    _imageOrig[2].Dispose();
+                    _imageOrig[2] = null;
+                    GC.Collect();
+                    Invalidate();
                     break;
             }
         }
@@ -4840,12 +4921,12 @@ namespace System.Windows.Forms
             Entity item = new Entity();
 
             item.Type = EntityType.Region;
-            item.Label = "Region";
+            item.Label = "";
             item.LabelAlignment = TextAlignment.GlobalSettings;
             item.Priority = RegionPriority;
             item.Selected = false;
             item.PathPoints = path;
-            item.ColorOverride = Color.Green;
+            item.ColorOverride = RegionOverrideColor;
             item.FontOverride = null;
             item.SetParent(this);
 
@@ -4971,6 +5052,10 @@ namespace System.Windows.Forms
         [XmlIgnore] public Color UnitMemoryColor;
         [XmlIgnore] public Color UnitCustomColor;
         [XmlIgnore] public Color SelectionColor;
+        [XmlIgnore] public Color ViasOverrideColor;
+        [XmlIgnore] public Color WireOverrideColor;
+        [XmlIgnore] public Color CellOverrideColor;
+        [XmlIgnore] public Color RegionOverrideColor;
         public ViasShape viasShape;
         public int viasBaseSize;
         public int wireBaseSize;
@@ -5175,6 +5260,35 @@ namespace System.Windows.Forms
             set { SelectionColor = ColorTranslator.FromHtml(value); }
         }
 
+        [XmlElement("ViasOverrideColor")]
+        [Browsable(false)]
+        public string ViasOverrideColorHtml
+        {
+            get { return ColorTranslator.ToHtml(ViasOverrideColor); }
+            set { ViasOverrideColor = ColorTranslator.FromHtml(value); }
+        }
+        [XmlElement("WireOverrideColor")]
+        [Browsable(false)]
+        public string WireOverrideColorHtml
+        {
+            get { return ColorTranslator.ToHtml(WireOverrideColor); }
+            set { WireOverrideColor = ColorTranslator.FromHtml(value); }
+        }
+        [XmlElement("CellOverrideColor")]
+        [Browsable(false)]
+        public string CellOverrideColorHtml
+        {
+            get { return ColorTranslator.ToHtml(CellOverrideColor); }
+            set { CellOverrideColor = ColorTranslator.FromHtml(value); }
+        }
+        [XmlElement("RegionOverrideColor")]
+        [Browsable(false)]
+        public string RegionOverrideColorHtml
+        {
+            get { return ColorTranslator.ToHtml(RegionOverrideColor); }
+            set { RegionOverrideColor = ColorTranslator.FromHtml(value); }
+        }
+
         public EntityBoxWorkspace()
         {
         }
@@ -5250,6 +5364,10 @@ namespace System.Windows.Forms
             UnitMemoryColor = parent.UnitMemoryColor;
             UnitCustomColor = parent.UnitCustomColor;
             SelectionColor = parent.SelectionColor;
+            ViasOverrideColor = parent.ViasOverrideColor;
+            WireOverrideColor = parent.WireOverrideColor;
+            CellOverrideColor = parent.CellOverrideColor;
+            RegionOverrideColor = parent.RegionOverrideColor;
             viasShape = parent.ViasShape;
             viasBaseSize = parent.ViasBaseSize;
             wireBaseSize = parent.WireBaseSize;
@@ -5331,6 +5449,10 @@ namespace System.Windows.Forms
             parent.UnitMemoryColor = UnitMemoryColor;
             parent.UnitCustomColor = UnitCustomColor;
             parent.SelectionColor = SelectionColor;
+            parent.ViasOverrideColor = ViasOverrideColor;
+            parent.WireOverrideColor = WireOverrideColor;
+            parent.CellOverrideColor = CellOverrideColor;
+            parent.RegionOverrideColor = RegionOverrideColor;
             parent.ViasShape = viasShape;
             parent.ViasBaseSize = viasBaseSize;
             parent.WireBaseSize = wireBaseSize;

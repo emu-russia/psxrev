@@ -73,6 +73,7 @@ public class Entity
     private List<PointF> _pathPoints = null;
     [XmlIgnore]
     public List<PointF> SavedPathPoints = null;
+    private int _WidthOverride;         // vias / wire
 
     [XmlIgnore]
     public long SelectTimeStamp;
@@ -249,6 +250,17 @@ public class Entity
         set
         {
             _pathPoints = value;
+            if (parentBox != null) parentBox.Invalidate();
+        }
+    }
+
+    [Category("Entity Properties")]
+    public int WidthOverride
+    {
+        get { return _WidthOverride; }
+        set
+        {
+            _WidthOverride = value;
             if (parentBox != null) parentBox.Invalidate();
         }
     }

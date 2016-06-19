@@ -699,5 +699,10 @@ namespace DerouteSharp
         {
             entityBox1.DrawRegionBetweenSelectedViases();
         }
+
+        private void unloadImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.UnloadImage();
+        }
     }       // Form1
 }
