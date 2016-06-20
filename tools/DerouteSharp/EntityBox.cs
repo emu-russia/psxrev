@@ -340,7 +340,7 @@ namespace System.Windows.Forms
                     if (PointInPoly(rect, point) == true)
                         return entity;
                 }
-                else if ( IsEntityRegion(entity))
+                else if (IsEntityRegion(entity) && HideRegions == false )
                 {
                     PointF[] poly = new PointF[entity.PathPoints.Count];
 
@@ -580,12 +580,15 @@ namespace System.Windows.Forms
                     {
                         foreach (Entity ent in _entities)
                         {
+                            if ( ent.Selected )
+                                continue;
+
                             if (IsEntityCell(ent))
                             {
                                 RectangleF rect2 = new RectangleF(ent.LambdaX, ent.LambdaY,
                                                                    ent.LambdaWidth, ent.LambdaHeight);
 
-                                if (rect.IntersectsWith(rect2) && ent.Selected == false)
+                                if (rect.IntersectsWith(rect2))
                                 {
                                     ent.Selected = true;
                                     CatchSomething = true;
@@ -596,7 +599,7 @@ namespace System.Windows.Forms
                                 PointF point1 = new PointF(ent.LambdaX, ent.LambdaY);
                                 PointF point2 = new PointF(ent.LambdaEndX, ent.LambdaEndY);
 
-                                if (LineIntersectsRect(point1, point2, rect) && ent.Selected == false)
+                                if (LineIntersectsRect(point1, point2, rect))
                                 {
                                     ent.Selected = true;
                                     CatchSomething = true;
@@ -606,13 +609,13 @@ namespace System.Windows.Forms
                             {
                                 PointF point1 = new PointF(ent.LambdaX, ent.LambdaY);
 
-                                if (rect.Contains(point1) && ent.Selected == false)
+                                if (rect.Contains(point1))
                                 {
                                     ent.Selected = true;
                                     CatchSomething = true;
                                 }
                             }
-                            else if (IsEntityRegion(ent) && ent.Selected == false)
+                            else if (IsEntityRegion(ent))
                             {
                                 foreach ( PointF point in ent.PathPoints )
                                 {

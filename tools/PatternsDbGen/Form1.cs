@@ -51,6 +51,8 @@ namespace PatternsDbGen
         {
 #if DEBUG
             entityBox1.AssociateSelectionPropertyGrid(propertyGrid1);
+
+            entityBox1.ViasBaseSize = 1;
 #else
             propertyGrid1.Hide();
             splitContainer1.SplitterDistance = Width;
@@ -121,7 +123,11 @@ namespace PatternsDbGen
 
             Console.WriteLine("--- Start wave scan ---");
 
+            cells.Clear();
+
             GenSingleCell(origin, origin, stop, 0, -1);
+
+            Console.WriteLine("--- Wave scan stop ---");
 
             //
             // Generate patterns_db Text
@@ -157,6 +163,13 @@ namespace PatternsDbGen
             Random rand = new Random();
             byte[] color = new byte[3];
             rand.NextBytes(color);
+
+            if (color[0] < 15)
+                color[0] = 15;
+            if (color[1] < 15)
+                color[1] = 15;
+            if (color[2] < 15)
+                color[2] = 15;
 
             for (float r = keypointPolar.X; r < stopPolar.X; r += ScanWindowWidth)
             {
@@ -257,7 +270,6 @@ namespace PatternsDbGen
             // Insert in list
             //
 
-            // Now I have synaptic depression here ...
             cell.labeledPos = new PointF(labeled.LambdaX, labeled.LambdaY);
 
             cell.Label = labeled.Label;
@@ -478,7 +490,7 @@ namespace PatternsDbGen
 
             foreach (Entity entity in entityBox1._entities)
             {
-                if (!entityBox1.IsEntityVias(entity))
+                if (entity.Type != EntityType.ViasFloating)
                     continue;
 
                 if (entity.LambdaX < min)
@@ -494,7 +506,7 @@ namespace PatternsDbGen
 
             foreach (Entity entity in entityBox1._entities)
             {
-                if (!entityBox1.IsEntityVias(entity))
+                if (entity.Type != EntityType.ViasFloating)
                     continue;
 
                 if (entity.LambdaX > max)
@@ -510,7 +522,7 @@ namespace PatternsDbGen
 
             foreach (Entity entity in entityBox1._entities)
             {
-                if (!entityBox1.IsEntityVias(entity))
+                if (entity.Type != EntityType.ViasFloating)
                     continue;
 
                 if (entity.LambdaY < min)
@@ -526,7 +538,7 @@ namespace PatternsDbGen
 
             foreach (Entity entity in entityBox1._entities)
             {
-                if (!entityBox1.IsEntityVias(entity))
+                if (entity.Type != EntityType.ViasFloating)
                     continue;
 
                 if (entity.LambdaY > max)
