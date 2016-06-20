@@ -34,6 +34,8 @@ namespace PatternsDbGen
             public List<Vias> vias;
             public EntityType Type;
             public PointF labeledPos;
+            public int PCount;
+            public int NCount;
         }
 
         public Form1()
@@ -47,7 +49,12 @@ namespace PatternsDbGen
 
         private void Form1_Load(object sender, EventArgs e)
         {
+#if DEBUG
             entityBox1.AssociateSelectionPropertyGrid(propertyGrid1);
+#else
+            propertyGrid1.Hide();
+            splitContainer1.SplitterDistance = Width;
+#endif
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -228,9 +235,12 @@ namespace PatternsDbGen
 
             foreach ( Entity vias in entityBox1._entities )
             {
-                if ( vias.Type == EntityType.ViasInput || 
+                PointF point = new PointF(vias.LambdaX, vias.LambdaY);
+
+                if ( (vias.Type == EntityType.ViasInput || 
                      vias.Type == EntityType.ViasOutput || 
-                     vias.Type == EntityType.ViasInout )
+                     vias.Type == EntityType.ViasInout) && 
+                     cellArea.Contains(point) )
                 {
                     Vias myVias = new Vias();
 
@@ -253,7 +263,19 @@ namespace PatternsDbGen
             cell.Label = labeled.Label;
             cell.Type = CellTypeByLabel(cell.Label);
 
+            // Count transistors
+            TransCount(cellArea, cell);
+
             cells.Add(cell);
+
+            Console.WriteLine ( cell.Label + " vias collection:" );
+
+            foreach ( Vias vias in cell.vias )
+            {
+                Console.WriteLine( vias.Type.ToString() + 
+                                   " x: " + vias.posOffset.X.ToString() +
+                                   ", y: " + vias.posOffset.Y.ToString());
+            }
 
             //
             // Propagate keypoints
@@ -269,6 +291,185 @@ namespace PatternsDbGen
             GenSingleCell(origin, kp[0], stop, Tier + 1, 0);
             GenSingleCell(origin, kp[1], stop, Tier + 1, 1);
             GenSingleCell(origin, kp[2], stop, Tier + 1, 2);
+        }
+
+        private void TransCount ( RectangleF cellRect, Cell cell )
+        {
+            List<Entity> wires = new List<Entity>();
+            List<Entity> preg = new List<Entity> ();
+            List<Entity> nreg = new List<Entity> ();
+            RectangleF prect = new RectangleF ( cellRect.X, cellRect.Y, 
+                                                cellRect.Width / 2, cellRect.Height );
+            RectangleF nrect = new RectangleF ( cellRect.X + cellRect.Width/2, cellRect.Y, 
+                                                cellRect.Width / 2, cellRect.Height );
+
+            Console.WriteLine("Begin trans count for " + cell.Label);
+
+            //
+            // Get cell wires (not m1)
+            //
+
+            foreach ( Entity entity in entityBox1._entities )
+            {
+                PointF pointStart = new PointF(entity.LambdaX, entity.LambdaY);
+                PointF pointEnd = new PointF(entity.LambdaEndX, entity.LambdaEndY);
+
+                if ( entity.Type == EntityType.WireInterconnect && 
+                     entity.ColorOverride != Color.Black && 
+                    (cellRect.Contains(pointStart) || cellRect.Contains(pointEnd) ) )
+                {
+                    wires.Add (entity);
+                }
+            }
+
+            //
+            // Get p regions
+            //
+
+            foreach ( Entity entity in entityBox1._entities )
+            {
+                if (entity.Type != EntityType.Region)
+                    continue;
+
+                PointF point = new PointF(entity.PathPoints[0].X, entity.PathPoints[0].Y);
+
+                if (prect.Contains(point) && entity.ColorOverride == Color.Yellow)
+                {
+                    preg.Add (entity);
+                }
+            }
+
+            //
+            // Get n regions
+            //
+
+            foreach ( Entity entity in entityBox1._entities )
+            {
+                if (entity.Type != EntityType.Region)
+                    continue;
+
+                PointF point = new PointF(entity.PathPoints[0].X, entity.PathPoints[0].Y);
+
+                if ( nrect.Contains(point) && entity.ColorOverride == Color.Yellow )
+                {
+                    nreg.Add (entity);
+                }
+            }
+
+            //
+            // Count transistors
+            //
+
+            Console.WriteLine( "wires: " + wires.Count.ToString() + 
+                               ", p-regions: " + preg.Count.ToString() +
+                               ", n-regions: " + nreg.Count.ToString() );
+
+            Console.WriteLine("------- p-count ----------");
+            cell.PCount = CountTransInSection ( preg, wires );
+            Console.WriteLine("------- n-count ---------");
+            cell.NCount = CountTransInSection ( nreg, wires );
+
+            Console.WriteLine(" ");
+        }
+
+        private int CountTransInSection ( List<Entity> regions, List<Entity> wires)
+        {
+            List<Entity> wiresInside = new List<Entity>();
+            Entity[] wiresArray;
+
+            //
+            // Get all wires inside / crossing regions
+            //
+
+            foreach ( Entity region in regions )
+            {
+                foreach (Entity wire in wires)
+                {
+                    PointF pointStart = new PointF(wire.LambdaX, wire.LambdaY);
+                    PointF pointEnd = new PointF(wire.LambdaEndX, wire.LambdaEndY);
+
+                    if (PointInPoly(region.PathPoints.ToArray(), pointStart) ||
+                        PointInPoly(region.PathPoints.ToArray(), pointEnd) ||
+                        LineIntersectsPoly(region.PathPoints.ToArray(), pointStart, pointEnd) )
+                    {
+                        Console.WriteLine("wire: x=" + wire.LambdaX.ToString() + ", y=" + wire.LambdaY.ToString());
+
+                        wire.UserData = 0;
+
+                        wiresInside.Add(wire);
+                    }
+                }
+            }
+
+            wiresArray = wiresInside.ToArray();
+
+            //
+            // Eliminate attached wires (UserData contains flag)
+            //
+
+            int count = 0;
+
+            for (int i = 0; i < wiresArray.Length; i++ )
+            {
+                if (wiresArray[i].UserData == 1)
+                    continue;
+
+                PointF pointStart = new PointF(wiresArray[i].LambdaX, wiresArray[i].LambdaY);
+                PointF pointEnd = new PointF(wiresArray[i].LambdaEndX, wiresArray[i].LambdaEndY);
+
+                // Mark
+                wiresArray[i].UserData = 1;
+
+                MarkWiresRecursive(pointStart, pointEnd, wiresArray);
+
+                count++;
+            }
+
+            Console.WriteLine("Count=" + count.ToString());
+
+            return count;
+        }
+
+        private void MarkWiresRecursive(PointF pointStart, PointF pointEnd, Entity[] wiresArray)
+        {
+            for (int j = 0; j < wiresArray.Length; j++)
+            {
+                if (wiresArray[j].UserData == 1)
+                    continue;
+
+                RectangleF rectStart = new RectangleF(wiresArray[j].LambdaX - 1, wiresArray[j].LambdaY - 1,
+                                                        2, 2);
+                RectangleF rectEnd = new RectangleF(wiresArray[j].LambdaEndX - 1, wiresArray[j].LambdaEndY - 1,
+                                                        2, 2);
+
+                //
+                // Start attached - mark attached wire
+                //
+
+                if (rectStart.Contains(pointStart) || rectEnd.Contains(pointStart))
+                {
+                    wiresArray[j].UserData = 1;
+
+                    PointF start = new PointF(wiresArray[j].LambdaX, wiresArray[j].LambdaY);
+                    PointF end = new PointF(wiresArray[j].LambdaEndX, wiresArray[j].LambdaEndY);
+
+                    MarkWiresRecursive(start, end, wiresArray);
+                }
+
+                //
+                // End attached - mark attached wire
+                //
+
+                if (rectStart.Contains(pointEnd) || rectEnd.Contains(pointEnd))
+                {
+                    wiresArray[j].UserData = 1;
+
+                    PointF start = new PointF(wiresArray[j].LambdaX, wiresArray[j].LambdaY);
+                    PointF end = new PointF(wiresArray[j].LambdaEndX, wiresArray[j].LambdaEndY);
+
+                    MarkWiresRecursive(start, end, wiresArray);
+                }
+            }
         }
 
         private float LeftmostEntity ()
@@ -337,6 +538,58 @@ namespace PatternsDbGen
 
         private EntityType CellTypeByLabel (string Label)
         {
+            if (Label.Contains("TRI", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellBusSupp;
+            if (Label.Contains("KEEPER", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellBusSupp;
+            if (Label.Contains("BUS", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellBusSupp;
+
+            if (Label.Contains("DFF", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellFlipFlop;
+            if (Label.Contains("LATCH", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLatch;
+
+            if (Label.Contains("XNOR", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("XOR", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("AOI", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("OAI", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("NAND", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("AND", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("NOR", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+            if (Label.Contains("OR", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellLogic;
+
+            if (Label.Contains("BUF", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellBuffer;
+            if (Label.Contains("NOT", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellNot;
+
+            if (Label.Contains("IMUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
+            if (Label.Contains("MUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
+            if (Label.Contains("DEMUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
+
+            if (Label.Contains("HA", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellAdder;
+            if (Label.Contains("FA", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellAdder;
+            if (Label.Contains("CA", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellAdder;
+            if (Label.Contains("WS", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellAdder;
+            if (Label.Contains("ARRAY", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellAdder;
+
             return EntityType.CellOther;
         }
 
@@ -373,6 +626,96 @@ namespace PatternsDbGen
             planar.X = coord.X * (float)Math.Cos(coord.Y);
             planar.Y = coord.X * (float)Math.Sin(coord.Y);
             return planar;
+        }
+
+        //
+        // Math
+        //
+
+        private bool PointInPoly(PointF[] poly, PointF point)
+        {
+            int max_point = poly.Length - 1;
+            float total_angle = GetAngle(
+                poly[max_point].X, poly[max_point].Y,
+                point.X, point.Y,
+                poly[0].X, poly[0].Y);
+
+            for (int i = 0; i < max_point; i++)
+            {
+                total_angle += GetAngle(
+                    poly[i].X, poly[i].Y,
+                    point.X, point.Y,
+                    poly[i + 1].X, poly[i + 1].Y);
+            }
+
+            return (Math.Abs(total_angle) > 0.000001);
+        }
+
+        private float GetAngle(float Ax, float Ay,
+            float Bx, float By, float Cx, float Cy)
+        {
+            float dot_product = DotProduct(Ax, Ay, Bx, By, Cx, Cy);
+
+            float cross_product = CrossProductLength(Ax, Ay, Bx, By, Cx, Cy);
+
+            return (float)Math.Atan2(cross_product, dot_product);
+        }
+
+        private float DotProduct(float Ax, float Ay, float Bx, float By, float Cx, float Cy)
+        {
+            float BAx = Ax - Bx;
+            float BAy = Ay - By;
+            float BCx = Cx - Bx;
+            float BCy = Cy - By;
+
+            return (BAx * BCx + BAy * BCy);
+        }
+
+        private float CrossProductLength(float Ax, float Ay, float Bx, float By, float Cx, float Cy)
+        {
+            float BAx = Ax - Bx;
+            float BAy = Ay - By;
+            float BCx = Cx - Bx;
+            float BCy = Cy - By;
+
+            return (BAx * BCy - BAy * BCx);
+        }
+
+        private static bool LineIntersectsLine(PointF l1p1, PointF l1p2, PointF l2p1, PointF l2p2)
+        {
+            float q = (l1p1.Y - l2p1.Y) * (l2p2.X - l2p1.X) - (l1p1.X - l2p1.X) * (l2p2.Y - l2p1.Y);
+            float d = (l1p2.X - l1p1.X) * (l2p2.Y - l2p1.Y) - (l1p2.Y - l1p1.Y) * (l2p2.X - l2p1.X);
+
+            if (d == 0)
+            {
+                return false;
+            }
+
+            float r = q / d;
+
+            q = (l1p1.Y - l2p1.Y) * (l1p2.X - l1p1.X) - (l1p1.X - l2p1.X) * (l1p2.Y - l1p1.Y);
+            float s = q / d;
+
+            if (r < 0 || r > 1 || s < 0 || s > 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool LineIntersectsPoly ( PointF [] poly, PointF lp1, PointF lp2 )
+        {
+            for (int i = 1; i < poly.Length; i++)
+            {
+                PointF poly1 = poly[i - 1];
+                PointF poly2 = poly[i];
+
+                if (LineIntersectsLine(lp1, lp2, poly1, poly2))
+                    return true;
+            }
+
+            return false;
         }
 
         //
@@ -422,7 +765,15 @@ namespace PatternsDbGen
             "# Vias Syntax:\r\n" +
             "# vias pattern_name, vias_name, offset_x, offset_y, type, reserved\r\n" +
             "\r\n" +
-            "# Vias types: ViasInput, ViasOutput, ViasInout\r\n";
+            "# Vias types: ViasInput, ViasOutput, ViasInout\r\n\r\n";
+
+            foreach ( Cell cell in cells )
+            {
+                foreach ( Vias vias in cell.vias )
+                {
+                    textOut += TextOutVias(cell, vias);
+                }
+            }
 
             textOut +=
 
@@ -435,7 +786,42 @@ namespace PatternsDbGen
         {
             return "pattern " + cell.Label + 
                    ", " + cell.Type.ToString() + 
-                   ", 5.0, pc, nc, \"patterns_db/" + cell.Label + ".jpg\"\r\n";
+                   ", 5.0, " + cell.PCount.ToString()+
+                   ", " + cell.NCount.ToString() +
+                   ", \"patterns_db/" + cell.Label + ".jpg\"\r\n";
+        }
+
+        private string TextOutVias (Cell cell, Vias vias)
+        {
+            string text = "";
+
+            text += "vias " + cell.Label +", ";
+
+            if (vias.Label.Length == 0)
+            {
+                if (vias.Type == EntityType.ViasInput) text += "in";
+                else if (vias.Type == EntityType.ViasOutput) text += "out";
+                else if (vias.Type == EntityType.ViasInout) text += "inout";
+                else return "";         // Skip
+            }
+            else text += vias.Label;
+            
+            text += ", " + vias.posOffset.X.ToString() + ", " + vias.posOffset.Y.ToString() + ", ";
+
+            text += vias.Type.ToString();
+            
+            text += ", 0\r\n";
+
+            return text;
+        }
+    }
+
+
+    public static class StringExtensions
+    {
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source.IndexOf(toCheck, comp) >= 0;
         }
     }
 }

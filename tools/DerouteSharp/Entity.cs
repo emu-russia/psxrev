@@ -79,6 +79,9 @@ public class Entity
     public long SelectTimeStamp;
 
     [XmlIgnore]
+    public int UserData;        // For temp values
+
+    [XmlIgnore]
     public float SavedLambdaX;
     [XmlIgnore]
     public float SavedLambdaY;

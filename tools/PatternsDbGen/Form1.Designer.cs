@@ -190,9 +190,6 @@
             this.entityBox1.RegionOpacity = 128;
             this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.RegionPriority = 0;
-            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
-            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
-            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
             this.entityBox1.ScrollX = 0F;
             this.entityBox1.ScrollY = 0F;
             this.entityBox1.SelectEntitiesAfterAdd = false;
