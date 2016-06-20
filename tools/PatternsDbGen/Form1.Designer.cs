@@ -40,8 +40,9 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -139,14 +140,6 @@
             this.splitContainer1.SplitterDistance = 527;
             this.splitContainer1.TabIndex = 2;
             // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(221, 426);
-            this.propertyGrid1.TabIndex = 0;
-            // 
             // entityBox1
             // 
             this.entityBox1.AutoPriority = true;
@@ -190,6 +183,9 @@
             this.entityBox1.RegionOpacity = 128;
             this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.RegionPriority = 0;
+            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
+            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
+            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
             this.entityBox1.ScrollX = 0F;
             this.entityBox1.ScrollY = 0F;
             this.entityBox1.SelectEntitiesAfterAdd = false;
@@ -227,6 +223,18 @@
             this.entityBox1.ZoomImage1 = 100;
             this.entityBox1.ZoomImage2 = 100;
             // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(221, 426);
+            this.propertyGrid1.TabIndex = 0;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -234,6 +242,7 @@
             this.ClientSize = new System.Drawing.Size(752, 450);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "PatternsDbGen";
@@ -264,6 +273,7 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

@@ -124,6 +124,7 @@ namespace System.Windows.Forms
         private long UnserializeLastStamp = 0;
         private bool grayscale = false;
         private Point LastRMB = new Point(-1, -1);
+        private bool DrawInProgress;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -1642,6 +1643,8 @@ namespace System.Windows.Forms
 
         private void DrawScene(Graphics gr, int width, int height, bool WholeScene, Point origin)
         {
+            DrawInProgress = true;
+
             float savedScrollX = 0, savedScrollY = 0;
             int savedZoom = 0;
 
@@ -1875,6 +1878,8 @@ namespace System.Windows.Forms
                 _ScrollY = savedScrollY;
                 _zoom = savedZoom;
             }
+
+            DrawInProgress = false;
         }
 
         private void ReallocateGraphics ()
@@ -2304,6 +2309,8 @@ namespace System.Windows.Forms
             item.FontOverride = null;
             item.SetParent(this);
 
+            while (DrawInProgress) ;
+
             _entities.Add(item);
             SortEntities();
             Invalidate();
@@ -2355,6 +2362,8 @@ namespace System.Windows.Forms
             item.WidthOverride = 0;
             item.SetParent(this);
 
+            while (DrawInProgress) ;
+
             _entities.Add(item);
             SortEntities();
             Invalidate();
@@ -2369,7 +2378,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        private Entity AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        public Entity AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY)
         {
             Entity item = new Entity();
 
@@ -2398,6 +2407,8 @@ namespace System.Windows.Forms
             item.FontOverride = null;
             item.WidthOverride = 0;
             item.SetParent(this);
+
+            while (DrawInProgress) ;
 
             _entities.Add(item);
             SortEntities();
@@ -2473,6 +2484,8 @@ namespace System.Windows.Forms
             item.Priority = CellPriority;
             item.FontOverride = null;
             item.SetParent(this);
+
+            while (DrawInProgress) ;
 
             _entities.Add(item);
             SortEntities();
@@ -4932,9 +4945,13 @@ namespace System.Windows.Forms
             item.Priority = RegionPriority;
             item.Selected = false;
             item.PathPoints = path;
+            item.LambdaX = path[0].X;
+            item.LambdaY = path[0].Y;
             item.ColorOverride = RegionOverrideColor;
             item.FontOverride = null;
             item.SetParent(this);
+
+            while (DrawInProgress) ;
 
             _entities.Add(item);
             SortEntities();

@@ -70,6 +70,12 @@ namespace PatternsDbGen
 
             if (result == DialogResult.OK)
             {
+#if DEBUG
+                Console.Clear();
+#endif
+
+                entityBox1.DeleteAllEntites();
+
                 entityBox1.Unserialize(openFileDialog1.FileName, true);
             }
         }
@@ -80,8 +86,18 @@ namespace PatternsDbGen
 
             if (result == DialogResult.OK)
             {
-                ExportEntitiesAsPatternsDatabase(saveFileDialog1.FileName);
+                if (!backgroundWorker1.IsBusy)
+                {
+                    backgroundWorker1.RunWorkerAsync();
+                }
+                else
+                    MessageBox.Show("Patterns database is still generating...", "Busy");
             }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ExportEntitiesAsPatternsDatabase(saveFileDialog1.FileName);
         }
 
         private void ExportEntitiesAsPatternsDatabase (string filename)
@@ -171,7 +187,9 @@ namespace PatternsDbGen
             if (color[2] < 15)
                 color[2] = 15;
 
-            for (float r = keypointPolar.X; r < stopPolar.X; r += ScanWindowWidth)
+            float r = 0, phi = 0;
+
+            for (r = keypointPolar.X; r < stopPolar.X; r += ScanWindowWidth)
             {
                 if (LabeledViasFound && UnlabeledViasFound)
                     break;
@@ -179,7 +197,7 @@ namespace PatternsDbGen
                 PointF vertPolarDelta = PlanarToPolar(vertDelta);
                 PointF horzPolarDelta = PlanarToPolar(horzDelta);
 
-                for (float phi = horzPolarDelta.Y; phi < vertPolarDelta.Y; phi += 0.017F)
+                for (phi = horzPolarDelta.Y; phi < vertPolarDelta.Y; phi += 0.017F)
                 {
                     PointF planar = PolarToPlanar(new PointF(r, phi));
 
@@ -208,10 +226,13 @@ namespace PatternsDbGen
 
                         if (entity.Type == EntityType.ViasFloating && entity.Label.Length == 0 &&
                             rect.Contains(new PointF(entity.LambdaX, entity.LambdaY)) &&
-                            !UnlabeledViasFound )
+                            !UnlabeledViasFound && LabeledViasFound )
                         {
-                            unlabeled = entity;
-                            UnlabeledViasFound = true;
+                            if (entity.LambdaY > labeled.LambdaY && entity.LambdaX > labeled.LambdaX )
+                            {
+                                unlabeled = entity;
+                                UnlabeledViasFound = true;
+                            }
                         }
                     }
 
@@ -222,6 +243,14 @@ namespace PatternsDbGen
                 vertDelta.X -= ScanWindowWidth;
                 horzDelta.Y += ScanWindowWidth;
             }
+
+#if DEBUG && true
+            Point startPoint = entityBox1.LambdaToScreen(-keyPoint.X, keyPoint.Y);
+            PointF planarEnd = PolarToPlanar( new PointF(r, phi));
+            Point endPoint = entityBox1.LambdaToScreen(-planarEnd.X, planarEnd.Y);
+            Entity wire = entityBox1.AddWire(EntityType.WireInterconnect, startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
+            wire.Label = Tier.ToString() + "," + Kpn.ToString();
+#endif
 
             if (!LabeledViasFound || !UnlabeledViasFound)
             {
@@ -287,6 +316,24 @@ namespace PatternsDbGen
                 Console.WriteLine( vias.Type.ToString() + 
                                    " x: " + vias.posOffset.X.ToString() +
                                    ", y: " + vias.posOffset.Y.ToString());
+            }
+
+            //
+            // Highlight cells without transistors
+            //
+
+            if ( cell.PCount == 0 || cell.NCount == 0)
+            {
+                foreach ( Entity entity in entityBox1._entities )
+                {
+                    PointF point = new PointF(entity.LambdaX, entity.LambdaY);
+
+                    if (cellArea.Contains(point))
+                    {
+                        entity.Selected = true;
+                        entityBox1.Invalidate();
+                    }
+                }
             }
 
             //
