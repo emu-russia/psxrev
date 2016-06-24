@@ -33,6 +33,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSceneAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,7 +153,6 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.unloadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -207,6 +207,13 @@
             this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.loadImageToolStripMenuItem.Text = "Load Image...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            // 
+            // unloadImageToolStripMenuItem
+            // 
+            this.unloadImageToolStripMenuItem.Name = "unloadImageToolStripMenuItem";
+            this.unloadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.unloadImageToolStripMenuItem.Text = "Unload Image";
+            this.unloadImageToolStripMenuItem.Click += new System.EventHandler(this.unloadImageToolStripMenuItem_Click);
             // 
             // saveSceneAsImageToolStripMenuItem
             // 
@@ -331,12 +338,14 @@
             this.copyCtrlCToolStripMenuItem.Name = "copyCtrlCToolStripMenuItem";
             this.copyCtrlCToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.copyCtrlCToolStripMenuItem.Text = "Copy (Ctrl+C)";
+            this.copyCtrlCToolStripMenuItem.Click += new System.EventHandler(this.copyCtrlCToolStripMenuItem_Click);
             // 
             // pasteCtrlVToolStripMenuItem
             // 
             this.pasteCtrlVToolStripMenuItem.Name = "pasteCtrlVToolStripMenuItem";
             this.pasteCtrlVToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.pasteCtrlVToolStripMenuItem.Text = "Paste (Ctrl+V)";
+            this.pasteCtrlVToolStripMenuItem.Click += new System.EventHandler(this.pasteCtrlVToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
             // 
@@ -465,6 +474,7 @@
             this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
             this.entityBox1.CellOpacity = 128;
             this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox1.CellOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.CellPriority = 1;
             this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
             this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -490,6 +500,7 @@
             this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
             this.entityBox1.Name = "entityBox1";
             this.entityBox1.RegionOpacity = 128;
+            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.RegionPriority = 0;
             this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
             this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
@@ -513,6 +524,7 @@
             this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
             this.entityBox1.ViasOpacity = 255;
             this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
             this.entityBox1.ViasPriority = 3;
             this.entityBox1.ViasShape = ViasShape.Round;
@@ -521,6 +533,7 @@
             this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
             this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
             this.entityBox1.WireOpacity = 128;
+            this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
             this.entityBox1.WirePriority = 2;
             this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
@@ -1326,13 +1339,6 @@
             this.toolStripStatusLabel14.Name = "toolStripStatusLabel14";
             this.toolStripStatusLabel14.Size = new System.Drawing.Size(36, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
-            // 
-            // unloadImageToolStripMenuItem
-            // 
-            this.unloadImageToolStripMenuItem.Name = "unloadImageToolStripMenuItem";
-            this.unloadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.unloadImageToolStripMenuItem.Text = "Unload Image";
-            this.unloadImageToolStripMenuItem.Click += new System.EventHandler(this.unloadImageToolStripMenuItem_Click);
             // 
             // Form1
             // 

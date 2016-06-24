@@ -13,8 +13,10 @@ namespace DerouteSharp
 {
     public partial class Form1 : Form
     {
+#if !MONO
         [DllImport("kernel32")]
         static extern bool AllocConsole();
+#endif
 
         public Form1()
         {
@@ -38,7 +40,7 @@ namespace DerouteSharp
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
 
-#if DEBUG
+#if DEBUG && (!MONO)
             AllocConsole ();
 #endif
         }
@@ -430,13 +432,13 @@ namespace DerouteSharp
                 propertyGrid1.Refresh();
                 ViasButtonHighlight();
             }
-            else if (e.KeyCode == Keys.F3 )
+            else if (e.KeyCode == Keys.F3)
             {
                 entityBox1.Mode = EntityMode.WireInterconnect;
                 propertyGrid1.Refresh();
                 WiresButtonHighlight();
             }
-            else if ( e.KeyCode == Keys.Z && e.Control )
+            else if (e.KeyCode == Keys.Z && e.Control)
             {
                 entityBox1.CancelLastOperation();
             }
@@ -444,7 +446,7 @@ namespace DerouteSharp
             {
                 entityBox1.RetryCancelledOperation();
             }
-            else if ( e.KeyCode == Keys.F10 )
+            else if (e.KeyCode == Keys.F10)
             {
                 entityBox1.TraversalSelection(1);
             }
@@ -460,7 +462,7 @@ namespace DerouteSharp
             {
                 LambdaScale form = new LambdaScale();
                 form.FormClosing += form_FormClosing;
-                form.ShowDialog();                
+                form.ShowDialog();
             }
             else if (e.KeyCode == Keys.A && e.Control)
             {
@@ -703,6 +705,16 @@ namespace DerouteSharp
         private void unloadImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             entityBox1.UnloadImage();
+        }
+
+        private void copyCtrlCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Copy();
+        }
+
+        private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.Paste();
         }
     }       // Form1
 }

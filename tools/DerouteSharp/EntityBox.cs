@@ -125,6 +125,8 @@ namespace System.Windows.Forms
         private bool grayscale = false;
         private Point LastRMB = new Point(-1, -1);
         private bool DrawInProgress;
+        private List<Entity> copied = new List<Entity> ();
+        private PointF TopLeftCopied;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -3551,6 +3553,20 @@ namespace System.Windows.Forms
             base.OnKeyUp(e);
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C && e.Control)
+            {
+                Copy();
+            }
+            else if (e.KeyCode == Keys.V && e.Control)
+            {
+                Paste();
+            }
+
+            base.OnKeyDown(e);
+        }
+
         //
         // Priority stuff
         //
@@ -4957,6 +4973,112 @@ namespace System.Windows.Forms
             SortEntities();
 
             Invalidate ();
+        }
+
+        //
+        // Copy & Paste
+        //
+
+        public void Copy ()
+        {
+            copied.Clear ();
+            copied.AddRange(GetSelected());
+            RecalcCopyOrigin();
+        }
+
+        private void RecalcCopyOrigin ()
+        {
+            TopLeftCopied.X = float.PositiveInfinity;
+            TopLeftCopied.Y = float.PositiveInfinity;
+
+            foreach (Entity entity in copied)
+            {
+                if (IsEntityRegion(entity))
+                {
+                    if (entity.PathPoints[0].X < TopLeftCopied.X)
+                        TopLeftCopied.X = entity.PathPoints[0].X;
+
+                    if (entity.PathPoints[0].Y < TopLeftCopied.Y)
+                        TopLeftCopied.Y = entity.PathPoints[0].Y;
+                }
+                else
+                {
+                    if (entity.LambdaX < TopLeftCopied.X)
+                        TopLeftCopied.X = entity.LambdaX;
+
+                    if (entity.LambdaY < TopLeftCopied.Y)
+                        TopLeftCopied.Y = entity.LambdaY;
+
+                    if (IsEntityWire(entity))
+                    {
+                        if (entity.LambdaEndX < TopLeftCopied.X)
+                            TopLeftCopied.X = entity.LambdaEndX;
+
+                        if (entity.LambdaEndY < TopLeftCopied.Y)
+                            TopLeftCopied.Y = entity.LambdaEndY;
+                    }
+                }
+            }
+
+            Console.WriteLine( "TopLeft Selected: X=" + TopLeftCopied.X.ToString() + 
+                               ", Y=" + TopLeftCopied.Y.ToString());
+        }
+
+        public void Paste ()
+        {
+            PointF delta = ScreenToLambda(LastRMB.X, LastRMB.Y);
+
+            foreach ( Entity entity in copied )
+            {
+                Entity item = new Entity();
+
+                item.Type = entity.Type;
+                item.Label = entity.Label;
+                item.ColorOverride = entity.ColorOverride;
+                item.FontOverride = entity.FontOverride;
+                item.WidthOverride = entity.WidthOverride;
+                item.Priority = entity.Priority;
+
+                item.LambdaX = entity.LambdaX - TopLeftCopied.X + delta.X;
+                item.LambdaY = entity.LambdaY - TopLeftCopied.Y + delta.Y;
+                item.LambdaEndX = entity.LambdaEndX - TopLeftCopied.X + delta.X;
+                item.LambdaEndY = entity.LambdaEndY - TopLeftCopied.Y + delta.Y;
+
+                if (IsEntityRegion(entity))
+                {
+                    item.PathPoints = new List<PointF>();
+
+                    for (int i = 0; i < entity.PathPoints.Count; i++)
+                    {
+                        PointF point = new PointF();
+
+                        point.X = entity.PathPoints[i].X - TopLeftCopied.X + delta.X;
+                        point.Y = entity.PathPoints[i].Y - TopLeftCopied.Y + delta.Y;
+
+                        item.PathPoints.Add(point);
+                    }
+                }
+
+                item.SetParent(this);
+                item.LambdaWidth = entity.LambdaWidth;
+                item.LambdaHeight = entity.LambdaHeight;
+                item.LabelAlignment = entity.LabelAlignment;
+                item.Label = entity.Label;
+
+                //
+                // Select pasted items, so we can move it around
+                //
+
+                item.Selected = true;
+
+                _entities.Add(item);
+            }
+
+            SortEntities();
+            Invalidate();
+
+            if (OnEntityCountChanged != null)
+                OnEntityCountChanged(this, EventArgs.Empty);
         }
 
     }       // EntityBox
