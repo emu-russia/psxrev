@@ -127,6 +127,7 @@ namespace System.Windows.Forms
         private bool DrawInProgress;
         private List<Entity> copied = new List<Entity> ();
         private PointF TopLeftCopied;
+        private bool DrawStats = false;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -1647,6 +1648,12 @@ namespace System.Windows.Forms
         {
             DrawInProgress = true;
 
+            if (DrawStats)
+                Console.WriteLine("---------- DRAW SCENE STATS START ----------");
+
+            long Stamp1;
+            long Stamp2;
+
             float savedScrollX = 0, savedScrollY = 0;
             int savedZoom = 0;
 
@@ -1667,9 +1674,15 @@ namespace System.Windows.Forms
             // Background
             //
 
+            Stamp1 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
             Region region = new Region(new Rectangle(0, 0, width - origin.X, height - origin.Y));
 
             gr.FillRegion(new SolidBrush(BackColor), region);
+
+            Stamp2 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            if (DrawStats)
+                Console.WriteLine("Background: " + (Stamp2 - Stamp1).ToString() + " ms");
 
             //
             // Image Layers
@@ -1678,8 +1691,17 @@ namespace System.Windows.Forms
             float zf = (float)Zoom / 100F;
             bool EnableOpacity = true;
 
+            Stamp1 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
             for (int n = 2; n >= 0; n--)
             {
+                if (n == 0 && ImageOpacity0 == 0 && EnableOpacity)
+                    continue;
+                if (n == 1 && ImageOpacity1 == 0 && EnableOpacity)
+                    continue;
+                if (n == 2 && ImageOpacity2 == 0 && EnableOpacity)
+                    continue;
+
                 if (_imageOrig[n] != null && hideImage == false)
                 {
                     Point imageOffset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
@@ -1723,12 +1745,22 @@ namespace System.Windows.Forms
                 }
             }
 
+            Stamp2 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            if (DrawStats)
+                Console.WriteLine("Image Layers: " + (Stamp2 - Stamp1).ToString() + " ms");
+
             //
             // Grid
             //
 
+            Stamp1 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
             if (WholeScene == false && HideGrid == false)
                 DrawLambdaGrid(gr);
+
+            Stamp2 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            if (DrawStats)
+                Console.WriteLine("Grid: " + (Stamp2 - Stamp1).ToString() + " ms");
 
             //
             // Entities
@@ -1736,10 +1768,16 @@ namespace System.Windows.Forms
 
             if (Lambda > 0.0F)
             {
+                Stamp1 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
                 foreach (Entity entity in _entities)
                 {
                     DrawEntity(entity, gr);
                 }
+
+                Stamp2 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                if (DrawStats)
+                    Console.WriteLine("Entities: " + (Stamp2 - Stamp1).ToString() + " ms");
 
                 //
                 // Wire drawing animation
@@ -1880,6 +1918,9 @@ namespace System.Windows.Forms
                 _ScrollY = savedScrollY;
                 _zoom = savedZoom;
             }
+
+            if (DrawStats)
+                Console.WriteLine("---------- DRAW SCENE STATS END ----------");
 
             DrawInProgress = false;
         }

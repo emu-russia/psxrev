@@ -131,7 +131,11 @@ namespace DerouteSharp
 
             if (result == DialogResult.OK)
             {
+                Cursor = Cursors.WaitCursor;
+
                 entityBox1.SaveSceneAsImage(saveFileDialog1.FileName);
+
+                Cursor = Cursors.Default;
             }
         }
 
@@ -538,7 +542,11 @@ namespace DerouteSharp
 
             if (result == DialogResult.OK)
             {
+                Cursor = Cursors.WaitCursor;
+
                 entityBox1.LoadWorkspace(openFileDialog2.FileName);
+
+                Cursor = Cursors.Default;
             }
         }
 
@@ -548,7 +556,11 @@ namespace DerouteSharp
 
             if (result == DialogResult.OK)
             {
+                Cursor = Cursors.WaitCursor;
+
                 entityBox1.SaveWorkspace(saveFileDialog2.FileName);
+
+                Cursor = Cursors.Default;
             }
         }
 
