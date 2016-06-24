@@ -4,10 +4,10 @@ Sony PlayStation chips reverse engineering.
  * Wiki: http://psxdev.ru/wiki
  * Board: http://psxdev.ru/board
 
-Everything (code, images etc) is public domain (Creative Commons). Use at your own risk)
+Everything (code, images etc) is public domain (Creative Commons Zero). Use at your own risk)
 No credits required.
 
-PlayStation logo and trademarks are property of Sony. All rights reserved.
+PlayStation logo and trademarks are property of Sony.
 
 # PSX CPU (CXD8530CQ) #
 
