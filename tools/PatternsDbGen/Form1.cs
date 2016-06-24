@@ -150,6 +150,8 @@ namespace PatternsDbGen
             //
 
             GenPatternsTxt(filename);
+
+            MessageBox.Show("Export complete. " + cells.Count.ToString() + " cells found.");
         }
 
         private void GenSingleCell(PointF origin, PointF keyPoint, PointF stop, int Tier, int Kpn)
@@ -244,7 +246,7 @@ namespace PatternsDbGen
                 horzDelta.Y += ScanWindowWidth;
             }
 
-#if DEBUG && true
+#if DEBUG
             Point startPoint = entityBox1.LambdaToScreen(-keyPoint.X, keyPoint.Y);
             PointF planarEnd = PolarToPlanar( new PointF(r, phi));
             Point endPoint = entityBox1.LambdaToScreen(-planarEnd.X, planarEnd.Y);
@@ -631,13 +633,6 @@ namespace PatternsDbGen
             if (Label.Contains("NOT", StringComparison.OrdinalIgnoreCase))
                 return EntityType.CellNot;
 
-            if (Label.Contains("IMUX", StringComparison.OrdinalIgnoreCase))
-                return EntityType.CellMux;
-            if (Label.Contains("MUX", StringComparison.OrdinalIgnoreCase))
-                return EntityType.CellMux;
-            if (Label.Contains("DEMUX", StringComparison.OrdinalIgnoreCase))
-                return EntityType.CellMux;
-
             if (Label.Contains("HA", StringComparison.OrdinalIgnoreCase))
                 return EntityType.CellAdder;
             if (Label.Contains("FA", StringComparison.OrdinalIgnoreCase))
@@ -648,6 +643,13 @@ namespace PatternsDbGen
                 return EntityType.CellAdder;
             if (Label.Contains("ARRAY", StringComparison.OrdinalIgnoreCase))
                 return EntityType.CellAdder;
+
+            if (Label.Contains("IMUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
+            if (Label.Contains("MUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
+            if (Label.Contains("DEMUX", StringComparison.OrdinalIgnoreCase))
+                return EntityType.CellMux;
 
             return EntityType.CellOther;
         }
@@ -865,7 +867,8 @@ namespace PatternsDbGen
             }
             else text += vias.Label;
             
-            text += ", " + vias.posOffset.X.ToString() + ", " + vias.posOffset.Y.ToString() + ", ";
+            text += ", " + vias.posOffset.X.ToString().Replace(',','.') +
+                    ", " + vias.posOffset.Y.ToString().Replace(',', '.') + ", ";
 
             text += vias.Type.ToString();
             

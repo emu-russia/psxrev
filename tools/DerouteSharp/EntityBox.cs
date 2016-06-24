@@ -2424,7 +2424,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        private Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        public Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
         {
             Entity item = new Entity();
 
