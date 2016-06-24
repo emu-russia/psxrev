@@ -9,11 +9,15 @@ using System.Windows.Forms;
 
 using System.Runtime.InteropServices;
 
+//
+// Nothing to comment here. Everything is self-explanatory (GUI stubs)
+//
+
 namespace DerouteSharp
 {
     public partial class Form1 : Form
     {
-#if !MONO
+#if !__MonoCS__
         [DllImport("kernel32")]
         static extern bool AllocConsole();
 #endif
@@ -40,7 +44,7 @@ namespace DerouteSharp
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
 
-#if DEBUG && (!MONO)
+#if DEBUG && (!__MonoCS__)
             AllocConsole ();
 #endif
         }

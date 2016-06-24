@@ -500,7 +500,7 @@
             this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
             this.entityBox1.Name = "entityBox1";
             this.entityBox1.RegionOpacity = 128;
-            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Green;
             this.entityBox1.RegionPriority = 0;
             this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
             this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));

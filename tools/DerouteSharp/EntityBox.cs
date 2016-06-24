@@ -3579,11 +3579,35 @@ namespace System.Windows.Forms
                 {
                     if (entity.Selected)
                     {
-                        entity.LambdaX += deltaX;
-                        entity.LambdaY += deltaY;
-                        entity.LambdaEndX += deltaX;
-                        entity.LambdaEndY += deltaY;
-                        NeedUpdate = true;
+                        if (IsEntityRegion(entity))
+                        {
+                            entity.LambdaX += deltaX;
+                            entity.LambdaY += deltaY;
+
+                            List<PointF> points = new List<PointF>();
+
+                            foreach ( PointF point in entity.PathPoints )
+                            {
+                                PointF newPoint = new PointF();
+
+                                newPoint.X = point.X + deltaX;
+                                newPoint.Y = point.Y + deltaY;
+
+                                points.Add(newPoint);
+                            }
+
+                            entity.PathPoints = points;
+
+                            NeedUpdate = true;
+                        }
+                        else
+                        {
+                            entity.LambdaX += deltaX;
+                            entity.LambdaY += deltaY;
+                            entity.LambdaEndX += deltaX;
+                            entity.LambdaEndY += deltaY;
+                            NeedUpdate = true;
+                        }
                     }
                 }
 

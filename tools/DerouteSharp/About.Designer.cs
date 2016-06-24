@@ -35,11 +35,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(334, 213);
+            this.button1.Location = new System.Drawing.Point(383, 236);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(109, 41);
             this.button1.TabIndex = 0;
@@ -93,11 +94,23 @@
             this.label5.TabIndex = 5;
             this.label5.Text = "Bytes";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(24, 158);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(452, 52);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Everything (code, images etc) is public domain (Creative Commons Zero). Use at yo" +
+    "ur own risk)\r\nNo credits required.\r\n\r\nPlayStation logo and trademarks are proper" +
+    "ty of Sony.\r\n";
+            // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 266);
+            this.ClientSize = new System.Drawing.Size(529, 289);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -122,5 +135,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
