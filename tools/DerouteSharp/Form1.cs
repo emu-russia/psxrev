@@ -732,5 +732,64 @@ namespace DerouteSharp
         {
             entityBox1.Paste();
         }
+
+        private void AddTiles (string [] FileNames, bool AsRow )
+        {
+            //
+            // Select priority
+            //
+
+            int prio = -1;
+
+            switch (entityBox1.Mode)
+            {
+                case EntityMode.ImageLayer0:
+                default:
+                    prio = -1;
+                    break;
+                case EntityMode.ImageLayer1:
+                    prio = -2;
+                    break;
+                case EntityMode.ImageLayer2:
+                    prio = -3;
+                    break;
+            }
+
+            Point rmb = entityBox1.GetLastRightMouseButton();
+
+            float zf = entityBox1.Zoom / 100F;
+
+            foreach (string filename in FileNames)
+            {
+                Entity tile = entityBox1.AddTile(filename,
+                                                  prio,
+                                                  rmb.X, rmb.Y);
+
+                if (AsRow)
+                    rmb.X += (int)((float)tile.ImageWidth * zf);
+                else
+                    rmb.Y += (int)((float)tile.ImageHeight * zf);
+            }
+        }
+
+        private void addTileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog1.ShowDialog();
+
+            if ( result == DialogResult.OK )
+            {
+                AddTiles(openFileDialog1.FileNames, true);
+            }
+        }
+
+        private void addTilesColumnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog1.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                AddTiles(openFileDialog1.FileNames, false);
+            }
+        }
     }       // Form1
 }

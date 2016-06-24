@@ -27,7 +27,7 @@ namespace System.Windows.Forms
     {
         Selection = 0,
 
-        ImageLayer0,
+        ImageLayer0,        // Topmost
         ImageLayer1,
         ImageLayer2,
 
@@ -128,6 +128,7 @@ namespace System.Windows.Forms
         private List<Entity> copied = new List<Entity> ();
         private PointF TopLeftCopied;
         private bool DrawStats = false;
+        private bool EnableOpacity = true;
 
         public event EntityBoxEventHandler OnScrollChanged = null;
         public event EntityBoxEventHandler OnZoomChanged = null;
@@ -197,6 +198,16 @@ namespace System.Windows.Forms
         public bool IsEntityRegion(Entity entity)
         {
             return (entity.Type == EntityType.Region );
+        }
+
+        public bool IsEntityTile(Entity entity)
+        {
+            return (entity.Type == EntityType.Tile);
+        }
+
+        public Point GetLastRightMouseButton ()
+        {
+            return LastRMB;
         }
 
         //
@@ -1635,6 +1646,85 @@ namespace System.Windows.Forms
                     }
 
                     break;
+
+                //
+                // Tile
+                //
+
+                case EntityType.Tile:
+
+                    Point imgTopLeft = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+
+                    //
+                    // Discard invisible tiles
+                    //
+
+                    if ( imgTopLeft.X >= Width ||
+                         imgTopLeft.Y >= Height ||
+                         (imgTopLeft.X + (float)entity.ImageWidth * zf) < 0 ||
+                         (imgTopLeft.Y + (float)entity.ImageHeight * zf) < 0)
+                        break;
+
+                    Image image = Image.FromFile(entity.ImageFile);
+
+                    PointF imgSize = new PointF (entity.ImageWidth, entity.ImageHeight);
+
+                    gr.DrawImage( image,
+                                  imgTopLeft.X,
+                                  imgTopLeft.Y,
+                                  imgSize.X * zf,
+                                  imgSize.Y * zf );
+
+                    image.Dispose();
+                    image = null;
+                    break;
+            }
+        }
+
+        private void DrawImage (Graphics gr, int n)
+        {
+            float zf = (float)Zoom / 100F;
+
+            if (_imageOrig[n] != null && hideImage == false)
+            {
+                Point imageOffset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
+                float imageWidth = (float)_imageOrig[n].Width;
+                float imageHeight = (float)_imageOrig[n].Height;
+                float sx = imageOffset.X;
+                float sy = imageOffset.Y;
+
+                float imgZf = (float)_imageZoom[n] / 100F;
+
+                ColorMatrix colorMatrix = new ColorMatrix();
+                colorMatrix.Matrix33 = _imageOpacity[n] / 100F;
+
+                ImageAttributes imageAtt = new ImageAttributes();
+                imageAtt.SetColorMatrix(
+                   colorMatrix,
+                   ColorMatrixFlag.Default,
+                   ColorAdjustType.Bitmap);
+
+                if (EnableOpacity == false)
+                {
+                    gr.DrawImage(_imageOrig[n],
+                                  sx, sy,
+                                  imageWidth * zf / imgZf,
+                                  imageHeight * zf / imgZf);
+                }
+                else
+                {
+                    gr.InterpolationMode = InterpolationMode.HighQualityBilinear;
+
+                    gr.DrawImage(_imageOrig[n],
+                        new Rectangle(
+                            (int)sx, (int)sy,
+                            (int)(imageWidth * zf), (int)(imageHeight * zf)),
+                        0, 0,
+                        imageWidth / imgZf,
+                        imageHeight / imgZf,
+                        GraphicsUnit.Pixel,
+                        imageAtt);
+                }
             }
         }
 
@@ -1688,9 +1778,6 @@ namespace System.Windows.Forms
             // Image Layers
             //
 
-            float zf = (float)Zoom / 100F;
-            bool EnableOpacity = true;
-
             Stamp1 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
             for (int n = 2; n >= 0; n--)
@@ -1702,47 +1789,7 @@ namespace System.Windows.Forms
                 if (n == 2 && ImageOpacity2 == 0 && EnableOpacity)
                     continue;
 
-                if (_imageOrig[n] != null && hideImage == false)
-                {
-                    Point imageOffset = LambdaToScreen(_imageScroll[n].X, _imageScroll[n].Y);
-                    float imageWidth = (float)_imageOrig[n].Width;
-                    float imageHeight = (float)_imageOrig[n].Height;
-                    float sx = imageOffset.X;
-                    float sy = imageOffset.Y;
-
-                    float imgZf = (float)_imageZoom[n] / 100F;
-
-                    ColorMatrix colorMatrix = new ColorMatrix();
-                    colorMatrix.Matrix33 = _imageOpacity[n] / 100F;
-
-                    ImageAttributes imageAtt = new ImageAttributes();
-                    imageAtt.SetColorMatrix(
-                       colorMatrix,
-                       ColorMatrixFlag.Default,
-                       ColorAdjustType.Bitmap);
-
-                    if (EnableOpacity == false)
-                    {
-                        gr.DrawImage(_imageOrig[n],
-                                      sx, sy,
-                                      imageWidth * zf / imgZf,
-                                      imageHeight * zf / imgZf);
-                    }
-                    else
-                    {
-                        gr.InterpolationMode = InterpolationMode.HighQualityBilinear;
-
-                        gr.DrawImage(_imageOrig[n],
-                            new Rectangle(
-                                (int)sx, (int)sy,
-                                (int)(imageWidth * zf), (int)(imageHeight * zf)),
-                            0, 0,
-                            imageWidth / imgZf,
-                            imageHeight / imgZf,
-                            GraphicsUnit.Pixel,
-                            imageAtt);
-                    }
-                }
+                DrawImage(gr, n);
             }
 
             Stamp2 = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
@@ -5124,11 +5171,11 @@ namespace System.Windows.Forms
                     }
                 }
 
-                item.SetParent(this);
                 item.LambdaWidth = entity.LambdaWidth;
                 item.LambdaHeight = entity.LambdaHeight;
                 item.LabelAlignment = entity.LabelAlignment;
                 item.Label = entity.Label;
+                item.SetParent(this);
 
                 //
                 // Select pasted items, so we can move it around
@@ -5144,6 +5191,56 @@ namespace System.Windows.Forms
 
             if (OnEntityCountChanged != null)
                 OnEntityCountChanged(this, EventArgs.Empty);
+        }
+
+        //
+        // Tiles
+        //
+        // imageFile is absolute path.
+        // All tile source files will be copied relative to workspace dump, after Workspace saving.
+        //
+
+        public Entity AddTile (string imageFile, int prio, int ScreenX, int ScreenY )
+        {
+            Entity item = new Entity();
+
+            try
+            {
+                Bitmap bitmap = new Bitmap(imageFile);
+
+                item.ImageWidth = bitmap.Width;
+                item.ImageHeight = bitmap.Height;
+
+                // Dispose
+                bitmap.Dispose ();
+                bitmap = null;
+                GC.Collect ();
+            }
+            catch
+            {
+                //
+                // We have memory/decode issues..
+                //
+
+                return null;
+            }
+
+            PointF origin = ScreenToLambda(ScreenX, ScreenY);
+
+            item.LambdaX = origin.X;
+            item.LambdaY = origin.Y;
+            item.Selected = true;
+            item.Priority = prio;
+            item.Type = EntityType.Tile;
+            item.ImageFile = imageFile;
+            item.SetParent(this);
+
+            _entities.Add (item);
+
+            SortEntities();
+            Invalidate();
+
+            return item;
         }
 
     }       // EntityBox
