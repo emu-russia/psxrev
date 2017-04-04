@@ -12,6 +12,8 @@ namespace psxemu
 {
     public partial class Form1 : Form
     {
+        bool DebugActive = false;
+
         public Form1()
         {
             InitializeComponent();
@@ -30,8 +32,18 @@ namespace psxemu
 
         private void openDebuggerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (DebugActive)
+                return;
+
             FormDebugger debugDlg = new FormDebugger();
+            debugDlg.FormClosed += debugDlg_FormClosed;
             debugDlg.Show();
+            DebugActive = true;
+        }
+
+        void debugDlg_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            DebugActive = false;
         }
     }
 }

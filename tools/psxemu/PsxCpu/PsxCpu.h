@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include <iostream>
+
+using namespace std;
+
 #include "CommonTypes.h"
 #include "CpuContext.h"
 #include "BusIF.h"
@@ -15,3 +19,18 @@
 #include "Mdec.h"
 #include "RootCounters.h"
 #include "Sio.h"
+
+class PsxCpu
+{
+
+public:
+
+    PSX_CPU_CONTEXT cpuContext;
+    BusUnit busUnit;
+
+    PsxCpu();
+    ~PsxCpu();
+
+};
+
+extern PsxCpu Cpu;
