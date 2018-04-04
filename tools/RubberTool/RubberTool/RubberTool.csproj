@@ -50,7 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AffineTransform.cs" />
     <Compile Include="Delaunay.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityBox.cs">
@@ -70,6 +69,7 @@
       <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Geometry.cs" />
+    <Compile Include="NonAffineTransform.cs" />
     <Compile Include="PointFConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

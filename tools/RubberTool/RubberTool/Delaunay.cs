@@ -1,4 +1,4 @@
-// Триангуляция Делоне
+// РўСЂРёР°РЅРіСѓР»СЏС†РёСЏ Р”РµР»РѕРЅРµ
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ class Delaunay
 {
 
     /// <summary>
-    /// Сгенерировать сетку треугольников на базе точек
+    /// РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ СЃРµС‚РєСѓ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ РЅР° Р±Р°Р·Рµ С‚РѕС‡РµРє
     /// </summary>
     /// <param name="points"></param>
     public List<Triangle> GenMesh (List<Point> points)

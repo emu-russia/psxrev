@@ -135,6 +135,8 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnEntityCountChanged = null;
         public event EntityBoxEventHandler OnLastOperation = null;
         public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
+        public event EntityBoxEntityEventHandler OnEntitySelect = null;
+        public event EntityBoxEntityEventHandler OnEntityAdd = null;
         public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
         public EntityBox()
@@ -605,7 +607,7 @@ namespace System.Windows.Forms
 
                                 if (rect.IntersectsWith(rect2))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -616,7 +618,7 @@ namespace System.Windows.Forms
 
                                 if (LineIntersectsRect(point1, point2, rect))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -626,7 +628,7 @@ namespace System.Windows.Forms
 
                                 if (rect.Contains(point1))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -636,7 +638,7 @@ namespace System.Windows.Forms
                                 {
                                     if ( rect.Contains(point))
                                     {
-                                        ent.Selected = true;
+                                        SelectEntity(ent);
                                         CatchSomething = true;
                                     }
                                 }
@@ -662,7 +664,7 @@ namespace System.Windows.Forms
                     }
                     else
                     {
-                        entity.Selected = true;
+                        SelectEntity(entity);
                         Invalidate();
 
                         if (entityGrid != null)
@@ -2412,6 +2414,9 @@ namespace System.Windows.Forms
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
 
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
+
             return item;
         }
 
@@ -2465,6 +2470,9 @@ namespace System.Windows.Forms
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
 
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
+
             return item;
         }
 
@@ -2510,6 +2518,9 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
 
             return item;
         }
@@ -2587,6 +2598,9 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
 
             return item;
         }
@@ -3107,7 +3121,7 @@ namespace System.Windows.Forms
                 entityGrid.SelectedObject = null;
         }
 
-        private List<Entity> GetSelected()
+        public List<Entity> GetSelected()
         {
             List<Entity> _selected = new List<Entity>();
 
@@ -3120,6 +3134,29 @@ namespace System.Windows.Forms
             }
 
             return _selected;
+        }
+
+        public Entity GetLastSelected ()
+        {
+            List<Entity> _selected = GetSelected();
+
+            if ( _selected.Count == 0 )
+            {
+                return null;
+            }
+
+            Entity lastSelected =
+                _selected.Where(m => m.SelectTimeStamp == _selected.Max(p => p.SelectTimeStamp)).FirstOrDefault();
+
+            return lastSelected;
+        }
+
+        private void SelectEntity ( Entity entity )
+        {
+            entity.Selected = true;
+
+            if (OnEntitySelect != null)
+                OnEntitySelect(this, entity, EventArgs.Empty);
         }
 
         #region Entity Props
@@ -4427,7 +4464,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist )
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4436,7 +4473,7 @@ namespace System.Windows.Forms
 
                             if (dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4445,7 +4482,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4454,7 +4491,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4469,7 +4506,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in viases)
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                 }
 
@@ -4534,7 +4571,7 @@ namespace System.Windows.Forms
 
                 foreach ( Entity entity in wires )
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
 
                     //
@@ -4546,7 +4583,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in cells)
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier+1, TierMax, Depth + 1, Debug);
 
                     //
@@ -4601,7 +4638,7 @@ namespace System.Windows.Forms
 
                 foreach ( Entity entity in viases )
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                 }
             }
@@ -4999,22 +5036,22 @@ namespace System.Windows.Forms
                 {
                     case EntitySelection.Vias:
                         if (IsEntityVias(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     case EntitySelection.Wire:
                         if (IsEntityWire(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     case EntitySelection.Cell:
                         if (IsEntityCell(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     default:
                     case EntitySelection.All:
-                        entity.Selected = true;
+                        SelectEntity(entity);
                         break;
                 }
             }
@@ -5181,7 +5218,7 @@ namespace System.Windows.Forms
                 // Select pasted items, so we can move it around
                 //
 
-                item.Selected = true;
+                SelectEntity(item);
 
                 _entities.Add(item);
             }
@@ -5229,7 +5266,7 @@ namespace System.Windows.Forms
 
             item.LambdaX = origin.X;
             item.LambdaY = origin.Y;
-            item.Selected = true;
+            SelectEntity(item);
             item.Priority = prio;
             item.Type = EntityType.Tile;
             item.ImageFile = imageFile;
