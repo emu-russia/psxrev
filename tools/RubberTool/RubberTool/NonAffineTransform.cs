@@ -33,18 +33,20 @@ class NonAffineTransform
         //
 
 
-        TextureTriangle(ref sourceImage, ref destImage, destTri );
+        TextureTriangle(ref sourceImage, ref destImage, sourceTri, destTri);
+
+        //FillTriangle(ref destImage, sourceTri, destTri, SystemColors.InfoText );
 
     }
 
-    public static void FillTriangle ( ref Image image, Triangle tri, Color color)
+    public static void FillTriangle ( ref Image image, Triangle sourceTri, Triangle destTri, Color color)
     {
         Pen pen = new Pen(color);
         Graphics gr = Graphics.FromImage(image);
 
-        int x0 = tri.a.X, y0 = tri.a.Y;
-        int x1 = tri.b.X, y1 = tri.b.Y;
-        int x2 = tri.c.X, y2 = tri.c.Y;
+        float x0 = destTri.a.X, y0 = destTri.a.Y;
+        float x1 = destTri.b.X, y1 = destTri.b.Y;
+        float x2 = destTri.c.X, y2 = destTri.c.Y;
 
         int width = image.Width;
         int height = image.Height;
@@ -52,18 +54,18 @@ class NonAffineTransform
         // Сортировка вершин
         if ( y1 > y2 )
         {
-            Swap<int>(ref x1, ref x2);
-            Swap<int>(ref y1, ref y2);
+            Swap<float>(ref x1, ref x2);
+            Swap<float>(ref y1, ref y2);
         }
         if (y0 > y1)
         {
-            Swap<int>(ref x0, ref x1);
-            Swap<int>(ref y0, ref y1);
+            Swap<float>(ref x0, ref x1);
+            Swap<float>(ref y0, ref y1);
         }
         if (y1 > y2)
         {
-            Swap<int>(ref x1, ref x2);
-            Swap<int>(ref y1, ref y2);
+            Swap<float>(ref x1, ref x2);
+            Swap<float>(ref y1, ref y2);
         }
 
         double dx_far = Convert.ToDouble(x2 - x0) / (y2 - y0 + 1);
@@ -72,14 +74,14 @@ class NonAffineTransform
         double xf = x0;
         double xt = x0 + dx_upper;
 
-        for (int y = y0; y <= (y2 > height - 1 ? height - 1 : y2); y++)
+        for (float y = y0; y <= (y2 > height - 1 ? height - 1 : y2); y++)
         {
             if (y >= 0)
             {
-                for (int x = (xf > 0 ? Convert.ToInt32(xf) : 0); x <= (xt < width ? xt : width - 1); x++)
-                    gr.DrawRectangle(pen, new Rectangle(x, y, 1, 1));
-                for (int x = (xf < width ? Convert.ToInt32(xf) : width - 1); x >= (xt > 0 ? xt : 0); x--)
-                    gr.DrawRectangle(pen, new Rectangle(x, y, 1, 1));
+                for (float x = (xf > 0 ? Convert.ToInt32(xf) : 0); x <= (xt < width ? xt : width - 1); x++)
+                    gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
+                for (float x = (xf < width ? Convert.ToInt32(xf) : width - 1); x >= (xt > 0 ? xt : 0); x--)
+                    gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
             }
             xf += dx_far;
             if (y < y1)
@@ -89,14 +91,14 @@ class NonAffineTransform
         }
     }
 
-    public static void TextureTriangle(ref Image texImage, ref Image destImage, Triangle tri)
+    public static void TextureTriangle(ref Image texImage, ref Image destImage, Triangle sourceTri, Triangle destTri)
     {
         Bitmap sourceBitmap = new Bitmap(texImage);
         Graphics gr = Graphics.FromImage(destImage);
 
-        int x0 = tri.a.X, y0 = tri.a.Y;
-        int x1 = tri.b.X, y1 = tri.b.Y;
-        int x2 = tri.c.X, y2 = tri.c.Y;
+        float x0 = destTri.a.X, y0 = destTri.a.Y;
+        float x1 = destTri.b.X, y1 = destTri.b.Y;
+        float x2 = destTri.c.X, y2 = destTri.c.Y;
 
         int width = destImage.Width;
         int height = destImage.Height;
@@ -104,18 +106,18 @@ class NonAffineTransform
         // Сортировка вершин
         if (y1 > y2)
         {
-            Swap<int>(ref x1, ref x2);
-            Swap<int>(ref y1, ref y2);
+            Swap<float>(ref x1, ref x2);
+            Swap<float>(ref y1, ref y2);
         }
         if (y0 > y1)
         {
-            Swap<int>(ref x0, ref x1);
-            Swap<int>(ref y0, ref y1);
+            Swap<float>(ref x0, ref x1);
+            Swap<float>(ref y0, ref y1);
         }
         if (y1 > y2)
         {
-            Swap<int>(ref x1, ref x2);
-            Swap<int>(ref y1, ref y2);
+            Swap<float>(ref x1, ref x2);
+            Swap<float>(ref y1, ref y2);
         }
 
         double dx_far = Convert.ToDouble(x2 - x0) / (y2 - y0 + 1);
@@ -124,21 +126,46 @@ class NonAffineTransform
         double xf = x0;
         double xt = x0 + dx_upper;
 
-        for (int y = y0; y <= (y2 > height - 1 ? height - 1 : y2); y++)
+        for (float y = y0; y <= (y2 > height - 1 ? height - 1 : y2); y++)
         {
             if (y >= 0)
             {
                 for (int x = (xf > 0 ? Convert.ToInt32(xf) : 0); x <= (xt < width ? xt : width - 1); x++)
                 {
-                    Color pixel = sourceBitmap.GetPixel(x, y);
+                    Point2D n2 = TrilateralXform(destTri, sourceTri, new Point2D(x, y));
+
+                    //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
+                    //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
+
+                    if (float.IsNaN(n2.X) || float.IsNaN(n2.Y) || 
+                        n2.X >= sourceBitmap.Width || n2.Y >= sourceBitmap.Height || 
+                        n2.X < 0 || n2.Y < 0 )
+                    {
+                        n2 = new Point2D(0, 0);
+                    }
+
+
+                    Color pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     Pen pen = new Pen(pixel);
-                    gr.DrawRectangle(pen, new Rectangle(x, y, 1, 1));
+                    gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
                 }
                 for (int x = (xf < width ? Convert.ToInt32(xf) : width - 1); x >= (xt > 0 ? xt : 0); x--)
                 {
-                    Color pixel = sourceBitmap.GetPixel(x, y);
+                    Point2D n2 = TrilateralXform(destTri, sourceTri, new Point2D(x, y));
+
+                    //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
+                    //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
+
+                    if (float.IsNaN(n2.X) || float.IsNaN(n2.Y) ||
+                        n2.X >= sourceBitmap.Width || n2.Y >= sourceBitmap.Height ||
+                        n2.X < 0 || n2.Y < 0)
+                    {
+                        n2 = new Point2D(0, 0);
+                    }
+
+                    Color pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     Pen pen = new Pen(pixel);
-                    gr.DrawRectangle(pen, new Rectangle(x, y, 1, 1));
+                    gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
                 }
             }
             xf += dx_far;
@@ -147,6 +174,83 @@ class NonAffineTransform
             else
                 xt += dx_low;
         }
+    }
+
+    /// <summary>
+    /// Трилатеральный перенос точки исходного треугольника в целевой треугольник
+    /// </summary>
+    /// <param name="sourceTri">Исходный треугольник</param>
+    /// <param name="destTri">Целевой треугольник</param>
+    /// <param name="n">Исходная точка</param>
+    /// <returns>Точка внутри целевого треугольника</returns>
+    public static Point2D TrilateralXform (Triangle sourceTri, Triangle destTri, Point2D n)
+    {
+        //
+        // Получение "срединных" точек
+        //
+
+        Vec ab = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.b.X, sourceTri.b.Y));
+        Vec cn = new Vec(new Point2D(sourceTri.c.X, sourceTri.c.Y), new Point2D(n.X, n.Y));
+        Point2D mpAB = VecMath.LineCross(ab, cn);
+
+        Vec ac = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+        Vec bn = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(n.X, n.Y));
+        Point2D mpAC = VecMath.LineCross(ac, bn);
+
+        Vec bc = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+        Vec an = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(n.X, n.Y));
+        Point2D mpBC = VecMath.LineCross(bc, an);
+
+        //
+        // Получение соотношения отрезков разделяемых срединными точками
+        //
+
+        Vec a_mpAB = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(mpAB.X, mpAB.Y));
+        Vec mpAB_b = new Vec(new Point2D(mpAB.X, mpAB.Y), new Point2D(sourceTri.b.X, sourceTri.b.Y));
+        float sAB = a_mpAB.Length() / ab.Length();
+
+        Vec a_mpAC = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(mpAC.X, mpAC.Y));
+        Vec mpAC_c = new Vec(new Point2D(mpAC.X, mpAC.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+        float sAC = a_mpAC.Length() / ac.Length();
+
+        Vec b_mpBC = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(mpBC.X, mpBC.Y));
+        Vec mpBC_c = new Vec(new Point2D(mpBC.X, mpBC.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+        float sBC = b_mpBC.Length() / bc.Length();
+
+        //
+        // Перенос срединных точек
+        //
+
+        Vec ab2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.b.X, destTri.b.Y));
+        Vec ab2_s = VecMath.VecScale(ab2, sAB);
+
+        Vec ac2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.c.X, destTri.c.Y));
+        Vec ac2_s = VecMath.VecScale(ac2, sAC);
+
+        Vec bc2 = new Vec(new Point2D(destTri.b.X, destTri.b.Y), new Point2D(destTri.c.X, destTri.c.Y));
+        Vec bc2_s = VecMath.VecScale(bc2, sBC);
+
+        //
+        // Получение вершин внутреннего треугольника
+        //
+
+        Vec mpAB2_c2 = new Vec(new Point2D(ab2_s.end.X, ab2_s.end.Y), new Point2D(destTri.c.X, destTri.c.Y));
+        Vec mpAC2_b2 = new Vec(new Point2D(ac2_s.end.X, ac2_s.end.Y), new Point2D(destTri.b.X, destTri.b.Y));
+        Vec mpBC2_a2 = new Vec(new Point2D(bc2_s.end.X, bc2_s.end.Y), new Point2D(destTri.a.X, destTri.a.Y));
+
+        Triangle tri = new Triangle();
+
+        tri.a = VecMath.LineCross(mpAB2_c2, mpAC2_b2);
+        tri.b = VecMath.LineCross(mpBC2_a2, mpAC2_b2);
+        tri.c = VecMath.LineCross(mpAB2_c2, mpBC2_a2);
+
+        //
+        // Вычисление барицентра
+        //
+
+        Point2D p = VecMath.BaryCenter(tri);
+
+        return p;
     }
 
     private static void Swap<T> ( ref T a, ref T b)

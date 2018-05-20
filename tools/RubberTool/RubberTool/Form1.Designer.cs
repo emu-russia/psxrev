@@ -32,6 +32,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLeftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,10 +82,11 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lineCrossTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.barycenterTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.entityBox2 = new System.Windows.Forms.EntityBox();
+            this.trilateralTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -135,6 +138,24 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem,
+            this.lineCrossTestToolStripMenuItem,
+            this.barycenterTestToolStripMenuItem,
+            this.trilateralTestToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // drawTexturedTriangleFromLeftImageToolStripMenuItem
+            // 
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Name = "drawTexturedTriangleFromLeftImageToolStripMenuItem";
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Size = new System.Drawing.Size(315, 22);
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Text = "Trilateral transform single triangle Left->Right";
+            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Click += new System.EventHandler(this.drawTexturedTriangleFromLeftImageToolStripMenuItem_Click);
             // 
             // imageToolStripMenuItem
             // 
@@ -315,7 +336,7 @@
             this.leftRightToolStripMenuItem,
             this.rightLeftToolStripMenuItem});
             this.transformToolStripMenuItem.Name = "transformToolStripMenuItem";
-            this.transformToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.transformToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.transformToolStripMenuItem.Text = "Transform";
             // 
             // leftRightToolStripMenuItem
@@ -547,20 +568,19 @@
             this.saveFileDialog2.DefaultExt = "xml";
             this.saveFileDialog2.Filter = "XML files|*.xml|All files|*.*";
             // 
-            // debugToolStripMenuItem
+            // lineCrossTestToolStripMenuItem
             // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.debugToolStripMenuItem.Text = "Debug";
+            this.lineCrossTestToolStripMenuItem.Name = "lineCrossTestToolStripMenuItem";
+            this.lineCrossTestToolStripMenuItem.Size = new System.Drawing.Size(315, 22);
+            this.lineCrossTestToolStripMenuItem.Text = "LineCross Test";
+            this.lineCrossTestToolStripMenuItem.Click += new System.EventHandler(this.lineCrossTestToolStripMenuItem_Click);
             // 
-            // drawTexturedTriangleFromLeftImageToolStripMenuItem
+            // barycenterTestToolStripMenuItem
             // 
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Name = "drawTexturedTriangleFromLeftImageToolStripMenuItem";
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Text = "Trilateral transform single triangle Left->Right";
-            this.drawTexturedTriangleFromLeftImageToolStripMenuItem.Click += new System.EventHandler(this.drawTexturedTriangleFromLeftImageToolStripMenuItem_Click);
+            this.barycenterTestToolStripMenuItem.Name = "barycenterTestToolStripMenuItem";
+            this.barycenterTestToolStripMenuItem.Size = new System.Drawing.Size(315, 22);
+            this.barycenterTestToolStripMenuItem.Text = "Barycenter Test";
+            this.barycenterTestToolStripMenuItem.Click += new System.EventHandler(this.barycenterTestToolStripMenuItem_Click);
             // 
             // entityBox1
             // 
@@ -732,6 +752,13 @@
             this.entityBox2.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntitySelect);
             this.entityBox2.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityAdd);
             // 
+            // trilateralTestToolStripMenuItem
+            // 
+            this.trilateralTestToolStripMenuItem.Name = "trilateralTestToolStripMenuItem";
+            this.trilateralTestToolStripMenuItem.Size = new System.Drawing.Size(315, 22);
+            this.trilateralTestToolStripMenuItem.Text = "Trilateral Test";
+            this.trilateralTestToolStripMenuItem.Click += new System.EventHandler(this.trilateralTestToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -830,6 +857,9 @@
         private System.Windows.Forms.ToolStripMenuItem rightLeftToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawTexturedTriangleFromLeftImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lineCrossTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem barycenterTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem trilateralTestToolStripMenuItem;
     }
 }
 

@@ -8,17 +8,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace RubberTool
 {
     public partial class Form1 : Form
     {
+        [DllImport("kernel32")]
+        static extern bool AllocConsole();
+
         private int kpIndexLeft = 1;
         private int kpIndexRight = 1;
 
         public Form1()
         {
             InitializeComponent();
+
+#if DEBUG
+            AllocConsole();
+#endif
+
+            Console.WriteLine("RubberTool 1.0");
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -235,19 +245,72 @@ namespace RubberTool
 
             Triangle sourceTri = new Triangle();
 
-            sourceTri.a = entityBox1.LambdaToScreen(_selectedLeft[0].LambdaX, _selectedLeft[0].LambdaY);
-            sourceTri.b = entityBox1.LambdaToScreen(_selectedLeft[1].LambdaX, _selectedLeft[1].LambdaY);
-            sourceTri.c = entityBox1.LambdaToScreen(_selectedLeft[2].LambdaX, _selectedLeft[2].LambdaY);
+            Point a0 = entityBox1.LambdaToScreen(_selectedLeft[0].LambdaX, _selectedLeft[0].LambdaY);
+            Point a1 = entityBox1.LambdaToScreen(_selectedLeft[1].LambdaX, _selectedLeft[1].LambdaY);
+            Point a2 = entityBox1.LambdaToScreen(_selectedLeft[2].LambdaX, _selectedLeft[2].LambdaY);
+
+            sourceTri.a = new Point2D(a0.X, a0.Y);
+            sourceTri.b = new Point2D(a1.X, a1.Y);
+            sourceTri.c = new Point2D(a2.X, a2.Y);
 
             Triangle destTri = new Triangle();
 
-            destTri.a = entityBox1.LambdaToScreen(_selectedRight[0].LambdaX, _selectedRight[0].LambdaY);
-            destTri.b = entityBox1.LambdaToScreen(_selectedRight[1].LambdaX, _selectedRight[1].LambdaY);
-            destTri.c = entityBox1.LambdaToScreen(_selectedRight[2].LambdaX, _selectedRight[2].LambdaY);
+            Point b0 = entityBox1.LambdaToScreen(_selectedRight[0].LambdaX, _selectedRight[0].LambdaY);
+            Point b1 = entityBox1.LambdaToScreen(_selectedRight[1].LambdaX, _selectedRight[1].LambdaY);
+            Point b2 = entityBox1.LambdaToScreen(_selectedRight[2].LambdaX, _selectedRight[2].LambdaY);
+
+            destTri.a = new Point2D(b0.X, b0.Y);
+            destTri.b = new Point2D(b1.X, b1.Y);
+            destTri.c = new Point2D(b2.X, b2.Y);
 
             NonAffineTransform.WarpTriangle(entityBox1.Image0,
                 entityBox2.Image0,
                 sourceTri, destTri);
+
+        }
+
+        private void lineCrossTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Vec v1 = new Vec(new Point2D(75F, 53F), new Point2D(96F,80F));
+            Vec v2 = new Vec(new Point2D(250F, 50F), new Point2D(214F, 74F));
+
+            Point2D cross = VecMath.LineCross(v1, v2);
+
+            Console.WriteLine( "X: " + cross.X.ToString() + ", Y:" + cross.Y.ToString() );
+        }
+
+        private void barycenterTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Triangle tri = new Triangle();
+
+            tri.a = new Point2D(751, 294);
+            tri.b = new Point2D(526, 546);
+            tri.c = new Point2D(866, 626);
+
+            Point2D c = VecMath.BaryCenter(tri);
+
+            Console.WriteLine("X: " + c.X.ToString() + ", Y: " + c.Y.ToString());
+        }
+
+        private void trilateralTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Triangle sourceTri = new Triangle();
+
+            sourceTri.a = new Point2D(466, 191);
+            sourceTri.b = new Point2D(285, 419);
+            sourceTri.c = new Point2D(636, 462);
+
+            Triangle destTri = new Triangle();
+
+            destTri.a = new Point2D(316, 243);
+            destTri.b = new Point2D(194, 350);
+            destTri.c = new Point2D(383, 372);
+
+            Point2D n = new Point2D(268, 285);
+
+            Point2D n2 = NonAffineTransform.TrilateralXform(sourceTri, destTri, n);
+
+            Console.WriteLine("X: " + n2.X.ToString() + ", Y: " + n2.Y.ToString());
 
         }
     }
