@@ -274,7 +274,7 @@ namespace RubberTool
             Vec v1 = new Vec(new Point2D(75F, 53F), new Point2D(96F,80F));
             Vec v2 = new Vec(new Point2D(250F, 50F), new Point2D(214F, 74F));
 
-            Point2D cross = VecMath.LineCross(v1, v2);
+            Point2D cross = Geom.LineCross(v1, v2);
 
             Console.WriteLine( "X: " + cross.X.ToString() + ", Y:" + cross.Y.ToString() );
         }
@@ -287,7 +287,7 @@ namespace RubberTool
             tri.b = new Point2D(526, 546);
             tri.c = new Point2D(866, 626);
 
-            Point2D c = VecMath.BaryCenter(tri);
+            Point2D c = Geom.BaryCenter(tri);
 
             Console.WriteLine("X: " + c.X.ToString() + ", Y: " + c.Y.ToString());
         }
@@ -312,6 +312,144 @@ namespace RubberTool
 
             Console.WriteLine("X: " + n2.X.ToString() + ", Y: " + n2.Y.ToString());
 
+        }
+
+        private void generateTrianglesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Delaunay delaunay = new Delaunay();
+
+            List<Point2D> points = new List<Point2D>();
+
+            //
+            // Получить ключевые точки
+            //
+
+            foreach ( Entity entity in entityBox1._entities)
+            {
+                if (entityBox1.IsEntityVias(entity))
+                {
+                    Point p = entityBox1.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point2D point = new Point2D( p.X, p.Y);
+                    points.Add(point);
+                }
+            }
+
+            //
+            // Триангулируем
+            //
+
+            List<Triangle> mesh = delaunay.GenMesh(points);
+
+#if DEBUG
+            Random rnd = new Random();
+
+            foreach ( Triangle tri in mesh)
+            {
+                Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+
+                AddTriangle(entityBox1, tri, randomColor);
+            }
+
+#endif
+        }
+
+        private Entity AddTriangle ( EntityBox box, Triangle tri, Color color )
+        {
+            List<Point> points = new List<Point>();
+
+            points.Add(new Point((int)tri.a.X, (int)tri.a.Y));
+            points.Add(new Point((int)tri.b.X, (int)tri.b.Y));
+            points.Add(new Point((int)tri.c.X, (int)tri.c.Y));
+
+            return box.AddRegion(points, color);
+        }
+
+        /// <summary>
+        /// Резиновая трансфомация левого изображения в правые ключевые точки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void leftRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Delaunay delaunay = new Delaunay();
+
+            List<Point2D> pointsLeft = new List<Point2D>();
+            List<Point2D> pointsRight = new List<Point2D>();
+
+            //
+            // Получить ключевые точки слева
+            //
+
+            foreach (Entity entity in entityBox1._entities)
+            {
+                if (entityBox1.IsEntityVias(entity))
+                {
+                    Point p = entityBox1.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point2D point = new Point2D(p.X, p.Y);
+                    point.name = entity.Label;
+                    pointsLeft.Add(point);
+                }
+            }
+
+            //
+            // Получить ключевые точки справа
+            //
+
+            foreach (Entity entity in entityBox2._entities)
+            {
+                if (entityBox2.IsEntityVias(entity))
+                {
+                    Point p = entityBox2.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point2D point = new Point2D(p.X, p.Y);
+                    point.name = entity.Label;
+                    pointsRight.Add(point);
+                }
+            }
+
+            //
+            // Триангулируем
+            //
+
+            List<Triangle> mesh = delaunay.GenMesh(pointsLeft);
+
+            //
+            // Сформировать изображение справа
+            //
+
+            Bitmap bitmap = new Bitmap(entityBox1.Image0.Width * 3, entityBox1.Image0.Height * 3);
+            Graphics gr = Graphics.FromImage(bitmap);
+            gr.Clear(Color.White);
+            entityBox2.Image0 = bitmap;
+
+            //
+            // Трилатеральный перенос треугольников левого изображения в правое
+            //
+
+            foreach ( Triangle sourceTri in mesh )
+            {
+                Triangle destTri = new Triangle();
+
+                destTri.a = MapPoint(sourceTri.a, pointsRight);
+                destTri.b = MapPoint(sourceTri.b, pointsRight);
+                destTri.c = MapPoint(sourceTri.c, pointsRight);
+
+                NonAffineTransform.WarpTriangle(entityBox1.Image0,
+                    entityBox2.Image0,
+                    sourceTri, destTri);
+            }
+        }
+
+        private Point2D MapPoint ( Point2D source, List<Point2D> dest)
+        {
+            foreach ( Point2D point in dest )
+            {
+                if ( point.name == source.name)
+                {
+                    return point;
+                }
+            }
+
+            return null;
         }
     }
 }

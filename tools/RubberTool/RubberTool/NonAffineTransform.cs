@@ -191,15 +191,15 @@ class NonAffineTransform
 
         Vec ab = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.b.X, sourceTri.b.Y));
         Vec cn = new Vec(new Point2D(sourceTri.c.X, sourceTri.c.Y), new Point2D(n.X, n.Y));
-        Point2D mpAB = VecMath.LineCross(ab, cn);
+        Point2D mpAB = Geom.LineCross(ab, cn);
 
         Vec ac = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
         Vec bn = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(n.X, n.Y));
-        Point2D mpAC = VecMath.LineCross(ac, bn);
+        Point2D mpAC = Geom.LineCross(ac, bn);
 
         Vec bc = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
         Vec an = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(n.X, n.Y));
-        Point2D mpBC = VecMath.LineCross(bc, an);
+        Point2D mpBC = Geom.LineCross(bc, an);
 
         //
         // Получение соотношения отрезков разделяемых срединными точками
@@ -222,13 +222,13 @@ class NonAffineTransform
         //
 
         Vec ab2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.b.X, destTri.b.Y));
-        Vec ab2_s = VecMath.VecScale(ab2, sAB);
+        Vec ab2_s = Geom.VecScale(ab2, sAB);
 
         Vec ac2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.c.X, destTri.c.Y));
-        Vec ac2_s = VecMath.VecScale(ac2, sAC);
+        Vec ac2_s = Geom.VecScale(ac2, sAC);
 
         Vec bc2 = new Vec(new Point2D(destTri.b.X, destTri.b.Y), new Point2D(destTri.c.X, destTri.c.Y));
-        Vec bc2_s = VecMath.VecScale(bc2, sBC);
+        Vec bc2_s = Geom.VecScale(bc2, sBC);
 
         //
         // Получение вершин внутреннего треугольника
@@ -240,15 +240,15 @@ class NonAffineTransform
 
         Triangle tri = new Triangle();
 
-        tri.a = VecMath.LineCross(mpAB2_c2, mpAC2_b2);
-        tri.b = VecMath.LineCross(mpBC2_a2, mpAC2_b2);
-        tri.c = VecMath.LineCross(mpAB2_c2, mpBC2_a2);
+        tri.a = Geom.LineCross(mpAB2_c2, mpAC2_b2);
+        tri.b = Geom.LineCross(mpBC2_a2, mpAC2_b2);
+        tri.c = Geom.LineCross(mpAB2_c2, mpBC2_a2);
 
         //
         // Вычисление барицентра
         //
 
-        Point2D p = VecMath.BaryCenter(tri);
+        Point2D p = Geom.BaryCenter(tri);
 
         return p;
     }

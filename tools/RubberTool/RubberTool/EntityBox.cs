@@ -5060,6 +5060,53 @@ namespace System.Windows.Forms
         }
 
         //
+        // Add region
+        //
+
+        public Entity AddRegion (List<Point> points, Color color)
+        {
+            //
+            // Fill path
+            //
+
+            List<PointF> path = new List<PointF>();
+
+            foreach (Point point in points)
+            {
+                PointF p = ScreenToLambda(point.X, point.Y);
+
+                path.Add(p);
+            }
+
+            //
+            // Add new region entity
+            //
+
+            Entity item = new Entity();
+
+            item.Type = EntityType.Region;
+            item.Label = "";
+            item.LabelAlignment = TextAlignment.GlobalSettings;
+            item.Priority = RegionPriority;
+            item.Selected = false;
+            item.PathPoints = path;
+            item.LambdaX = path[0].X;
+            item.LambdaY = path[0].Y;
+            item.ColorOverride = color;
+            item.FontOverride = null;
+            item.SetParent(this);
+
+            while (DrawInProgress) ;
+
+            _entities.Add(item);
+            SortEntities();
+
+            Invalidate();
+
+            return item;
+        }
+
+        //
         // Draw region between selected viases
         //
 
