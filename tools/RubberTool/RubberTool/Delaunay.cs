@@ -374,7 +374,7 @@ class Delaunay
             }
         }
 
-        Console.WriteLine((points.Count - nump).ToString() + " duplicate points rejected");
+        //Console.WriteLine((points.Count - nump).ToString() + " duplicate points rejected");
 
         if (nump < 3)
             throw new ArgumentException("Number of unique points supplied must be >= 3");

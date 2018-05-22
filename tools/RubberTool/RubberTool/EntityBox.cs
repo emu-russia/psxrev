@@ -104,6 +104,7 @@ namespace System.Windows.Forms
         private bool hideWires;
         private bool hideCells;
         private bool hideGrid;
+        private bool hideLambdaMetrics;
         private bool hideRegions;
         private PropertyGrid entityGrid;
         private List<Entity> selected;
@@ -1045,6 +1046,9 @@ namespace System.Windows.Forms
 
         private void DrawLambdaScale(Graphics gr)
         {
+            if (hideLambdaMetrics)
+                return;
+
             float scaleWidth = (int)Lambda * 5;
 
             scaleWidth *= (float)Zoom / 100.0F;
@@ -2381,6 +2385,13 @@ namespace System.Windows.Forms
         {
             get { return hideGrid; }
             set { hideGrid = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
+        public bool HideLambdaMetrics
+        {
+            get { return hideLambdaMetrics; }
+            set { hideLambdaMetrics = value; Invalidate(); }
         }
 
         [Category("Appearance")]
@@ -5496,6 +5507,7 @@ namespace System.Windows.Forms
         public bool hideWires;
         public bool hideCells;
         public bool hideGrid;
+        public bool hideLambdaMetrics;
         public bool hideRegions;
         [XmlIgnore] public Color selectionBoxColor;
         [XmlIgnore] public Color ForeColor;
@@ -5802,6 +5814,7 @@ namespace System.Windows.Forms
             hideWires = parent.HideWires;
             hideCells = parent.HideCells;
             hideGrid = parent.HideGrid;
+            hideLambdaMetrics = parent.HideLambdaMetrics;
             hideRegions = parent.HideRegions;
             selectionBoxColor = parent.SelectionBoxColor;
             ForeColor = parent.ForeColor;
@@ -5887,6 +5900,7 @@ namespace System.Windows.Forms
             parent.HideWires = hideWires;
             parent.HideCells = hideCells;
             parent.HideGrid = hideGrid;
+            parent.HideLambdaMetrics = hideLambdaMetrics;
             parent.HideRegions = hideRegions;
             parent.SelectionBoxColor = selectionBoxColor;
             parent.ForeColor = ForeColor;

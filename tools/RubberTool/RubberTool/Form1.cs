@@ -193,14 +193,41 @@ namespace RubberTool
         {
             Entity last = entityBox1.GetLastSelected();
 
-            last.Label = toolStripTextBox1.Text;
+            RenameKeypointAssociatively(last, toolStripTextBox1.Text, true);
         }
 
         private void toolStripTextBox2_Leave(object sender, EventArgs e)
         {
             Entity last = entityBox2.GetLastSelected();
 
-            last.Label = toolStripTextBox2.Text;
+            RenameKeypointAssociatively(last, toolStripTextBox2.Text, false);
+        }
+
+        private void RenameKeypointAssociatively ( Entity kp, string newName, bool left)
+        {
+            EntityBox otherBox;
+
+            if ( left )
+            {
+                otherBox = entityBox2;
+            }
+            else
+            {
+                otherBox = entityBox1;
+            }
+
+            foreach (Entity entity in otherBox._entities)
+            {
+                if (EntityBox.IsEntityVias(entity) && entity.Label == kp.Label)
+                {
+                    entity.Label = newName;
+                }
+            }
+            otherBox.Invalidate();
+
+            ListRenameKeypoint(kp.Label, newName);
+
+            kp.Label = newName;
         }
 
 #endregion
@@ -1107,6 +1134,22 @@ namespace RubberTool
                 else
                 {
                     itemExists.BackColor = SystemColors.Control;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Переименовать ключевую точку в списке
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        private void ListRenameKeypoint ( string oldName, string newName )
+        {
+            foreach (ListViewItem item in listView1.Items)
+            {
+                if (item.SubItems[0].Text == oldName)
+                {
+                    item.SubItems[0].Text = newName;
                 }
             }
         }

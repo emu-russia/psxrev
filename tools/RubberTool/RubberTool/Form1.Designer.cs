@@ -53,6 +53,7 @@
             this.clearRightToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.editKeypointIndexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keypointColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateTrianglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateRightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,12 +68,14 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.entityBox2 = new System.Windows.Forms.EntityBox();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
@@ -86,10 +89,7 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-            this.keypointColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.entityBox1 = new System.Windows.Forms.EntityBox();
-            this.entityBox2 = new System.Windows.Forms.EntityBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -306,6 +306,13 @@
             this.editKeypointIndexToolStripMenuItem.Text = "Keypoint Index";
             this.editKeypointIndexToolStripMenuItem.Click += new System.EventHandler(this.editKeypointIndexToolStripMenuItem_Click);
             // 
+            // keypointColorToolStripMenuItem
+            // 
+            this.keypointColorToolStripMenuItem.Name = "keypointColorToolStripMenuItem";
+            this.keypointColorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.keypointColorToolStripMenuItem.Text = "Keypoint Color";
+            this.keypointColorToolStripMenuItem.Click += new System.EventHandler(this.keypointColorToolStripMenuItem_Click);
+            // 
             // meshToolStripMenuItem
             // 
             this.meshToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -443,6 +450,94 @@
             this.splitContainer3.SplitterDistance = 340;
             this.splitContainer3.TabIndex = 1;
             // 
+            // entityBox1
+            // 
+            this.entityBox1.AutoPriority = true;
+            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.entityBox1.BeaconPriority = 4;
+            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
+            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
+            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
+            this.entityBox1.CellLatchColor = System.Drawing.Color.Cyan;
+            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
+            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
+            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellOpacity = 128;
+            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox1.CellOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.CellPriority = 1;
+            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox1.Grayscale = false;
+            this.entityBox1.HideCells = false;
+            this.entityBox1.HideGrid = false;
+            this.entityBox1.HideImage = false;
+            this.entityBox1.HideLambdaMetrics = false;
+            this.entityBox1.HideRegions = false;
+            this.entityBox1.HideVias = false;
+            this.entityBox1.HideWires = false;
+            this.entityBox1.ImageOpacity0 = 100;
+            this.entityBox1.ImageOpacity1 = 100;
+            this.entityBox1.ImageOpacity2 = 100;
+            this.entityBox1.Lambda = 5F;
+            this.entityBox1.Location = new System.Drawing.Point(0, 0);
+            this.entityBox1.LockScroll0 = true;
+            this.entityBox1.LockScroll1 = true;
+            this.entityBox1.LockScroll2 = true;
+            this.entityBox1.LockZoom0 = true;
+            this.entityBox1.LockZoom1 = true;
+            this.entityBox1.LockZoom2 = true;
+            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
+            this.entityBox1.Name = "entityBox1";
+            this.entityBox1.RegionOpacity = 128;
+            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.RegionPriority = 0;
+            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
+            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
+            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
+            this.entityBox1.ScrollX = 0F;
+            this.entityBox1.ScrollY = 0F;
+            this.entityBox1.SelectEntitiesAfterAdd = true;
+            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
+            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
+            this.entityBox1.Size = new System.Drawing.Size(438, 340);
+            this.entityBox1.TabIndex = 0;
+            this.entityBox1.Text = "entityBox1";
+            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
+            this.entityBox1.ViasBaseSize = 2;
+            this.entityBox1.ViasConnectColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox1.ViasOpacity = 255;
+            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPriority = 3;
+            this.entityBox1.ViasShape = ViasShape.Round;
+            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
+            this.entityBox1.WireBaseSize = 5;
+            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox1.WireOpacity = 128;
+            this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
+            this.entityBox1.WirePriority = 2;
+            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Zoom = 100;
+            this.entityBox1.ZoomImage0 = 100;
+            this.entityBox1.ZoomImage1 = 100;
+            this.entityBox1.ZoomImage2 = 100;
+            this.entityBox1.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntitySelect);
+            this.entityBox1.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityAdd);
+            this.entityBox1.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityRemove);
+            this.entityBox1.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityScroll);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -510,6 +605,94 @@
             this.splitContainer4.Size = new System.Drawing.Size(473, 380);
             this.splitContainer4.SplitterDistance = 340;
             this.splitContainer4.TabIndex = 1;
+            // 
+            // entityBox2
+            // 
+            this.entityBox2.AutoPriority = true;
+            this.entityBox2.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.entityBox2.BeaconPriority = 4;
+            this.entityBox2.CellAdderColor = System.Drawing.Color.Red;
+            this.entityBox2.CellBufferColor = System.Drawing.Color.Navy;
+            this.entityBox2.CellBusSuppColor = System.Drawing.Color.DarkViolet;
+            this.entityBox2.CellFlipFlopColor = System.Drawing.Color.Lime;
+            this.entityBox2.CellLatchColor = System.Drawing.Color.Cyan;
+            this.entityBox2.CellLogicColor = System.Drawing.Color.Yellow;
+            this.entityBox2.CellMuxColor = System.Drawing.Color.DarkOrange;
+            this.entityBox2.CellNotColor = System.Drawing.Color.Navy;
+            this.entityBox2.CellOpacity = 128;
+            this.entityBox2.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox2.CellOverrideColor = System.Drawing.Color.Black;
+            this.entityBox2.CellPriority = 1;
+            this.entityBox2.CellTextAlignment = TextAlignment.TopLeft;
+            this.entityBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox2.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox2.Grayscale = false;
+            this.entityBox2.HideCells = false;
+            this.entityBox2.HideGrid = false;
+            this.entityBox2.HideImage = false;
+            this.entityBox2.HideLambdaMetrics = false;
+            this.entityBox2.HideRegions = false;
+            this.entityBox2.HideVias = false;
+            this.entityBox2.HideWires = false;
+            this.entityBox2.ImageOpacity0 = 100;
+            this.entityBox2.ImageOpacity1 = 100;
+            this.entityBox2.ImageOpacity2 = 100;
+            this.entityBox2.Lambda = 5F;
+            this.entityBox2.Location = new System.Drawing.Point(0, 0);
+            this.entityBox2.LockScroll0 = true;
+            this.entityBox2.LockScroll1 = true;
+            this.entityBox2.LockScroll2 = true;
+            this.entityBox2.LockZoom0 = true;
+            this.entityBox2.LockZoom1 = true;
+            this.entityBox2.LockZoom2 = true;
+            this.entityBox2.Mode = System.Windows.Forms.EntityMode.Selection;
+            this.entityBox2.Name = "entityBox2";
+            this.entityBox2.RegionOpacity = 128;
+            this.entityBox2.RegionOverrideColor = System.Drawing.Color.Black;
+            this.entityBox2.RegionPriority = 0;
+            this.entityBox2.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage0")));
+            this.entityBox2.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage1")));
+            this.entityBox2.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage2")));
+            this.entityBox2.ScrollX = 0F;
+            this.entityBox2.ScrollY = 0F;
+            this.entityBox2.SelectEntitiesAfterAdd = true;
+            this.entityBox2.SelectionBoxColor = System.Drawing.Color.Red;
+            this.entityBox2.SelectionColor = System.Drawing.Color.LimeGreen;
+            this.entityBox2.Size = new System.Drawing.Size(473, 340);
+            this.entityBox2.TabIndex = 0;
+            this.entityBox2.Text = "entityBox2";
+            this.entityBox2.UnitCustomColor = System.Drawing.Color.Snow;
+            this.entityBox2.UnitMemoryColor = System.Drawing.Color.Snow;
+            this.entityBox2.UnitRegfileColor = System.Drawing.Color.Snow;
+            this.entityBox2.ViasBaseSize = 2;
+            this.entityBox2.ViasConnectColor = System.Drawing.Color.Yellow;
+            this.entityBox2.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox2.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox2.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox2.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox2.ViasOpacity = 255;
+            this.entityBox2.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox2.ViasOverrideColor = System.Drawing.Color.Black;
+            this.entityBox2.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox2.ViasPriority = 3;
+            this.entityBox2.ViasShape = ViasShape.Round;
+            this.entityBox2.ViasTextAlignment = TextAlignment.Top;
+            this.entityBox2.WireBaseSize = 5;
+            this.entityBox2.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox2.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox2.WireOpacity = 128;
+            this.entityBox2.WireOverrideColor = System.Drawing.Color.Black;
+            this.entityBox2.WirePowerColor = System.Drawing.Color.Red;
+            this.entityBox2.WirePriority = 2;
+            this.entityBox2.WireTextAlignment = TextAlignment.TopLeft;
+            this.entityBox2.Zoom = 100;
+            this.entityBox2.ZoomImage0 = 100;
+            this.entityBox2.ZoomImage1 = 100;
+            this.entityBox2.ZoomImage2 = 100;
+            this.entityBox2.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntitySelect);
+            this.entityBox2.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityAdd);
+            this.entityBox2.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityRemove);
+            this.entityBox2.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityScroll);
             // 
             // toolStrip2
             // 
@@ -614,187 +797,6 @@
             this.saveFileDialog2.DefaultExt = "xml";
             this.saveFileDialog2.Filter = "XML files|*.xml|All files|*.*";
             // 
-            // keypointColorToolStripMenuItem
-            // 
-            this.keypointColorToolStripMenuItem.Name = "keypointColorToolStripMenuItem";
-            this.keypointColorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.keypointColorToolStripMenuItem.Text = "Keypoint Color";
-            this.keypointColorToolStripMenuItem.Click += new System.EventHandler(this.keypointColorToolStripMenuItem_Click);
-            // 
-            // entityBox1
-            // 
-            this.entityBox1.AutoPriority = true;
-            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.entityBox1.BeaconPriority = 4;
-            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
-            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
-            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
-            this.entityBox1.CellLatchColor = System.Drawing.Color.Cyan;
-            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
-            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
-            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellOpacity = 128;
-            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
-            this.entityBox1.CellOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.CellPriority = 1;
-            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
-            this.entityBox1.Grayscale = false;
-            this.entityBox1.HideCells = false;
-            this.entityBox1.HideGrid = false;
-            this.entityBox1.HideImage = false;
-            this.entityBox1.HideRegions = false;
-            this.entityBox1.HideVias = false;
-            this.entityBox1.HideWires = false;
-            this.entityBox1.ImageOpacity0 = 100;
-            this.entityBox1.ImageOpacity1 = 100;
-            this.entityBox1.ImageOpacity2 = 100;
-            this.entityBox1.Lambda = 5F;
-            this.entityBox1.Location = new System.Drawing.Point(0, 0);
-            this.entityBox1.LockScroll0 = true;
-            this.entityBox1.LockScroll1 = true;
-            this.entityBox1.LockScroll2 = true;
-            this.entityBox1.LockZoom0 = true;
-            this.entityBox1.LockZoom1 = true;
-            this.entityBox1.LockZoom2 = true;
-            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
-            this.entityBox1.Name = "entityBox1";
-            this.entityBox1.RegionOpacity = 128;
-            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.RegionPriority = 0;
-            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
-            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
-            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
-            this.entityBox1.ScrollX = 0F;
-            this.entityBox1.ScrollY = 0F;
-            this.entityBox1.SelectEntitiesAfterAdd = true;
-            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
-            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(438, 340);
-            this.entityBox1.TabIndex = 0;
-            this.entityBox1.Text = "entityBox1";
-            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox1.ViasBaseSize = 2;
-            this.entityBox1.ViasConnectColor = System.Drawing.Color.Yellow;
-            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
-            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
-            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
-            this.entityBox1.ViasOpacity = 255;
-            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
-            this.entityBox1.ViasOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPriority = 3;
-            this.entityBox1.ViasShape = ViasShape.Round;
-            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox1.WireBaseSize = 5;
-            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
-            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
-            this.entityBox1.WireOpacity = 128;
-            this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
-            this.entityBox1.WirePriority = 2;
-            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Zoom = 100;
-            this.entityBox1.ZoomImage0 = 100;
-            this.entityBox1.ZoomImage1 = 100;
-            this.entityBox1.ZoomImage2 = 100;
-            this.entityBox1.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntitySelect);
-            this.entityBox1.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityAdd);
-            this.entityBox1.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityRemove);
-            this.entityBox1.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityScroll);
-            // 
-            // entityBox2
-            // 
-            this.entityBox2.AutoPriority = true;
-            this.entityBox2.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.entityBox2.BeaconPriority = 4;
-            this.entityBox2.CellAdderColor = System.Drawing.Color.Red;
-            this.entityBox2.CellBufferColor = System.Drawing.Color.Navy;
-            this.entityBox2.CellBusSuppColor = System.Drawing.Color.DarkViolet;
-            this.entityBox2.CellFlipFlopColor = System.Drawing.Color.Lime;
-            this.entityBox2.CellLatchColor = System.Drawing.Color.Cyan;
-            this.entityBox2.CellLogicColor = System.Drawing.Color.Yellow;
-            this.entityBox2.CellMuxColor = System.Drawing.Color.DarkOrange;
-            this.entityBox2.CellNotColor = System.Drawing.Color.Navy;
-            this.entityBox2.CellOpacity = 128;
-            this.entityBox2.CellOtherColor = System.Drawing.Color.Snow;
-            this.entityBox2.CellOverrideColor = System.Drawing.Color.Black;
-            this.entityBox2.CellPriority = 1;
-            this.entityBox2.CellTextAlignment = TextAlignment.TopLeft;
-            this.entityBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBox2.ForeColor = System.Drawing.Color.Snow;
-            this.entityBox2.Grayscale = false;
-            this.entityBox2.HideCells = false;
-            this.entityBox2.HideGrid = false;
-            this.entityBox2.HideImage = false;
-            this.entityBox2.HideRegions = false;
-            this.entityBox2.HideVias = false;
-            this.entityBox2.HideWires = false;
-            this.entityBox2.ImageOpacity0 = 100;
-            this.entityBox2.ImageOpacity1 = 100;
-            this.entityBox2.ImageOpacity2 = 100;
-            this.entityBox2.Lambda = 5F;
-            this.entityBox2.Location = new System.Drawing.Point(0, 0);
-            this.entityBox2.LockScroll0 = true;
-            this.entityBox2.LockScroll1 = true;
-            this.entityBox2.LockScroll2 = true;
-            this.entityBox2.LockZoom0 = true;
-            this.entityBox2.LockZoom1 = true;
-            this.entityBox2.LockZoom2 = true;
-            this.entityBox2.Mode = System.Windows.Forms.EntityMode.Selection;
-            this.entityBox2.Name = "entityBox2";
-            this.entityBox2.RegionOpacity = 128;
-            this.entityBox2.RegionOverrideColor = System.Drawing.Color.Black;
-            this.entityBox2.RegionPriority = 0;
-            this.entityBox2.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage0")));
-            this.entityBox2.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage1")));
-            this.entityBox2.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox2.ScrollImage2")));
-            this.entityBox2.ScrollX = 0F;
-            this.entityBox2.ScrollY = 0F;
-            this.entityBox2.SelectEntitiesAfterAdd = true;
-            this.entityBox2.SelectionBoxColor = System.Drawing.Color.Red;
-            this.entityBox2.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox2.Size = new System.Drawing.Size(473, 340);
-            this.entityBox2.TabIndex = 0;
-            this.entityBox2.Text = "entityBox2";
-            this.entityBox2.UnitCustomColor = System.Drawing.Color.Snow;
-            this.entityBox2.UnitMemoryColor = System.Drawing.Color.Snow;
-            this.entityBox2.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox2.ViasBaseSize = 2;
-            this.entityBox2.ViasConnectColor = System.Drawing.Color.Yellow;
-            this.entityBox2.ViasFloatingColor = System.Drawing.Color.Gray;
-            this.entityBox2.ViasGroundColor = System.Drawing.Color.Black;
-            this.entityBox2.ViasInoutColor = System.Drawing.Color.Yellow;
-            this.entityBox2.ViasInputColor = System.Drawing.Color.Green;
-            this.entityBox2.ViasOpacity = 255;
-            this.entityBox2.ViasOutputColor = System.Drawing.Color.Red;
-            this.entityBox2.ViasOverrideColor = System.Drawing.Color.Black;
-            this.entityBox2.ViasPowerColor = System.Drawing.Color.Black;
-            this.entityBox2.ViasPriority = 3;
-            this.entityBox2.ViasShape = ViasShape.Round;
-            this.entityBox2.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox2.WireBaseSize = 5;
-            this.entityBox2.WireGroundColor = System.Drawing.Color.Green;
-            this.entityBox2.WireInterconnectColor = System.Drawing.Color.Blue;
-            this.entityBox2.WireOpacity = 128;
-            this.entityBox2.WireOverrideColor = System.Drawing.Color.Black;
-            this.entityBox2.WirePowerColor = System.Drawing.Color.Red;
-            this.entityBox2.WirePriority = 2;
-            this.entityBox2.WireTextAlignment = TextAlignment.TopLeft;
-            this.entityBox2.Zoom = 100;
-            this.entityBox2.ZoomImage0 = 100;
-            this.entityBox2.ZoomImage1 = 100;
-            this.entityBox2.ZoomImage2 = 100;
-            this.entityBox2.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntitySelect);
-            this.entityBox2.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityAdd);
-            this.entityBox2.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityRemove);
-            this.entityBox2.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityScroll);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -892,7 +894,6 @@
         private System.Windows.Forms.ToolStripMenuItem lineCrossTestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem barycenterTestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem trilateralTestToolStripMenuItem;
-        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
@@ -900,6 +901,7 @@
         private System.Windows.Forms.ToolStripMenuItem editKeypointIndexToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keypointColorToolStripMenuItem;
         private System.Windows.Forms.ColorDialog colorDialog1;
+        private ListViewNF listView1;
     }
 }
 
