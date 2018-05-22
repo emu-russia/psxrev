@@ -3204,9 +3204,10 @@ namespace System.Windows.Forms
                 screen.X >= Width - WireBaseSize * 2 || screen.Y >= Height - WireBaseSize * 2)
             {
                 PointF center = ScreenToLambda(Width, Height);
+                float zf = (float)Zoom / 100F;
 
-                ScrollX = -(entity.LambdaX - center.X / 2);
-                ScrollY = -(entity.LambdaY - center.Y / 2);
+                ScrollX = -entity.LambdaX + (Width/2/ (zf*Lambda));
+                ScrollY = -entity.LambdaY + (Height/2 / (zf*Lambda));
 
                 Invalidate();
             }
