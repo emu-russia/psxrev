@@ -78,7 +78,7 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.listView1 = new ListViewNF();
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -86,6 +86,8 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.keypointColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.entityBox2 = new System.Windows.Forms.EntityBox();
             this.menuStrip1.SuspendLayout();
@@ -244,7 +246,8 @@
             this.clearLeftToolStripMenuItem1,
             this.clearRightToolStripMenuItem1,
             this.toolStripSeparator2,
-            this.editKeypointIndexToolStripMenuItem});
+            this.editKeypointIndexToolStripMenuItem,
+            this.keypointColorToolStripMenuItem});
             this.keypointsToolStripMenuItem.Name = "keypointsToolStripMenuItem";
             this.keypointsToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.keypointsToolStripMenuItem.Text = "Keypoints";
@@ -252,54 +255,54 @@
             // loadLeftToolStripMenuItem1
             // 
             this.loadLeftToolStripMenuItem1.Name = "loadLeftToolStripMenuItem1";
-            this.loadLeftToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.loadLeftToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.loadLeftToolStripMenuItem1.Text = "Load Left";
             this.loadLeftToolStripMenuItem1.Click += new System.EventHandler(this.loadLeftToolStripMenuItem1_Click);
             // 
             // loadRightToolStripMenuItem1
             // 
             this.loadRightToolStripMenuItem1.Name = "loadRightToolStripMenuItem1";
-            this.loadRightToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.loadRightToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.loadRightToolStripMenuItem1.Text = "Load Right";
             this.loadRightToolStripMenuItem1.Click += new System.EventHandler(this.loadRightToolStripMenuItem1_Click);
             // 
             // saveLeftToolStripMenuItem1
             // 
             this.saveLeftToolStripMenuItem1.Name = "saveLeftToolStripMenuItem1";
-            this.saveLeftToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveLeftToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.saveLeftToolStripMenuItem1.Text = "Save Left";
             this.saveLeftToolStripMenuItem1.Click += new System.EventHandler(this.saveLeftToolStripMenuItem1_Click);
             // 
             // saveRightToolStripMenuItem1
             // 
             this.saveRightToolStripMenuItem1.Name = "saveRightToolStripMenuItem1";
-            this.saveRightToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveRightToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.saveRightToolStripMenuItem1.Text = "Save Right";
             this.saveRightToolStripMenuItem1.Click += new System.EventHandler(this.saveRightToolStripMenuItem1_Click);
             // 
             // clearLeftToolStripMenuItem1
             // 
             this.clearLeftToolStripMenuItem1.Name = "clearLeftToolStripMenuItem1";
-            this.clearLeftToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.clearLeftToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.clearLeftToolStripMenuItem1.Text = "Clear Left";
             this.clearLeftToolStripMenuItem1.Click += new System.EventHandler(this.clearLeftToolStripMenuItem1_Click);
             // 
             // clearRightToolStripMenuItem1
             // 
             this.clearRightToolStripMenuItem1.Name = "clearRightToolStripMenuItem1";
-            this.clearRightToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.clearRightToolStripMenuItem1.Size = new System.Drawing.Size(153, 22);
             this.clearRightToolStripMenuItem1.Text = "Clear Right";
             this.clearRightToolStripMenuItem1.Click += new System.EventHandler(this.clearRightToolStripMenuItem1_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(150, 6);
             // 
             // editKeypointIndexToolStripMenuItem
             // 
             this.editKeypointIndexToolStripMenuItem.Name = "editKeypointIndexToolStripMenuItem";
-            this.editKeypointIndexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editKeypointIndexToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.editKeypointIndexToolStripMenuItem.Text = "Keypoint Index";
             this.editKeypointIndexToolStripMenuItem.Click += new System.EventHandler(this.editKeypointIndexToolStripMenuItem_Click);
             // 
@@ -611,6 +614,13 @@
             this.saveFileDialog2.DefaultExt = "xml";
             this.saveFileDialog2.Filter = "XML files|*.xml|All files|*.*";
             // 
+            // keypointColorToolStripMenuItem
+            // 
+            this.keypointColorToolStripMenuItem.Name = "keypointColorToolStripMenuItem";
+            this.keypointColorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.keypointColorToolStripMenuItem.Text = "Keypoint Color";
+            this.keypointColorToolStripMenuItem.Click += new System.EventHandler(this.keypointColorToolStripMenuItem_Click);
+            // 
             // entityBox1
             // 
             this.entityBox1.AutoPriority = true;
@@ -696,6 +706,7 @@
             this.entityBox1.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntitySelect);
             this.entityBox1.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityAdd);
             this.entityBox1.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityRemove);
+            this.entityBox1.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityScroll);
             // 
             // entityBox2
             // 
@@ -782,6 +793,7 @@
             this.entityBox2.OnEntitySelect += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntitySelect);
             this.entityBox2.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityAdd);
             this.entityBox2.OnEntityRemove += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityRemove);
+            this.entityBox2.OnEntityScroll += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox2_OnEntityScroll);
             // 
             // Form1
             // 
@@ -886,6 +898,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem editKeypointIndexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keypointColorToolStripMenuItem;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 

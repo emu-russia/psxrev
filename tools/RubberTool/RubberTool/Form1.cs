@@ -61,6 +61,20 @@ namespace RubberTool
             Close();
         }
 
+        private void keypointColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult res = colorDialog1.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                entityBox1.ViasConnectColor = colorDialog1.Color;
+                entityBox2.ViasConnectColor = colorDialog1.Color;
+
+                entityBox1.Invalidate();
+                entityBox2.Invalidate();
+            }
+        }
+
         private void loadLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog1.ShowDialog();
@@ -937,8 +951,6 @@ namespace RubberTool
             }
         }
 
-        #endregion
-
         /// <summary>
         /// Обработка нажатия на DELETE
         /// </summary>
@@ -1029,6 +1041,51 @@ namespace RubberTool
             entityBox1.Invalidate();
             entityBox2.Invalidate();
         }
+
+        private void entityBox1_OnEntityScroll(object sender, Entity entity, EventArgs e)
+        {
+            if (EntityBox.IsEntityVias(entity))
+            {
+                UpdateKeypointCoords(entity, true);
+            }
+        }
+
+        private void entityBox2_OnEntityScroll(object sender, Entity entity, EventArgs e)
+        {
+            if (EntityBox.IsEntityVias(entity))
+            {
+                UpdateKeypointCoords(entity, false);
+            }
+        }
+
+        private void UpdateKeypointCoords ( Entity kp, bool left)
+        {
+            ListViewItem itemExists = CheckAlreadyPresent(kp.Label);
+
+            if (itemExists != null)
+            {
+                if (left)
+                {
+                    itemExists.SubItems[1].Text = kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString();
+                }
+                else
+                {
+                    itemExists.SubItems[2].Text = kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString();
+                }
+
+                if (itemExists.SubItems[1].Text == "" ||
+                    itemExists.SubItems[2].Text == "")
+                {
+                    itemExists.BackColor = Color.Tomato;
+                }
+                else
+                {
+                    itemExists.BackColor = SystemColors.Control;
+                }
+            }
+        }
+
+        #endregion
 
     }
 }

@@ -138,6 +138,7 @@ namespace System.Windows.Forms
         public event EntityBoxEntityEventHandler OnEntitySelect = null;
         public event EntityBoxEntityEventHandler OnEntityAdd = null;
         public event EntityBoxEntityEventHandler OnEntityRemove = null;
+        public event EntityBoxEntityEventHandler OnEntityScroll = null;
         public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
         public EntityBox()
@@ -759,6 +760,9 @@ namespace System.Windows.Forms
                         entity.LambdaY = entity.SavedLambdaY;
                         entity.LambdaEndX = entity.SavedLambdaEndX;
                         entity.LambdaEndY = entity.SavedLambdaEndY;
+
+                        if (OnEntityScroll != null)
+                            OnEntityScroll(this, entity, EventArgs.Empty);
                     }
                 }
                 else
@@ -919,6 +923,9 @@ namespace System.Windows.Forms
 
                         entity.LambdaEndX = lambda.X;
                         entity.LambdaEndY = lambda.Y;
+
+                        if (OnEntityScroll != null)
+                            OnEntityScroll(this, entity, EventArgs.Empty);
                     }
 
                     Point dist = new Point(Math.Abs(e.X - DragStartMouseX),

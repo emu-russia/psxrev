@@ -75,6 +75,9 @@
       <DependentUpon>FormKeypointIndex.cs</DependentUpon>
     </Compile>
     <Compile Include="Geometry.cs" />
+    <Compile Include="ListViewNF.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="NonAffineTransform.cs" />
     <Compile Include="PointFConverter.cs" />
     <Compile Include="Program.cs" />
