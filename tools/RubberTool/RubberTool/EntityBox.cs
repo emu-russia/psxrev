@@ -1073,13 +1073,43 @@ namespace System.Windows.Forms
                 return;
 
             float scaleWidth = (int)Lambda * 5;
-            scaleWidth *= (float)Zoom / 100.0F;
 
-            for (y = 0; y < Height; y += scaleWidth)
+            PointF topLeft = ScreenToLambda(0, 0);
+            PointF bottomRight = ScreenToLambda(Width, Height);
+
+            for (y = 0; y < bottomRight.Y; y += Lambda)
             {
-                for (x = 0; x < Width; x += scaleWidth)
+                for (x = 0; x < bottomRight.X; x += Lambda)
                 {
-                    gr.FillRectangle(Brushes.LightGray, x, y, 1, 1);
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y >= topLeft.Y; y -= Lambda)
+            {
+                for (x = 0; x < bottomRight.X; x += Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y >= topLeft.Y; y -= Lambda)
+            {
+                for (x = 0; x >= topLeft.X; x -= Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y < bottomRight.Y; y += Lambda)
+            {
+                for (x = 0; x >= topLeft.X; x -= Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
                 }
             }
         }
