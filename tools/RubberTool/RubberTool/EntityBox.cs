@@ -233,6 +233,16 @@ namespace System.Windows.Forms
             return point;
         }
 
+        public PointF ImageToLambda(int ImageX, int ImageY)
+        {
+            PointF point = new PointF(0.0F, 0.0F);
+
+            point.X = (float)ImageX / Lambda;
+            point.Y = (float)ImageY / Lambda;
+
+            return point;
+        }
+
         public Point LambdaToScreen(float LambdaX, float LambdaY)
         {
             Point point = new Point(0, 0);
@@ -240,6 +250,19 @@ namespace System.Windows.Forms
 
             float x = (LambdaX + ScrollX) * (zf * Lambda);
             float y = (LambdaY + ScrollY) * (zf * Lambda);
+
+            point.X = (int)x;
+            point.Y = (int)y;
+
+            return point;
+        }
+
+        public Point LambdaToImage(float LambdaX, float LambdaY)
+        {
+            Point point = new Point(0, 0);
+
+            float x = LambdaX * Lambda;
+            float y = LambdaY * Lambda;
 
             point.X = (int)x;
             point.Y = (int)y;

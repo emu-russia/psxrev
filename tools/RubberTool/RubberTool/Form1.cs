@@ -259,7 +259,7 @@ namespace RubberTool
 
             if ( entityBox1.Image0 == null )
             {
-                MessageBox.Show("Load image on Left");
+                MessageBox.Show("Load image on Left", "Error");
                 return;
             }
 
@@ -269,7 +269,7 @@ namespace RubberTool
 
             if (_selectedLeft.Count != 3 )
             {
-                MessageBox.Show("Select exactly 3 keypoints to form triangle");
+                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error");
                 return;
             }
 
@@ -277,7 +277,7 @@ namespace RubberTool
             {
                 if ( !EntityBox.IsEntityVias(entity))
                 {
-                    MessageBox.Show("Select keypoints only");
+                    MessageBox.Show("Select keypoints only", "Error");
                     return;
                 }
             }
@@ -288,7 +288,7 @@ namespace RubberTool
 
             if (_selectedRight.Count != 3)
             {
-                MessageBox.Show("Select exactly 3 keypoints to form triangle");
+                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error");
                 return;
             }
 
@@ -296,7 +296,7 @@ namespace RubberTool
             {
                 if (!EntityBox.IsEntityVias(entity))
                 {
-                    MessageBox.Show("Select keypoints only");
+                    MessageBox.Show("Select keypoints only", "Error");
                     return;
                 }
             }
@@ -316,9 +316,9 @@ namespace RubberTool
 
             Triangle sourceTri = new Triangle();
 
-            Point a0 = entityBox1.LambdaToScreen(_selectedLeft[0].LambdaX, _selectedLeft[0].LambdaY);
-            Point a1 = entityBox1.LambdaToScreen(_selectedLeft[1].LambdaX, _selectedLeft[1].LambdaY);
-            Point a2 = entityBox1.LambdaToScreen(_selectedLeft[2].LambdaX, _selectedLeft[2].LambdaY);
+            Point a0 = entityBox1.LambdaToImage(_selectedLeft[0].LambdaX, _selectedLeft[0].LambdaY);
+            Point a1 = entityBox1.LambdaToImage(_selectedLeft[1].LambdaX, _selectedLeft[1].LambdaY);
+            Point a2 = entityBox1.LambdaToImage(_selectedLeft[2].LambdaX, _selectedLeft[2].LambdaY);
 
             sourceTri.a = new Point2D(a0.X, a0.Y);
             sourceTri.b = new Point2D(a1.X, a1.Y);
@@ -326,9 +326,9 @@ namespace RubberTool
 
             Triangle destTri = new Triangle();
 
-            Point b0 = entityBox1.LambdaToScreen(_selectedRight[0].LambdaX, _selectedRight[0].LambdaY);
-            Point b1 = entityBox1.LambdaToScreen(_selectedRight[1].LambdaX, _selectedRight[1].LambdaY);
-            Point b2 = entityBox1.LambdaToScreen(_selectedRight[2].LambdaX, _selectedRight[2].LambdaY);
+            Point b0 = entityBox2.LambdaToImage(_selectedRight[0].LambdaX, _selectedRight[0].LambdaY);
+            Point b1 = entityBox2.LambdaToImage(_selectedRight[1].LambdaX, _selectedRight[1].LambdaY);
+            Point b2 = entityBox2.LambdaToImage(_selectedRight[2].LambdaX, _selectedRight[2].LambdaY);
 
             destTri.a = new Point2D(b0.X, b0.Y);
             destTri.b = new Point2D(b1.X, b1.Y);
@@ -589,7 +589,7 @@ namespace RubberTool
             {
                 if (EntityBox.IsEntityVias(entity))
                 {
-                    Point p = box.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point p = box.LambdaToImage(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
                     point.name = entity.Label;
                     points.Add(point);
@@ -616,6 +616,12 @@ namespace RubberTool
             List<Point2D> pointsRight = GetKeypoints(boxTo);
 
             //
+            // Добавить точки по краям изображения
+            //
+
+            Point2D bottomDownTo = BottomDownPoint(pointsRight);
+
+            //
             // Триангулируем
             //
 
@@ -625,7 +631,7 @@ namespace RubberTool
             // Сформировать изображение справа
             //
 
-            Bitmap bitmap = new Bitmap(boxFrom.Image0.Width * 3, boxFrom.Image0.Height * 3);
+            Bitmap bitmap = new Bitmap((int)bottomDownTo.X + 1, (int)bottomDownTo.Y + 1);
             Graphics gr = Graphics.FromImage(bitmap);
             gr.Clear(Color.Gray);
             boxTo.Image0 = bitmap;
@@ -646,6 +652,26 @@ namespace RubberTool
                     boxTo.Image0,
                     sourceTri, destTri);
             }
+        }
+
+        private Point2D BottomDownPoint(List<Point2D> points)
+        {
+            float xmax = 0.0F;
+            float ymax = 0.0F;
+
+            foreach ( Point2D point in points)
+            {
+                if ( point.X > xmax)
+                {
+                    xmax = point.X;
+                }
+                if ( point.Y > ymax)
+                {
+                    ymax = point.Y;
+                }
+            }
+
+            return new Point2D(xmax, ymax);
         }
 
         /// <summary>
