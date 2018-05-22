@@ -137,15 +137,19 @@ class NonAffineTransform
                     //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
                     //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
 
+                    Color pixel;
+
                     if (float.IsNaN(n2.X) || float.IsNaN(n2.Y) || 
                         n2.X >= sourceBitmap.Width || n2.Y >= sourceBitmap.Height || 
                         n2.X < 0 || n2.Y < 0 )
                     {
-                        n2 = new Point2D(0, 0);
+                        pixel = Color.Red;
+                    }
+                    else
+                    {
+                        pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     }
 
-
-                    Color pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     Pen pen = new Pen(pixel);
                     gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
                 }
@@ -156,14 +160,19 @@ class NonAffineTransform
                     //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
                     //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
 
+                    Color pixel;
+
                     if (float.IsNaN(n2.X) || float.IsNaN(n2.Y) ||
                         n2.X >= sourceBitmap.Width || n2.Y >= sourceBitmap.Height ||
                         n2.X < 0 || n2.Y < 0)
                     {
-                        n2 = new Point2D(0, 0);
+                        pixel = Color.Red;
+                    }
+                    else
+                    {
+                        pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     }
 
-                    Color pixel = sourceBitmap.GetPixel((int)n2.X, (int)n2.Y);
                     Pen pen = new Pen(pixel);
                     gr.DrawRectangle(pen, new Rectangle((int)x, (int)y, 1, 1));
                 }

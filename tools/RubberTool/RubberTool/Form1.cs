@@ -18,6 +18,10 @@ namespace RubberTool
         [DllImport("kernel32")]
         static extern bool AllocConsole();
 
+        //
+        // Индекс для генерации имени контрольной точки
+        //
+
         private int kpIndexLeft = 1;
         private int kpIndexRight = 1;
 
@@ -34,8 +38,16 @@ namespace RubberTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //
+            // Сделать ширину границы ячейки треугольной сетки после выделения минимальной
+            //
+
             entityBox1.WireBaseSize = 1;
             entityBox2.WireBaseSize = 1;
+
+#if !DEBUG
+            debugToolStripMenuItem.Visible = false;
+#endif
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -147,7 +159,7 @@ namespace RubberTool
             }
         }
 
-        #region Названия контрольных точек
+#region Названия контрольных точек
 
         private void entityBox1_OnEntitySelect(object sender, Entity entity, EventArgs e)
         {
@@ -177,23 +189,43 @@ namespace RubberTool
             last.Label = toolStripTextBox2.Text;
         }
 
-        #endregion
+#endregion
 
         private void entityBox1_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
-            if ( entityBox1.IsEntityVias(entity))
+            if (EntityBox.IsEntityVias(entity))
             {
                 entity.Label = "kp" + kpIndexLeft.ToString();
                 kpIndexLeft++;
+
+                ListInsertKeypoint(entity, true);
             }
         }
 
         private void entityBox2_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
-            if (entityBox2.IsEntityVias(entity))
+            if (EntityBox.IsEntityVias(entity))
             {
                 entity.Label = "kp" + kpIndexRight.ToString();
                 kpIndexRight++;
+
+                ListInsertKeypoint(entity, false);
+            }
+        }
+
+        private void entityBox1_OnEntityRemove(object sender, Entity entity, EventArgs e)
+        {
+            if (EntityBox.IsEntityVias(entity))
+            {
+                ListRemoveKeypoint(entity, true);
+            }
+        }
+
+        private void entityBox2_OnEntityRemove(object sender, Entity entity, EventArgs e)
+        {
+            if (EntityBox.IsEntityVias(entity))
+            {
+                ListRemoveKeypoint(entity, false);
             }
         }
 
@@ -229,7 +261,7 @@ namespace RubberTool
 
             foreach ( Entity entity in _selectedLeft)
             {
-                if ( !entityBox1.IsEntityVias(entity))
+                if ( !EntityBox.IsEntityVias(entity))
                 {
                     MessageBox.Show("Select keypoints only");
                     return;
@@ -248,7 +280,7 @@ namespace RubberTool
 
             foreach (Entity entity in _selectedRight)
             {
-                if (!entityBox1.IsEntityVias(entity))
+                if (!EntityBox.IsEntityVias(entity))
                 {
                     MessageBox.Show("Select keypoints only");
                     return;
@@ -360,6 +392,10 @@ namespace RubberTool
             GenerateMesh(entityBox2);
         }
 
+        /// <summary>
+        /// Сгенерировать и показать треугольную сетку
+        /// </summary>
+        /// <param name="box"></param>
         private void GenerateMesh ( EntityBox box )
         {
             Delaunay delaunay = new Delaunay();
@@ -372,12 +408,18 @@ namespace RubberTool
 
             foreach (Entity entity in box._entities)
             {
-                if (box.IsEntityVias(entity))
+                if (EntityBox.IsEntityVias(entity))
                 {
                     Point p = box.LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
                     points.Add(point);
                 }
+            }
+
+            if ( points.Count < 3)
+            {
+                MessageBox.Show("3 or more keypoints required!", "Error");
+                return;
             }
 
             //
@@ -386,7 +428,10 @@ namespace RubberTool
 
             List<Triangle> mesh = delaunay.GenMesh(points);
 
-#if DEBUG
+            //
+            // Отобразить треугольную сетку
+            //
+
             Random rnd = new Random();
 
             foreach (Triangle tri in mesh)
@@ -395,8 +440,6 @@ namespace RubberTool
 
                 AddTriangle(box, tri, randomColor);
             }
-
-#endif
         }
 
         private Entity AddTriangle ( EntityBox box, Triangle tri, Color color )
@@ -430,13 +473,17 @@ namespace RubberTool
             ClearMesh(entityBox2);
         }
 
+        /// <summary>
+        /// Очистить треугольную сетку
+        /// </summary>
+        /// <param name="box"></param>
         private void ClearMesh ( EntityBox box )
         {
             List<Entity> ents = new List<Entity>();
 
             foreach (Entity entity in box._entities)
             {
-                if (entityBox1.IsEntityRegion(entity))
+                if (EntityBox.IsEntityRegion(entity))
                 {
                     ents.Add(entity);
                 }
@@ -457,6 +504,18 @@ namespace RubberTool
         /// <param name="e"></param>
         private void leftRightToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if ( entityBox1.Image0 == null )
+            {
+                MessageBox.Show("Image not loaded!", "Error");
+                return;
+            }
+
+            if ( !VerifyKeypoints(entityBox1, entityBox2))
+            {
+                MessageBox.Show("Keypoints doesn't match!", "Error");
+                return;
+            }
+
             RubberWarping(entityBox1, entityBox2);
         }
 
@@ -467,45 +526,80 @@ namespace RubberTool
         /// <param name="e"></param>
         private void rightLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (entityBox2.Image0 == null)
+            {
+                MessageBox.Show("Image not loaded!", "Error");
+                return;
+            }
+
+            if (!VerifyKeypoints(entityBox2, entityBox1))
+            {
+                MessageBox.Show("Keypoints doesn't match!", "Error");
+                return;
+            }
+
             RubberWarping(entityBox2, entityBox1);
         }
 
+        /// <summary>
+        /// Верифицировать количество и названия ключевых точек
+        /// </summary>
+        /// <param name="sourceBox"></param>
+        /// <param name="destBox"></param>
+        /// <returns></returns>
+        private bool VerifyKeypoints ( EntityBox sourceBox, EntityBox destBox )
+        {
+            //
+            // Получить ключевые точки 
+            //
+
+            List<Point2D> pointsLeft = GetKeypoints(sourceBox);
+            List<Point2D> pointsRight = GetKeypoints(destBox);
+
+            foreach ( Point2D point in pointsLeft)
+            {
+                if ( MapPoint ( point, pointsRight) == null )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private List<Point2D> GetKeypoints ( EntityBox box )
+        {
+            List<Point2D> points = new List<Point2D>();
+
+            foreach (Entity entity in box._entities)
+            {
+                if (EntityBox.IsEntityVias(entity))
+                {
+                    Point p = box.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point2D point = new Point2D(p.X, p.Y);
+                    point.name = entity.Label;
+                    points.Add(point);
+                }
+            }
+
+            return points;
+        }
+
+        /// <summary>
+        /// Резиновая трансформация изображений
+        /// </summary>
+        /// <param name="boxFrom"></param>
+        /// <param name="boxTo"></param>
         private void RubberWarping ( EntityBox boxFrom, EntityBox boxTo )
         {
             Delaunay delaunay = new Delaunay();
 
-            List<Point2D> pointsLeft = new List<Point2D>();
-            List<Point2D> pointsRight = new List<Point2D>();
-
             //
-            // Получить ключевые точки слева
+            // Получить ключевые точки 
             //
 
-            foreach (Entity entity in boxFrom._entities)
-            {
-                if (boxFrom.IsEntityVias(entity))
-                {
-                    Point p = boxFrom.LambdaToScreen(entity.LambdaX, entity.LambdaY);
-                    Point2D point = new Point2D(p.X, p.Y);
-                    point.name = entity.Label;
-                    pointsLeft.Add(point);
-                }
-            }
-
-            //
-            // Получить ключевые точки справа
-            //
-
-            foreach (Entity entity in boxTo._entities)
-            {
-                if (boxTo.IsEntityVias(entity))
-                {
-                    Point p = boxTo.LambdaToScreen(entity.LambdaX, entity.LambdaY);
-                    Point2D point = new Point2D(p.X, p.Y);
-                    point.name = entity.Label;
-                    pointsRight.Add(point);
-                }
-            }
+            List<Point2D> pointsLeft = GetKeypoints (boxFrom);
+            List<Point2D> pointsRight = GetKeypoints(boxTo);
 
             //
             // Триангулируем
@@ -519,7 +613,7 @@ namespace RubberTool
 
             Bitmap bitmap = new Bitmap(boxFrom.Image0.Width * 3, boxFrom.Image0.Height * 3);
             Graphics gr = Graphics.FromImage(bitmap);
-            gr.Clear(Color.White);
+            gr.Clear(Color.Gray);
             boxTo.Image0 = bitmap;
 
             //
@@ -566,7 +660,7 @@ namespace RubberTool
         /// <param name="e"></param>
         private void clearLeftToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            RemoveKeypoints(entityBox1);
+            RemoveKeypoints(entityBox1, true);
         }
 
         /// <summary>
@@ -576,16 +670,20 @@ namespace RubberTool
         /// <param name="e"></param>
         private void clearRightToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            RemoveKeypoints(entityBox2);
+            RemoveKeypoints(entityBox2, false);
         }
 
-        private void RemoveKeypoints ( EntityBox box )
+        /// <summary>
+        /// Удалить контрольные точки
+        /// </summary>
+        /// <param name="box"></param>
+        private void RemoveKeypoints ( EntityBox box, bool left )
         {
             List<Entity> kps = new List<Entity>();
 
             foreach (Entity entity in box._entities)
             {
-                if (entityBox1.IsEntityVias(entity))
+                if (EntityBox.IsEntityVias(entity))
                 {
                     kps.Add(entity);
                 }
@@ -594,6 +692,7 @@ namespace RubberTool
             foreach (Entity entity in kps)
             {
                 box._entities.Remove(entity);
+                ListRemoveKeypoint(entity, left);
             }
 
             box.Invalidate();
@@ -640,7 +739,7 @@ namespace RubberTool
 
             if ( res == DialogResult.OK)
             {
-                LoadKeypoints(entityBox1, openFileDialog2.FileName);
+                LoadKeypoints(entityBox1, openFileDialog2.FileName, true);
             }
         }
 
@@ -655,17 +754,22 @@ namespace RubberTool
 
             if (res == DialogResult.OK)
             {
-                LoadKeypoints(entityBox2, openFileDialog2.FileName);
+                LoadKeypoints(entityBox2, openFileDialog2.FileName, false);
             }
         }
 
+        /// <summary>
+        /// Сохранить контрольные точки в XML
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="filename"></param>
         private void SaveKeypoints (EntityBox box, string filename )
         {
             List<Entity> kps = new List<Entity>();
 
             foreach (Entity entity in box._entities)
             {
-                if (box.IsEntityVias(entity))
+                if (EntityBox.IsEntityVias(entity))
                 {
                     kps.Add(entity);
                 }
@@ -679,7 +783,12 @@ namespace RubberTool
             }
         }
 
-        private void LoadKeypoints ( EntityBox box, string filename)
+        /// <summary>
+        /// Загрузить контрольные точки из XML
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="filename"></param>
+        private void LoadKeypoints ( EntityBox box, string filename, bool left)
         {
             XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
 
@@ -690,6 +799,7 @@ namespace RubberTool
                 foreach (Entity entity in list)
                 {
                     box._entities.Add(entity);
+                    ListInsertKeypoint(entity, left);
                 }
 
                 box._entities = box._entities.OrderBy(o => o.Priority).ToList();
@@ -703,7 +813,7 @@ namespace RubberTool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-
+        /// 
         private void editKeypointIndexToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormKeypointIndex form = new FormKeypointIndex(kpIndexLeft, kpIndexRight);
@@ -723,6 +833,202 @@ namespace RubberTool
             }
         }
 
+        #region List view of keypoints
+
+        private void ListInsertKeypoint(Entity kp, bool left)
+        {
+            ListViewItem item = new ListViewItem(kp.Label);
+
+            //
+            // Проверить, если такая точка уже есть в списке, то просто обновить координаты
+            //
+
+            ListViewItem itemExists = CheckAlreadyPresent(kp.Label);
+
+            if (itemExists != null)
+            {
+                if (left)
+                {
+                    itemExists.SubItems[1].Text =
+                        kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString();
+                }
+                else
+                {
+                    itemExists.SubItems[2].Text =
+                        kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString();
+                }
+
+                if ( itemExists.SubItems[1].Text == "" ||
+                    itemExists.SubItems[2].Text == "" )
+                {
+                    itemExists.BackColor = Color.Tomato;
+                }
+                else
+                {
+                    itemExists.BackColor = SystemColors.Control;
+                }
+            }
+            else
+            {
+                //
+                // Иначе добавить новую
+                //
+
+                if (left)
+                {
+                    item.SubItems.Add(kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString());
+                    item.SubItems.Add("");
+                }
+                else
+                {
+                    item.SubItems.Add("");
+                    item.SubItems.Add(kp.LambdaX.ToString() + "; " + kp.LambdaY.ToString());
+                }
+
+                item.BackColor = Color.Tomato;
+
+                listView1.Items.Add(item);
+            }
+        }
+
+        private ListViewItem CheckAlreadyPresent ( string name )
+        {
+            foreach (ListViewItem item in listView1.Items)
+            {
+                if (item.SubItems[0].Text == name )
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        private void ListRemoveKeypoint (Entity kp, bool left )
+        {
+            ListViewItem itemExists = CheckAlreadyPresent(kp.Label);
+
+            if (itemExists != null)
+            {
+                if (left)
+                {
+                    itemExists.SubItems[1].Text = "";
+                }
+                else
+                {
+                    itemExists.SubItems[2].Text = "";
+                }
+
+                if (itemExists.SubItems[1].Text == "" ||
+                    itemExists.SubItems[2].Text == "")
+                {
+                    itemExists.BackColor = Color.Tomato;
+                }
+                else
+                {
+                    itemExists.BackColor = SystemColors.Control;
+                }
+
+                if (itemExists.SubItems[1].Text == "" &&
+                    itemExists.SubItems[2].Text == "" )
+                {
+                    listView1.Items.Remove(itemExists);
+                }
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Обработка нажатия на DELETE
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (listView1.SelectedIndices.Count == 0 )
+            {
+                return;
+            }
+
+            if (e.KeyCode == Keys.Delete)
+            {
+                ListViewItem item = listView1.SelectedItems[0];
+
+                RemoveKeypointByName(entityBox1, item.SubItems[0].Text);
+                RemoveKeypointByName(entityBox2, item.SubItems[0].Text);
+
+                listView1.Items.Remove(item);
+            }
+        }
+
+        /// <summary>
+        /// Удалить контрольную точку по имени
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="name"></param>
+        private void RemoveKeypointByName ( EntityBox box, string name )
+        {
+            Entity kp = null;
+
+            foreach ( Entity entity in box._entities)
+            {
+                if (EntityBox.IsEntityVias (entity))
+                {
+                    if ( entity.Label == name )
+                    {
+                        kp = entity;
+                    }
+                }
+            }
+
+            if (kp != null )
+            {
+                box._entities.Remove(kp);
+                box.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Подсветить точки по клику на элемент списка
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (listView1.SelectedIndices.Count == 0)
+            {
+                return;
+            }
+
+            ListViewItem item = listView1.SelectedItems[0];
+
+            string name = item.Text;
+
+            entityBox1.RemoveSelection();
+            entityBox2.RemoveSelection();
+
+            foreach ( Entity entity in entityBox1._entities)
+            {
+                if ( EntityBox.IsEntityVias(entity) && entity.Label == name )
+                {
+                    entity.Selected = true;
+                    entityBox1.EnsureVisible(entity);
+                }
+            }
+
+            foreach (Entity entity in entityBox2._entities)
+            {
+                if (EntityBox.IsEntityVias(entity) && entity.Label == name)
+                {
+                    entity.Selected = true;
+                    entityBox2.EnsureVisible(entity);
+                }
+            }
+
+            entityBox1.Invalidate();
+            entityBox2.Invalidate();
+        }
 
     }
 }

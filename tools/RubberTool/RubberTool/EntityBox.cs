@@ -137,6 +137,7 @@ namespace System.Windows.Forms
         public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
         public event EntityBoxEntityEventHandler OnEntitySelect = null;
         public event EntityBoxEntityEventHandler OnEntityAdd = null;
+        public event EntityBoxEntityEventHandler OnEntityRemove = null;
         public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
         public EntityBox()
@@ -163,14 +164,14 @@ namespace System.Windows.Forms
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        public bool IsEntityWire(Entity entity)
+        public static bool IsEntityWire(Entity entity)
         {
             return (entity.Type == EntityType.WireGround ||
                      entity.Type == EntityType.WireInterconnect ||
                      entity.Type == EntityType.WirePower);
         }
 
-        public bool IsEntityVias(Entity entity)
+        public static bool IsEntityVias(Entity entity)
         {
             return (entity.Type == EntityType.ViasConnect ||
                      entity.Type == EntityType.ViasFloating ||
@@ -181,7 +182,7 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.ViasPower);
         }
 
-        public bool IsEntityCell(Entity entity)
+        public static bool IsEntityCell(Entity entity)
         {
             return (entity.Type == EntityType.CellNot ||
                      entity.Type == EntityType.CellBuffer ||
@@ -197,12 +198,12 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.UnitCustom);
         }
 
-        public bool IsEntityRegion(Entity entity)
+        public static bool IsEntityRegion(Entity entity)
         {
             return (entity.Type == EntityType.Region );
         }
 
-        public bool IsEntityTile(Entity entity)
+        public static bool IsEntityTile(Entity entity)
         {
             return (entity.Type == EntityType.Tile);
         }
@@ -2712,6 +2713,9 @@ namespace System.Windows.Forms
             foreach (Entity entity in _entities)
             {
                 lastEntities.Add(entity);
+
+                if (OnEntityRemove != null)
+                    OnEntityRemove(this, entity, EventArgs.Empty);
             }
 
             LastOpWrapper = EntityBoxOperation.EntityDelete;
@@ -3106,6 +3110,9 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in pendingDelete)
             {
+                if (OnEntityRemove != null)
+                    OnEntityRemove(this, entity, EventArgs.Empty);
+
                 _entities.Remove(entity);
             }
 
@@ -3157,6 +3164,22 @@ namespace System.Windows.Forms
 
             if (OnEntitySelect != null)
                 OnEntitySelect(this, entity, EventArgs.Empty);
+        }
+
+        public void EnsureVisible ( Entity entity )
+        {
+            Point screen = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+
+            if ( screen.X < WireBaseSize * 2 || screen.Y < WireBaseSize * 2 ||
+                screen.X >= Width - WireBaseSize * 2 || screen.Y >= Height - WireBaseSize * 2)
+            {
+                PointF center = ScreenToLambda(Width, Height);
+
+                ScrollX = -(entity.LambdaX - center.X / 2);
+                ScrollY = -(entity.LambdaY - center.Y / 2);
+
+                Invalidate();
+            }
         }
 
         #region Entity Props
