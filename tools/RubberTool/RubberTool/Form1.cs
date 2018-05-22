@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
 namespace RubberTool
 {
@@ -29,6 +30,12 @@ namespace RubberTool
 #endif
 
             Console.WriteLine("RubberTool 1.0");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            entityBox1.WireBaseSize = 1;
+            entityBox2.WireBaseSize = 1;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,30 +72,48 @@ namespace RubberTool
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             entityBox1.Mode = EntityMode.ViasConnect;
+            toolStripButton1.BackColor = SystemColors.ControlDark;
+            toolStripButton2.BackColor = SystemColors.Control;
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             entityBox1.Mode = EntityMode.Selection;
+            toolStripButton1.BackColor = SystemColors.Control;
+            toolStripButton2.BackColor = SystemColors.ControlDark;
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             entityBox2.Mode = EntityMode.ViasConnect;
+            toolStripButton3.BackColor = SystemColors.ControlDark;
+            toolStripButton4.BackColor = SystemColors.Control;
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
             entityBox2.Mode = EntityMode.Selection;
+            toolStripButton3.BackColor = SystemColors.Control;
+            toolStripButton4.BackColor = SystemColors.ControlDark;
         }
 
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
+            Random rnd = new Random();
+            Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+
+            entityBox1.RegionOverrideColor = randomColor;
+
             entityBox1.DrawRegionBetweenSelectedViases();
         }
 
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
+            Random rnd = new Random();
+            Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+
+            entityBox1.RegionOverrideColor = randomColor;
+
             entityBox2.DrawRegionBetweenSelectedViases();
         }
 
@@ -266,7 +291,6 @@ namespace RubberTool
             NonAffineTransform.WarpTriangle(entityBox1.Image0,
                 entityBox2.Image0,
                 sourceTri, destTri);
-
         }
 
         private void lineCrossTestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -314,7 +338,29 @@ namespace RubberTool
 
         }
 
+        /// <summary>
+        /// Сгененрировать сетку слева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void generateTrianglesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearMesh(entityBox1);
+            GenerateMesh(entityBox1);
+        }
+
+        /// <summary>
+        /// Сгененрировать сетку справа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void generateRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearMesh(entityBox2);
+            GenerateMesh(entityBox2);
+        }
+
+        private void GenerateMesh ( EntityBox box )
         {
             Delaunay delaunay = new Delaunay();
 
@@ -324,12 +370,12 @@ namespace RubberTool
             // Получить ключевые точки
             //
 
-            foreach ( Entity entity in entityBox1._entities)
+            foreach (Entity entity in box._entities)
             {
-                if (entityBox1.IsEntityVias(entity))
+                if (box.IsEntityVias(entity))
                 {
-                    Point p = entityBox1.LambdaToScreen(entity.LambdaX, entity.LambdaY);
-                    Point2D point = new Point2D( p.X, p.Y);
+                    Point p = box.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point2D point = new Point2D(p.X, p.Y);
                     points.Add(point);
                 }
             }
@@ -343,11 +389,11 @@ namespace RubberTool
 #if DEBUG
             Random rnd = new Random();
 
-            foreach ( Triangle tri in mesh)
+            foreach (Triangle tri in mesh)
             {
                 Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
 
-                AddTriangle(entityBox1, tri, randomColor);
+                AddTriangle(box, tri, randomColor);
             }
 
 #endif
@@ -365,11 +411,66 @@ namespace RubberTool
         }
 
         /// <summary>
+        /// Очистить треугольную сетку слева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clearLeftToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            ClearMesh(entityBox1);
+        }
+
+        /// <summary>
+        /// Очистить треугольную сетку справа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clearRightToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            ClearMesh(entityBox2);
+        }
+
+        private void ClearMesh ( EntityBox box )
+        {
+            List<Entity> ents = new List<Entity>();
+
+            foreach (Entity entity in box._entities)
+            {
+                if (entityBox1.IsEntityRegion(entity))
+                {
+                    ents.Add(entity);
+                }
+            }
+
+            foreach (Entity entity in ents)
+            {
+                box._entities.Remove(entity);
+            }
+
+            box.Invalidate();
+        }
+
+        /// <summary>
         /// Резиновая трансфомация левого изображения в правые ключевые точки
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void leftRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RubberWarping(entityBox1, entityBox2);
+        }
+
+        /// <summary>
+        /// Резиновая трансфомация правого изображения в левые ключевые точки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rightLeftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RubberWarping(entityBox2, entityBox1);
+        }
+
+        private void RubberWarping ( EntityBox boxFrom, EntityBox boxTo )
         {
             Delaunay delaunay = new Delaunay();
 
@@ -380,11 +481,11 @@ namespace RubberTool
             // Получить ключевые точки слева
             //
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in boxFrom._entities)
             {
-                if (entityBox1.IsEntityVias(entity))
+                if (boxFrom.IsEntityVias(entity))
                 {
-                    Point p = entityBox1.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point p = boxFrom.LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
                     point.name = entity.Label;
                     pointsLeft.Add(point);
@@ -395,11 +496,11 @@ namespace RubberTool
             // Получить ключевые точки справа
             //
 
-            foreach (Entity entity in entityBox2._entities)
+            foreach (Entity entity in boxTo._entities)
             {
-                if (entityBox2.IsEntityVias(entity))
+                if (boxTo.IsEntityVias(entity))
                 {
-                    Point p = entityBox2.LambdaToScreen(entity.LambdaX, entity.LambdaY);
+                    Point p = boxTo.LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
                     point.name = entity.Label;
                     pointsRight.Add(point);
@@ -416,16 +517,16 @@ namespace RubberTool
             // Сформировать изображение справа
             //
 
-            Bitmap bitmap = new Bitmap(entityBox1.Image0.Width * 3, entityBox1.Image0.Height * 3);
+            Bitmap bitmap = new Bitmap(boxFrom.Image0.Width * 3, boxFrom.Image0.Height * 3);
             Graphics gr = Graphics.FromImage(bitmap);
             gr.Clear(Color.White);
-            entityBox2.Image0 = bitmap;
+            boxTo.Image0 = bitmap;
 
             //
             // Трилатеральный перенос треугольников левого изображения в правое
             //
 
-            foreach ( Triangle sourceTri in mesh )
+            foreach (Triangle sourceTri in mesh)
             {
                 Triangle destTri = new Triangle();
 
@@ -433,12 +534,18 @@ namespace RubberTool
                 destTri.b = MapPoint(sourceTri.b, pointsRight);
                 destTri.c = MapPoint(sourceTri.c, pointsRight);
 
-                NonAffineTransform.WarpTriangle(entityBox1.Image0,
-                    entityBox2.Image0,
+                NonAffineTransform.WarpTriangle(boxFrom.Image0,
+                    boxTo.Image0,
                     sourceTri, destTri);
             }
         }
 
+        /// <summary>
+        /// Найти контрольную точку в списке ассоциативно связанную по имени
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
         private Point2D MapPoint ( Point2D source, List<Point2D> dest)
         {
             foreach ( Point2D point in dest )
@@ -451,5 +558,171 @@ namespace RubberTool
 
             return null;
         }
+
+        /// <summary>
+        /// Удалить контрольные точки слева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clearLeftToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            RemoveKeypoints(entityBox1);
+        }
+
+        /// <summary>
+        /// Удалить контрольные точки справа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clearRightToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            RemoveKeypoints(entityBox2);
+        }
+
+        private void RemoveKeypoints ( EntityBox box )
+        {
+            List<Entity> kps = new List<Entity>();
+
+            foreach (Entity entity in box._entities)
+            {
+                if (entityBox1.IsEntityVias(entity))
+                {
+                    kps.Add(entity);
+                }
+            }
+
+            foreach (Entity entity in kps)
+            {
+                box._entities.Remove(entity);
+            }
+
+            box.Invalidate();
+        }
+
+        /// <summary>
+        /// Сохранить контрольные точки слева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveLeftToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DialogResult res = saveFileDialog2.ShowDialog();
+            
+            if (res == DialogResult.OK)
+            {
+                SaveKeypoints(entityBox1, saveFileDialog2.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Сохранить контрольные точки справа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveRightToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DialogResult res = saveFileDialog2.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                SaveKeypoints(entityBox2, saveFileDialog2.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Загрузить контрольные точки слева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void loadLeftToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DialogResult res = openFileDialog2.ShowDialog();
+
+            if ( res == DialogResult.OK)
+            {
+                LoadKeypoints(entityBox1, openFileDialog2.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Загрузить контрольные точки справа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void loadRightToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DialogResult res = openFileDialog2.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                LoadKeypoints(entityBox2, openFileDialog2.FileName);
+            }
+        }
+
+        private void SaveKeypoints (EntityBox box, string filename )
+        {
+            List<Entity> kps = new List<Entity>();
+
+            foreach (Entity entity in box._entities)
+            {
+                if (box.IsEntityVias(entity))
+                {
+                    kps.Add(entity);
+                }
+            }
+
+            XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            {
+                ser.Serialize(fs, kps);
+            }
+        }
+
+        private void LoadKeypoints ( EntityBox box, string filename)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+            using (FileStream fs = new FileStream(filename, FileMode.Open))
+            {
+                List<Entity> list = (List<Entity>)ser.Deserialize(fs);
+
+                foreach (Entity entity in list)
+                {
+                    box._entities.Add(entity);
+                }
+
+                box._entities = box._entities.OrderBy(o => o.Priority).ToList();
+
+                box.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Изменение автоподстановки индекса контрольных точек
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void editKeypointIndexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormKeypointIndex form = new FormKeypointIndex(kpIndexLeft, kpIndexRight);
+
+            form.FormClosed += Form_FormClosed;
+            form.ShowDialog();
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            FormKeypointIndex form = (FormKeypointIndex)sender;
+
+            if (form.OkPressed)
+            {
+                kpIndexLeft = form.indexLeft;
+                kpIndexRight = form.indexRight;
+            }
+        }
+
+
     }
 }

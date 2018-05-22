@@ -248,9 +248,7 @@ class NonAffineTransform
         // Вычисление барицентра
         //
 
-        Point2D p = Geom.BaryCenter(tri);
-
-        return p;
+        return Geom.BaryCenter(tri);
     }
 
     private static void Swap<T> ( ref T a, ref T b)
