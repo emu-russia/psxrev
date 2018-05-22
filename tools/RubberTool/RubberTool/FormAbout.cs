@@ -16,6 +16,7 @@ namespace RubberTool
         private int stepCurrent = 0;
         private const int stepsAmount = 25;
         private const int msPerStep = 20;
+        private bool Spawning;
 
         public FormAbout()
         {
@@ -24,6 +25,8 @@ namespace RubberTool
             SpawnKeypoints();
 
             backgroundWorker1.RunWorkerAsync();
+
+            entityBox1.Mode = EntityMode.ViasConnect;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -47,7 +50,11 @@ namespace RubberTool
         {
             Random rnd = new Random();
 
-            int maxPoints = rnd.Next(10, 25);
+            Spawning = true;
+
+            ClearKeypoints();
+
+            int maxPoints = rnd.Next(10, 35);
 
             for(int i=0;i<maxPoints; i++)
             {
@@ -56,6 +63,8 @@ namespace RubberTool
 
                 Entity vias = entityBox1.AddVias(EntityType.ViasConnect, x, y, entityBox1.ViasConnectColor);
             }
+
+            Spawning = false;
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -83,7 +92,16 @@ namespace RubberTool
             // Триангулируем
             //
 
-            List<Triangle> mesh = delaunay.GenMesh(points);
+            List<Triangle> mesh;
+
+            try
+            {
+                mesh = delaunay.GenMesh(points);
+            }
+            catch
+            {
+                return;
+            }
 
             //
             // Отобразить треугольную сетку
@@ -109,6 +127,26 @@ namespace RubberTool
             foreach (Entity entity in entityBox1._entities)
             {
                 if (EntityBox.IsEntityWire(entity))
+                {
+                    ents.Add(entity);
+                }
+            }
+
+            foreach (Entity entity in ents)
+            {
+                entityBox1._entities.Remove(entity);
+            }
+
+            entityBox1.Invalidate();
+        }
+
+        private void ClearKeypoints()
+        {
+            List<Entity> ents = new List<Entity>();
+
+            foreach (Entity entity in entityBox1._entities)
+            {
+                if (EntityBox.IsEntityVias(entity))
                 {
                     ents.Add(entity);
                 }
@@ -160,6 +198,19 @@ namespace RubberTool
                 entity.LambdaEndX = entity.LambdaX + ( -10 + (float)rnd.NextDouble() * 20) ;
                 entity.LambdaEndY = entity.LambdaY + ( -10 + (float)rnd.NextDouble() * 20) ;
             }
+        }
+
+        private void FormAbout_SizeChanged(object sender, EventArgs e)
+        {
+            SpawnKeypoints();
+
+            CreatePath();
+        }
+
+        private void entityBox1_OnEntityAdd(object sender, Entity entity, EventArgs e)
+        {
+            if (!Spawning && EntityBox.IsEntityVias(entity))
+                CreatePath();
         }
     }
 }

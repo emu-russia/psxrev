@@ -57,7 +57,7 @@
             // button1
             // 
             this.button1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button1.Location = new System.Drawing.Point(513, 0);
+            this.button1.Location = new System.Drawing.Point(702, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 49);
             this.button1.TabIndex = 2;
@@ -87,8 +87,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(613, 473);
-            this.splitContainer1.SplitterDistance = 420;
+            this.splitContainer1.Size = new System.Drawing.Size(802, 528);
+            this.splitContainer1.SplitterDistance = 475;
             this.splitContainer1.TabIndex = 4;
             // 
             // splitContainer2
@@ -106,7 +106,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.entityBox1);
-            this.splitContainer2.Size = new System.Drawing.Size(613, 420);
+            this.splitContainer2.Size = new System.Drawing.Size(802, 475);
             this.splitContainer2.SplitterDistance = 42;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -162,7 +162,7 @@
             this.entityBox1.SelectEntitiesAfterAdd = true;
             this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
             this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(613, 374);
+            this.entityBox1.Size = new System.Drawing.Size(802, 429);
             this.entityBox1.TabIndex = 3;
             this.entityBox1.Text = "entityBox1";
             this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
@@ -193,16 +193,18 @@
             this.entityBox1.ZoomImage0 = 100;
             this.entityBox1.ZoomImage1 = 100;
             this.entityBox1.ZoomImage2 = 100;
+            this.entityBox1.OnEntityAdd += new System.Windows.Forms.EntityBoxEntityEventHandler(this.entityBox1_OnEntityAdd);
             // 
             // FormAbout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(613, 473);
+            this.ClientSize = new System.Drawing.Size(802, 528);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAbout";
             this.Text = "About Rubber Tool";
+            this.SizeChanged += new System.EventHandler(this.FormAbout_SizeChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

@@ -66,11 +66,29 @@ public class Geom
 
         float paramDenominator = x43 * y21 - x21 * y43;
 
+        if (paramDenominator == 0)
+        {
+            Console.WriteLine("Denominator = 0, lines are parallel");
+        }
+
         float s = (x43 * y31 - x31 * y43) / paramDenominator;
         float t = (x21 * y31 - x31 * y21) / paramDenominator;
 
         return new Point2D(p1.X + (p2.X - p1.X) * s,
              p1.Y + (p2.Y - p1.Y) * s);
+    }
+
+    public static double DistanceFromPointToLine(Point2D point, Vec line)
+    {
+        // given a line based on two points, and a point away from the line,
+        // find the perpendicular distance from the point to the line.
+        // see http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
+        // for explanation and defination.
+        Point2D l1 = line.begin;
+        Point2D l2 = line.end;
+
+        return Math.Abs((l2.X - l1.X) * (l1.Y - point.Y) - (l1.X - point.X) * (l2.Y - l1.Y)) /
+                Math.Sqrt(Math.Pow(l2.X - l1.X, 2) + Math.Pow(l2.Y - l1.Y, 2));
     }
 
     /// <summary>

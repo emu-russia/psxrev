@@ -134,9 +134,6 @@ class NonAffineTransform
                 {
                     Point2D n2 = TrilateralXform(destTri, sourceTri, new Point2D(x, y));
 
-                    //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
-                    //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
-
                     Color pixel;
 
                     if (float.IsNaN(n2.X) || float.IsNaN(n2.Y) || 
@@ -156,9 +153,6 @@ class NonAffineTransform
                 for (int x = (xf < width ? Convert.ToInt32(xf) : width - 1); x >= (xt > 0 ? xt : 0); x--)
                 {
                     Point2D n2 = TrilateralXform(destTri, sourceTri, new Point2D(x, y));
-
-                    //Console.WriteLine("X: " + x.ToString() + ", Y: " + y.ToString());
-                    //Console.WriteLine("X': " + n2.X.ToString() + ", Y': " + n2.Y.ToString());
 
                     Color pixel;
 
@@ -194,19 +188,55 @@ class NonAffineTransform
     /// <returns>Точка внутри целевого треугольника</returns>
     public static Point2D TrilateralXform (Triangle sourceTri, Triangle destTri, Point2D n)
     {
+        Triangle tri;
+
+        //
+        // Вектора сторон
+        //
+
+        Vec ab = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.b.X, sourceTri.b.Y));
+        Vec ac = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+        Vec bc = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
+
+        Vec ab2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.b.X, destTri.b.Y));
+        Vec ac2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.c.X, destTri.c.Y));
+        Vec bc2 = new Vec(new Point2D(destTri.b.X, destTri.b.Y), new Point2D(destTri.c.X, destTri.c.Y));
+
+        //
+        // Проверка когда точка лежит на одной из сторон
+        //
+
+        if (Geom.DistanceFromPointToLine(n, ab) < 1F)
+        {
+            Vec vn = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(n.X, n.Y));
+            float scale = vn.Length() / ab.Length();
+            return Geom.VecScale(ab2, scale).end;
+        }
+
+        if (Geom.DistanceFromPointToLine(n, ac) < 1F)
+        {
+            Vec vn = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(n.X, n.Y));
+            float scale = vn.Length() / ac.Length();
+            return Geom.VecScale(ac2, scale).end;
+        }
+
+        if (Geom.DistanceFromPointToLine(n, bc) < 1F)
+        {
+            Vec vn = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(n.X, n.Y));
+            float scale = vn.Length() / bc.Length();
+            return Geom.VecScale(bc2, scale).end;
+        }
+
         //
         // Получение "срединных" точек
         //
 
-        Vec ab = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.b.X, sourceTri.b.Y));
         Vec cn = new Vec(new Point2D(sourceTri.c.X, sourceTri.c.Y), new Point2D(n.X, n.Y));
         Point2D mpAB = Geom.LineCross(ab, cn);
 
-        Vec ac = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
         Vec bn = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(n.X, n.Y));
         Point2D mpAC = Geom.LineCross(ac, bn);
 
-        Vec bc = new Vec(new Point2D(sourceTri.b.X, sourceTri.b.Y), new Point2D(sourceTri.c.X, sourceTri.c.Y));
         Vec an = new Vec(new Point2D(sourceTri.a.X, sourceTri.a.Y), new Point2D(n.X, n.Y));
         Point2D mpBC = Geom.LineCross(bc, an);
 
@@ -230,13 +260,8 @@ class NonAffineTransform
         // Перенос срединных точек
         //
 
-        Vec ab2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.b.X, destTri.b.Y));
         Vec ab2_s = Geom.VecScale(ab2, sAB);
-
-        Vec ac2 = new Vec(new Point2D(destTri.a.X, destTri.a.Y), new Point2D(destTri.c.X, destTri.c.Y));
         Vec ac2_s = Geom.VecScale(ac2, sAC);
-
-        Vec bc2 = new Vec(new Point2D(destTri.b.X, destTri.b.Y), new Point2D(destTri.c.X, destTri.c.Y));
         Vec bc2_s = Geom.VecScale(bc2, sBC);
 
         //
@@ -247,7 +272,7 @@ class NonAffineTransform
         Vec mpAC2_b2 = new Vec(new Point2D(ac2_s.end.X, ac2_s.end.Y), new Point2D(destTri.b.X, destTri.b.Y));
         Vec mpBC2_a2 = new Vec(new Point2D(bc2_s.end.X, bc2_s.end.Y), new Point2D(destTri.a.X, destTri.a.Y));
 
-        Triangle tri = new Triangle();
+        tri = new Triangle();
 
         tri.a = Geom.LineCross(mpAB2_c2, mpAC2_b2);
         tri.b = Geom.LineCross(mpBC2_a2, mpAC2_b2);
