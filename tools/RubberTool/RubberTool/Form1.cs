@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
+using System.Drawing.Imaging;
 
 namespace RubberTool
 {
@@ -159,7 +160,7 @@ namespace RubberTool
 
             if (result == DialogResult.OK)
             {
-                entityBox1.Image0.Save(saveFileDialog1.FileName);
+                entityBox1.Image0.Save(saveFileDialog1.FileName, ImageFormat.Jpeg);
             }
         }
 
@@ -169,7 +170,7 @@ namespace RubberTool
 
             if (result == DialogResult.OK)
             {
-                entityBox2.Image0.Save(saveFileDialog1.FileName);
+                entityBox2.Image0.Save(saveFileDialog1.FileName, ImageFormat.Jpeg);
             }
         }
 
