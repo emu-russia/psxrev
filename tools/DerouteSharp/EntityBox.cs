@@ -104,6 +104,7 @@ namespace System.Windows.Forms
         private bool hideWires;
         private bool hideCells;
         private bool hideGrid;
+        private bool hideLambdaMetrics;
         private bool hideRegions;
         private PropertyGrid entityGrid;
         private List<Entity> selected;
@@ -135,6 +136,10 @@ namespace System.Windows.Forms
         public event EntityBoxEventHandler OnEntityCountChanged = null;
         public event EntityBoxEventHandler OnLastOperation = null;
         public event EntityBoxEntityEventHandler OnEntityLabelEdit = null;
+        public event EntityBoxEntityEventHandler OnEntitySelect = null;
+        public event EntityBoxEntityEventHandler OnEntityAdd = null;
+        public event EntityBoxEntityEventHandler OnEntityRemove = null;
+        public event EntityBoxEntityEventHandler OnEntityScroll = null;
         public event EntityBoxFrameDoneHandler OnFrameDone = null;
 
         public EntityBox()
@@ -161,14 +166,14 @@ namespace System.Windows.Forms
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        public bool IsEntityWire(Entity entity)
+        public static bool IsEntityWire(Entity entity)
         {
             return (entity.Type == EntityType.WireGround ||
                      entity.Type == EntityType.WireInterconnect ||
                      entity.Type == EntityType.WirePower);
         }
 
-        public bool IsEntityVias(Entity entity)
+        public static bool IsEntityVias(Entity entity)
         {
             return (entity.Type == EntityType.ViasConnect ||
                      entity.Type == EntityType.ViasFloating ||
@@ -179,7 +184,7 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.ViasPower);
         }
 
-        public bool IsEntityCell(Entity entity)
+        public static bool IsEntityCell(Entity entity)
         {
             return (entity.Type == EntityType.CellNot ||
                      entity.Type == EntityType.CellBuffer ||
@@ -195,12 +200,12 @@ namespace System.Windows.Forms
                      entity.Type == EntityType.UnitCustom);
         }
 
-        public bool IsEntityRegion(Entity entity)
+        public static bool IsEntityRegion(Entity entity)
         {
             return (entity.Type == EntityType.Region );
         }
 
-        public bool IsEntityTile(Entity entity)
+        public static bool IsEntityTile(Entity entity)
         {
             return (entity.Type == EntityType.Tile);
         }
@@ -229,6 +234,16 @@ namespace System.Windows.Forms
             return point;
         }
 
+        public PointF ImageToLambda(int ImageX, int ImageY)
+        {
+            PointF point = new PointF(0.0F, 0.0F);
+
+            point.X = (float)ImageX / Lambda;
+            point.Y = (float)ImageY / Lambda;
+
+            return point;
+        }
+
         public Point LambdaToScreen(float LambdaX, float LambdaY)
         {
             Point point = new Point(0, 0);
@@ -236,6 +251,19 @@ namespace System.Windows.Forms
 
             float x = (LambdaX + ScrollX) * (zf * Lambda);
             float y = (LambdaY + ScrollY) * (zf * Lambda);
+
+            point.X = (int)x;
+            point.Y = (int)y;
+
+            return point;
+        }
+
+        public Point LambdaToImage(float LambdaX, float LambdaY)
+        {
+            Point point = new Point(0, 0);
+
+            float x = LambdaX * Lambda;
+            float y = LambdaY * Lambda;
 
             point.X = (int)x;
             point.Y = (int)y;
@@ -605,7 +633,7 @@ namespace System.Windows.Forms
 
                                 if (rect.IntersectsWith(rect2))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -616,7 +644,7 @@ namespace System.Windows.Forms
 
                                 if (LineIntersectsRect(point1, point2, rect))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -626,7 +654,7 @@ namespace System.Windows.Forms
 
                                 if (rect.Contains(point1))
                                 {
-                                    ent.Selected = true;
+                                    SelectEntity(ent);
                                     CatchSomething = true;
                                 }
                             }
@@ -636,7 +664,7 @@ namespace System.Windows.Forms
                                 {
                                     if ( rect.Contains(point))
                                     {
-                                        ent.Selected = true;
+                                        SelectEntity(ent);
                                         CatchSomething = true;
                                     }
                                 }
@@ -662,7 +690,7 @@ namespace System.Windows.Forms
                     }
                     else
                     {
-                        entity.Selected = true;
+                        SelectEntity(entity);
                         Invalidate();
 
                         if (entityGrid != null)
@@ -756,6 +784,9 @@ namespace System.Windows.Forms
                         entity.LambdaY = entity.SavedLambdaY;
                         entity.LambdaEndX = entity.SavedLambdaEndX;
                         entity.LambdaEndY = entity.SavedLambdaEndY;
+
+                        if (OnEntityScroll != null)
+                            OnEntityScroll(this, entity, EventArgs.Empty);
                     }
                 }
                 else
@@ -916,6 +947,9 @@ namespace System.Windows.Forms
 
                         entity.LambdaEndX = lambda.X;
                         entity.LambdaEndY = lambda.Y;
+
+                        if (OnEntityScroll != null)
+                            OnEntityScroll(this, entity, EventArgs.Empty);
                     }
 
                     Point dist = new Point(Math.Abs(e.X - DragStartMouseX),
@@ -1012,6 +1046,9 @@ namespace System.Windows.Forms
 
         private void DrawLambdaScale(Graphics gr)
         {
+            if (hideLambdaMetrics)
+                return;
+
             float scaleWidth = (int)Lambda * 5;
 
             scaleWidth *= (float)Zoom / 100.0F;
@@ -1040,13 +1077,43 @@ namespace System.Windows.Forms
                 return;
 
             float scaleWidth = (int)Lambda * 5;
-            scaleWidth *= (float)Zoom / 100.0F;
 
-            for (y = 0; y < Height; y += scaleWidth)
+            PointF topLeft = ScreenToLambda(0, 0);
+            PointF bottomRight = ScreenToLambda(Width, Height);
+
+            for (y = 0; y < bottomRight.Y; y += Lambda)
             {
-                for (x = 0; x < Width; x += scaleWidth)
+                for (x = 0; x < bottomRight.X; x += Lambda)
                 {
-                    gr.FillRectangle(Brushes.LightGray, x, y, 1, 1);
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y >= topLeft.Y; y -= Lambda)
+            {
+                for (x = 0; x < bottomRight.X; x += Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y >= topLeft.Y; y -= Lambda)
+            {
+                for (x = 0; x >= topLeft.X; x -= Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
+                }
+            }
+
+            for (y = 0; y < bottomRight.Y; y += Lambda)
+            {
+                for (x = 0; x >= topLeft.X; x -= Lambda)
+                {
+                    Point screen = LambdaToScreen(x, y);
+                    gr.FillRectangle(Brushes.LightGray, screen.X, screen.Y, 1, 1);
                 }
             }
         }
@@ -2321,6 +2388,13 @@ namespace System.Windows.Forms
         }
 
         [Category("Appearance")]
+        public bool HideLambdaMetrics
+        {
+            get { return hideLambdaMetrics; }
+            set { hideLambdaMetrics = value; Invalidate(); }
+        }
+
+        [Category("Appearance")]
         public bool HideRegions
         {
             get { return hideRegions; }
@@ -2412,6 +2486,9 @@ namespace System.Windows.Forms
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
 
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
+
             return item;
         }
 
@@ -2465,6 +2542,9 @@ namespace System.Windows.Forms
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
 
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
+
             return item;
         }
 
@@ -2510,6 +2590,9 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
 
             return item;
         }
@@ -2587,6 +2670,9 @@ namespace System.Windows.Forms
             LastOpWrapper = EntityBoxOperation.EntityAddSingle;
             lastOpData = (object)item;
             cancelledOp = EntityBoxOperation.Unknown;
+
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
 
             return item;
         }
@@ -2698,6 +2784,9 @@ namespace System.Windows.Forms
             foreach (Entity entity in _entities)
             {
                 lastEntities.Add(entity);
+
+                if (OnEntityRemove != null)
+                    OnEntityRemove(this, entity, EventArgs.Empty);
             }
 
             LastOpWrapper = EntityBoxOperation.EntityDelete;
@@ -3092,6 +3181,9 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in pendingDelete)
             {
+                if (OnEntityRemove != null)
+                    OnEntityRemove(this, entity, EventArgs.Empty);
+
                 _entities.Remove(entity);
             }
 
@@ -3107,7 +3199,7 @@ namespace System.Windows.Forms
                 entityGrid.SelectedObject = null;
         }
 
-        private List<Entity> GetSelected()
+        public List<Entity> GetSelected()
         {
             List<Entity> _selected = new List<Entity>();
 
@@ -3120,6 +3212,46 @@ namespace System.Windows.Forms
             }
 
             return _selected;
+        }
+
+        public Entity GetLastSelected ()
+        {
+            List<Entity> _selected = GetSelected();
+
+            if ( _selected.Count == 0 )
+            {
+                return null;
+            }
+
+            Entity lastSelected =
+                _selected.Where(m => m.SelectTimeStamp == _selected.Max(p => p.SelectTimeStamp)).FirstOrDefault();
+
+            return lastSelected;
+        }
+
+        private void SelectEntity ( Entity entity )
+        {
+            entity.Selected = true;
+
+            if (OnEntitySelect != null)
+                OnEntitySelect(this, entity, EventArgs.Empty);
+        }
+
+        public void EnsureVisible ( Entity entity )
+        {
+            Point screen = LambdaToScreen(entity.LambdaX, entity.LambdaY);
+
+            if ( screen.X < WireBaseSize * 2 || screen.Y < WireBaseSize * 2 ||
+                screen.X >= Width - WireBaseSize * 2 || screen.Y >= Height - WireBaseSize * 2)
+            {
+                PointF center = ScreenToLambda(Width, Height);
+                float zf = (float)Zoom / 100F;
+
+                ScrollX = -entity.LambdaX + (Width/2/ (zf*Lambda));
+                ScrollY = -entity.LambdaY + (Height/2 / (zf*Lambda));
+
+                Invalidate();
+            }
         }
 
         #region Entity Props
@@ -4427,7 +4559,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist )
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4436,7 +4568,7 @@ namespace System.Windows.Forms
 
                             if (dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4445,7 +4577,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4454,7 +4586,7 @@ namespace System.Windows.Forms
 
                             if ( dist < maxDist && entity.Selected == false)
                             {
-                                entity.Selected = true;
+                                SelectEntity(entity);
                                 SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                             }
 
@@ -4469,7 +4601,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in viases)
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                 }
 
@@ -4534,7 +4666,7 @@ namespace System.Windows.Forms
 
                 foreach ( Entity entity in wires )
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
 
                     //
@@ -4546,7 +4678,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in cells)
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier+1, TierMax, Depth + 1, Debug);
 
                     //
@@ -4601,7 +4733,7 @@ namespace System.Windows.Forms
 
                 foreach ( Entity entity in viases )
                 {
-                    entity.Selected = true;
+                    SelectEntity(entity);
                     SelectTraverse(entity, Tier, TierMax, Depth + 1, Debug);
                 }
             }
@@ -4999,27 +5131,74 @@ namespace System.Windows.Forms
                 {
                     case EntitySelection.Vias:
                         if (IsEntityVias(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     case EntitySelection.Wire:
                         if (IsEntityWire(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     case EntitySelection.Cell:
                         if (IsEntityCell(entity))
-                            entity.Selected = true;
+                            SelectEntity(entity);
                         break;
 
                     default:
                     case EntitySelection.All:
-                        entity.Selected = true;
+                        SelectEntity(entity);
                         break;
                 }
             }
 
             Invalidate();
+        }
+
+        //
+        // Add region
+        //
+
+        public Entity AddRegion (List<Point> points, Color color)
+        {
+            //
+            // Fill path
+            //
+
+            List<PointF> path = new List<PointF>();
+
+            foreach (Point point in points)
+            {
+                PointF p = ScreenToLambda(point.X, point.Y);
+
+                path.Add(p);
+            }
+
+            //
+            // Add new region entity
+            //
+
+            Entity item = new Entity();
+
+            item.Type = EntityType.Region;
+            item.Label = "";
+            item.LabelAlignment = TextAlignment.GlobalSettings;
+            item.Priority = RegionPriority;
+            item.Selected = false;
+            item.PathPoints = path;
+            item.LambdaX = path[0].X;
+            item.LambdaY = path[0].Y;
+            item.ColorOverride = color;
+            item.FontOverride = null;
+            item.SetParent(this);
+
+            while (DrawInProgress) ;
+
+            _entities.Add(item);
+            SortEntities();
+
+            Invalidate();
+
+            return item;
         }
 
         //
@@ -5181,7 +5360,7 @@ namespace System.Windows.Forms
                 // Select pasted items, so we can move it around
                 //
 
-                item.Selected = true;
+                SelectEntity(item);
 
                 _entities.Add(item);
             }
@@ -5229,7 +5408,7 @@ namespace System.Windows.Forms
 
             item.LambdaX = origin.X;
             item.LambdaY = origin.Y;
-            item.Selected = true;
+            SelectEntity(item);
             item.Priority = prio;
             item.Type = EntityType.Tile;
             item.ImageFile = imageFile;
@@ -5328,6 +5507,7 @@ namespace System.Windows.Forms
         public bool hideWires;
         public bool hideCells;
         public bool hideGrid;
+        public bool hideLambdaMetrics;
         public bool hideRegions;
         [XmlIgnore] public Color selectionBoxColor;
         [XmlIgnore] public Color ForeColor;
@@ -5634,6 +5814,7 @@ namespace System.Windows.Forms
             hideWires = parent.HideWires;
             hideCells = parent.HideCells;
             hideGrid = parent.HideGrid;
+            hideLambdaMetrics = parent.HideLambdaMetrics;
             hideRegions = parent.HideRegions;
             selectionBoxColor = parent.SelectionBoxColor;
             ForeColor = parent.ForeColor;
@@ -5719,6 +5900,7 @@ namespace System.Windows.Forms
             parent.HideWires = hideWires;
             parent.HideCells = hideCells;
             parent.HideGrid = hideGrid;
+            parent.HideLambdaMetrics = hideLambdaMetrics;
             parent.HideRegions = hideRegions;
             parent.SelectionBoxColor = selectionBoxColor;
             parent.ForeColor = ForeColor;

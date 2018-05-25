@@ -509,7 +509,7 @@
             this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
             this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
             this.entityBox1.ViasBaseSize = 2;
-            this.entityBox1.ViasConnectColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasConnectColor = System.Drawing.SystemColors.HotTrack;
             this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
             this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
             this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
@@ -665,7 +665,7 @@
             this.entityBox2.UnitMemoryColor = System.Drawing.Color.Snow;
             this.entityBox2.UnitRegfileColor = System.Drawing.Color.Snow;
             this.entityBox2.ViasBaseSize = 2;
-            this.entityBox2.ViasConnectColor = System.Drawing.Color.Yellow;
+            this.entityBox2.ViasConnectColor = System.Drawing.SystemColors.HotTrack;
             this.entityBox2.ViasFloatingColor = System.Drawing.Color.Gray;
             this.entityBox2.ViasGroundColor = System.Drawing.Color.Black;
             this.entityBox2.ViasInoutColor = System.Drawing.Color.Yellow;

@@ -287,7 +287,8 @@ namespace RubberTool
 
             if ( entityBox1.Image0 == null )
             {
-                MessageBox.Show("Load image on Left", "Error");
+                MessageBox.Show("Load image on Left", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -297,7 +298,8 @@ namespace RubberTool
 
             if (_selectedLeft.Count != 3 )
             {
-                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error");
+                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -305,7 +307,8 @@ namespace RubberTool
             {
                 if ( !EntityBox.IsEntityVias(entity))
                 {
-                    MessageBox.Show("Select keypoints only", "Error");
+                    MessageBox.Show("Select keypoints only", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -316,7 +319,8 @@ namespace RubberTool
 
             if (_selectedRight.Count != 3)
             {
-                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error");
+                MessageBox.Show("Select exactly 3 keypoints to form triangle", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -324,7 +328,8 @@ namespace RubberTool
             {
                 if (!EntityBox.IsEntityVias(entity))
                 {
-                    MessageBox.Show("Select keypoints only", "Error");
+                    MessageBox.Show("Select keypoints only", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -460,9 +465,16 @@ namespace RubberTool
 
             if ( points.Count < 3)
             {
-                MessageBox.Show("3 or more keypoints required!", "Error");
+                MessageBox.Show("3 or more keypoints required!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+
+            //
+            // Добавить ключевые точки по углам
+            //
+
+            AddCornerKeypoints(ref points);
 
             //
             // Триангулируем
@@ -482,6 +494,46 @@ namespace RubberTool
 
                 AddTriangle(box, tri, randomColor);
             }
+        }
+
+        /// <summary>
+        /// Добавить синтетические точки, чтобы получалось прямоугольное изображение 
+        /// </summary>
+        /// <param name="points"></param>
+        private void AddCornerKeypoints ( ref List<Point2D> points)
+        {
+            const float gap = 25;
+
+            float minx = float.MaxValue;
+            float miny = float.MaxValue;
+            float maxx = 0;
+            float maxy = 0;
+
+            foreach ( Point2D point in points )
+            {
+                if (point.X < minx)
+                    minx = point.X;
+                if (point.Y < miny)
+                    miny = point.Y;
+                if (point.X > maxx)
+                    maxx = point.X;
+                if (point.Y > maxy)
+                    maxy = point.Y;
+            }
+
+            Point2D topLeft = new Point2D(minx- gap, miny- gap);
+            topLeft.name = "__internal__topLeft";
+            Point2D bottomLeft = new Point2D(minx- gap, maxy+ gap);
+            bottomLeft.name = "__internal__bottomLeft";
+            Point2D topRight = new Point2D(maxx+ gap, miny- gap);
+            topRight.name = "__internal__topRight";
+            Point2D bottomRight = new Point2D(maxx+ gap, maxy+ gap);
+            bottomRight.name = "__internal__bottomRight";
+
+            points.Add(topLeft);
+            points.Add(bottomLeft);
+            points.Add(topRight);
+            points.Add(bottomRight);
         }
 
         private Entity AddTriangle ( EntityBox box, Triangle tri, Color color )
@@ -548,13 +600,15 @@ namespace RubberTool
         {
             if ( entityBox1.Image0 == null )
             {
-                MessageBox.Show("Image not loaded!", "Error");
+                MessageBox.Show("Image not loaded!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
             if ( !VerifyKeypoints(entityBox1, entityBox2))
             {
-                MessageBox.Show("Keypoints doesn't match!", "Error");
+                MessageBox.Show("Keypoints doesn't match!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -570,13 +624,15 @@ namespace RubberTool
         {
             if (entityBox2.Image0 == null)
             {
-                MessageBox.Show("Image not loaded!", "Error");
+                MessageBox.Show("Image not loaded!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
             if (!VerifyKeypoints(entityBox2, entityBox1))
             {
-                MessageBox.Show("Keypoints doesn't match!", "Error");
+                MessageBox.Show("Keypoints doesn't match!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -647,7 +703,8 @@ namespace RubberTool
             // Добавить точки по краям изображения
             //
 
-            Point2D bottomDownTo = BottomDownPoint(pointsRight);
+            AddCornerKeypoints(ref pointsLeft);
+            AddCornerKeypoints(ref pointsRight);
 
             //
             // Триангулируем
@@ -658,6 +715,8 @@ namespace RubberTool
             //
             // Сформировать изображение справа
             //
+
+            Point2D bottomDownTo = BottomDownPoint(pointsRight);
 
             Bitmap bitmap = new Bitmap((int)bottomDownTo.X + 1, (int)bottomDownTo.Y + 1);
             Graphics gr = Graphics.FromImage(bitmap);

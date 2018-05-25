@@ -50,12 +50,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Delaunay.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="EntityBox.cs">
+    <Compile Include="..\..\DerouteSharp\Entity.cs">
+      <Link>Entity.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DerouteSharp\EntityBox.cs">
+      <Link>EntityBox.cs</Link>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FontXmlConverter.cs" />
+    <Compile Include="..\..\DerouteSharp\FontXmlConverter.cs">
+      <Link>FontXmlConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DerouteSharp\PointFConverter.cs">
+      <Link>PointFConverter.cs</Link>
+    </Compile>
+    <Compile Include="Delaunay.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,7 +87,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="NonAffineTransform.cs" />
-    <Compile Include="PointFConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
