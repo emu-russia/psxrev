@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitImageOnTilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ешдштпЩзешщToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -64,14 +66,32 @@
             // loadImageToolStripMenuItem
             // 
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.loadImageToolStripMenuItem.Text = "Load Image";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
-            // openFileDialog1
+            // toolsToolStripMenuItem
             // 
-            this.openFileDialog1.DefaultExt = "jpg";
-            this.openFileDialog1.Filter = "Image Files|*.jpg|All files|*.8";
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.splitImageOnTilesToolStripMenuItem,
+            this.ешдштпЩзешщToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // splitImageOnTilesToolStripMenuItem
+            // 
+            this.splitImageOnTilesToolStripMenuItem.Name = "splitImageOnTilesToolStripMenuItem";
+            this.splitImageOnTilesToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.splitImageOnTilesToolStripMenuItem.Text = "Split image on tiles";
+            this.splitImageOnTilesToolStripMenuItem.Click += new System.EventHandler(this.splitImageOnTilesToolStripMenuItem_Click);
+            // 
+            // ешдштпЩзешщToolStripMenuItem
+            // 
+            this.ешдштпЩзешщToolStripMenuItem.Name = "ешдштпЩзешщToolStripMenuItem";
+            this.ешдштпЩзешщToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.ешдштпЩзешщToolStripMenuItem.Text = "Tiling options...";
+            this.ешдштпЩзешщToolStripMenuItem.Click += new System.EventHandler(this.tilingOptionsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -86,6 +106,12 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "jpg";
+            this.openFileDialog1.Filter = "Image Files|*.jpg|All files|*.8";
             // 
             // pictureBox1
             // 
@@ -96,21 +122,6 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.splitImageOnTilesToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // splitImageOnTilesToolStripMenuItem
-            // 
-            this.splitImageOnTilesToolStripMenuItem.Name = "splitImageOnTilesToolStripMenuItem";
-            this.splitImageOnTilesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.splitImageOnTilesToolStripMenuItem.Text = "Split image on tiles";
-            this.splitImageOnTilesToolStripMenuItem.Click += new System.EventHandler(this.splitImageOnTilesToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -118,6 +129,7 @@
             this.ClientSize = new System.Drawing.Size(807, 509);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Image Tiler";
@@ -140,6 +152,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem splitImageOnTilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ешдштпЩзешщToolStripMenuItem;
     }
 }
 

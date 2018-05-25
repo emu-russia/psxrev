@@ -13,6 +13,9 @@ namespace ImageTiler
 {
     public partial class Form1 : Form
     {
+        private int tileSize = 1000;
+        private int gapSize = 100;
+
         public Form1()
         {
             InitializeComponent();
@@ -30,7 +33,7 @@ namespace ImageTiler
             }
         }
 
-        private void SplitImageOnTiles ( Image image, int gap, int tileSize )
+        private void SplitImageOnTiles ( Image image )
         {
             Bitmap bitmap = new Bitmap(image);
             PixelFormat pixelFormat = image.PixelFormat;
@@ -39,16 +42,16 @@ namespace ImageTiler
             {
                 for (int x = 0; x < image.Width; x += tileSize)
                 {
-                    int w = Math.Min(tileSize + 2 * gap, image.Width - x);
-                    int h = Math.Min(tileSize + 2 * gap, image.Height - y);
+                    int w = Math.Min(tileSize + 2 * gapSize, image.Width - x);
+                    int h = Math.Min(tileSize + 2 * gapSize, image.Height - y);
 
-                    int gapX = Math.Max(0, x - gap);
-                    int gapY = Math.Max(0, y - gap);
+                    int gapX = Math.Max(0, x - gapSize);
+                    int gapY = Math.Max(0, y - gapSize);
 
                     if (gapX == 0)
-                        w -= gap;
+                        w -= gapSize;
                     if (gapY == 0)
-                        h -= gap;
+                        h -= gapSize;
 
                     Rectangle rect = new Rectangle(gapX, gapY, w, h);
                     Bitmap tile = bitmap.Clone(rect, pixelFormat);
@@ -63,12 +66,45 @@ namespace ImageTiler
                 }
             }
 
-            MessageBox.Show("Operation Completed", "Notification");
+            MessageBox.Show("Operation Completed", "Notification",
+                MessageBoxButtons.OK, MessageBoxIcon.Information );
         }
 
         private void splitImageOnTilesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SplitImageOnTiles(pictureBox1.Image, 100, 1000);
+            if ( pictureBox1.Image == null )
+            {
+                MessageBox.Show("Load Image", "Notification", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SplitImageOnTiles(pictureBox1.Image);
+        }
+
+        private void tilingOptionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormTilingOptions form = new FormTilingOptions(tileSize, gapSize);
+
+            form.FormClosed += Form_FormClosed;
+            form.ShowDialog();
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            FormTilingOptions form = (FormTilingOptions)sender;
+
+            if ( form.OkPressed)
+            {
+                tileSize = form.tileSize;
+                gapSize = form.gapSize;
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormAbout form = new FormAbout();
+            form.ShowDialog();
         }
     }
 }
