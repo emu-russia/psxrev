@@ -1995,9 +1995,7 @@ namespace System.Windows.Forms
                 // Origin
                 //
 
-#if DEBUG
                 DrawOrigin (gr);
-#endif
 
                 //
                 // RMB
