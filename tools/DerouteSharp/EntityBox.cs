@@ -4478,9 +4478,11 @@ namespace System.Windows.Forms
         // Traverse selection
         //
 
+        const float traverseLamdaDelta = 0.7F;      // Lambdas
+
         private bool IsViasInWire (Entity vias, Entity wire)
         {
-            float delta = 1F;       // Lambdas
+            float delta = traverseLamdaDelta;
 
             PointF start = new PointF(wire.LambdaX, wire.LambdaY);
             PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
@@ -4515,7 +4517,7 @@ namespace System.Windows.Forms
 
             if ( IsEntityWire(source) )
             {
-                float maxDist = 1F;
+                float maxDist = traverseLamdaDelta;
                 float dist;
                 List<Entity> viases = new List<Entity>();
 
