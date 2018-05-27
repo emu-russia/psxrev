@@ -233,11 +233,37 @@ namespace RubberTool
 
 #endregion
 
+        private bool IsKeypointExists ( EntityBox box, string name )
+        {
+            for (int i = 0; i<box._entities.Count-1; i++)
+            {
+                Entity entity = box._entities[i];
+
+                if ( EntityBox.IsEntityVias(entity) && entity.Label == name )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void entityBox1_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
             if (EntityBox.IsEntityVias(entity))
             {
                 entity.Label = "kp" + kpIndexLeft.ToString();
+
+                if (IsKeypointExists(entityBox1, entity.Label))
+                {
+                    entityBox1._entities.Remove(entity);
+
+                    MessageBox.Show("Keypoint " + entity.Label + " already exists!", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    return;
+                }
+
                 kpIndexLeft++;
 
                 ListInsertKeypoint(entity, true);
@@ -249,6 +275,17 @@ namespace RubberTool
             if (EntityBox.IsEntityVias(entity))
             {
                 entity.Label = "kp" + kpIndexRight.ToString();
+
+                if (IsKeypointExists(entityBox2, entity.Label))
+                {
+                    entityBox2._entities.Remove(entity);
+
+                    MessageBox.Show("Keypoint " + entity.Label + " already exists!", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    return;
+                }
+
                 kpIndexRight++;
 
                 ListInsertKeypoint(entity, false);
@@ -474,7 +511,7 @@ namespace RubberTool
             // Добавить ключевые точки по углам
             //
 
-            AddCornerKeypoints(ref points);
+            AddCornerKeypoints(ref points, 25, 25);
 
             //
             // Триангулируем
@@ -500,10 +537,8 @@ namespace RubberTool
         /// Добавить синтетические точки, чтобы получалось прямоугольное изображение 
         /// </summary>
         /// <param name="points"></param>
-        private void AddCornerKeypoints ( ref List<Point2D> points)
+        private void AddCornerKeypoints ( ref List<Point2D> points, float gapW, float gapH)
         {
-            const float gap = 25;
-
             float minx = float.MaxValue;
             float miny = float.MaxValue;
             float maxx = 0;
@@ -521,13 +556,13 @@ namespace RubberTool
                     maxy = point.Y;
             }
 
-            Point2D topLeft = new Point2D(minx- gap, miny- gap);
+            Point2D topLeft = new Point2D(minx- gapW, miny- gapH);
             topLeft.name = "__internal__topLeft";
-            Point2D bottomLeft = new Point2D(minx- gap, maxy+ gap);
+            Point2D bottomLeft = new Point2D(minx- gapW, maxy+ gapH);
             bottomLeft.name = "__internal__bottomLeft";
-            Point2D topRight = new Point2D(maxx+ gap, miny- gap);
+            Point2D topRight = new Point2D(maxx+ gapW, miny- gapH);
             topRight.name = "__internal__topRight";
-            Point2D bottomRight = new Point2D(maxx+ gap, maxy+ gap);
+            Point2D bottomRight = new Point2D(maxx+ gapW, maxy+ gapH);
             bottomRight.name = "__internal__bottomRight";
 
             points.Add(topLeft);
@@ -703,8 +738,15 @@ namespace RubberTool
             // Добавить точки по краям изображения
             //
 
-            AddCornerKeypoints(ref pointsLeft);
-            AddCornerKeypoints(ref pointsRight);
+            float gapFromWidth = 25;
+            float gapFromHeight = 25;
+            float scale = new Vec(pointsLeft[0], pointsLeft[1]).Length() /
+                new Vec(pointsRight[0], pointsRight[1]).Length();
+            float gapToWidth = gapFromWidth * scale;
+            float gapToHeight = gapFromHeight * scale;
+
+            AddCornerKeypoints(ref pointsLeft, gapFromWidth, gapFromHeight);
+            AddCornerKeypoints(ref pointsRight, gapToWidth, gapToHeight);
 
             //
             // Триангулируем
