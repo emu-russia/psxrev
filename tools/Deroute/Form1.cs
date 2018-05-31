@@ -791,5 +791,18 @@ namespace DerouteSharp
                 AddTiles(openFileDialog1.FileNames, false);
             }
         }
+
+        /// <summary>
+        /// Switch opacity between Image0 and Image1 layers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            int temp = entityBox1.ImageOpacity0;
+            entityBox1.ImageOpacity0 = entityBox1.ImageOpacity1;
+            entityBox1.ImageOpacity1 = temp;
+        }
     }       // Form1
 }

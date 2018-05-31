@@ -49,17 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DerouteSharp\Entity.cs">
+    <Compile Include="..\Deroute\Entity.cs">
       <Link>Entity.cs</Link>
     </Compile>
-    <Compile Include="..\DerouteSharp\EntityBox.cs">
+    <Compile Include="..\Deroute\EntityBox.cs">
       <Link>EntityBox.cs</Link>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="..\DerouteSharp\FontXmlConverter.cs">
+    <Compile Include="..\Deroute\FontXmlConverter.cs">
       <Link>FontXmlConverter.cs</Link>
     </Compile>
-    <Compile Include="..\DerouteSharp\PointFConverter.cs">
+    <Compile Include="..\Deroute\PointFConverter.cs">
       <Link>PointFConverter.cs</Link>
     </Compile>
     <Compile Include="Form1.cs">
