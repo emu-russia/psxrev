@@ -2595,6 +2595,55 @@ namespace System.Windows.Forms
             return item;
         }
 
+        public Entity AddWireOnImage(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        {
+            Entity item = new Entity();
+
+            PointF point1 = ImageToLambda(StartX, StartY);
+            PointF point2 = ImageToLambda(EndX, EndY);
+
+            float len = (float)Math.Sqrt(Math.Pow(point2.X - point1.X, 2) +
+                                          Math.Pow(point2.Y - point1.Y, 2));
+
+            if (len < 1.0F)
+            {
+                Invalidate();
+                return null;
+            }
+
+            item.Label = "";
+            item.LambdaX = point1.X;
+            item.LambdaY = point1.Y;
+            item.LambdaEndX = point2.X;
+            item.LambdaEndY = point2.Y;
+            item.LambdaWidth = 1;
+            item.LambdaHeight = 1;
+            item.Type = Type;
+            item.ColorOverride = WireOverrideColor;
+            item.Priority = WirePriority;
+            item.FontOverride = null;
+            item.WidthOverride = 0;
+            item.SetParent(this);
+
+            while (DrawInProgress) ;
+
+            _entities.Add(item);
+            SortEntities();
+            Invalidate();
+
+            if (OnEntityCountChanged != null)
+                OnEntityCountChanged(this, EventArgs.Empty);
+
+            LastOpWrapper = EntityBoxOperation.EntityAddSingle;
+            lastOpData = (object)item;
+            cancelledOp = EntityBoxOperation.Unknown;
+
+            if (OnEntityAdd != null)
+                OnEntityAdd(this, item, EventArgs.Empty);
+
+            return item;
+        }
+
         public Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
         {
             Entity item = new Entity();

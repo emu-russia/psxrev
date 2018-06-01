@@ -804,5 +804,100 @@ namespace DerouteSharp
             entityBox1.ImageOpacity0 = entityBox1.ImageOpacity1;
             entityBox1.ImageOpacity1 = temp;
         }
+
+        private void routeSingleWireToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Entity vias1 = null;
+            Entity vias2 = null;
+            List<Entity> shapes = new List<Entity>();
+
+            //
+            // Get selected vias
+            //
+
+            List<Entity> selected = entityBox1.GetSelected();
+
+            foreach ( Entity entity in selected )
+            {
+                if ( EntityBox.IsEntityVias(entity) )
+                {
+                    if (vias1 == null)
+                    {
+                        vias1 = entity;
+                        continue;
+                    }
+
+                    if (vias2 == null)
+                    {
+                        vias2 = entity;
+                        continue;
+                    }
+
+                    if ( vias1 != null && vias2 != null )
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //
+            // Check 
+            //
+
+            if (vias1 == null || vias2 == null)
+            {
+                MessageBox.Show("Two selected vias required", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            //
+            // Get shapes
+            //
+
+            foreach (Entity entity in entityBox1._entities )
+            {
+                if ( EntityBox.IsEntityCell(entity) || EntityBox.IsEntityRegion(entity))
+                {
+                    shapes.Add(entity);
+                }
+            }
+
+            //
+            // Add wire corners as artifical cells
+            //
+
+            foreach (Entity entity in entityBox1._entities )
+            {
+                if ( EntityBox.IsEntityWire(entity))
+                {
+                    Entity artifical1 = new Entity();
+
+                    artifical1.Type = EntityType.CellOther;
+                    artifical1.LambdaX = entity.LambdaX;
+                    artifical1.LambdaY = entity.LambdaY;
+                    artifical1.LambdaWidth = 1;
+                    artifical1.LambdaHeight = 1;
+
+                    Entity artifical2 = new Entity();
+
+                    artifical2.Type = EntityType.CellOther;
+                    artifical2.LambdaX = entity.LambdaEndX;
+                    artifical2.LambdaY = entity.LambdaEndY;
+                    artifical2.LambdaWidth = 1;
+                    artifical2.LambdaHeight = 1;
+
+                    shapes.Add(artifical1);
+                    shapes.Add(artifical2);
+                }
+            }
+
+            List<Entity> wires = entityBox1.Route(vias1, vias2, shapes, true);
+
+            vias1.Selected = false;
+            vias2.Selected = false;
+        }
+
+
     }       // Form1
 }
