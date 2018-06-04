@@ -78,8 +78,11 @@ pattern 3-XOR, CellLogic, 5.0, 10, 10, "patterns_db/3-XOR.jpg"
 # 4-Input Logic
 
 pattern 4-NOR, CellLogic, 5.0, 7, 7, "patterns_db/4-NOR.jpg"
+pattern 4-NOR-3X, CellLogic, 5.0, 9, 9, "patterns_db/4-NOR-3X.jpg"
 
 # 5-Input Logic
+
+pattern 5-NOR, CellLogic, 5.0, 8, 8, "patterns_db/5-NOR.jpg"
 
 pattern 5-NAND, CellLogic, 5.0, 8, 8, "patterns_db/5-NAND.jpg"
 
@@ -115,6 +118,7 @@ pattern MUX1, CellMux, 5.0, 6, 6, "patterns_db/MUX1.jpg"
 pattern MUX2X, CellMux, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
 pattern MUX3X, CellMux, 5.0, 8, 8, "patterns_db/MUX3X.jpg"
 
+pattern IMU1, CellMux, 5.0, 4, 4, "patterns_db/IMUX1.jpg"
 pattern IMUX, CellMux, 5.0, 4, 4, "patterns_db/IMUX.jpg"
 pattern IMUX2X, CellMux, 5.0, 5, 5, "patterns_db/IMUX2X.jpg"
 pattern IMUX3X, CellMux, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
