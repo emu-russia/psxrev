@@ -9,15 +9,15 @@ No credits required.
 
 PlayStation logo and trademarks are property of Sony.
 
-# PSX CPU (CXD8530CQ) #
+# PSX CPU (CXD8530CQ)
 
- * 350 nm
- * 2 metal layers (aluminium)
+ * Around 350 nm
+ * 2 metal layers (aluminium?)
  * Around 37600 cells (~150 unique)
- * 850k transistors
+ * Approx. 850k transistors
  * Custom units (internal SRAM and dual-port registers)
 
-### Raw data ###
+### Raw data
 
 Top metal (M2) : https://drive.google.com/file/d/0B0xV_NJcfKCYdWdObWZJaG40Q0E/edit?usp=sharing
 
@@ -27,7 +27,7 @@ M1 : https://drive.google.com/file/d/0B0xV_NJcfKCYMnh2NVdFUTNsY2M/view?usp=shari
 
 Active / poly : https://drive.google.com/file/d/0B0xV_NJcfKCYTkFWWlQweVBkLTA/view?usp=sharing
 
-### Pads ###
+### Pads
 
 <img src='http://wiki.psxdev.ru/images/2/2e/IC103_contacts.jpg' width='900px'>
 
