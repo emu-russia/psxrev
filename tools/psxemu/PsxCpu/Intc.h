@@ -1,6 +1,6 @@
 // Interrupt controller
 
-typedef enum _PsxInterrupt
+typedef enum
 {
 
 } PsxInterrupt;

@@ -33,7 +33,9 @@ namespace psxemu
         private void openDebuggerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (DebugActive)
+            {
                 return;
+            }
 
             FormDebugger debugDlg = new FormDebugger();
             debugDlg.FormClosed += debugDlg_FormClosed;
@@ -44,6 +46,13 @@ namespace psxemu
         void debugDlg_FormClosed(object sender, FormClosedEventArgs e)
         {
             DebugActive = false;
+        }
+
+        private void fetchCDCoverDemoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormCoverDemo dlg = new FormCoverDemo();
+
+            dlg.ShowDialog();
         }
     }
 }

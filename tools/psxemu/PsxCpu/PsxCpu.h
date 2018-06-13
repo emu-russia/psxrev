@@ -25,7 +25,7 @@ class PsxCpu
 
 public:
 
-    PSX_CPU_CONTEXT cpuContext;
+    PsxCpuContext cpuContext;
     BusUnit busUnit;
 
     PsxCpu();

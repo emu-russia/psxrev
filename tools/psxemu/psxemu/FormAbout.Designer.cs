@@ -52,7 +52,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(102, 26);
             this.label1.TabIndex = 1;
-            this.label1.Text = "PSX Emulator, v.1.0\r\n(C) 2016, psxdev.ru\r\n";
+            this.label1.Text = "PSX Emulator, v.1.0\r\n(C) 2018, psxdev.ru\r\n";
             // 
             // button1
             // 

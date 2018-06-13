@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cpu.cs" />
+    <Compile Include="FetchDiskCover.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -59,6 +60,12 @@
     </Compile>
     <Compile Include="FormAbout.Designer.cs">
       <DependentUpon>FormAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCoverDemo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCoverDemo.Designer.cs">
+      <DependentUpon>FormCoverDemo.cs</DependentUpon>
     </Compile>
     <Compile Include="FormDebugger.cs">
       <SubType>Form</SubType>
@@ -75,6 +82,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCoverDemo.resx">
+      <DependentUpon>FormCoverDemo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormDebugger.resx">
       <DependentUpon>FormDebugger.cs</DependentUpon>
