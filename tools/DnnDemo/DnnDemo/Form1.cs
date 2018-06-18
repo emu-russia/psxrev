@@ -47,11 +47,15 @@ namespace DnnDemo
         /// Downscale image
         /// </summary>
         /// <param name="source">Any image</param>
-        /// <returns>64x64 image</returns>
+        /// <returns>Smaller image</returns>
         private Image Convolution (Image source)
         {
-            return ResizeImage(source, 64, 64);
+            int smallerSize = pictureBox2.Width;
+
+            return ResizeImage(source, smallerSize, smallerSize);
         }
+
+        // Source: https://stackoverflow.com/questions/1922040/resize-an-image-c-sharp
 
         /// <summary>
         /// Resize the image to the specified width and height.
@@ -86,7 +90,7 @@ namespace DnnDemo
         }
 
         /// <summary>
-        /// Check all is ok
+        /// Check everything is ok
         /// </summary>
         /// <returns></returns>
         private bool CheckEnvironment ()
@@ -108,6 +112,11 @@ namespace DnnDemo
             return true;
         }
 
+        /// <summary>
+        /// Guess pattern
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (!CheckEnvironment())
@@ -168,6 +177,21 @@ namespace DnnDemo
         }
 
         /// <summary>
+        /// Train as unknown pattern
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (!CheckEnvironment())
+            {
+                return;
+            }
+
+            dnn.Train(pictureBox2.Image, DnnXo.FeatureType.Unknown);
+        }
+
+        /// <summary>
         /// Load network state
         /// </summary>
         /// <param name="sender"></param>
@@ -221,15 +245,17 @@ namespace DnnDemo
         }
 
         /// <summary>
-        /// Born child
+        /// Child born
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void createNewNetworkToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DnnXo.DnnState blankState = new DnnXo.DnnState();
+            DnnXo.DnnState blankState = DnnXo.CreateBlankState ();
 
             dnn = new DnnXo(blankState);
         }
+
+
     }
 }

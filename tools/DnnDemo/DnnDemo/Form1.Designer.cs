@@ -52,6 +52,7 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.createNewNetworkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button2 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -73,7 +74,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(792, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(892, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -110,12 +111,13 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button4);
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Panel2.Controls.Add(this.label1);
-            this.splitContainer1.Size = new System.Drawing.Size(792, 464);
-            this.splitContainer1.SplitterDistance = 373;
+            this.splitContainer1.Size = new System.Drawing.Size(892, 464);
+            this.splitContainer1.SplitterDistance = 337;
             this.splitContainer1.TabIndex = 1;
             // 
             // splitContainer2
@@ -132,7 +134,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.pictureBox2);
-            this.splitContainer2.Size = new System.Drawing.Size(373, 464);
+            this.splitContainer2.Size = new System.Drawing.Size(337, 464);
             this.splitContainer2.SplitterDistance = 252;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -150,7 +152,7 @@
             this.pictureBox2.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.pictureBox2.Location = new System.Drawing.Point(4, 4);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox2.Size = new System.Drawing.Size(16, 16);
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
             // 
@@ -272,11 +274,21 @@
             this.createNewNetworkToolStripMenuItem.Text = "Create new network";
             this.createNewNetworkToolStripMenuItem.Click += new System.EventHandler(this.createNewNetworkToolStripMenuItem_Click);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(342, 86);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(102, 43);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Train as ???";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 488);
+            this.ClientSize = new System.Drawing.Size(892, 488);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -326,6 +338,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.ToolStripMenuItem createNewNetworkToolStripMenuItem;
+        private System.Windows.Forms.Button button2;
     }
 }
 

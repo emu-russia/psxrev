@@ -17,12 +17,15 @@ using System.Windows.Forms;
 public class DnnXo
 {
     public DnnState _state;
+    private NeuralNetwork nn;
 
     public enum FeatureType
     {
         Unknown = 0,
         X,
-        O
+        O,
+
+        Max
     }
 
     /// <summary>
@@ -30,21 +33,78 @@ public class DnnXo
     /// </summary>
     public class DnnState
     {
-        public int dummy;
+        public int imageSize;
+        public int numInput;
+        public int numHidden;
+        public int numOutput;
+        public double[] weights;
+    }
+
+    /// <summary>
+    /// Create blank network
+    /// </summary>
+    /// <returns></returns>
+    public static DnnState CreateBlankState ()
+    {
+        DnnState state = new DnnState();
+
+        state.imageSize = 16;
+
+        state.numInput = state.imageSize * state.imageSize;
+        state.numHidden = state.imageSize * state.imageSize;
+        state.numOutput = (int)FeatureType.Max;
+
+        state.weights = NeuralNetwork.GetInitialWeights(state.numInput, state.numHidden, state.numOutput);
+
+        return state;
     }
 
     public DnnXo (DnnState state)
     {
         _state = state;
+
+        nn = new NeuralNetwork(_state.numInput, _state.numHidden, _state.numOutput);
+
+        nn.SetWeights(_state.weights);
     }
 
     /// <summary>
     /// Recognize image pattern
     /// </summary>
-    /// <param name="image">64x64 vector</param>
+    /// <param name="image">vector</param>
     /// <returns></returns>
     public FeatureType Guess ( Image image)
     {
+        Bitmap bitmap = new Bitmap(image);
+        double[] inputs = new double[_state.numInput];
+        int i = 0;
+
+        //
+        // Create input vector
+        //
+
+        for (int y=0; y<_state.imageSize; y++)
+        {
+            for (int x=0; x< _state.imageSize; x++)
+            {
+                Color color = bitmap.GetPixel(x, y);
+
+                float blue = color.B;
+                float green = color.G;
+                float red = color.R;
+
+                byte Y = (byte)((0.299 * red) + (0.587 * green) + (0.114 * blue));
+                inputs[i++] = 1.0F / (float)Y;
+            }
+        }
+
+        //
+        // Calculate output
+        //
+
+        double[] outputs = nn.ComputeOutputs(inputs);
+
+        Console.WriteLine(outputs.ToString());
 
         return FeatureType.Unknown;
     }
@@ -56,6 +116,10 @@ public class DnnXo
     /// <param name="feature">classify by feature type (teach)</param>
     public void Train ( Image image, FeatureType feature)
     {
+        int maxEpochs = 1000;
+        double learnRate = 0.05;
+        double momentum = 0.01;
+
 
     }
 
@@ -69,7 +133,7 @@ public class DnnXo
         int numHidden = 5;
         int numOutput = 3; // number of classes for Y
         int numRows = 1000;
-        int seed = 1; // gives nice demo
+        int seed = 77; // gives nice demo
 
         Console.WriteLine("\nGenerating " + numRows +
           " artificial data items with " + numInput + " features");
@@ -321,13 +385,23 @@ public class NeuralNetwork
 
     private void InitializeWeights() // helper for ctor
     {
+        double[] initialWeights = GetInitialWeights(numInput, numHidden, numOutput);
+
+        this.SetWeights(initialWeights);
+    }
+
+    public static double [] GetInitialWeights(int numInput, int numHidden, int numOutput)
+    {
+        Random rnd = new Random();
+
         // initialize weights and biases to small random values
         int numWeights = (numInput * numHidden) +
           (numHidden * numOutput) + numHidden + numOutput;
         double[] initialWeights = new double[numWeights];
         for (int i = 0; i < initialWeights.Length; ++i)
             initialWeights[i] = (0.001 - 0.0001) * rnd.NextDouble() + 0.0001;
-        this.SetWeights(initialWeights);
+
+        return initialWeights;
     }
 
     public void SetWeights(double[] weights)
