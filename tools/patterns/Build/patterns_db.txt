@@ -118,7 +118,7 @@ pattern MUX1, CellMux, 5.0, 6, 6, "patterns_db/MUX1.jpg"
 pattern MUX2X, CellMux, 5.0, 7, 7, "patterns_db/MUX2X.jpg"
 pattern MUX3X, CellMux, 5.0, 8, 8, "patterns_db/MUX3X.jpg"
 
-pattern IMU1, CellMux, 5.0, 4, 4, "patterns_db/IMUX1.jpg"
+pattern IMUX1, CellMux, 5.0, 4, 4, "patterns_db/IMUX1.jpg"
 pattern IMUX, CellMux, 5.0, 4, 4, "patterns_db/IMUX.jpg"
 pattern IMUX2X, CellMux, 5.0, 5, 5, "patterns_db/IMUX2X.jpg"
 pattern IMUX3X, CellMux, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
@@ -126,16 +126,9 @@ pattern IMUX3X, CellMux, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
 pattern 3-MUX, CellMux, 5.0, 10, 10, "patterns_db/3-MUX.jpg"
 pattern 3-MUX3X, CellMux, 5.0, 12, 12, "patterns_db/3-MUX3X.jpg"
 pattern 4-MUX, CellMux, 5.0, 13, 13, "patterns_db/4-MUX.jpg"
+pattern 4-MUX3X, CellMux, 5.0, 13, 13, "patterns_db/4-MUX3X.jpg"
 
-# Triggers / latches
-
-pattern DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/DLATCH.jpg"
-pattern /DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/nDLATCH.jpg"
-pattern DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/DLATCH4X.jpg"
-pattern /DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/nDLATCH4X.jpg"
-
-pattern DLATCHR2X, CellLatch, 5.0, 9, 9, "patterns_db/DLATCHR2X.jpg"
-pattern DLATCHR4X, CellLatch, 5.0, 11, 11, "patterns_db/DLATCHR4X.jpg"
+# Triggers
 
 pattern DFF, CellFlipFlop, 5.0, 12, 12, "patterns_db/DFF.jpg"
 pattern /DFF, CellFlipFlop, 5.0, 12, 12, "patterns_db/nDFF.jpg"
@@ -146,9 +139,22 @@ pattern /DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/nDFFR.jpg"
 pattern DFFR3X, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X.jpg"
 pattern DFFR3X-FLIP, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X-FLIP.jpg"
 
+pattern DFFS, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFFS.jpg"
+
 pattern DFFRS3X, CellFlipFlop, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
 
+pattern DFF_MUX, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFF_MUX.jpg"
 pattern DFFR_MUX, CellFlipFlop, 5.0, 18, 18, "patterns_db/DFFR_MUX.jpg"
+
+# Latches
+
+pattern DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/DLATCH.jpg"
+pattern /DLATCH, CellLatch, 5.0, 8, 8, "patterns_db/nDLATCH.jpg"
+pattern DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/DLATCH4X.jpg"
+pattern /DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/nDLATCH4X.jpg"
+
+pattern DLATCHR2X, CellLatch, 5.0, 9, 9, "patterns_db/DLATCHR2X.jpg"
+pattern DLATCHR4X, CellLatch, 5.0, 11, 11, "patterns_db/DLATCHR4X.jpg"
 
 # Adder / Multiplier
 
