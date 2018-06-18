@@ -198,6 +198,9 @@
     <ClCompile Include="..\xmlsaver.c">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\mapwnd.c">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\patternwnd.h">
@@ -269,11 +272,14 @@
     <ClInclude Include="..\..\libjpeg\transupp.h">
       <Filter>libjpeg</Filter>
     </ClInclude>
-    <ClInclude Include="..\Resource\resource.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="..\xmlsaver.h">
       <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mapwnd.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Resource\resource.h">
+      <Filter>Файлы ресурсов</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -83,3 +83,11 @@ void JpegSelectPattern(PatternEntry * Pattern);
 PatternEntry * JpegGetSelectedPattern(void);
 
 void JpegEnsureVisible(PatternEntry * Pattern);
+
+void JpegNextUnknown(void);
+
+void JpegNextGarbage(void);
+
+void JpegGetDims(LPPOINT Dims);
+
+void JpegGotoOrigin(void);

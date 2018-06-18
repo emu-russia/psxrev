@@ -17,6 +17,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include "jpegwnd.h"
 #include "patternwnd.h"
 #include "statuswnd.h"
+#include "mapwnd.h"
 #include "workspace.h"
 #include "textsaver.h"
 #include "text_vertical.h"
@@ -275,6 +276,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         CreateStatusBar(hwnd);
         JpegInit(hwnd);
         PatternInit(hwnd, "patterns_db.txt");
+		MapInit(hwnd);
 
         GetClientRect(hwnd, &Rect);
         JpegResize(Rect.right, Rect.bottom);
@@ -285,6 +287,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         JpegResize(LOWORD(lParam), HIWORD(lParam) - GetStatusBarHeight());
         PatternResize(LOWORD(lParam), HIWORD(lParam) - GetStatusBarHeight());
+		MapResize(LOWORD(lParam), HIWORD(lParam) - GetStatusBarHeight());
         ResizeStatusBar(LOWORD(lParam), HIWORD(lParam));
         break;
     case WM_COMMAND:
@@ -324,6 +327,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_REMOVE_ALL_PATTERNS:
             JpegRemoveAllPatterns();
             break;
+		case ID_NAVIGATE_ORIGIN:
+			JpegGotoOrigin();
+			break;
+		case ID_NAVIGATE_UNKNOWN:
+			JpegNextUnknown();
+			break;
+		case ID_NAVIGATE_GARBAGE:
+			JpegNextGarbage();
+			break;
+		case ID_HELP_ABOUT:
+			MessageBox(NULL, "patterns, v.1.0\n(c) 2018, http://psxdev.ru", "About patterns",
+				MB_ICONINFORMATION | MB_OK);
+			break;
         case ID_SHOW_PROFILER:
             if (PerfRunning())
             {

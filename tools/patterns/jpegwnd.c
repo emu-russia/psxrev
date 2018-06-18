@@ -17,6 +17,7 @@
 #include "jpegload.h"
 #include "jpegsave.h"
 #include "patternwnd.h"
+#include "mapwnd.h"
 #include "statuswnd.h"
 #include "jpegwnd.h"
 #include "profiler.h"
@@ -71,6 +72,8 @@ static BOOL DragOccureInPattern;
 static PatternEntry * PatternLayer;
 static int NumPatterns;
 static PatternEntry * SelectedPattern;
+static PatternEntry * LastUnknownPattern;
+static PatternEntry * LastGarbagePattern;
 static BOOL DraggingPattern;
 
 HBITMAP RemoveBitmap;
@@ -1556,6 +1559,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         PerfUpdateStats(hdc);
 
+		MapUpdate();
+
         EndPaint(hwnd, &ps);
         break;
 
@@ -1637,6 +1642,7 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             RearrangePatternTiles();
             PatternRedraw();
             UpdateSelectionStatus();
+			JpegSelectPattern(NULL);
         }
 #ifdef USEGL
         if (DraggingPattern)
@@ -1706,7 +1712,6 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         RearrangePatternTiles();
         PatternRedraw();
         UpdateSelectionStatus();
-        JpegSelectPattern(NULL);
         break;
 
 #ifdef USEGL
@@ -2123,6 +2128,12 @@ void JpegSelectPattern(PatternEntry * Pattern)
 
     SelectedPattern = Pattern;
 
+	//
+	// Forget last unknown/garbage
+	//
+
+	LastUnknownPattern = LastGarbagePattern = NULL;
+
     //
     // Update newly selected Pattern
     //
@@ -2204,4 +2215,109 @@ void JpegEnsureVisible(PatternEntry * Pattern)
 #endif
 
     PERF_STOP("JpegEnsureVisible");
+}
+
+static PatternEntry * GetNexSpecificPattern(char *nameContains, PatternEntry * parent)
+{
+	int startIndex;
+
+	if (!parent)
+	{
+		startIndex = 0;
+	}
+	else
+	{
+		for (int i = 0; i < NumPatterns; i++)
+		{
+			if (&PatternLayer[i] == parent)
+			{
+				startIndex = i;
+				break;
+			}
+		}
+	}
+
+	for (int i = startIndex + 1; i < NumPatterns; i++)
+	{
+		if (strstr(PatternLayer[i].PatternName, nameContains))
+		{
+			return &PatternLayer[i];
+		}
+	}
+
+	for (int i = 0; i < startIndex; i++)
+	{
+		if (strstr(PatternLayer[i].PatternName, nameContains))
+		{
+			return &PatternLayer[i];
+		}
+	}
+
+	return NULL;
+}
+
+void JpegNextUnknown(void)
+{
+	PatternEntry * next = GetNexSpecificPattern("UNK", LastUnknownPattern);
+
+	if (next)
+	{
+		JpegSelectPattern(next);
+		JpegEnsureVisible(next);
+
+		LastUnknownPattern = next;
+	}
+}
+
+void JpegNextGarbage(void)
+{
+	PatternEntry * next = GetNexSpecificPattern("GARBAGE", LastGarbagePattern);
+
+	if (next)
+	{
+		JpegSelectPattern(next);
+		JpegEnsureVisible(next);
+
+		LastGarbagePattern = next;
+	}
+}
+
+void JpegGetDims(LPPOINT Dims)
+{
+	Dims->x = JpegWidth;
+	Dims->y = JpegHeight;
+}
+
+void JpegGotoOrigin(void)
+{
+	POINT Offset;
+	int DeltaX;
+	int DeltaY;
+
+	DeltaX = ScrollX;
+	DeltaY = ScrollY;
+
+	SaveEntryPositions(NULL);
+
+	//
+	// Set scroll offset
+	//
+
+	Offset.x = 0;
+	Offset.y = 0;
+
+	JpegSetScroll(&Offset);
+
+	//
+	// Adjust added patterns windows positions, according to changed scroll offset.
+	//
+
+	DeltaX -= ScrollX;
+	DeltaY -= ScrollY;
+
+	UpdateEntryPositions(-DeltaX, -DeltaY, TRUE, NULL);
+
+#ifdef USEGL
+	JpegRedraw();
+#endif
 }

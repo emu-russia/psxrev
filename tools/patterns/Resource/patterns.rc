@@ -8,9 +8,16 @@ BEGIN
         MENUITEM "Load Source Image", ID_FILE_LOAD
         MENUITEM "Load Pattern Database", ID_FILE_LOAD_PATTERNS_DB
         MENUITEM "Save Patterns as Image", ID_SAVE_PATIMG
-        MENUITEM "Save Patterns as Text", ID_SAVE_PATTXT
         MENUITEM "Save Patterns as XML", ID_SAVE_PATXML
         MENUITEM "E&xit", ID_FILE_EXIT
+    END
+
+    POPUP "&Navigate"
+    BEGIN
+	MENUITEM "Origin", ID_NAVIGATE_ORIGIN
+        MENUITEM "Ensure Visible", ID_ENSURE_VISIBLE
+        MENUITEM "Show Next Unknown", ID_NAVIGATE_UNKNOWN
+        MENUITEM "Show Next Garbage", ID_NAVIGATE_GARBAGE
     END
 
     POPUP "&Workspace"
@@ -19,13 +26,17 @@ BEGIN
         MENUITEM "Save Workspace", ID_WORKSPACE_SAVE
         MENUITEM SEPARATOR
         MENUITEM "Remove all added patterns", ID_REMOVE_ALL_PATTERNS
-        MENUITEM "Ensure Visible", ID_ENSURE_VISIBLE
         MENUITEM "Show debug profile info", ID_SHOW_PROFILER
     END
 
     POPUP "&Settings"
     BEGIN
         MENUITEM "&Settings", ID_SETTINGS
+    END
+
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "A&bout", ID_HELP_ABOUT
     END
 END
 

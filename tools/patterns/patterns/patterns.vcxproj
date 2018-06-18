@@ -214,6 +214,7 @@
     <ClCompile Include="..\jpegwnd.c" />
     <ClCompile Include="..\listutils.c" />
     <ClCompile Include="..\main.c" />
+    <ClCompile Include="..\mapwnd.c" />
     <ClCompile Include="..\patternwnd.c" />
     <ClCompile Include="..\profiler.c" />
     <ClCompile Include="..\statuswnd.c" />
@@ -240,6 +241,7 @@
     <ClInclude Include="..\jpegsave.h" />
     <ClInclude Include="..\jpegwnd.h" />
     <ClInclude Include="..\listutils.h" />
+    <ClInclude Include="..\mapwnd.h" />
     <ClInclude Include="..\patternwnd.h" />
     <ClInclude Include="..\profiler.h" />
     <ClInclude Include="..\Resource\resource.h" />

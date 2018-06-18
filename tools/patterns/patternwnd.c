@@ -601,7 +601,6 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
 void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int ncount, long type)
 {
     PatternItem Item;
-    char buffer[1024];
     int DecodeResult;
     char Text[1024];
     char FullPath[MAX_PATH];
@@ -706,7 +705,6 @@ void ParseLine(char *line)
     char pcount[32];        // offset_y
     char ncount[32];        // type
     char path[256];         // reserved
-    char buffer[1024];
 
     // Skip whitespaces.
     while (*line)
