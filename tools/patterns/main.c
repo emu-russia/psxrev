@@ -269,6 +269,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     RECT Rect;
+	PatternEntry * selected;
 
     switch (msg)
     {
@@ -336,8 +337,56 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case ID_NAVIGATE_GARBAGE:
 			JpegNextGarbage();
 			break;
+		case ID_REMOVE_SELECTION:
+			JpegSelectPattern(NULL);
+			JpegRedraw();
+			break;
+		case ID_PATTERN_MOVE_LEFT:
+			selected = JpegGetSelectedPattern();
+			if (selected)
+			{
+				selected->PlaneX--;
+				selected->PosX--;
+				JpegRedraw();
+			}
+			break;
+		case ID_PATTERN_MOVE_RIGHT:
+			selected = JpegGetSelectedPattern();
+			if (selected)
+			{
+				selected->PlaneX++;
+				selected->PosX++;
+				JpegRedraw();
+			}
+			break;
+		case ID_PATTERN_MOVE_UP:
+			selected = JpegGetSelectedPattern();
+			if (selected)
+			{
+				selected->PlaneY--;
+				selected->PosY--;
+				JpegRedraw();
+			}
+			break;
+		case ID_PATTERN_MOVE_DOWN:
+			selected = JpegGetSelectedPattern();
+			if (selected)
+			{
+				selected->PlaneY++;
+				selected->PosY++;
+				JpegRedraw();
+			}
+			break;
 		case ID_HELP_ABOUT:
 			MessageBox(NULL, "patterns, v.1.0\n(c) 2018, http://psxdev.ru", "About patterns",
+				MB_ICONINFORMATION | MB_OK);
+			break;
+		case ID_HELP_HOTKEYS:
+			MessageBox(NULL, 
+				"Escape: remove selection\n"
+				"Home: goto origin (0,0)\n"
+				"Arrows: fine movement of selected pattern\n" ,
+				"Hotkey bindings",
 				MB_ICONINFORMATION | MB_OK);
 			break;
         case ID_SHOW_PROFILER:

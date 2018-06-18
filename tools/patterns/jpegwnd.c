@@ -63,6 +63,7 @@ static BOOL ScrollingBegin;
 static int SavedMouseX, SavedMouseY;
 static int SavedScrollX, SavedScrollY;
 static BOOL SelectionBegin, RegionSelected;
+static BOOL MapScrollBegin;
 static int SelectionStartX, SelectionStartY;
 static int SelectionEndX, SelectionEndY;
 static BOOL DragOccureInPattern;
@@ -735,6 +736,29 @@ static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
     glDisable(GL_TEXTURE_2D);
 }
 
+static void GL_DrawMapArea(void)
+{
+	RECT mapRect;
+
+	MapGetDims(&mapRect);
+
+	if (mapRect.right != 0)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glColor4f(.7f, .7f, .7f, .5f);
+		glBegin(GL_QUADS);
+		glVertex2i(mapRect.left, mapRect.top);
+		glVertex2i(mapRect.right, mapRect.top);
+		glVertex2i(mapRect.right, mapRect.bottom);
+		glVertex2i(mapRect.left, mapRect.bottom);
+		glEnd();
+
+		glDisable(GL_BLEND);
+	}
+}
+
 static void GL_redraw(HDC hDC)
 {
     int n;
@@ -782,6 +806,12 @@ static void GL_redraw(HDC hDC)
         glVertex2i(SelectionStartX, SelectionStartY);
         glEnd();
     }
+
+	//
+	// Draw map area
+	//
+
+	GL_DrawMapArea();
 
     SwapBuffers(hDC);
 }
@@ -1472,6 +1502,8 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     int EntryIndex;
     PatternEntry * Entry;
     PatternEntry * Selected;
+	RECT mapRect;
+	POINT cursor;
 
     switch (msg)
     {
@@ -1568,6 +1600,28 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         RegionSelected = FALSE;
 
+		//
+		// Map hit test
+		//
+
+		MapGetDims(&mapRect);
+
+		if (mapRect.right != 0)
+		{
+			cursor.x = LOWORD(lParam);
+			cursor.y = HIWORD(lParam);
+
+			if (PtInRect(&mapRect, cursor))
+			{
+				MapScroll(cursor.x - mapRect.left,
+					cursor.y - mapRect.top);
+
+				MapScrollBegin = TRUE;
+
+				break;
+			}
+		}
+
 #ifdef USEGL
         EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
         if (EntryIndex != -1)
@@ -1617,6 +1671,27 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_MOUSEMOVE:
+
+		//
+		// Map hit test
+		//
+
+		MapGetDims(&mapRect);
+
+		if (mapRect.right != 0)
+		{
+			cursor.x = LOWORD(lParam);
+			cursor.y = HIWORD(lParam);
+
+			if (PtInRect(&mapRect, cursor) && MapScrollBegin)
+			{
+				MapScroll(cursor.x - mapRect.left,
+					cursor.y - mapRect.top);
+
+				break;
+			}
+		}
+
         if (ScrollingBegin)
         {
             Offset.x = SavedScrollX + LOWORD(lParam) - SavedMouseX;
@@ -1679,7 +1754,28 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_LBUTTONUP:
+
+		//
+		// Map hit test
+		//
+
+		MapGetDims(&mapRect);
+
+		if (mapRect.right != 0)
+		{
+			cursor.x = LOWORD(lParam);
+			cursor.y = HIWORD(lParam);
+
+			if (PtInRect(&mapRect, cursor))
+			{
+				MapScrollBegin = FALSE;
+
+				break;
+			}
+		}
+
 #ifdef USEGL
+		MapScrollBegin = FALSE;
         DraggingPattern = FALSE;
 
         EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
@@ -1721,6 +1817,23 @@ LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         //
 
     case WM_LBUTTONDBLCLK:
+
+		//
+		// Map hit test
+		//
+
+		MapGetDims(&mapRect);
+
+		if (mapRect.right != 0)
+		{
+			cursor.x = LOWORD(lParam);
+			cursor.y = HIWORD(lParam);
+			if (PtInRect(&mapRect, cursor))
+			{
+				break;
+			}
+		}
+
         EntryIndex = GetPatternEntryIndexByCursorPos(LOWORD(lParam), HIWORD(lParam));
         if (EntryIndex != -1)
         {
@@ -1745,6 +1858,7 @@ void JpegInit(HWND Parent)
     ScrollX = ScrollY = 0;
     ScrollingBegin = FALSE;
     SelectionBegin = RegionSelected = FALSE;
+	MapScrollBegin = FALSE;
 
     ParentWnd = Parent;
 
@@ -2021,6 +2135,9 @@ int GetPatternEntryNum(void)
 // Destroy all system resources to create it again.
 void JpegDestroy(void)
 {
+	SelectionBegin = FALSE;
+	MapScrollBegin = FALSE;
+
     JpegRemoveSelection();
 
     ScrollX = ScrollY = 0;
@@ -2288,7 +2405,7 @@ void JpegGetDims(LPPOINT Dims)
 	Dims->y = JpegHeight;
 }
 
-void JpegGotoOrigin(void)
+void JpegGoto(int x, int y)
 {
 	POINT Offset;
 	int DeltaX;
@@ -2303,8 +2420,8 @@ void JpegGotoOrigin(void)
 	// Set scroll offset
 	//
 
-	Offset.x = 0;
-	Offset.y = 0;
+	Offset.x = x;
+	Offset.y = y;
 
 	JpegSetScroll(&Offset);
 
@@ -2320,4 +2437,9 @@ void JpegGotoOrigin(void)
 #ifdef USEGL
 	JpegRedraw();
 #endif
+}
+
+void JpegGotoOrigin(void)
+{
+	JpegGoto(0, 0);
 }

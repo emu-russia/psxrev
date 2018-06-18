@@ -16,7 +16,10 @@ static HWND MapWnd;
 
 static HPEN MapPen;
 
-#define MAP_WND_SIZE 150
+#define MAP_WND_SIZE  ( JpegWindowWidth() / 5 )
+
+#define MAP_WND_X  ( JpegWindowWidth() - MAP_WND_SIZE )
+#define MAP_WND_Y  ( 2 )
 
 LRESULT CALLBACK MapWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -29,7 +32,6 @@ LRESULT CALLBACK MapWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         break;
-
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
@@ -90,8 +92,8 @@ void MapInit(HWND Parent)
 
 	MapUpdate();
 
-	if (JpegWindowWidth() < MAP_WND_SIZE + 100 ||
-		JpegWindowHeight() < MAP_WND_SIZE + 100)
+	if (JpegWindowWidth() < 2*MAP_WND_SIZE ||
+		JpegWindowHeight() < 2*MAP_WND_SIZE )
 	{
 		ShowWindow(MapWnd, SW_HIDE);
 	}
@@ -99,8 +101,8 @@ void MapInit(HWND Parent)
 
 void MapResize(int Width, int Height)
 {
-    if (JpegWindowWidth() < MAP_WND_SIZE + 100 ||
-        JpegWindowHeight() < MAP_WND_SIZE + 100 )
+    if (JpegWindowWidth() < 2*MAP_WND_SIZE ||
+        JpegWindowHeight() < 2*MAP_WND_SIZE )
     {
 		ShowWindow(MapWnd, SW_HIDE);
         return;
@@ -109,8 +111,8 @@ void MapResize(int Width, int Height)
 	ShowWindow(MapWnd, SW_NORMAL);
 
     MoveWindow( MapWnd,
-        JpegWindowWidth() - MAP_WND_SIZE,
-        2,
+		MAP_WND_X,
+		MAP_WND_Y,
         MAP_WND_SIZE,
         MAP_WND_SIZE,
         TRUE);
@@ -175,4 +177,53 @@ void MapUpdate()
 	LineTo(mapDc, scrollX, scrollY);
 
 	ReleaseDC(MapWnd, mapDc);
+}
+
+void MapGetDims(LPRECT mapWnd)
+{
+	POINT jpegSize;
+
+	JpegGetDims(&jpegSize);
+
+	if (jpegSize.y == 0 || !IsWindowVisible(MapWnd))
+	{
+		mapWnd->right = mapWnd->bottom = 0;
+		return;
+	}
+
+	float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+	int mapWidth = MAP_WND_SIZE;
+	int mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+
+	mapWnd->left = MAP_WND_X;
+	mapWnd->top = MAP_WND_Y;
+	mapWnd->right = mapWnd->left + mapWidth - 1;
+	mapWnd->bottom = mapWnd->top + mapHeight - 1;
+}
+
+//
+// Translate pointing device hit test to JpegWnd scroll change
+//
+
+void MapScroll(int x, int y)
+{
+	POINT jpegSize;
+
+	JpegGetDims(&jpegSize);
+
+	if (jpegSize.y == 0 || !IsWindowVisible(MapWnd))
+	{
+		return;
+	}
+
+	float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+	int mapWidth = MAP_WND_SIZE;
+	int mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+
+	int scrollX = -(int)((float)x * ((float)jpegSize.x / (float)mapWidth));
+	int scrollY = -(int)((float)y * ((float)jpegSize.y / (float)mapHeight));
+
+	JpegGoto(scrollX, scrollY);
 }

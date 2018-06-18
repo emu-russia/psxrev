@@ -1,4 +1,3 @@
 Patterns tool TODO List:
 
-- Preview window for quick navigation
 - Save as Jpeg

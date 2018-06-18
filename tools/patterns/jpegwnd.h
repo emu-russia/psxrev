@@ -90,4 +90,6 @@ void JpegNextGarbage(void);
 
 void JpegGetDims(LPPOINT Dims);
 
+void JpegGoto(int x, int y);
+
 void JpegGotoOrigin(void);
