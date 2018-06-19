@@ -21,7 +21,6 @@ public class DnnXo
 
     public enum FeatureType
     {
-        Unknown = 0,
         X,
         O,
 
@@ -51,10 +50,18 @@ public class DnnXo
         state.imageSize = 16;
 
         state.numInput = state.imageSize * state.imageSize;
-        state.numHidden = state.imageSize * state.imageSize;
+        state.numHidden = (state.imageSize * state.imageSize) / 2;
         state.numOutput = (int)FeatureType.Max;
 
-        state.weights = NeuralNetwork.GetInitialWeights(state.numInput, state.numHidden, state.numOutput);
+        Random rnd = new Random();
+        int numWeights = (state.numInput * state.numHidden) + state.numHidden +
+          (state.numHidden * state.numOutput) + state.numOutput;
+        double[] weights = new double[numWeights]; // actually weights & biases
+        for (int i = 0; i < numWeights; ++i)
+            weights[i] = rnd.NextDouble(); // [0.0 to 1.0)  (Y-space)
+            //weights[i] = 20.0 * rnd.NextDouble() - 10.0; // [-10.0 to 10.0]
+
+        state.weights = weights;
 
         return state;
     }
@@ -94,25 +101,31 @@ public class DnnXo
                 float red = color.R;
 
                 byte Y = (byte)((0.299 * red) + (0.587 * green) + (0.114 * blue));
-                inputs[i++] = 1.0F / (float)Y;
+                inputs[i++] = (float)Y / 256.0F;
             }
         }
+
+        //ShowVector(inputs, 2, _state.imageSize, true);
 
         //
         // Calculate output
         //
 
+        nn.SetWeights(_state.weights);
+
         double[] outputs = nn.ComputeOutputs(inputs);
 
-        Console.WriteLine(outputs.ToString());
+        ShowVector(outputs, 2, 10, true);
 
-        return FeatureType.Unknown;
+        int guessMax = NeuralNetwork.MaxIndex(outputs);
+
+        return (FeatureType)guessMax;
     }
 
     /// <summary>
     /// Teach network
     /// </summary>
-    /// <param name="image">64x64 vector</param>
+    /// <param name="image">vector</param>
     /// <param name="feature">classify by feature type (teach)</param>
     public void Train ( Image image, FeatureType feature)
     {
@@ -120,7 +133,62 @@ public class DnnXo
         double learnRate = 0.05;
         double momentum = 0.01;
 
+        //
+        // Create train data
+        //
 
+        Bitmap bitmap = new Bitmap(image);
+        double[] trainData = new double[_state.numInput + _state.numOutput];    // 1 of N at the end
+        int i = 0;
+
+        //
+        // Fill input vector
+        //
+
+        for (int y = 0; y < _state.imageSize; y++)
+        {
+            for (int x = 0; x < _state.imageSize; x++)
+            {
+                Color color = bitmap.GetPixel(x, y);
+
+                float blue = color.B;
+                float green = color.G;
+                float red = color.R;
+
+                byte Y = (byte)((0.299 * red) + (0.587 * green) + (0.114 * blue));
+                trainData[i++] = (float)Y / 256.0F;
+            }
+        }
+
+        //
+        // Fill output
+        //
+
+        for (int n=0; n<_state.numOutput; n++)
+        {
+            if ( n == (int)feature)
+            {
+                trainData[i++] = 1.0;
+            }
+            else
+            {
+                trainData[i++] = 0.0;
+            }
+        }
+
+        //
+        // Train and save weights
+        //
+
+        double[][] trainDataSet = new double[1][];
+
+        trainDataSet[0] = trainData;
+
+        ShowVector(trainData, 2, _state.imageSize, true);
+
+        nn.SetWeights(_state.weights);
+
+        _state.weights = nn.Train(trainDataSet, maxEpochs, learnRate, momentum);
     }
 
     // Source: https://visualstudiomagazine.com/Articles/2015/04/01/Back-Propagation-Using-C.aspx
@@ -227,7 +295,15 @@ public class DnnXo
         {
             if (i > 0 && i % lineLen == 0) Console.WriteLine("");
             if (vector[i] >= 0) Console.Write(" ");
-            Console.Write(vector[i].ToString("F" + decimals) + " ");
+
+            //if (vector[i] >= 0.99F)
+            //{
+            //    Console.Write("     ");
+            //}
+            //else
+            {
+                Console.Write(vector[i].ToString("F" + decimals) + " ");
+            }
         }
         if (newLine == true)
             Console.WriteLine("");
@@ -334,6 +410,23 @@ public class NeuralNetwork
     private double[] oBiases;
     private double[] outputs;
 
+    // train using back-prop
+    // back-prop specific arrays
+    private double[][] hoGrads;
+    private double[] obGrads;
+
+    private double[][] ihGrads;
+    private double[] hbGrads;
+
+    private double[] oSignals;
+    private double[] hSignals;
+
+    // back-prop momentum specific arrays 
+    private double[][] ihPrevWeightsDelta;
+    private double[] hPrevBiasesDelta;
+    private double[][] hoPrevWeightsDelta;
+    private double[] oPrevBiasesDelta;
+
     private Random rnd;
 
     public NeuralNetwork(int numInput, int numHidden, int numOutput)
@@ -352,8 +445,23 @@ public class NeuralNetwork
         this.oBiases = new double[numOutput];
         this.outputs = new double[numOutput];
 
-        this.rnd = new Random(0);
+        this.rnd = new Random();
         this.InitializeWeights(); // all weights and biases
+
+        hoGrads = MakeMatrix(numHidden, numOutput, 0.0); // hidden-to-output weight gradients
+        obGrads = new double[numOutput];                   // output bias gradients
+
+        ihGrads = MakeMatrix(numInput, numHidden, 0.0);  // input-to-hidden weight gradients
+        hbGrads = new double[numHidden];                   // hidden bias gradients
+
+        oSignals = new double[numOutput];                  // local gradient output signals - gradients w/o associated input terms
+        hSignals = new double[numHidden];                  // local gradient hidden node signals
+
+        ihPrevWeightsDelta = MakeMatrix(numInput, numHidden, 0.0);
+        hPrevBiasesDelta = new double[numHidden];
+        hoPrevWeightsDelta = MakeMatrix(numHidden, numOutput, 0.0);
+        oPrevBiasesDelta = new double[numOutput];
+
     } // ctor
 
     private static double[][] MakeMatrix(int rows,
@@ -508,21 +616,6 @@ public class NeuralNetwork
       double learnRate, double momentum)
     {
         // train using back-prop
-        // back-prop specific arrays
-        double[][] hoGrads = MakeMatrix(numHidden, numOutput, 0.0); // hidden-to-output weight gradients
-        double[] obGrads = new double[numOutput];                   // output bias gradients
-
-        double[][] ihGrads = MakeMatrix(numInput, numHidden, 0.0);  // input-to-hidden weight gradients
-        double[] hbGrads = new double[numHidden];                   // hidden bias gradients
-
-        double[] oSignals = new double[numOutput];                  // local gradient output signals - gradients w/o associated input terms
-        double[] hSignals = new double[numHidden];                  // local gradient hidden node signals
-
-        // back-prop momentum specific arrays 
-        double[][] ihPrevWeightsDelta = MakeMatrix(numInput, numHidden, 0.0);
-        double[] hPrevBiasesDelta = new double[numHidden];
-        double[][] hoPrevWeightsDelta = MakeMatrix(numHidden, numOutput, 0.0);
-        double[] oPrevBiasesDelta = new double[numOutput];
 
         int epoch = 0;
         double[] xValues = new double[numInput]; // inputs
@@ -704,7 +797,7 @@ public class NeuralNetwork
         return (numCorrect * 1.0) / (numCorrect + numWrong);
     }
 
-    private static int MaxIndex(double[] vector) // helper for Accuracy()
+    public static int MaxIndex(double[] vector) // helper for Accuracy()
     {
         // index of largest value
         int bigIndex = 0;
