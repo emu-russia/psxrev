@@ -86,6 +86,8 @@ static char * SavedImageName = NULL;
 
 static int TransCount[2];
 
+static CRITICAL_SECTION updateSelection;
+
 #ifdef USEGL
 
 //
@@ -1035,6 +1037,8 @@ static void UpdateSelectionStatus(void)
     float LamdaWidth, LamdaHeight;
     PCHAR FlagDesc = "";
 
+	EnterCriticalSection(&updateSelection);
+
     Width = abs(SelectionEndX - SelectionStartX);
     Height = abs(SelectionEndY - SelectionStartY);
 
@@ -1075,6 +1079,8 @@ static void UpdateSelectionStatus(void)
         }
         else SetStatusText(STATUS_SELECTED, "Selected: ---");
     }
+
+	LeaveCriticalSection(&updateSelection);
 }
 
 static int GetPatternEntryIndexByHwnd(HWND Hwnd)
@@ -1962,6 +1968,8 @@ void JpegInit(HWND Parent)
     ScrollingBegin = FALSE;
     SelectionBegin = RegionSelected = FALSE;
 	MapScrollBegin = FALSE;
+
+	InitializeCriticalSection(&updateSelection);
 
     ParentWnd = Parent;
 
