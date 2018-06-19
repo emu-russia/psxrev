@@ -1966,7 +1966,7 @@ ULONG JpegLoadImage(char *filename, BOOL Silent)
 
     SetCursor(LoadCursor(NULL, IDC_WAIT));
 
-    JpegLoad(
+    int res = JpegLoad(
         filename,
         JpegAddScanline,
         &JpegBuffer,
@@ -1974,6 +1974,15 @@ ULONG JpegLoadImage(char *filename, BOOL Silent)
         &JpegWidth,
         &JpegHeight,
         NULL );
+
+	if (res < 0)
+	{
+		JpegMeshRelease(&JpegMesh);
+
+		SetStatusText(STATUS_SOURCE_IMAGE, "Source Image : Not Found!");
+
+		return 0;
+	}
 
 #ifdef USEGL
     //

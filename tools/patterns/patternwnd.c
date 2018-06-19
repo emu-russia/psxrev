@@ -625,7 +625,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int nco
         &Item.PatternHeight,
         &Item);
 
-    if (DecodeResult == 0)
+    if (DecodeResult < 0)
     {
         sprintf(Text, "Error, decoding pattern JPEG %s", FullPath);
         MessageBox(0, Text, "Error", 0);

@@ -145,10 +145,23 @@ void MapUpdate()
 	jpegWndSize.x = JpegWindowWidth();
 	jpegWndSize.y = JpegWindowHeight();
 
-	float aspect = (float)jpegSize.x / (float)jpegSize.y;
+	int mapWidth;
+	int mapHeight;
 
-	int mapWidth = MAP_WND_SIZE;
-	int mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	if (jpegSize.x > jpegSize.y)
+	{
+		float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+		mapWidth = MAP_WND_SIZE;
+		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	}
+	else
+	{
+		float aspect = (float)jpegSize.y / (float)jpegSize.x;
+
+		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
+		mapHeight = MAP_WND_SIZE;
+	}
 
 	//
 	// Draw image border
@@ -191,10 +204,23 @@ void MapGetDims(LPRECT mapWnd)
 		return;
 	}
 
-	float aspect = (float)jpegSize.x / (float)jpegSize.y;
+	int mapWidth;
+	int mapHeight;
 
-	int mapWidth = MAP_WND_SIZE;
-	int mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	if (jpegSize.x > jpegSize.y)
+	{
+		float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+		mapWidth = MAP_WND_SIZE;
+		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	}
+	else
+	{
+		float aspect = (float)jpegSize.y / (float)jpegSize.x;
+
+		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
+		mapHeight = MAP_WND_SIZE;
+	}
 
 	mapWnd->left = MAP_WND_X;
 	mapWnd->top = MAP_WND_Y;
@@ -217,10 +243,23 @@ void MapScroll(int x, int y)
 		return;
 	}
 
-	float aspect = (float)jpegSize.x / (float)jpegSize.y;
+	int mapWidth;
+	int mapHeight;
 
-	int mapWidth = MAP_WND_SIZE;
-	int mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	if (jpegSize.x > jpegSize.y)
+	{
+		float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+		mapWidth = MAP_WND_SIZE;
+		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
+	}
+	else
+	{
+		float aspect = (float)jpegSize.y / (float)jpegSize.x;
+
+		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
+		mapHeight = MAP_WND_SIZE;
+	}
 
 	int scrollX = -(int)((float)x * ((float)jpegSize.x / (float)mapWidth));
 	int scrollY = -(int)((float)y * ((float)jpegSize.y / (float)mapHeight));

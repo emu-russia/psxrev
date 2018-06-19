@@ -51,7 +51,7 @@ int JpegLoad(
 
     if ((infile = fopen(filename, "rb")) == NULL) {
         fprintf(stderr, "can't open %s\n", filename);
-        return 0;
+        return -1;
     }
 
     // Step 1: allocate and initialize JPEG decompression object
@@ -64,7 +64,7 @@ int JpegLoad(
         */
         jpeg_destroy_decompress(&cinfo);
         fclose(infile);
-        return 0;
+        return -2;
     }
     jpeg_create_decompress(&cinfo);
 
@@ -123,7 +123,7 @@ int JpegLoad(
     jpeg_destroy_decompress(&cinfo);
 
     fclose(infile);
-    return 1;
+    return 0;
 }
 
 HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, PBYTE pBits)
