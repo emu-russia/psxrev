@@ -37,6 +37,8 @@ char CurrentWorkingDir[MAX_PATH];
 
 int SelectedTextSaver;
 
+static char copiedPatternName[0x100];
+
 // nice value of KB, MB or GB, for output
 char * FileSmartSize(ULONG size)
 {
@@ -385,9 +387,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			MessageBox(NULL, 
 				"Escape: remove selection\n"
 				"Home: goto origin (0,0)\n"
-				"Arrows: fine movement of selected pattern\n" ,
+				"Arrows: fine movement of selected pattern\n" 
+				"Ctrl+C: copy selected pattern\n"
+				"Ctrl+V: paste pattern at selection box coords\n"
+				,
 				"Hotkey bindings",
 				MB_ICONINFORMATION | MB_OK);
+			break;
+		case ID_EDIT_COPY:
+			selected = JpegGetSelectedPattern();
+			if (selected)
+			{
+				strcpy(copiedPatternName, selected->PatternName);
+			}
+			else
+			{
+				copiedPatternName[0] = 0;
+			}
+			break;
+		case ID_EDIT_PASTE:
+			if (copiedPatternName[0] != 0)
+			{
+				AddPatternEntry(copiedPatternName);
+				JpegRedraw();
+			}
 			break;
         case ID_SHOW_PROFILER:
             if (PerfRunning())

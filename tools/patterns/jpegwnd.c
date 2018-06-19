@@ -1434,7 +1434,7 @@ void AddPatternEntry(char * PatternName)
 #endif
 
         //
-        // Add Entry in List.
+        // Add Entry in List
         //
 
         PatternLayer = (PatternEntry *)realloc(PatternLayer, sizeof(PatternEntry)* (NumPatterns + 1));
