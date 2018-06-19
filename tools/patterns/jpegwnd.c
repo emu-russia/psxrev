@@ -736,6 +736,107 @@ static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
     glDisable(GL_TEXTURE_2D);
 }
 
+static void GL_GetPatternColor(long patternType, GLubyte * red, GLubyte * green, GLubyte * blue)
+{
+	switch (patternType)
+	{
+	case CellNot:
+		*red = 0; *green = 0; *blue = 128;
+		break;
+	case CellBuffer:
+		*red = 0; *green = 0; *blue = 128;
+		break;
+	case CellMux:
+		*red = 255; *green = 140; *blue = 0;
+		break;
+	case CellLogic:
+		*red = 255; *green = 255; *blue = 0;
+		break;
+	case CellAdder:
+		*red = 255; *green = 0; *blue = 0;
+		break;
+	case CellBusSupp:
+		*red = 148; *green = 0; *blue = 211;
+		break;
+	case CellFlipFlop:
+		*red = 0; *green = 255; *blue = 0;
+		break;
+	case CellLatch:
+		*red = 0; *green = 255; *blue = 127;
+		break;
+	case CellOther:
+		*red = 255; *green = 250; *blue = 250;
+		break;
+	default:
+		*red = 200; *green = 200; *blue = 200;
+		break;
+	}
+}
+
+static void GL_DrawPatternOnMap(PatternEntry * Pattern)
+{
+	RECT planeRect;
+	RECT mapRect;
+
+	//
+	// Get pattern color
+	//
+
+	GLubyte red, green, blue;
+
+	PatternItem * item = PatternGetItem(Pattern->PatternName);
+
+	if (!item)
+	{
+		return;
+	}
+
+	GL_GetPatternColor(item->Type, &red, &green, &blue);
+
+	//
+	// Translate pattern plane coords to mini-map coords
+	//
+
+	planeRect.left = Pattern->PlaneX;
+	planeRect.top = Pattern->PlaneY;
+	planeRect.right = Pattern->PlaneX + Pattern->Width;
+	planeRect.bottom = Pattern->PlaneY + Pattern->Height;
+
+	MapPlaneToMap(&planeRect, &mapRect);
+
+	if (!mapRect.right)
+	{
+		return;
+	}
+
+	//
+	// Draw pattern box
+	//
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor4ub(red, green, blue, 127);
+
+	glBegin(GL_QUADS);
+	glVertex2i(mapRect.left, mapRect.top);
+	glVertex2i(mapRect.right, mapRect.top);
+	glVertex2i(mapRect.right, mapRect.bottom);
+	glVertex2i(mapRect.left, mapRect.bottom);
+	glEnd();
+
+	glDisable(GL_BLEND);
+}
+
+static void GL_DrawPatternsOnMap(void)
+{
+	for (int n = 0; n < NumPatterns; n++)
+	{
+		PatternEntry * Entry = &PatternLayer[n];
+		GL_DrawPatternOnMap(Entry);
+	}
+}
+
 static void GL_DrawMapArea(void)
 {
 	RECT mapRect;
@@ -747,7 +848,7 @@ static void GL_DrawMapArea(void)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glColor4f(.7f, .7f, .7f, .5f);
+		glColor4f(.5f, .5f, .5f, .5f);
 		glBegin(GL_QUADS);
 		glVertex2i(mapRect.left, mapRect.top);
 		glVertex2i(mapRect.right, mapRect.top);
@@ -756,6 +857,8 @@ static void GL_DrawMapArea(void)
 		glEnd();
 
 		glDisable(GL_BLEND);
+
+		GL_DrawPatternsOnMap();
 	}
 }
 

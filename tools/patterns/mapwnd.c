@@ -124,6 +124,34 @@ void MapRedraw(void)
     //UpdateWindow(MapWnd);
 }
 
+static void MapGetResolution(int * width, int * height)
+{
+	POINT jpegSize;
+
+	JpegGetDims(&jpegSize);
+
+	if (!jpegSize.y)
+	{
+		*width = *height = 0;
+		return;
+	}
+
+	if (jpegSize.x > jpegSize.y)
+	{
+		float aspect = (float)jpegSize.x / (float)jpegSize.y;
+
+		*width = MAP_WND_SIZE;
+		*height = (int)((float)MAP_WND_SIZE / aspect);
+	}
+	else
+	{
+		float aspect = (float)jpegSize.y / (float)jpegSize.x;
+
+		*width = (int)((float)MAP_WND_SIZE / aspect);
+		*height = MAP_WND_SIZE;
+	}
+}
+
 void MapUpdate()
 {
 	POINT jpegSize;
@@ -148,20 +176,7 @@ void MapUpdate()
 	int mapWidth;
 	int mapHeight;
 
-	if (jpegSize.x > jpegSize.y)
-	{
-		float aspect = (float)jpegSize.x / (float)jpegSize.y;
-
-		mapWidth = MAP_WND_SIZE;
-		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
-	}
-	else
-	{
-		float aspect = (float)jpegSize.y / (float)jpegSize.x;
-
-		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
-		mapHeight = MAP_WND_SIZE;
-	}
+	MapGetResolution(&mapWidth, &mapHeight);
 
 	//
 	// Draw image border
@@ -207,20 +222,7 @@ void MapGetDims(LPRECT mapWnd)
 	int mapWidth;
 	int mapHeight;
 
-	if (jpegSize.x > jpegSize.y)
-	{
-		float aspect = (float)jpegSize.x / (float)jpegSize.y;
-
-		mapWidth = MAP_WND_SIZE;
-		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
-	}
-	else
-	{
-		float aspect = (float)jpegSize.y / (float)jpegSize.x;
-
-		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
-		mapHeight = MAP_WND_SIZE;
-	}
+	MapGetResolution(&mapWidth, &mapHeight);
 
 	mapWnd->left = MAP_WND_X;
 	mapWnd->top = MAP_WND_Y;
@@ -246,23 +248,40 @@ void MapScroll(int x, int y)
 	int mapWidth;
 	int mapHeight;
 
-	if (jpegSize.x > jpegSize.y)
-	{
-		float aspect = (float)jpegSize.x / (float)jpegSize.y;
-
-		mapWidth = MAP_WND_SIZE;
-		mapHeight = (int)((float)MAP_WND_SIZE / aspect);
-	}
-	else
-	{
-		float aspect = (float)jpegSize.y / (float)jpegSize.x;
-
-		mapWidth = (int)((float)MAP_WND_SIZE / aspect);
-		mapHeight = MAP_WND_SIZE;
-	}
+	MapGetResolution(&mapWidth, &mapHeight);
 
 	int scrollX = -(int)((float)x * ((float)jpegSize.x / (float)mapWidth));
 	int scrollY = -(int)((float)y * ((float)jpegSize.y / (float)mapHeight));
 
 	JpegGoto(scrollX, scrollY);
+}
+
+//
+// Convert plane coords to map coords
+//
+
+void MapPlaneToMap(RECT * planeBox, RECT *mapBox)
+{
+	POINT jpegSize;
+	RECT mapWnd;
+
+	JpegGetDims(&jpegSize);
+
+	if (jpegSize.y == 0 || !IsWindowVisible(MapWnd))
+	{
+		memset(mapBox, 0, sizeof(RECT));
+		return;
+	}
+
+	int mapWidth;
+	int mapHeight;
+
+	MapGetResolution(&mapWidth, &mapHeight);
+
+	MapGetDims(&mapWnd);
+
+	mapBox->left = mapWnd.left + (int)((float)planeBox->left / ((float)jpegSize.x / (float)mapWidth));
+	mapBox->right = mapWnd.left + (int)((float)planeBox->right / ((float)jpegSize.x / (float)mapWidth));
+	mapBox->top = mapWnd.top + (int)((float)planeBox->top / ((float)jpegSize.y / (float)mapHeight));
+	mapBox->bottom = mapWnd.top + (int)((float)planeBox->bottom / ((float)jpegSize.y / (float)mapHeight));
 }

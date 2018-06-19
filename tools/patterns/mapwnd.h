@@ -11,3 +11,5 @@ void MapUpdate();
 void MapGetDims(LPRECT mapWnd);
 
 void MapScroll(int x, int y);
+
+void MapPlaneToMap(RECT * planeBox, RECT *mapBox);
