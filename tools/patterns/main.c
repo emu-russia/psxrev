@@ -426,6 +426,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				"Arrows: fine movement of selected pattern\n" 
 				"Ctrl+C: copy selected pattern\n"
 				"Ctrl+V: paste pattern at selection box coords\n"
+				"Ctrl+U: cycle next unknown pattern (if any)\n"
+				"Ctrl+G: cycle next garbage pattern (if any)\n"
 				,
 				"Hotkey bindings",
 				MB_ICONINFORMATION | MB_OK);
