@@ -123,6 +123,9 @@ pattern IMUX, CellMux, 5.0, 4, 4, "patterns_db/IMUX.jpg"
 pattern IMUX2X, CellMux, 5.0, 5, 5, "patterns_db/IMUX2X.jpg"
 pattern IMUX3X, CellMux, 5.0, 6, 6, "patterns_db/IMUX3X.jpg"
 
+pattern IMUXR1, CellMux, 5.0, 3, 3, "patterns_db/IMUXR1.jpg"
+pattern IMUXR2, CellMux, 5.0, 4, 4, "patterns_db/IMUXR2.jpg"
+
 pattern 3-MUX, CellMux, 5.0, 10, 10, "patterns_db/3-MUX.jpg"
 pattern 3-MUX3X, CellMux, 5.0, 12, 12, "patterns_db/3-MUX3X.jpg"
 pattern 4-MUX, CellMux, 5.0, 13, 13, "patterns_db/4-MUX.jpg"
@@ -141,6 +144,7 @@ pattern /DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/nDFFR.jpg"
 pattern DFFR3X, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X.jpg"
 
 pattern DFFS, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFFS.jpg"
+pattern DFFS3X, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFS3X.jpg"
 
 pattern DFFRS3X, CellFlipFlop, 5.0, 18, 20, "patterns_db/DFFRS3X.jpg"
 
