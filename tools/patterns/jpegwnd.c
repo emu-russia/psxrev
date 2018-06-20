@@ -75,6 +75,7 @@ static int NumPatterns;
 static PatternEntry * SelectedPattern;
 static PatternEntry * LastUnknownPattern;
 static PatternEntry * LastGarbagePattern;
+static PatternEntry * LastContainsStringPattern;
 static BOOL DraggingPattern;
 
 HBITMAP RemoveBitmap;
@@ -2366,10 +2367,10 @@ void JpegSelectPattern(PatternEntry * Pattern)
     SelectedPattern = Pattern;
 
 	//
-	// Forget last unknown/garbage
+	// Forget last containstring/unknown/garbage pattern
 	//
 
-	LastUnknownPattern = LastGarbagePattern = NULL;
+	LastUnknownPattern = LastGarbagePattern = LastContainsStringPattern = NULL;
 
     //
     // Update newly selected Pattern
@@ -2516,6 +2517,19 @@ void JpegNextGarbage(void)
 		JpegEnsureVisible(next);
 
 		LastGarbagePattern = next;
+	}
+}
+
+void JpegNextContainsString(char *partOfName)
+{
+	PatternEntry * next = GetNexSpecificPattern(partOfName, LastContainsStringPattern);
+
+	if (next)
+	{
+		JpegSelectPattern(next);
+		JpegEnsureVisible(next);
+
+		LastContainsStringPattern = next;
 	}
 }
 

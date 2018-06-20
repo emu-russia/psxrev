@@ -267,6 +267,38 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
     return TRUE;
 }
 
+INT_PTR CALLBACK ContainsStringDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	char Text[1024];
+
+	switch (Message)
+	{
+	case WM_INITDIALOG:
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			GetDlgItemText(hwnd, ID_PART_OF_NAME, Text, sizeof(Text));
+
+			if (strlen(Text) >= 3)
+			{
+				JpegNextContainsString(Text);
+			}
+
+			EndDialog(hwnd, IDOK);
+			break;
+		case IDCANCEL:
+			EndDialog(hwnd, IDCANCEL);
+			break;
+		}
+		break;
+	default:
+		return FALSE;
+	}
+	return TRUE;
+}
+
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -338,6 +370,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_NAVIGATE_GARBAGE:
 			JpegNextGarbage();
+			break;
+		case ID_NAVIGATE_CONTAINS:
+			DialogBox(GetModuleHandle(NULL),
+				MAKEINTRESOURCE(IDD_CONTAINS), hwnd, ContainsStringDlgProc);
 			break;
 		case ID_REMOVE_SELECTION:
 			JpegSelectPattern(NULL);

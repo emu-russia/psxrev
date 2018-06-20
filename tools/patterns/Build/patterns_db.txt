@@ -127,6 +127,8 @@ pattern 3-MUX, CellMux, 5.0, 10, 10, "patterns_db/3-MUX.jpg"
 pattern 3-MUX3X, CellMux, 5.0, 12, 12, "patterns_db/3-MUX3X.jpg"
 pattern 4-MUX, CellMux, 5.0, 13, 13, "patterns_db/4-MUX.jpg"
 pattern 4-MUX3X, CellMux, 5.0, 13, 13, "patterns_db/4-MUX3X.jpg"
+pattern 8-MUX, CellMux, 5.0, 27, 27, "patterns_db/8-MUX.jpg"
+pattern 8-MUX3X, CellMux, 5.0, 29, 29, "patterns_db/8-MUX3X.jpg"
 
 # Triggers
 
@@ -137,7 +139,6 @@ pattern DFF3X, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFF3X.jpg"
 pattern DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFFR.jpg"
 pattern /DFFR, CellFlipFlop, 5.0, 14, 14, "patterns_db/nDFFR.jpg"
 pattern DFFR3X, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X.jpg"
-pattern DFFR3X-FLIP, CellFlipFlop, 5.0, 16, 16, "patterns_db/DFFR3X-FLIP.jpg"
 
 pattern DFFS, CellFlipFlop, 5.0, 14, 14, "patterns_db/DFFS.jpg"
 

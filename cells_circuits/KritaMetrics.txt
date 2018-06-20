@@ -1,4 +1,4 @@
-vias: 6,53px
-other: 2,53px
+vias: 6,43px
+other: 2,43px
 Gray background: 148 148 148
 

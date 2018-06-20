@@ -88,6 +88,8 @@ void JpegNextUnknown(void);
 
 void JpegNextGarbage(void);
 
+void JpegNextContainsString(char *partOfName);
+
 void JpegGetDims(LPPOINT Dims);
 
 void JpegGoto(int x, int y);
