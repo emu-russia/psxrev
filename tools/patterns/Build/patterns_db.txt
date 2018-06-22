@@ -45,6 +45,7 @@ pattern NOR3X, CellLogic, 5.0, 4, 4, "patterns_db/NOR3X.jpg"
 pattern NOR4X, CellLogic, 5.0, 6, 6, "patterns_db/NOR4X.jpg"
 
 pattern XNOR, CellLogic, 5.0, 6, 6, "patterns_db/XNOR.jpg"
+pattern XNOR1, CellLogic, 5.0, 6, 6, "patterns_db/XNOR1.jpg"
 pattern XNOR2, CellLogic, 5.0, 7, 7, "patterns_db/XNOR2.jpg"
 pattern XNOR3, CellLogic, 5.0, 8, 8, "patterns_db/XNOR3.jpg"
 
