@@ -68,11 +68,12 @@ pattern 3-NAND5X, CellLogic, 5.0, 7, 7, "patterns_db/3-NAND5X.jpg"
 pattern 3-NOR, CellLogic, 5.0, 3, 3, "patterns_db/3-NOR.jpg"
 pattern 3-NOR2X, CellLogic, 5.0, 3, 3, "patterns_db/3-NOR2X.jpg"
 pattern 3-NOR4X, CellLogic, 5.0, 6, 3, "patterns_db/3-NOR4X.jpg"
-pattern 3-NOR5X, CellLogic, 5.0, 6, 6, "patterns_db/3-NOR5X.jpg"
 pattern 3-NOR6X, CellLogic, 5.0, 9, 6, "patterns_db/3-NOR6X.jpg"
 
 pattern 3-OR, CellLogic, 5.0, 4, 4, "patterns_db/3-OR.jpg"
 pattern 3-OR2X, CellLogic, 5.0, 4, 4, "patterns_db/3-OR2X.jpg"
+pattern 3-OR3X, CellLogic, 5.0, 5, 5, "patterns_db/3-OR3X.jpg"
+pattern 3-OR4X, CellLogic, 5.0, 6, 6, "patterns_db/3-OR4X.jpg"
 
 pattern 3-XOR, CellLogic, 5.0, 10, 10, "patterns_db/3-XOR.jpg"
 
@@ -103,8 +104,8 @@ pattern 12-OAI, CellLogic, 5.0, 3, 3, "patterns_db/12-OAI.jpg"
 pattern 12-OAI3X, CellLogic, 5.0, 9, 9, "patterns_db/12-OAI3X.jpg"
 pattern 21-AOI3X, CellLogic, 5.0, 9, 9, "patterns_db/21-AOI3X.jpg"
 pattern 22-AOI, CellLogic, 5.0, 4, 4, "patterns_db/22-AOI.jpg"
+pattern 22-AOI3X, CellLogic, 5.0, 12, 12, "patterns_db/22-AOI3X.jpg"
 pattern 22-OAI, CellLogic, 5.0, 4, 4, "patterns_db/22-OAI.jpg"
-pattern 22-OAI3X, CellLogic, 5.0, 12, 12, "patterns_db/22-OAI3X.jpg"
 pattern 31-AOI, CellLogic, 5.0, 12, 12, "patterns_db/31-AOI.jpg"
 pattern 222-AOI, CellLogic, 5.0, 8, 8, "patterns_db/222-AOI.jpg"
 
