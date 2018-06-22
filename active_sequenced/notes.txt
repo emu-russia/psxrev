@@ -1,0 +1,63 @@
+
+# PART 00 (MDEC, BUS Unit)
+
+01_01: READY!
+01_02: garbage only
+01_03: garbage only
+
+02_01: garbage only
+02_02: garbage only
+02_03: garbage only
+
+03_01: garbage only
+03_02: garbage only
+04_01: nDFF3X possible, AOI-like
+04_02: long DFF 3X few
+05_01: garbage only
+05_02: nDFF3X possible (many)
+
+-------------------------------------------------------------------------
+
+# PART 01 (CPU Core)
+
+01_01: garbage only
+01_02: READY!
+02_01: nDFF3X possible, AOI-like, AOI-like long
+02_02: READY!
+03_01: AOI-like, 3-XOR2X (3)
+03_02: nDFF3X possible (1)
+04_01: nDFF3X possible (1), 3-XOR2X (1)
+04_02: garbage only
+
+-------------------------------------------------------------------------
+
+# PART 02 (GTE)
+
+02_01_01: READY!
+02_01_02: READY!
+02_02_01: AOI-like + 1 unknown
+02_02_02: FA-like (1), NOR-like (3)
+02_03_01: AOI-like
+02_03_02: READY!
+02_04_01: READY!
+02_04_02: READY!
+
+-------------------------------------------------------------------------
+
+# PART 03 (SIO?)
+
+02_01_03: garbage only
+02_02_03: NOR-like (2)
+02_03_03: FA-like (1), long DFF (1)
+02_04_03: garbage only
+
+03_01_01: long DFF many, DFFR3X-like, nDFF3X-like    !TODO ASAP!
+03_01_02: long DFF many, DFFR3X-like, nDFF3X-like  + AOI-like(1)   !TODO ASAP!
+
+03_02: many long DFF
+03_03: many long DFF
+03_04: few long DFF, NOR-like (1)
+03_05: few long DFF, NOR-like (1)
+03_06: garbage only
+
+-------------------------------------------------------------------------
