@@ -104,6 +104,7 @@ pattern 12-OAI3X, CellLogic, 5.0, 9, 9, "patterns_db/12-OAI3X.jpg"
 pattern 21-AOI3X, CellLogic, 5.0, 9, 9, "patterns_db/21-AOI3X.jpg"
 pattern 22-AOI, CellLogic, 5.0, 4, 4, "patterns_db/22-AOI.jpg"
 pattern 22-OAI, CellLogic, 5.0, 4, 4, "patterns_db/22-OAI.jpg"
+pattern 22-OAI3X, CellLogic, 5.0, 12, 12, "patterns_db/22-OAI3X.jpg"
 pattern 31-AOI, CellLogic, 5.0, 12, 12, "patterns_db/31-AOI.jpg"
 pattern 222-AOI, CellLogic, 5.0, 8, 8, "patterns_db/222-AOI.jpg"
 
