@@ -86,6 +86,7 @@ pattern 4-NOR-3X, CellLogic, 5.0, 9, 9, "patterns_db/4-NOR-3X.jpg"
 pattern 5-NOR, CellLogic, 5.0, 8, 8, "patterns_db/5-NOR.jpg"
 
 pattern 5-NAND, CellLogic, 5.0, 8, 8, "patterns_db/5-NAND.jpg"
+pattern 5-NAND3X, CellLogic, 5.0, 10, 10, "patterns_db/5-NAND3X.jpg"
 
 # 6-Input Logic
 
@@ -104,7 +105,6 @@ pattern 21-AOI3X, CellLogic, 5.0, 9, 9, "patterns_db/21-AOI3X.jpg"
 pattern 22-AOI, CellLogic, 5.0, 4, 4, "patterns_db/22-AOI.jpg"
 pattern 22-OAI, CellLogic, 5.0, 4, 4, "patterns_db/22-OAI.jpg"
 pattern 31-AOI, CellLogic, 5.0, 12, 12, "patterns_db/31-AOI.jpg"
-pattern 22-AAOI3X, CellLogic, 5.0, 12, 12, "patterns_db/22-AAOI3X.jpg"
 pattern 222-AOI, CellLogic, 5.0, 8, 8, "patterns_db/222-AOI.jpg"
 
 pattern NOR&NAND, CellLogic, 5.0, 4, 4, "patterns_db/NOR_NAND.jpg"
@@ -163,6 +163,7 @@ pattern /DLATCH4X, CellLatch, 5.0, 10, 10, "patterns_db/nDLATCH4X.jpg"
 
 pattern DLATCHR2X, CellLatch, 5.0, 9, 9, "patterns_db/DLATCHR2X.jpg"
 pattern DLATCHR4X, CellLatch, 5.0, 11, 11, "patterns_db/DLATCHR4X.jpg"
+pattern /DLATCHR2X, CellLatch, 5.0, 9, 9, "patterns_db/nDLATCHR2X.jpg"
 pattern /DLATCHR4X, CellLatch, 5.0, 11, 11, "patterns_db/nDLATCHR4X.jpg"
 
 # Adder / Multiplier
