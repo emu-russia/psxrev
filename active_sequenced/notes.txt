@@ -1,24 +1,35 @@
+READY!: Ready to double check
 
 # PART 00 (MDEC, BUS Unit)
 
+[TOP1]
 01_01: READY!
 01_02: garbage only
-01_03: garbage only
+01_03: READY!
 
+[TOP2]
 02_01: garbage only
 02_02: garbage only
-02_03: garbage only
+02_03: READY!
 
+[BOT]
 03_01: garbage only
 03_02: garbage only
 04_01: DFFS3X possible(?), AOI-like
-04_02: long DFF 3X (3)
+04_02: READY!
 05_01: garbage only
-05_02: nDFF3X possible (many)
+05_02: READY!
 
 -------------------------------------------------------------------------
 
 # PART 01 (CPU Core)
+
+[GAP]
+01_00: garbage only
+02_00: garbage only
+03_00: garbage only
+04_00: long DFF 3X (4)
+05_00: nDFF3X possible (many)
 
 01_01: garbage only
 01_02: READY!
@@ -46,14 +57,17 @@
 
 # PART 03 (SIO?)
 
+[GAP]
 02_01_03: garbage only
 02_02_03: NOR-like (2)
 02_03_03: FA-like (1), long DFF (1)
 02_04_03: garbage only
 
+[TOP]
 03_01_01: long DFF many, DFFR3X-like, nDFF3X-like    !TODO ASAP!
 03_01_02: long DFF many, DFFR3X-like, nDFF3X-like  + AOI-like(1)   !TODO ASAP!
 
+[BOT]
 03_02: many long DFF
 03_03: many long DFF
 03_04: few long DFF, NOR-like (1)
