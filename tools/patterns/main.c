@@ -375,6 +375,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case ID_REMOVE_ALL_PATTERNS:
             JpegRemoveAllPatterns();
             break;
+		case ID_DEBUG_REMOVE:
+			//JpegRemoveAllLessX(6400);
+			//JpegRemoveAllGreaterX(5800);
+			break;
 		case ID_NAVIGATE_ORIGIN:
 			JpegGotoOrigin();
 			break;

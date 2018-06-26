@@ -72,6 +72,10 @@ void JpegDestroy(void);
 
 void JpegRemoveAllPatterns(void);
 
+void JpegRemoveAllLessX(long x);
+
+void JpegRemoveAllGreaterX(long x);
+
 char * JpegGetImageName(BOOL NameOnly);
 
 void JpegGetScroll(LPPOINT Offset);

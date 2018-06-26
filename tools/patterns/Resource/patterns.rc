@@ -29,6 +29,7 @@ BEGIN
         MENUITEM "Save Workspace", ID_WORKSPACE_SAVE
         MENUITEM SEPARATOR
         MENUITEM "Remove all added patterns", ID_REMOVE_ALL_PATTERNS
+	MENUITEM "Debug Remove", ID_DEBUG_REMOVE
         MENUITEM "Show debug profile info", ID_SHOW_PROFILER
     END
 

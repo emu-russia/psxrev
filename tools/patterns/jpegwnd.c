@@ -2365,6 +2365,38 @@ void JpegRemoveAllPatterns(void)
     SetStatusText(STATUS_ADDED, "Added : 0");
 }
 
+void JpegRemoveAllLessX(long x)
+{
+Again:
+	for (int i = 0; i < NumPatterns; i++)
+	{
+		PatternEntry * entry = GetPatternEntry(i);
+
+		if (entry->PlaneX < x)
+		{
+			RemovePatternEntry(i);
+			goto Again;
+		}
+	}
+	JpegRedraw();
+}
+
+void JpegRemoveAllGreaterX(long x)
+{
+Again:
+	for (int i = 0; i < NumPatterns; i++)
+	{
+		PatternEntry * entry = GetPatternEntry(i);
+
+		if (entry->PlaneX > x)
+		{
+			RemovePatternEntry(i);
+			goto Again;
+		}
+	}
+	JpegRedraw();
+}
+
 char * JpegGetImageName(BOOL NameOnly)
 {
     if (NameOnly) return strrchr(SavedImageName, '\\') + 1;
