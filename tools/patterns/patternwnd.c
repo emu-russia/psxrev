@@ -22,7 +22,7 @@ static HWND PatternWnd;
 
 extern HWND FlipWnd;
 extern HWND MirrorWnd;
-extern float WorkspaceLamda, WorkspaceLamdaDelta;
+extern float WorkspaceLambda, WorkspaceLambdaDelta;
 extern char CurrentWorkingDir[MAX_PATH];
 
 static PatternItem * Patterns = NULL;
@@ -154,15 +154,12 @@ PViasEntry AddVias ( char * PatternName, char * ViasName, float OffsetX, float O
 // DEBUG
 static void DumpPatterns(void)
 {
-    char Buffer[0x10000], *ptr = Buffer;
     int n;
 
     for (n = 0; n < NumPatterns; n++)
     {
-        ptr += sprintf(ptr, "pattern %i: %s, lamda:%.1f\n", n, Patterns[n].Name, Patterns[n].Lamda );
+        printf("pattern %i: %s, lambda:%.1f\n", n, Patterns[n].Name, Patterns[n].Lambda );
     }
-
-    MessageBox(0, Buffer, "Patterns Dump", MB_OK);
 }
 
 int GetPatternIndexByHwnd(HWND hwnd)
@@ -197,8 +194,8 @@ void DrawPattern ( PatternItem *Item,
     BITMAPINFO Bmi;
     HBITMAP SelectionBitmap;
     RECT SelectionRect;
-    float LamdaWidth;
-    float LamdaHeight;
+    float LambdaWidth;
+    float LambdaHeight;
     int Width;
     int Height;
     int Flags;
@@ -216,10 +213,10 @@ void DrawPattern ( PatternItem *Item,
         // Get dimensions
         //
 
-        LamdaWidth = (float)Item->PatternWidth / Item->Lamda;
-        LamdaHeight = (float)Item->PatternHeight / Item->Lamda;
-        Width = (int)(LamdaWidth * WorkspaceLamda);
-        Height = (int)(LamdaHeight * WorkspaceLamda);
+        LambdaWidth = (float)Item->PatternWidth / Item->Lambda;
+        LambdaHeight = (float)Item->PatternHeight / Item->Lambda;
+        Width = (int)(LambdaWidth * WorkspaceLambda);
+        Height = (int)(LambdaHeight * WorkspaceLambda);
 
         //
         // Draw pattern's images
@@ -346,8 +343,8 @@ void DrawPattern ( PatternItem *Item,
             {
                 Vias = (PViasEntry) Entry;
 
-                ViasPosX = (int)(Vias->OffsetX * WorkspaceLamda);
-                ViasPosY = (int)(Vias->OffsetY * WorkspaceLamda);
+                ViasPosX = (int)(Vias->OffsetX * WorkspaceLambda);
+                ViasPosY = (int)(Vias->OffsetY * WorkspaceLambda);
 
                 switch (Flags)
                 {
@@ -481,35 +478,37 @@ BOOL CheckHidden(int PatternIndex)
     BOOL Fit;
 
     float RegionWidth, RegionHeight;
-    float LamdaWidth, LamdaHeight;
-    float PLamdaWidth, PLamdaHeight;
+    float LambdaWidth, LambdaHeight;
+    float PLambdaWidth, PLambdaHeight;
 
     if (RegionSelected)
     {
         //
-        // Calculate select box width and height in lamdas
+        // Calculate select box width and height in lambdas
         //
 
         RegionWidth = (float)abs(Region.right - Region.left);
         RegionHeight = (float)abs(Region.bottom - Region.top);
-        LamdaWidth = RegionWidth / WorkspaceLamda;
-        LamdaHeight = RegionHeight / WorkspaceLamda;
+        LambdaWidth = RegionWidth / WorkspaceLambda;
+        LambdaHeight = RegionHeight / WorkspaceLambda;
 
         //
-        // Calculate pattern width and height in lamdas
+        // Calculate pattern width and height in lambdas
         //
 
-        PLamdaWidth = (float)Item->PatternWidth / Item->Lamda;
-        PLamdaHeight = (float)Item->PatternHeight / Item->Lamda;
+        PLambdaWidth = (float)Item->PatternWidth / Item->Lambda;
+        PLambdaHeight = (float)Item->PatternHeight / Item->Lambda;
 
         //
-        // Match dimensions according to lamda delta
+        // Match dimensions according to lambda delta
         //
 
         Fit = FALSE;
-        if (PLamdaWidth >= (LamdaWidth - 2 * WorkspaceLamdaDelta) && PLamdaWidth < (LamdaWidth + 2 * WorkspaceLamdaDelta))
+        if (PLambdaWidth >= (LambdaWidth - 2 * WorkspaceLambdaDelta) && 
+			PLambdaWidth < (LambdaWidth + 2 * WorkspaceLambdaDelta))
         {
-            if (PLamdaHeight >= (LamdaHeight - 2 * WorkspaceLamdaDelta) && PLamdaHeight < (LamdaHeight + 2 * WorkspaceLamdaDelta)) Fit = TRUE;
+            if (PLambdaHeight >= (LambdaHeight - 2 * WorkspaceLambdaDelta) && 
+				PLambdaHeight < (LambdaHeight + 2 * WorkspaceLambdaDelta)) Fit = TRUE;
         }
 
         //
@@ -598,7 +597,7 @@ static void PatternAddScanline(unsigned char *buffer, int stride, void *Param)
 }
 
 // Add new pattern.
-void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int ncount, long type)
+void AddNewPattern(char *name, char *jpeg_path, float lambda, int pcount, int ncount, long type)
 {
     PatternItem Item;
     int DecodeResult;
@@ -608,7 +607,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int nco
     memset(&Item, 0, sizeof(PatternItem));
 
     strncpy(Item.Name, name, sizeof(Item.Name) - 1);
-    Item.Lamda = lamda;
+    Item.Lambda = lambda;
     Item.pcount = pcount;
     Item.ncount = ncount;
     Item.Hidden = FALSE;
@@ -665,7 +664,7 @@ void AddNewPattern(char *name, char *jpeg_path, float lamda, int pcount, int nco
     RearrangePatternTiles();
 
     // DEBUG
-    //sprintf(buffer, "Add Pattern: name:%s, lamda:%f, pcount:%i, ncount:%i, path:[%s]\n", name, lamda, pcount, ncount, jpeg_path);
+    //sprintf(buffer, "Add Pattern: name:%s, lambda:%f, pcount:%i, ncount:%i, path:[%s]\n", name, lambda, pcount, ncount, jpeg_path);
     //MessageBox(0, buffer, "New Pattern", 0);
 }
 
@@ -701,7 +700,7 @@ void ParseLine(char *line)
     char typeStr[128];      // vias_name
     char *typeStrPtr;
     long type;
-    char lamda[32];         // offset_x
+    char lambda[32];         // offset_x
     char pcount[32];        // offset_y
     char ncount[32];        // type
     char path[256];         // reserved
@@ -720,7 +719,7 @@ void ParseLine(char *line)
     // Check comments
     if (*line == '#') return;
 
-    sscanf(line, "%s %[^','],%[^','],%[^','],%[^','],%[^','],%s", command, name, typeStr, lamda, pcount, ncount, path);
+    sscanf(line, "%s %[^','],%[^','],%[^','],%[^','],%[^','],%s", command, name, typeStr, lambda, pcount, ncount, path);
 
     if (!_stricmp(command, "pattern"))
     {
@@ -752,7 +751,7 @@ void ParseLine(char *line)
             return;
         }
 
-        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lamda), atoi(pcount), atoi(ncount), type);
+        AddNewPattern(TrimString(name), TrimString(path), (float)atof(lambda), atoi(pcount), atoi(ncount), type);
     }
     else if (!_stricmp(command, "vias") )
     {
@@ -774,15 +773,15 @@ void ParseLine(char *line)
 
         AddVias ( TrimString(name), 
                   TrimString(typeStr),
-                  (float)atof(lamda),
+                  (float)atof(lambda),
                   (float)atof(pcount),
                   type );
     }
 
-    // DEBUG.
-    //sprintf( buffer, "Case: command:%s, name:%s, lamda:%s, pcount:%s, ncount:%s, path:%s\n",
-    //         command, name, lamda, pcount, ncount, path);
-    //MessageBox(0, buffer, "Line", 0);
+#if defined(_DEBUG)
+    printf( "Case: command:%s, name:%s, lambda:%s, pcount:%s, ncount:%s, path:%s\n",
+             command, name, lambda, pcount, ncount, path);
+#endif
 }
 
 void ParseDatabase(char *text)

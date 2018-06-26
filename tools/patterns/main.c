@@ -31,7 +31,8 @@ HWND MainWnd;
 HWND FlipWnd;
 HWND MirrorWnd;
 
-float WorkspaceLamda = 1.0f, WorkspaceLamdaDelta = 1.0f;
+float WorkspaceLambda = 1.0f, WorkspaceLambdaDelta = 1.0f;
+int WorkspaceRowIndex = 0;
 
 char CurrentWorkingDir[MAX_PATH];
 
@@ -228,13 +229,20 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
     case WM_INITDIALOG:
 
         //
-        // Set Lamda
+        // Set Lambda
         //
 
-        sprintf(Text, "%.1f", WorkspaceLamda);
-        SetDlgItemText(hwnd, ID_LAMDA, Text);
-        sprintf(Text, "%.1f", WorkspaceLamdaDelta);
-        SetDlgItemText(hwnd, ID_LAMDA_DELTA, Text);
+        sprintf(Text, "%.1f", WorkspaceLambda);
+        SetDlgItemText(hwnd, ID_LAMBDA, Text);
+        sprintf(Text, "%.1f", WorkspaceLambdaDelta);
+        SetDlgItemText(hwnd, ID_LAMBDA_DELTA, Text);
+
+		//
+		// Row index
+		//
+
+		sprintf(Text, "%i", WorkspaceRowIndex);
+		SetDlgItemText(hwnd, ID_ROW_INDEX, Text);
 
         return TRUE;
     case WM_COMMAND:
@@ -243,16 +251,21 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
         case IDOK:
 
             //
-            // Get Lamda
+            // Get Lambda, row index
             //
 
-            GetDlgItemText(hwnd, ID_LAMDA, Text, sizeof(Text));
-            WorkspaceLamda = (float) atof(Text);
-            GetDlgItemText(hwnd, ID_LAMDA_DELTA, Text, sizeof(Text));
-            WorkspaceLamdaDelta = (float) atof(Text);
+            GetDlgItemText(hwnd, ID_LAMBDA, Text, sizeof(Text));
+            WorkspaceLambda = (float) atof(Text);
+            GetDlgItemText(hwnd, ID_LAMBDA_DELTA, Text, sizeof(Text));
+            WorkspaceLambdaDelta = (float) atof(Text);
+			GetDlgItemText(hwnd, ID_ROW_INDEX, Text, sizeof(Text));
+			WorkspaceRowIndex = atoi(Text);
 
-            sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
-            SetStatusText(STATUS_LAMDA_DELTA, Text);
+            sprintf(Text, "Lambda / Delta / Row : %.1f / %.1f / %i",
+				WorkspaceLambda, WorkspaceLambdaDelta, WorkspaceRowIndex);
+            SetStatusText(STATUS_LAMBDA_DELTA, Text);
+
+			JpegRedraw();
 
             EndDialog(hwnd, IDOK);
             break;
@@ -526,6 +539,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     WNDCLASSEX wc;
     MSG Msg;
     HACCEL haccel;
+
+#if defined(_DEBUG)
+	AllocConsole();
+
+	freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
+
+	printf("patterns, v.1.0\n");
+#endif
 
     AddProfilerProcs();
 

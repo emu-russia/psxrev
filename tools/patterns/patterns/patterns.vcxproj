@@ -217,6 +217,7 @@
     <ClCompile Include="..\mapwnd.c" />
     <ClCompile Include="..\patternwnd.c" />
     <ClCompile Include="..\profiler.c" />
+    <ClCompile Include="..\rows.c" />
     <ClCompile Include="..\statuswnd.c" />
     <ClCompile Include="..\textsaver.c" />
     <ClCompile Include="..\text_horz.c" />
@@ -245,6 +246,7 @@
     <ClInclude Include="..\patternwnd.h" />
     <ClInclude Include="..\profiler.h" />
     <ClInclude Include="..\Resource\resource.h" />
+    <ClInclude Include="..\rows.h" />
     <ClInclude Include="..\statuswnd.h" />
     <ClInclude Include="..\textsaver.h" />
     <ClInclude Include="..\text_horz.h" />

@@ -32,7 +32,7 @@
 #include "patternwnd.h"
 #include "jpegwnd.h"
 
-extern float WorkspaceLamda;
+extern float WorkspaceLambda;
 
 #define CELL_PRIORITY 1
 #define VIAS_PRIORITY 3
@@ -93,10 +93,10 @@ void XmlSave ( char * FileName )
         // Cell
         //
 
-        CellPosX = (float)Pattern->PlaneX / WorkspaceLamda;
-        CellPosY = (float)Pattern->PlaneY / WorkspaceLamda;
-        CellWidth = (float)Pattern->Width / WorkspaceLamda;
-        CellHeight = (float)Pattern->Height / WorkspaceLamda;
+        CellPosX = (float)Pattern->PlaneX / WorkspaceLambda;
+        CellPosY = (float)Pattern->PlaneY / WorkspaceLambda;
+        CellWidth = (float)Pattern->Width / WorkspaceLambda;
+        CellHeight = (float)Pattern->Height / WorkspaceLambda;
 
         strcpy(Name, Pattern->PatternName);
         Result = RemoveAmpersands(Name);

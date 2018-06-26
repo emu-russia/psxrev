@@ -11,8 +11,8 @@
 
 03_01: garbage only
 03_02: garbage only
-04_01: nDFF3X possible, AOI-like
-04_02: long DFF 3X few
+04_01: DFFS3X possible(?), AOI-like
+04_02: long DFF 3X (3)
 05_01: garbage only
 05_02: nDFF3X possible (many)
 

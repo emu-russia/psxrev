@@ -1,7 +1,7 @@
 # Patterns database
 
 # Pattern Syntax:
-# pattern name, type, source_lamda, pcount, ncount, image_path
+# pattern name, type, source_lambda, pcount, ncount, image_path
 
 # Pattern types: CellNot, CellBuffer, CellMux, CellLogic, CellAdder, CellBusSupp, CellFlipFlop, CellLatch, CellOther
 

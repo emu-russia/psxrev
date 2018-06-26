@@ -201,6 +201,9 @@
     <ClCompile Include="..\mapwnd.c">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\rows.c">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\patternwnd.h">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="..\Resource\resource.h">
       <Filter>Файлы ресурсов</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rows.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

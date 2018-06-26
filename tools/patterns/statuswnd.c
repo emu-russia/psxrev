@@ -8,27 +8,29 @@
 
 HWND StatusWnd = NULL;
 
-extern float WorkspaceLamda, WorkspaceLamdaDelta;
+extern float WorkspaceLambda, WorkspaceLambdaDelta;
+extern int WorkspaceRowIndex;
 
 // set default values of statusbar parts
 void ResetStatusBar(void)
 {
-    char LamdaDelta[256];
+    char LambdaDelta[256];
     
-    sprintf(LamdaDelta, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
+    sprintf(LambdaDelta, "Lambda / Delta / Row : %.1f / %.1f / %i",
+		WorkspaceLambda, WorkspaceLambdaDelta, WorkspaceRowIndex);
 
     SetStatusText(STATUS_SELECTED, "Selected: ---");
     SetStatusText(STATUS_SCROLL, "Scroll : 0 / 0px");
     SetStatusText(STATUS_PATTERNS, "Patterns : 0 / 0");
     SetStatusText(STATUS_ADDED, "Added : 0");
-    SetStatusText(STATUS_LAMDA_DELTA, LamdaDelta);
+    SetStatusText(STATUS_LAMBDA_DELTA, LambdaDelta);
     SetStatusText(STATUS_SOURCE_IMAGE, "Not Loaded");
 }
 
 // create status bar window
 void CreateStatusBar(HWND Parent)
 {
-    int parts[] = { 0, 350, 500, 650, 800, 950, -1 };
+    int parts[] = { 0, 350, 500, 650, 800, 1000, -1 };
 
     if (Parent == NULL) return;
 

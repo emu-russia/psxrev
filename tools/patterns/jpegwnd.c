@@ -22,6 +22,7 @@
 #include "jpegwnd.h"
 #include "profiler.h"
 #include "listutils.h"
+#include "rows.h"
 
 #ifdef USEGL
 #include <GL/gl.h>
@@ -42,7 +43,7 @@ RMB over empty space : Scrolling
 
 extern HWND FlipWnd;
 extern HWND MirrorWnd;
-extern float WorkspaceLamda, WorkspaceLamdaDelta;
+extern float WorkspaceLambda, WorkspaceLambdaDelta;
 
 LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 char * FileSmartSize(ULONG size);
@@ -622,8 +623,8 @@ static void GL_DrawPattern(PatternEntry * Pattern, BOOL Selected)
         {
             Vias = (PViasEntry) Entry;
 
-            ViasPosX = (int)(Vias->OffsetX * WorkspaceLamda);
-            ViasPosY = (int)(Vias->OffsetY * WorkspaceLamda);
+            ViasPosX = (int)(Vias->OffsetX * WorkspaceLambda);
+            ViasPosY = (int)(Vias->OffsetY * WorkspaceLambda);
 
             switch (Pattern->Flag & 3)
             {
@@ -865,6 +866,34 @@ static void GL_DrawMapArea(void)
 	}
 }
 
+static void GL_DrawRowNumbers(void)
+{
+	RGBQUAD color;
+
+	color.rgbRed = color.rgbGreen = color.rgbBlue = 255;
+
+	LIST_ENTRY * rows = RecalcRows(PatternLayer, NumPatterns);
+
+	if (!rows)
+	{
+		return;
+	}
+
+	LIST_ENTRY * entry = rows->Flink;
+
+	while (entry != rows)
+	{
+		RowEntry * rowEntry = (RowEntry *)entry;
+
+		int posX = rowEntry->planeX + ScrollX;
+		int posY = 0;
+
+		GL_Printf(posX, posY, 32, 32, TRUE, color, "%i", rowEntry->index);
+
+		entry = entry->Flink;
+	}
+}
+
 static void GL_redraw(HDC hDC)
 {
     int n;
@@ -912,6 +941,12 @@ static void GL_redraw(HDC hDC)
         glVertex2i(SelectionStartX, SelectionStartY);
         glEnd();
     }
+
+	//
+	// Row numbers
+	//
+
+	GL_DrawRowNumbers();
 
 	//
 	// Draw map area
@@ -1035,7 +1070,7 @@ static void UpdateSelectionStatus(void)
 {
     char Text[0x100];
     int Width, Height;
-    float LamdaWidth, LamdaHeight;
+    float LambdaWidth, LambdaHeight;
     PCHAR FlagDesc = "";
 
 	EnterCriticalSection(&updateSelection);
@@ -1073,9 +1108,9 @@ static void UpdateSelectionStatus(void)
     {
         if (RegionSelected && Width > 10 && Height > 10)
         {
-            LamdaWidth = (float)Width / WorkspaceLamda;
-            LamdaHeight = (float)Height / WorkspaceLamda;
-            sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LamdaWidth, LamdaHeight);
+            LambdaWidth = (float)Width / WorkspaceLambda;
+            LambdaHeight = (float)Height / WorkspaceLambda;
+            sprintf(Text, "Selected: %i / %ipx, %.1f / %.1fl", Width, Height, LambdaWidth, LambdaHeight);
             SetStatusText(STATUS_SELECTED, Text);
         }
         else SetStatusText(STATUS_SELECTED, "Selected: ---");
@@ -1466,7 +1501,7 @@ void AddPatternEntry(char * PatternName)
     PatternEntry Entry;
     RECT Region;
     BOOL Selected;
-    float LamdaWidth, LamdaHeight;
+    float LambdaWidth, LambdaHeight;
     char Text[0x100];
 
     PERF_START("AddPatternEntry");
@@ -1495,10 +1530,10 @@ void AddPatternEntry(char * PatternName)
         // Width / Height
         //
 
-        LamdaWidth = (float)Item->PatternWidth / Item->Lamda;
-        LamdaHeight = (float)Item->PatternHeight / Item->Lamda;
-        Entry.Width = (int) (LamdaWidth * WorkspaceLamda);
-        Entry.Height = (int) (LamdaHeight * WorkspaceLamda);
+        LambdaWidth = (float)Item->PatternWidth / Item->Lambda;
+        LambdaHeight = (float)Item->PatternHeight / Item->Lambda;
+        Entry.Width = (int) (LambdaWidth * WorkspaceLambda);
+        Entry.Height = (int) (LambdaHeight * WorkspaceLambda);
 
         //
         // Position

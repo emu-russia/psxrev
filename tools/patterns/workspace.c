@@ -13,7 +13,8 @@
 
 extern HWND FlipWnd;
 extern HWND MirrorWnd;
-extern float WorkspaceLamda, WorkspaceLamdaDelta;
+extern float WorkspaceLambda, WorkspaceLambdaDelta;
+extern int WorkspaceRowIndex;
 
 char * FileSmartSize(ULONG size);
 
@@ -45,24 +46,25 @@ void SaveWorkspace(char *filename)
     strcpy(ws.Signature, "WRK");
     ws.Signature[3] = 0;
 
+	//
+	// Pattern database - deprecated
+	//
+
+	//ws.DatabaseOffset = 0;
+	//ws.DatabaseLength = 0;
+
     //
     // Global settings
     //
 
-    ws.Lamda = WorkspaceLamda;
-    ws.LamdaDelta = WorkspaceLamdaDelta;
+    ws.Lambda = WorkspaceLambda;
+    ws.LambdaDelta = WorkspaceLambdaDelta;
+	ws.RowIndex = WorkspaceRowIndex;
     ws.Flag = 0;
     if (Button_GetCheck(FlipWnd) == BST_CHECKED)
         ws.Flag |= FLAG_FLIP;
     if (Button_GetCheck(MirrorWnd) == BST_CHECKED)
         ws.Flag |= FLAG_MIRROR;
-
-    //
-    // Pattern database - deprecated
-    //
-
-    ws.DatabaseOffset = 0;
-    ws.DatabaseLength = 0;
 
     //
     // Source image layer
@@ -173,10 +175,11 @@ void LoadWorkspace(char *filename)
     JpegDestroy();
 
     //
-    // Set default Lamda / Delta.
+    // Set default Lambda / Delta / row
     //
 
-    WorkspaceLamda = WorkspaceLamdaDelta = 1.0f;
+    WorkspaceLambda = WorkspaceLambdaDelta = 1.0f;
+	WorkspaceRowIndex = 0;
 
     //
     // Set default status line.
@@ -192,8 +195,9 @@ void LoadWorkspace(char *filename)
     // Global settings
     //
 
-    WorkspaceLamda = ws.Lamda;
-    WorkspaceLamdaDelta = ws.LamdaDelta;
+    WorkspaceLambda = ws.Lambda;
+    WorkspaceLambdaDelta = ws.LambdaDelta;
+	WorkspaceRowIndex = ws.RowIndex;
     if (ws.Flag & FLAG_FLIP) Button_SetCheck(FlipWnd, BST_CHECKED);
     else Button_SetCheck(FlipWnd, BST_UNCHECKED);
     if (ws.Flag & FLAG_MIRROR) Button_SetCheck(MirrorWnd, BST_CHECKED);
@@ -253,8 +257,9 @@ void LoadWorkspace(char *filename)
     // Update status line
     //
 
-    sprintf(Text, "Lamda / Delta : %.1f / %.1f", WorkspaceLamda, WorkspaceLamdaDelta);
-    SetStatusText(STATUS_LAMDA_DELTA, Text);
+    sprintf(Text, "Lambda / Delta / Row : %.1f / %.1f / %i",
+		WorkspaceLambda, WorkspaceLambdaDelta, WorkspaceRowIndex);
+    SetStatusText(STATUS_LAMBDA_DELTA, Text);
 
     sprintf(JpegInfo, "JpegBufferSize: %s", FileSmartSize(JpegSize));
     MessageBox(0, JpegInfo, "Workspace Loaded", 0);

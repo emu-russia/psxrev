@@ -5,7 +5,7 @@ Selected: 100 / 100px, 3.4 / 5.5l / ---
 Scroll : 100 / 100px
 Patterns : Shown / 100
 Added : 5
-Lamda / Delta : 6.0 / 3.0
+Lambda / Delta / Row : 6.0 / 3.0 / 0
 Source Image : Path / Not Loaded(last)
 */
 
@@ -15,7 +15,7 @@ enum {
     STATUS_SCROLL,
     STATUS_PATTERNS,
     STATUS_ADDED,
-    STATUS_LAMDA_DELTA,
+    STATUS_LAMBDA_DELTA,
     STATUS_SOURCE_IMAGE,
 };
 

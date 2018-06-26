@@ -13,19 +13,23 @@ typedef struct WorkspaceImage
     // Global settings
     //
 
-    float   Lamda;
-    float   LamdaDelta;
+    float   Lambda;
+    float   LambdaDelta;
     long    Flag;               // "flip" / "mirror" checkbox state
 
     //
     // Pattern Database
     //
 
-    long DatabaseOffset;        // deprecated
+	union
+	{
+		long DatabaseOffset;        // deprecated, replaced by row index
+		long RowIndex;
+	};
     long DatabaseLength;        // deprecated
 
     //
-    // Source mathing image layer
+    // Source matching image layer
     //
 
     long SourceImagePresent;

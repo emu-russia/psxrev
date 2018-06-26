@@ -16,7 +16,7 @@ enum
 typedef struct PatternItem
 {
     char    Name[128];
-    float   Lamda;
+    float   Lambda;
     unsigned char * PatternRawImage;
     long    PatternBufferSize;
     long    PatternWidth;
