@@ -45,6 +45,8 @@ extern HWND FlipWnd;
 extern HWND MirrorWnd;
 extern float WorkspaceLambda, WorkspaceLambdaDelta;
 
+extern BOOL ShowPatterns;
+
 LRESULT CALLBACK JpegProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 char * FileSmartSize(ULONG size);
 
@@ -916,11 +918,14 @@ static void GL_redraw(HDC hDC)
     // Draw added patterns
     //
 
-    for (n = 0; n < NumPatterns; n++)
-    {
-        Entry = &PatternLayer[n];
-        GL_DrawPattern(Entry, Entry == SelectedPattern);
-    }
+	if (ShowPatterns)
+	{
+		for (n = 0; n < NumPatterns; n++)
+		{
+			Entry = &PatternLayer[n];
+			GL_DrawPattern(Entry, Entry == SelectedPattern);
+		}
+	}
 
     //
     // Draw selection box

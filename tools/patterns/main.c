@@ -40,6 +40,8 @@ int SelectedTextSaver;
 
 static char copiedPatternName[0x100];
 
+BOOL ShowPatterns = TRUE;
+
 // nice value of KB, MB or GB, for output
 char * FileSmartSize(ULONG size)
 {
@@ -445,6 +447,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				"Ctrl+V: paste pattern at selection box coords\n"
 				"Ctrl+U: cycle next unknown pattern (if any)\n"
 				"Ctrl+G: cycle next garbage pattern (if any)\n"
+				"Space: show/hide patterns layer\n"
 				,
 				"Hotkey bindings",
 				MB_ICONINFORMATION | MB_OK);
@@ -479,6 +482,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 CheckMenuItem(GetMenu(hwnd), ID_SHOW_PROFILER, MF_BYCOMMAND | MF_CHECKED);
             }
             break;
+		case ID_SHOW_PATTERNS:
+			if (ShowPatterns)
+			{
+				ShowPatterns = FALSE;
+				CheckMenuItem(GetMenu(hwnd), ID_SHOW_PATTERNS, MF_BYCOMMAND | MF_UNCHECKED);
+				JpegRedraw();
+			}
+			else
+			{
+				ShowPatterns = TRUE;
+				CheckMenuItem(GetMenu(hwnd), ID_SHOW_PATTERNS, MF_BYCOMMAND | MF_CHECKED);
+				JpegRedraw();
+			}
+			break;
         }
         if (HIWORD(wParam) == BN_CLICKED && (HWND)lParam == FlipWnd)
         {
@@ -612,6 +629,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     ShowWindow(MainWnd, nCmdShow);
     UpdateWindow(MainWnd);
+
+	//
+	// Show patterns by default
+	//
+
+	ShowPatterns = TRUE;
+	CheckMenuItem(GetMenu(MainWnd), ID_SHOW_PATTERNS, MF_BYCOMMAND | MF_CHECKED);
 
     haccel = LoadAccelerators(hInstance, "PatternsAccel");
 
