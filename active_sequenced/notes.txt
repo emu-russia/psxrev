@@ -6,7 +6,7 @@ DBL_CHK!!: Double-checked
 [TOP1]
 01_01: DBL_CHK!!
 01_02: DBL_CHK!!  			(Notes: found NAND2X was actually NOT2)
-01_03: READY!
+01_03: DBL_CHK!!
 
 [TOP2]
 02_01: garbage only
