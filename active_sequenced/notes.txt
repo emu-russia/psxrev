@@ -1,10 +1,11 @@
 READY!: Ready to double check
+DBL_CHK!!: Double-checked
 
 # PART 00 (MDEC, BUS Unit)
 
 [TOP1]
-01_01: READY!
-01_02: garbage only
+01_01: DBL_CHK!!
+01_02: DBL_CHK!!  			(Notes: found NAND2X was actually NOT2)
 01_03: READY!
 
 [TOP2]
