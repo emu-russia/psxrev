@@ -67,18 +67,18 @@ namespace NeuralDemo
             // Create input vector
             //
 
-            for (int x = 0; x < imageSize; x++)
+            for (int y = 0; y < imageSize; y++)
             {
-                for (int y = 0; y < imageSize; y++)
+                for (int x = 0; x < imageSize; x++)
                 {
                     Color color = bitmap.GetPixel(x, y);
 
-                    float blue = color.B;
-                    float green = color.G;
-                    float red = color.R;
+                    double blue = color.B;
+                    double green = color.G;
+                    double red = color.R;
 
                     byte Y = (byte)((0.299 * red) + (0.587 * green) + (0.114 * blue));
-                    inputs[i] = (float)Y / 256F;
+                    inputs[i] = (double)Y / 256F;
 
                     if (inputs[i] > 0.99)
                     {
@@ -159,6 +159,8 @@ namespace NeuralDemo
         public FeatureType Guess(Image image)
         {
             double[] inputs = ConvertImageToVector(image);
+
+            ShowVector(inputs, 3, 16, true);
 
             double[] outputs = nn.Query(inputs);
 
