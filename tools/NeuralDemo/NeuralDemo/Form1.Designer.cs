@@ -91,40 +91,40 @@
             // createNewNetworkToolStripMenuItem
             // 
             this.createNewNetworkToolStripMenuItem.Name = "createNewNetworkToolStripMenuItem";
-            this.createNewNetworkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createNewNetworkToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.createNewNetworkToolStripMenuItem.Text = "Create new network";
             this.createNewNetworkToolStripMenuItem.Click += new System.EventHandler(this.createNewNetworkToolStripMenuItem_Click);
             // 
             // loadNetworkToolStripMenuItem
             // 
             this.loadNetworkToolStripMenuItem.Name = "loadNetworkToolStripMenuItem";
-            this.loadNetworkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadNetworkToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.loadNetworkToolStripMenuItem.Text = "Load network";
             this.loadNetworkToolStripMenuItem.Click += new System.EventHandler(this.loadNetworkToolStripMenuItem_Click);
             // 
             // saveNetworkToolStripMenuItem
             // 
             this.saveNetworkToolStripMenuItem.Name = "saveNetworkToolStripMenuItem";
-            this.saveNetworkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveNetworkToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.saveNetworkToolStripMenuItem.Text = "Save network";
             this.saveNetworkToolStripMenuItem.Click += new System.EventHandler(this.saveNetworkToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(176, 6);
             // 
             // loadSourceImageToolStripMenuItem
             // 
             this.loadSourceImageToolStripMenuItem.Name = "loadSourceImageToolStripMenuItem";
-            this.loadSourceImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadSourceImageToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.loadSourceImageToolStripMenuItem.Text = "Load source image";
             this.loadSourceImageToolStripMenuItem.Click += new System.EventHandler(this.loadSourceImageToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -139,7 +139,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -199,6 +199,7 @@
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(256, 256);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
