@@ -1,3 +1,5 @@
+// https://github.com/Hagsten/NeuralNetwork
+
 using System;
 using System.Linq;
 

@@ -166,20 +166,21 @@ namespace NeuralDemo
 
             Console.WriteLine(outputs[0].ToString() + ", " + outputs[1].ToString());
 
-            if (outputs[0] + outputs[1] < 0.5)
-            {
-                return FeatureType.Unknown;
-            }
+            //
+            // Choose max and make sure the network solution is correct
+            //
 
-            if ( outputs[0] > outputs[1] )
+            double maxValue = outputs.Max();
+            int maxIndex = outputs.ToList().IndexOf(maxValue);
+
+            if ( outputs[maxIndex] > 0.95 )
             {
-                return FeatureType.X;
+                return (FeatureType)maxIndex;
             }
             else
             {
-                return FeatureType.O;
+                return FeatureType.Unknown;
             }
-
         }
 
     }
