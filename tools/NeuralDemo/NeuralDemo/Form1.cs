@@ -13,17 +13,14 @@ using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace DnnDemo
+namespace NeuralDemo
 {
     public partial class Form1 : Form
     {
         [DllImport("kernel32")]
         static extern bool AllocConsole();
 
-        private DnnXo dnn = null;
-
-        Point lastPoint = Point.Empty;
-        bool isMouseDown = new Boolean();
+        private XO nn = null;
 
         public Form1()
         {
@@ -41,6 +38,9 @@ namespace DnnDemo
                 string filename = openFileDialog1.FileName;
 
                 pictureBox1.Image = Image.FromFile(filename);
+
+                pictureBox2.Image = Convolution(pictureBox1.Image);
+                pictureBox2.Invalidate();
             }
         }
 
@@ -96,7 +96,7 @@ namespace DnnDemo
         /// <returns></returns>
         private bool CheckEnvironment ()
         {
-            if (dnn == null)
+            if (nn == null)
             {
                 MessageBox.Show("Load or create network first", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -128,7 +128,7 @@ namespace DnnDemo
                 return;
             }
 
-            DnnXo.FeatureType featureType = dnn.Guess(pictureBox2.Image);
+            XO.FeatureType featureType = nn.Guess(pictureBox2.Image);
 
             label1.Text = featureType.ToString();
         }
@@ -147,7 +147,7 @@ namespace DnnDemo
 
         private void someDemoFromInternetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DnnXo.Simple();
+            
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace DnnDemo
                 return;
             }
 
-            dnn.Train(pictureBox2.Image, DnnXo.FeatureType.X);
+            nn.Train(pictureBox2.Image, XO.FeatureType.X);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace DnnDemo
                 return;
             }
 
-            dnn.Train(pictureBox2.Image, DnnXo.FeatureType.O);
+            nn.Train(pictureBox2.Image, XO.FeatureType.O);
         }
 
         /// <summary>
@@ -193,13 +193,13 @@ namespace DnnDemo
             {
                 string filename = openFileDialog2.FileName;
 
-                XmlSerializer ser = new XmlSerializer(typeof(DnnXo.DnnState));
+                XmlSerializer ser = new XmlSerializer(typeof(XO.State));
 
                 using (FileStream fs = new FileStream(filename, FileMode.Open))
                 {
-                    DnnXo.DnnState state = (DnnXo.DnnState)ser.Deserialize(fs);
+                    XO.State state = (XO.State)ser.Deserialize(fs);
 
-                    dnn = new DnnXo(state);
+                    nn = new XO(state);
                 }
             }
         }
@@ -211,7 +211,7 @@ namespace DnnDemo
         /// <param name="e"></param>
         private void saveNetworkToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (dnn == null)
+            if (nn == null)
             {
                 MessageBox.Show("Load or create network first", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -224,11 +224,11 @@ namespace DnnDemo
             {
                 string filename = saveFileDialog1.FileName;
 
-                XmlSerializer ser = new XmlSerializer(typeof(DnnXo.DnnState));
+                XmlSerializer ser = new XmlSerializer(typeof(XO.State));
 
                 using (FileStream fs = new FileStream(filename, FileMode.Create))
                 {
-                    ser.Serialize(fs, dnn._state);
+                    ser.Serialize(fs, nn._state);
                 }
             }
         }
@@ -240,55 +240,7 @@ namespace DnnDemo
         /// <param name="e"></param>
         private void createNewNetworkToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DnnXo.DnnState blankState = DnnXo.CreateBlankState ();
-
-            dnn = new DnnXo(blankState);
-        }
-
-        //
-        // Free-hand drawing
-        //
-        // https://simpledevcode.wordpress.com/2014/02/06/drawing-by-mouse-on-a-picturebox-freehand-drawing/
-        //
-
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            lastPoint = e.Location;
-            isMouseDown = true;
-        }
-
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (isMouseDown == true)//check to see if the mouse button is down
-            {
-                if (lastPoint != null)//if our last point is not null, which in this case we have assigned above
-                {
-                    if (pictureBox1.Image == null)//if no available bitmap exists on the picturebox to draw on
-                    {
-                        //create a new bitmap
-                        Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-                        pictureBox1.Image = bmp; //assign the picturebox.Image property to the bitmap created
-                    }
-
-                    using (Graphics g = Graphics.FromImage(pictureBox1.Image))
-                    {//we need to create a Graphics object to draw on the picture box, its our main tool
-                        //when making a Pen object, you can just give it color only or give it color and pen size
-
-                        g.DrawLine(new Pen(Color.Black, 2), lastPoint, e.Location);
-                        g.SmoothingMode = SmoothingMode.AntiAlias;
-                        //this is to give the drawing a more smoother, less sharper look
-                    }
-
-                    //pictureBox1.Invalidate();//refreshes the picturebox
-                    lastPoint = e.Location;//keep assigning the lastPoint to the current mouse position
-                }
-            }
-        }
-
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-            isMouseDown = false;
-            lastPoint = Point.Empty;
+            nn = new XO();
         }
 
         private void button5_Click(object sender, EventArgs e)

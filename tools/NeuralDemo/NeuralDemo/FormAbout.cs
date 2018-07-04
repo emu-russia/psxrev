@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DnnDemo
+namespace NeuralDemo
 {
     public partial class FormAbout : Form
     {

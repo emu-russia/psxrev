@@ -1,4 +1,4 @@
-﻿namespace DnnDemo
+﻿namespace NeuralDemo
 {
     partial class FormAbout
     {
@@ -52,7 +52,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(98, 26);
             this.label1.TabIndex = 1;
-            this.label1.Text = "DnnDemo, v.1.0\r\n(c) 2018, psxdev.ru\r\n";
+            this.label1.Text = "NeuralDemo, v.1.0\r\n(c) 2018, psxdev.ru\r\n";
             // 
             // button1
             // 
@@ -74,7 +74,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAbout";
-            this.Text = "About DnnDemo";
+            this.Text = "About NeuralDemo";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
