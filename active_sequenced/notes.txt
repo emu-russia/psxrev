@@ -9,9 +9,9 @@ DBL_CHK!!: Double-checked
 01_03: DBL_CHK!!
 
 [TOP2]
-02_01: garbage only
-02_02: garbage only
-02_03: READY!
+02_01: DBL_CHK!!
+02_02: DBL_CHK!!
+02_03: DBL_CHK!!
 
 [BOT]
 03_01: garbage only
