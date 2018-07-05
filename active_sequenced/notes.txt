@@ -14,8 +14,8 @@ DBL_CHK!!: Double-checked
 02_03: DBL_CHK!!
 
 [BOT]
-03_01: garbage only
-03_02: garbage only
+03_01: DBL_CHK!! 			(Notes: stitching artifacts, one of 6-NANDs can be resolved only by m1)
+03_02: DBL_CHK!!
 04_01: DFFS3X possible(?), AOI-like
 04_02: READY!
 05_01: garbage only
