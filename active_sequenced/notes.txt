@@ -16,8 +16,8 @@ DBL_CHK!!: Double-checked
 [BOT]
 03_01: DBL_CHK!! 			(Notes: stitching artifacts, one of 6-NANDs can be resolved only by m1)
 03_02: DBL_CHK!!
-04_01: DFFS3X possible(?), AOI-like
-04_02: READY!
+04_01: DBL_CHK!! 			(Notes: very dirty. Fixed some cells. Found FILLER)
+04_02: DBL_CHK!!			(Notes: MUX3X -> MUX2X)
 05_01: garbage only
 05_02: READY!
 

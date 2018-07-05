@@ -181,6 +181,8 @@ pattern MUX_ARRAY, CellAdder, 5.0, 26, 26, "patterns_db/MUX_ARRAY.jpg"
 
 # Misc
 
+pattern FILLER, CellOther, 5.0, 0, 0, "patterns_db/FILLER.jpg"
+
 pattern TRISTATE2, CellBusSupp, 5.0, 5, 5, "patterns_db/TRISTATE2.jpg"
 pattern TRISTATE3, CellBusSupp, 5.0, 7, 7, "patterns_db/TRISTATE3.jpg"
 pattern BUS_KEEPER, CellBusSupp, 5.0, 2, 2, "patterns_db/BUS_KEEPER.jpg"
