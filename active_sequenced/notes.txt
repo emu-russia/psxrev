@@ -5,7 +5,7 @@ DBL_CHK!!: Double-checked
 
 [TOP1]
 01_01: DBL_CHK!!
-01_02: DBL_CHK!!  			(Notes: found NAND2X was actually NOT2)
+01_02: DBL_CHK!!            (Notes: found NAND2X was actually NOT2)
 01_03: DBL_CHK!!
 
 [TOP2]
@@ -14,12 +14,12 @@ DBL_CHK!!: Double-checked
 02_03: DBL_CHK!!
 
 [BOT]
-03_01: DBL_CHK!! 			(Notes: stitching artifacts, one of 6-NANDs can be resolved only by m1)
+03_01: DBL_CHK!!            (Notes: stitching artifacts, one of 6-NANDs can be resolved only by m1)
 03_02: DBL_CHK!!
-04_01: DBL_CHK!! 			(Notes: very dirty. Fixed some cells. Found FILLER)
-04_02: DBL_CHK!!			(Notes: MUX3X -> MUX2X)
-05_01: garbage only
-05_02: READY!
+04_01: DBL_CHK!!            (Notes: very dirty. Fixed some cells. Found FILLER)
+04_02: DBL_CHK!!            (Notes: MUX3X -> MUX2X)
+05_01: DBL_CHK!!            (Notes: Row 58, very hard to recognize NAND,AND2X,NOT2, too many dirt and blurry m1)
+05_02: DBL_CHK!!
 
 -------------------------------------------------------------------------
 
