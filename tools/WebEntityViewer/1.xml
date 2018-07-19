@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ArrayOfEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Entity>
+    <Label>DFF</Label>
+    <LambdaWidth>30.384617</LambdaWidth>
+    <LambdaHeight>41.153847</LambdaHeight>
+    <LambdaX>916.153870</LambdaX>
+    <LambdaY>1115.961548</LambdaY>
+    <LambdaEndX>1</LambdaEndX>
+    <LambdaEndY>1</LambdaEndY>
+    <Type>CellFlipFlop</Type>
+    <ColorOverride>Black</ColorOverride>
+    <LabelAlignment>BottomRight</LabelAlignment>
+    <Priority>1</Priority>
+  </Entity>
+  <Entity>
+    <Label>WS1</Label>
+    <LambdaWidth>30.576923</LambdaWidth>
+    <LambdaHeight>100.192314</LambdaHeight>
+    <LambdaX>1194.423096</LambdaX>
+    <LambdaY>1071.346191</LambdaY>
+    <LambdaEndX>1</LambdaEndX>
+    <LambdaEndY>1</LambdaEndY>
+    <Type>CellAdder</Type>
+    <ColorOverride>Black</ColorOverride>
+    <LabelAlignment>TopLeft</LabelAlignment>
+    <Priority>1</Priority>
+  </Entity>
+</ArrayOfEntity>

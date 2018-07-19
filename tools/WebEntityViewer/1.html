@@ -1,0 +1,360 @@
+<html>
+
+<head>
+
+<script>
+
+var Lambda = 5.0;
+
+//
+// Load and parse xml
+//
+
+function parseEntities ()
+{
+    var c=document.getElementById("workspace");
+    var ctx=c.getContext("2d");
+
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;    
+
+    var reader = new FileReader();
+
+    var file = document.getElementById("fileControl").files[0];
+
+    reader.readAsText (file, "UTF-8");
+
+    reader.onload = function(e)
+    {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(reader.result, "text/xml");
+
+        entityList = xmlDoc.getElementsByTagName("ArrayOfEntity")[0].childNodes;
+
+        //
+        // TODO: Sort by priority
+        //
+
+        for (i = 0; i < entityList.length; i++)
+        {
+            if (entityList[i].nodeName === "Entity")
+            {
+                var label = entityList[i].getElementsByTagName("Label")[0];
+
+                //document.getElementById("demo").innerHTML += label.textContent + "<br/>";
+
+                DrawEntity (ctx, entityList[i]);
+            }
+        }
+    }
+}
+
+//
+// Render basic primitives
+//
+
+function DrawLine (ctx, xStart, yStart, xEnd, yEnd, color, width)
+{
+    ctx.lineWidth=width;
+    ctx.beginPath();
+    ctx.moveTo(xStart,yStart);
+    ctx.lineTo(xEnd,yEnd);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+}
+
+function DrawRect(ctx, xStart, yStart, width, height, color)
+{
+    ctx.fillStyle = color;    
+    ctx.fillRect(xStart,yStart,width,height);
+}
+
+function DrawCircle(ctx, xStart, yStart, radius, color)
+{
+    ctx.beginPath();
+    ctx.arc(xStart,yStart,radius,0,2*Math.PI);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+function DrawText(ctx, xStart, yStart, text, color)
+{
+    ctx.font = "14px Arial";
+    ctx.fillStyle = color;
+    ctx.fillText(text,xStart,yStart);    
+}
+
+//
+// Render entities
+//
+
+function GetEntityProperty (entity, prop)
+{
+    return entity.getElementsByTagName(prop)[0].textContent;
+}
+
+function GetViasColor (entity)
+{
+    var colorOverride = GetEntityProperty (entity, "ColorOverride");
+
+    if (colorOverride === "Black")
+    {
+        var type = GetEntityProperty (entity, "Type");
+
+        if ( type === "ViasInput" )
+        {
+            return 'Green';
+        }
+        else if ( type === "ViasOutput")
+        {
+            return 'Red';
+        }
+        else if (type === "ViasInout")
+        {
+            return 'Yellow';
+        }
+        else if ( type === "ViasConnect")
+        {
+            return 'Black';
+        }
+        else if ( type === "ViasFloating" )
+        {
+            return 'Gray';
+        }
+        else if (type === "ViasPower" )
+        {
+            return 'Black';
+        }
+        else if (type === "ViasGround" )
+        {
+            return 'Black';
+        }
+        else 
+        {
+            return '#000000';
+        }
+    }
+    else
+    {
+        return colorOverride;
+    }
+}
+
+function GetWireColor (entity)
+{
+    var colorOverride = GetEntityProperty (entity, "ColorOverride");
+
+    if (colorOverride === "Black")
+    {
+        var type = GetEntityProperty (entity, "Type");
+
+        if ( type === "WireInterconnect" )
+        {
+            return 'Blue';
+        }
+        else if ( type === "WirePower")
+        {
+            return 'Red';
+        }
+        else if (type === "WireGround")
+        {
+            return 'Green';
+        }
+        else 
+        {
+            return '#000000';
+        }
+    }
+    else
+    {
+        return colorOverride;
+    }
+}
+
+function GetCellColor (entity)
+{
+    var colorOverride = GetEntityProperty (entity, "ColorOverride");
+
+    if (colorOverride === "Black")
+    {
+        var type = GetEntityProperty (entity, "Type");
+
+        if ( type === "CellNot" )
+        {
+            return 'Navy';
+        }
+        else if ( type === "CellBuffer")
+        {
+            return 'Navy';
+        }
+        else if ( type === "CellMux")
+        {
+            return 'DarkOrange';
+        }
+        else if ( type === "CellLogic")
+        {
+            return 'Yellow';
+        }
+        else if ( type === "CellAdder")
+        {
+            return 'Red';
+        }
+        else if ( type === "CellBusSupp")
+        {
+            return 'DarkViolet';
+        }
+        else if ( type === "CellFlipFlop")
+        {
+            return 'Lime';
+        }
+        else if ( type === "CellLatch")
+        {
+            return 'SpringGreen';
+        }
+        else if ( type === "CellOther")
+        {
+            return 'Snow';
+        }
+
+        else if ( type === "UnitRegfile")
+        {
+            return 'Snow';
+        }
+        else if ( type === "UnitMemory")
+        {
+            return 'Snow';
+        }
+        else if ( type === "UnitCustom")
+        {
+            return 'Snow';
+        }
+
+        else 
+        {
+            return '#000000';
+        }
+    }
+    else
+    {
+        return colorOverride;
+    }
+}
+
+function DrawVias (ctx, entity)
+{
+    var ViasBaseSize = 2;
+
+    var x = GetEntityProperty (entity, "LambdaX") * Lambda;
+    var y = GetEntityProperty (entity, "LambdaY") * Lambda;
+
+    DrawCircle (ctx, x, y, ViasBaseSize, GetViasColor(entity) );
+}
+
+function DrawWire (ctx, entity)
+{
+    var WireBaseSize = 3;
+
+    var sx = GetEntityProperty (entity, "LambdaX") * Lambda;
+    var sy = GetEntityProperty (entity, "LambdaY") * Lambda;    
+    var ex = GetEntityProperty (entity, "LambdaEndX") * Lambda;
+    var ey = GetEntityProperty (entity, "LambdaEndY") * Lambda;
+
+    DrawLine (ctx, sx, sy, ex, ey, GetWireColor(entity), WireBaseSize);
+}
+
+function DrawCell (ctx, entity)
+{
+    var x = GetEntityProperty (entity, "LambdaX") * Lambda;
+    var y = GetEntityProperty (entity, "LambdaY") * Lambda;    
+    var w = GetEntityProperty (entity, "LambdaWidth") * Lambda;
+    var h = GetEntityProperty (entity, "LambdaHeight") * Lambda;
+
+    DrawRect (ctx, x, y, w, h, GetCellColor(entity) );
+}
+
+function DrawEntity (ctx, entity)
+{
+    var type = GetEntityProperty (entity, "Type");
+
+    if ( type === "ViasInput" || type === "ViasOutput" || type === "ViasInout" ||
+        type === "ViasConnect" || type === "ViasFloating" || 
+        type === "ViasPower" || type === "ViasGround" )
+    {
+        DrawVias ( ctx, entity);
+    }
+    else if (type === "WireInterconnect" || type === "WirePower" || type === "WireGround")
+    {
+        DrawWire (ctx, entity);
+    }
+    else if (
+        type === "CellNot" ||
+        type === "CellBuffer" ||
+        type === "CellMux" ||
+        type === "CellLogic" ||
+        type === "CellAdder" ||
+        type === "CellBusSupp" ||
+        type === "CellFlipFlop" ||
+        type === "CellLatch" ||
+        type === "CellOther" ||
+        type === "UnitRegfile" ||
+        type === "UnitMemory" ||
+        type === "UnitCustom" 
+        )
+    {
+        DrawCell (ctx, entity);
+    }
+    else if (type === "Beacon" )
+    {
+
+    }
+    else if (type === "Region" )
+    {
+
+    }    
+}
+
+function CanvasDemo ()
+{
+    var c=document.getElementById("workspace");
+    var ctx=c.getContext("2d");
+
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+
+    DrawRect (ctx, 100, 200, 300, 400, '#00ff00');
+
+    DrawLine (ctx, 20, 20, 100, 100, '#0000ff', 3);
+
+    DrawCircle(ctx, 500, 500, 15, '#f3ff00');
+
+    DrawText (ctx, 50, 50, "Hello canvas", '#ffffff');
+}
+
+function OnBodyLoad ()
+{
+    document.getElementById('fileControl').addEventListener('change', parseEntities, false);
+}
+
+</script>
+
+</head>
+
+<body onload="OnBodyLoad();">
+
+<input id="fileControl" type="file"></input>
+
+<br/><br/>
+
+<div id="container" style="width: auto; height: auto; background-color:gray">
+
+<canvas id="workspace">
+</canvas>
+
+<p id="demo"></p>
+
+</div>
+
+</body>
+</html>

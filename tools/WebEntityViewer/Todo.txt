@@ -1,0 +1,9 @@
++ Способ загрузки XML источника
++ Парсер XML
+
+- Отрисовка
+	- Vias
+	- Wire
+	- Cell
+	- Beacon
+	- Region
