@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<circuit>
+    <wire line="120 15 150 15"/>
+    <wire line="60 15 90 15"/>
+    <wire line="0 -75 0 15"/>
+    <wire line="-15 15 0 15"/>
+    <wire line="0 15 30 15"/>
+    <wire line="-45 -90 -15 -90"/>
+    <wire line="45 -60 45 0"/>
+    <wire line="105 -60 105 0"/>
+    <element type="pin" pos="150 15" rot="180"/>
+    <element type="pin" pos="150 15" rot="180"/>
+    <element type="nfet" pos="105 0" rot="0"/>
+    <element type="nfet" pos="45 0" rot="0"/>
+    <element type="nfet" pos="-30 0" rot="0"/>
+    <element type="nfet" pos="0 -75" rot="180"/>
+    <element type="nfet" pos="0 -75" rot="180"/>
+    <element type="ground" pos="-45 -90" rot="90"/>
+    <element type="ground" pos="-45 -90" rot="90"/>
+    <element type="pin" pos="105 -60" rot="450"/>
+    <element type="pin" pos="105 -60" rot="450"/>
+    <element type="pin" pos="45 -60" rot="450"/>
+    <element type="pin" pos="45 -60" rot="450"/>
+</circuit>

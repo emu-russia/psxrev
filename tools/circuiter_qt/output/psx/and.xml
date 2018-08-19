@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<circuit>
+    <wire line="240 735 255 735"/>
+    <wire line="345 615 345 645"/>
+    <wire line="255 615 255 645"/>
+    <wire line="345 705 345 675"/>
+    <wire line="270 720 330 720"/>
+    <wire line="315 765 315 720"/>
+    <wire line="255 705 255 675"/>
+    <wire line="300 690 255 690"/>
+    <wire line="300 750 345 750"/>
+    <wire line="345 750 345 735"/>
+    <wire line="270 660 330 660"/>
+    <wire line="285 765 285 660"/>
+    <wire line="345 630 360 630"/>
+    <wire line="240 630 255 630"/>
+    <wire line="255 585 255 570"/>
+    <wire line="255 570 345 570"/>
+    <wire line="345 570 345 585"/>
+    <wire line="300 570 300 540"/>
+    <wire line="300 600 300 750"/>
+    <wire line="270 600 330 600"/>
+    <element type="nfet" pos="330 660" rot="270"/>
+    <element type="pfet" pos="270 600" rot="90"/>
+    <element type="nfet" pos="330 720" rot="270"/>
+    <element type="power" pos="240 735" rot="270"/>
+    <element type="pfet" pos="270 660" rot="90"/>
+    <element type="pfet" pos="270 720" rot="90"/>
+    <element type="nfet" pos="330 600" rot="270"/>
+    <element type="pin" pos="285 765" rot="270"/>
+    <element type="pin" pos="315 765" rot="270"/>
+    <element type="ground" pos="360 630" rot="90"/>
+    <element type="power" pos="240 630" rot="270"/>
+</circuit>

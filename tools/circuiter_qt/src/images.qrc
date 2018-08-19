@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/zoomin.png</file>
+        <file>images/zoomout.png</file>
+        <file>images/ground.png</file>
+        <file>images/nfet.png</file>
+        <file>images/pfet.png</file>
+        <file>images/pin.png</file>
+        <file>images/power.png</file>
+    </qresource>
+</RCC>
