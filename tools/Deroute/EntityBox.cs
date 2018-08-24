@@ -2903,7 +2903,7 @@ namespace System.Windows.Forms
             {
                 foreach (Entity entity in _entities)
                 {
-                    Point screenCoords;
+                    Point screenCoords = new Point();
 
                     //
                     // Bottom Right Bounds
@@ -2920,6 +2920,29 @@ namespace System.Windows.Forms
                     {
                         screenCoords = LambdaToScreen(entity.LambdaX + entity.LambdaWidth,
                                                         entity.LambdaY + entity.LambdaHeight);
+                    }
+                    else if (IsEntityRegion(entity))
+                    {
+                        screenCoords.X = int.MinValue;
+                        screenCoords.Y = int.MinValue;
+
+                        foreach ( PointF p in entity.PathPoints )
+                        {
+                            Point sp = LambdaToScreen(p.X, p.Y);
+
+                            if ( sp.X > screenCoords.X )
+                            {
+                                screenCoords.X = sp.X;
+                            }
+
+                            if (sp.Y > screenCoords.Y)
+                            {
+                                screenCoords.Y = sp.Y;
+                            }
+                        }
+
+                        screenCoords.X += 2 * ViasBaseSize;
+                        screenCoords.Y += 2 * ViasBaseSize;
                     }
                     else
                     {
@@ -2949,6 +2972,29 @@ namespace System.Windows.Forms
                     {
                         screenCoords = LambdaToScreen(entity.LambdaX,
                                                         entity.LambdaY);
+                    }
+                    else if (IsEntityRegion(entity))
+                    {
+                        screenCoords.X = int.MaxValue;
+                        screenCoords.Y = int.MaxValue;
+
+                        foreach (PointF p in entity.PathPoints)
+                        {
+                            Point sp = LambdaToScreen(p.X, p.Y);
+
+                            if (sp.X < screenCoords.X)
+                            {
+                                screenCoords.X = sp.X;
+                            }
+
+                            if (sp.Y < screenCoords.Y)
+                            {
+                                screenCoords.Y = sp.Y;
+                            }
+                        }
+
+                        screenCoords.X -= 2 * ViasBaseSize;
+                        screenCoords.Y -= 2 * ViasBaseSize;
                     }
                     else
                     {
