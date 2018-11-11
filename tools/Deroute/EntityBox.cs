@@ -205,11 +205,6 @@ namespace System.Windows.Forms
             return (entity.Type == EntityType.Region );
         }
 
-        public static bool IsEntityTile(Entity entity)
-        {
-            return (entity.Type == EntityType.Tile);
-        }
-
         public Point GetLastRightMouseButton ()
         {
             return LastRMB;
@@ -1714,37 +1709,6 @@ namespace System.Windows.Forms
 
                     break;
 
-                //
-                // Tile
-                //
-
-                case EntityType.Tile:
-
-                    Point imgTopLeft = LambdaToScreen(entity.LambdaX, entity.LambdaY);
-
-                    //
-                    // Discard invisible tiles
-                    //
-
-                    if ( imgTopLeft.X >= Width ||
-                         imgTopLeft.Y >= Height ||
-                         (imgTopLeft.X + (float)entity.ImageWidth * zf) < 0 ||
-                         (imgTopLeft.Y + (float)entity.ImageHeight * zf) < 0)
-                        break;
-
-                    Image image = Image.FromFile(entity.ImageFile);
-
-                    PointF imgSize = new PointF (entity.ImageWidth, entity.ImageHeight);
-
-                    gr.DrawImage( image,
-                                  imgTopLeft.X,
-                                  imgTopLeft.Y,
-                                  imgSize.X * zf,
-                                  imgSize.Y * zf );
-
-                    image.Dispose();
-                    image = null;
-                    break;
             }
         }
 
@@ -5467,55 +5431,6 @@ namespace System.Windows.Forms
                 OnEntityCountChanged(this, EventArgs.Empty);
         }
 
-        //
-        // Tiles
-        //
-        // imageFile is absolute path.
-        // All tile source files will be copied relative to workspace dump, after Workspace saving.
-        //
-
-        public Entity AddTile (string imageFile, int prio, int ScreenX, int ScreenY )
-        {
-            Entity item = new Entity();
-
-            try
-            {
-                Bitmap bitmap = new Bitmap(imageFile);
-
-                item.ImageWidth = bitmap.Width;
-                item.ImageHeight = bitmap.Height;
-
-                // Dispose
-                bitmap.Dispose ();
-                bitmap = null;
-                GC.Collect ();
-            }
-            catch
-            {
-                //
-                // We have memory/decode issues..
-                //
-
-                return null;
-            }
-
-            PointF origin = ScreenToLambda(ScreenX, ScreenY);
-
-            item.LambdaX = origin.X;
-            item.LambdaY = origin.Y;
-            SelectEntity(item);
-            item.Priority = prio;
-            item.Type = EntityType.Tile;
-            item.ImageFile = imageFile;
-            item.SetParent(this);
-
-            _entities.Add (item);
-
-            SortEntities();
-            Invalidate();
-
-            return item;
-        }
 
     }       // EntityBox
 

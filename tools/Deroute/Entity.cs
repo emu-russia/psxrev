@@ -35,7 +35,6 @@ public enum EntityType
     UnitCustom,
     Beacon,
     Region,
-    Tile,
 }
 
 public enum ViasShape
@@ -75,9 +74,6 @@ public class Entity
     [XmlIgnore]
     public List<PointF> SavedPathPoints = null;
     private int _WidthOverride;         // vias / wire
-    private string _imageFile = null;
-    private int _ImageWidth;
-    private int _ImageHeight;
 
     [XmlIgnore]
     public long SelectTimeStamp;
@@ -107,43 +103,6 @@ public class Entity
                 parentBox.LabelEdited(this);
                 parentBox.Invalidate();
             }
-        }
-    }
-
-    [Category("Entity Properties")]
-    public string ImageFile
-    {
-        get { return _imageFile; }
-        set
-        {
-            _imageFile = value;
-
-            if (parentBox != null)
-            {
-                parentBox.Invalidate();
-            }
-        }
-    }
-
-    [Category("Entity Properties")]
-    public int ImageWidth
-    {
-        get { return _ImageWidth; }
-        set
-        {
-            _ImageWidth = value;
-            if (parentBox != null) parentBox.Invalidate();
-        }
-    }
-
-    [Category("Entity Properties")]
-    public int ImageHeight
-    {
-        get { return _ImageHeight; }
-        set
-        {
-            _ImageHeight = value;
-            if (parentBox != null) parentBox.Invalidate();
         }
     }
 
