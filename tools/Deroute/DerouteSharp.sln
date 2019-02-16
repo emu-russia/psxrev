@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DerouteSharp", "DerouteSharp.csproj", "{1BE0D7F9-1464-47A3-AC90-9ECC1E006426}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityBox", "..\EntityBox\EntityBox.csproj", "{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{1BE0D7F9-1464-47A3-AC90-9ECC1E006426}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BE0D7F9-1464-47A3-AC90-9ECC1E006426}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BE0D7F9-1464-47A3-AC90-9ECC1E006426}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C95C868-F6F6-4CB6-8E82-48ED6C3C974D}
 	EndGlobalSection
 EndGlobal

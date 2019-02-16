@@ -38,9 +38,9 @@ namespace DerouteSharp
             entityBox1.OnScrollChanged += ScrollChanged;
             entityBox1.OnZoomChanged += ZoomChanged;
             entityBox1.OnEntityCountChanged += EntityCountChanged;
-            entityBox1.OnLastOperation += LastOperation;
             entityBox1.OnEntityLabelEdit += EntityLabelChanged;
             entityBox1.OnFrameDone += entityBox1_OnFrameDone;
+            entityBox1.OnDestinationNodeChanged += EntityBox1_OnDestinationNodeChanged;
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
 
@@ -49,7 +49,12 @@ namespace DerouteSharp
 #endif
         }
 
-        void entityBox1_OnFrameDone(object sender, long ms_time, EventArgs e)
+        private void EntityBox1_OnDestinationNodeChanged(object sender, Entity entity, EventArgs e)
+        {
+            toolStripStatusLabel11.Text = entity.Type.ToString() + " " + entity.Label;
+        }
+
+        private void entityBox1_OnFrameDone(object sender, long ms_time, EventArgs e)
         {
             toolStripStatusLabel14.Text = ms_time.ToString() + " ms";
         }
@@ -85,13 +90,16 @@ namespace DerouteSharp
             {
                 RebuildBeaconList();
             }
+
+            //
+            // Update tree
+            //
+
+            PopulateTree();
         }
 
         private void LastOperation(object sender, EventArgs e)
         {
-            EntityBox entityBox = (EntityBox)sender;
-
-            toolStripStatusLabel12.Text = entityBox.GetLastOperation().ToString();
         }
 
         private void EntityLabelChanged(object sender, Entity entity, EventArgs e)
@@ -99,6 +107,13 @@ namespace DerouteSharp
             if (entity.Type == EntityType.Beacon)
             {
                 RebuildBeaconList();
+            }
+
+            TreeNode node;
+
+            if (SearchTreeNodeByEntity(entity, out node))
+            {
+                node.Text = entity.Type.ToString() + " " + entity.Label;
             }
         }
 
@@ -446,14 +461,6 @@ namespace DerouteSharp
                 propertyGrid1.Refresh();
                 WiresButtonHighlight();
             }
-            else if (e.KeyCode == Keys.Z && e.Control)
-            {
-                entityBox1.CancelLastOperation();
-            }
-            else if (e.KeyCode == Keys.Y && e.Control)
-            {
-                entityBox1.RetryCancelledOperation();
-            }
             else if (e.KeyCode == Keys.F10)
             {
                 entityBox1.TraversalSelection(1);
@@ -566,16 +573,6 @@ namespace DerouteSharp
 
                 Cursor = Cursors.Default;
             }
-        }
-
-        private void cancelOperationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            entityBox1.CancelLastOperation();
-        }
-
-        private void repeatCancelledOperationCtrlYToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            entityBox1.RetryCancelledOperation();
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)
@@ -760,7 +757,7 @@ namespace DerouteSharp
 
             foreach ( Entity entity in selected )
             {
-                if ( EntityBox.IsEntityVias(entity) )
+                if (entity.IsVias() )
                 {
                     if (vias1 == null)
                     {
@@ -796,9 +793,9 @@ namespace DerouteSharp
             // Get shapes
             //
 
-            foreach (Entity entity in entityBox1._entities )
+            foreach (Entity entity in entityBox1.GetEntities() )
             {
-                if ( EntityBox.IsEntityCell(entity) || EntityBox.IsEntityRegion(entity))
+                if (entity.IsCell() || entity.IsRegion())
                 {
                     shapes.Add(entity);
                 }
@@ -808,9 +805,9 @@ namespace DerouteSharp
             // Add wire corners as artifical cells
             //
 
-            foreach (Entity entity in entityBox1._entities )
+            foreach (Entity entity in entityBox1.GetEntities())
             {
-                if ( EntityBox.IsEntityWire(entity))
+                if (entity.IsWire())
                 {
                     Entity artifical1 = new Entity();
 
@@ -833,11 +830,157 @@ namespace DerouteSharp
                 }
             }
 
+            Cursor = Cursors.WaitCursor;
+
             List<Entity> wires = entityBox1.Route(vias1, vias2, shapes, true);
+
+            Cursor = Cursors.Default;
 
             vias1.Selected = false;
             vias2.Selected = false;
         }
+
+        #region "Hierarchy"
+
+        TreeNode prevNode = null;
+
+        private void PopulateTree()
+        {
+            myTreeView1.Nodes.Clear();
+
+            myTreeView1.BeginUpdate();
+
+            TreeNode rootNode = new TreeNode("Root");
+
+            rootNode.Tag = entityBox1.root;
+            rootNode.Checked = true;
+
+            myTreeView1.Nodes.Add(rootNode);
+
+            foreach(var entity in entityBox1.root.Children)
+            {
+                PopulateTreeRecursive(entity, rootNode);
+            }
+
+            myTreeView1.EndUpdate();
+            myTreeView1.ExpandAll();
+        }
+
+        private void PopulateTreeRecursive (Entity parent, TreeNode nodeParent)
+        {
+            TreeNode node = new TreeNode(parent.Type.ToString() + " " + parent.Label);
+
+            node.Tag = parent;
+            node.Checked = parent.Visible;
+
+            nodeParent.Nodes.Add(node);
+
+            foreach (var entity in parent.Children)
+            {
+                PopulateTreeRecursive(entity, node);
+            }
+        }
+
+        private void myTreeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeView tree = (TreeView)sender;
+
+            TreeNode node = tree.SelectedNode;
+
+            if (prevNode != null)
+            {
+                prevNode.BackColor = tree.BackColor;
+            }
+
+            node.BackColor = Color.Gold;
+            prevNode = node;
+
+            if (node.Tag is Entity)
+            {
+                Entity entity = node.Tag as Entity;
+
+                entityBox1.RemoveSelection();
+
+                if (entity != entityBox1.root)
+                {
+                    entityBox1.SelectEntity(entity);
+                    entityBox1.EnsureVisible(entity);
+                }
+
+                entityBox1.SetDestinationNode(entity);
+                entityBox1.Invalidate();
+                propertyGrid2.SelectedObject = entity;
+            }
+
+            //
+            // Dont loose focus after browing by keyboard arrows
+            //
+
+            tree.Focus();
+        }
+
+        private void myTreeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            TreeView tree = (TreeView)sender;
+
+            foreach (TreeNode node in tree.Nodes)
+            {
+                SetNodeVisibilityRecursive(node);
+            }
+
+            entityBox1.Invalidate();
+        }
+
+        private void SetNodeVisibilityRecursive(TreeNode node)
+        {
+            if (node.Tag is Entity)
+            {
+                Entity entity = node.Tag as Entity;
+
+                entity.Visible = node.Checked;
+            }
+
+            foreach (TreeNode child in node.Nodes)
+            {
+                SetNodeVisibilityRecursive(child);
+            }
+        }
+
+        private bool SearchTreeNodeByEntity (Entity entity, out TreeNode nodeOut)
+        {
+            nodeOut = null;
+
+            foreach (TreeNode node in myTreeView1.Nodes)
+            {
+                bool res = SearchTreeNodeByEntityRecursive(entity, node, out nodeOut);
+                if (res)
+                    return res;
+            }
+
+            return false;
+        }
+
+        private bool SearchTreeNodeByEntityRecursive (Entity entity, TreeNode parentNode, out TreeNode nodeOut)
+        {
+            nodeOut = null;
+
+            if (parentNode.Tag == entity)
+            {
+                nodeOut = parentNode;
+                return true;
+            }
+
+            foreach(TreeNode node in parentNode.Nodes)
+            {
+                bool res = SearchTreeNodeByEntityRecursive(entity, node, out nodeOut);
+                if (res)
+                    return res;
+            }
+
+            return false;
+        }
+
+        #endregion
 
 
     }       // Form1

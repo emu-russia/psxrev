@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubberTool", "RubberTool\RubberTool.csproj", "{597C210E-1811-4F17-9793-6A9DC2303CFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityBox", "..\EntityBox\EntityBox.csproj", "{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{597C210E-1811-4F17-9793-6A9DC2303CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{597C210E-1811-4F17-9793-6A9DC2303CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{597C210E-1811-4F17-9793-6A9DC2303CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

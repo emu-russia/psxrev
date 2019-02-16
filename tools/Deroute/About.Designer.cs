@@ -56,7 +56,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(170, 48);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Deroute Tool 1.0\r\n(c) 2016, psxdev.ru\r\n";
+            this.label1.Text = "Deroute Tool 1.0\r\n(c) 2019, psxdev.ru\r\n";
             // 
             // label2
             // 

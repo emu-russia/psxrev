@@ -217,9 +217,9 @@ namespace RubberTool
                 otherBox = entityBox1;
             }
 
-            foreach (Entity entity in otherBox._entities)
+            foreach (Entity entity in otherBox.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity) && entity.Label == kp.Label)
+                if (entity.IsVias() && entity.Label == kp.Label)
                 {
                     entity.Label = newName;
                 }
@@ -235,11 +235,13 @@ namespace RubberTool
 
         private bool IsKeypointExists ( EntityBox box, string name )
         {
-            for (int i = 0; i<box._entities.Count-1; i++)
-            {
-                Entity entity = box._entities[i];
+            List<Entity> _entities = box.GetEntities();
 
-                if ( EntityBox.IsEntityVias(entity) && entity.Label == name )
+            for (int i = 0; i<_entities.Count-1; i++)
+            {
+                Entity entity = _entities[i];
+
+                if (entity.IsVias() && entity.Label == name )
                 {
                     return true;
                 }
@@ -250,13 +252,13 @@ namespace RubberTool
 
         private void entityBox1_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 entity.Label = "kp" + kpIndexLeft.ToString();
 
                 if (IsKeypointExists(entityBox1, entity.Label))
                 {
-                    entityBox1._entities.Remove(entity);
+                    entity.parent.Children.Remove(entity);
 
                     MessageBox.Show("Keypoint " + entity.Label + " already exists!", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -272,13 +274,13 @@ namespace RubberTool
 
         private void entityBox2_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 entity.Label = "kp" + kpIndexRight.ToString();
 
                 if (IsKeypointExists(entityBox2, entity.Label))
                 {
-                    entityBox2._entities.Remove(entity);
+                    entity.parent.Children.Remove(entity);
 
                     MessageBox.Show("Keypoint " + entity.Label + " already exists!", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -294,7 +296,7 @@ namespace RubberTool
 
         private void entityBox1_OnEntityRemove(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 ListRemoveKeypoint(entity, true);
             }
@@ -302,7 +304,7 @@ namespace RubberTool
 
         private void entityBox2_OnEntityRemove(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 ListRemoveKeypoint(entity, false);
             }
@@ -342,7 +344,7 @@ namespace RubberTool
 
             foreach ( Entity entity in _selectedLeft)
             {
-                if ( !EntityBox.IsEntityVias(entity))
+                if ( !entity.IsVias())
                 {
                     MessageBox.Show("Select keypoints only", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -363,7 +365,7 @@ namespace RubberTool
 
             foreach (Entity entity in _selectedRight)
             {
-                if (!EntityBox.IsEntityVias(entity))
+                if (!entity.IsVias())
                 {
                     MessageBox.Show("Select keypoints only", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -490,9 +492,9 @@ namespace RubberTool
             // Получить ключевые точки
             //
 
-            foreach (Entity entity in box._entities)
+            foreach (Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity))
+                if (entity.IsVias())
                 {
                     Point p = box.LambdaToScreen(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
@@ -610,9 +612,9 @@ namespace RubberTool
         {
             List<Entity> ents = new List<Entity>();
 
-            foreach (Entity entity in box._entities)
+            foreach (Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityRegion(entity))
+                if (entity.IsRegion())
                 {
                     ents.Add(entity);
                 }
@@ -620,7 +622,7 @@ namespace RubberTool
 
             foreach (Entity entity in ents)
             {
-                box._entities.Remove(entity);
+                entity.parent.Children.Remove(entity);
             }
 
             box.Invalidate();
@@ -704,9 +706,9 @@ namespace RubberTool
         {
             List<Point2D> points = new List<Point2D>();
 
-            foreach (Entity entity in box._entities)
+            foreach (Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity))
+                if (entity.IsVias())
                 {
                     Point p = box.LambdaToImage(entity.LambdaX, entity.LambdaY);
                     Point2D point = new Point2D(p.X, p.Y);
@@ -850,9 +852,9 @@ namespace RubberTool
         {
             List<Entity> kps = new List<Entity>();
 
-            foreach (Entity entity in box._entities)
+            foreach (Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity))
+                if (entity.IsVias())
                 {
                     kps.Add(entity);
                 }
@@ -860,7 +862,7 @@ namespace RubberTool
 
             foreach (Entity entity in kps)
             {
-                box._entities.Remove(entity);
+                entity.parent.Children.Remove(entity);
                 ListRemoveKeypoint(entity, left);
             }
 
@@ -936,9 +938,9 @@ namespace RubberTool
         {
             List<Entity> kps = new List<Entity>();
 
-            foreach (Entity entity in box._entities)
+            foreach (Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity))
+                if (entity.IsVias())
                 {
                     kps.Add(entity);
                 }
@@ -967,11 +969,11 @@ namespace RubberTool
 
                 foreach (Entity entity in list)
                 {
-                    box._entities.Add(entity);
+                    box.root.Children.Add(entity);
                     ListInsertKeypoint(entity, left);
                 }
 
-                box._entities = box._entities.OrderBy(o => o.Priority).ToList();
+                box.SortEntities();
 
                 box.Invalidate();
             }
@@ -1138,9 +1140,9 @@ namespace RubberTool
         {
             Entity kp = null;
 
-            foreach ( Entity entity in box._entities)
+            foreach ( Entity entity in box.GetEntities())
             {
-                if (EntityBox.IsEntityVias (entity))
+                if (entity.IsVias ())
                 {
                     if ( entity.Label == name )
                     {
@@ -1151,7 +1153,7 @@ namespace RubberTool
 
             if (kp != null )
             {
-                box._entities.Remove(kp);
+                kp.parent.Children.Remove(kp);
                 box.Invalidate();
             }
         }
@@ -1175,18 +1177,18 @@ namespace RubberTool
             entityBox1.RemoveSelection();
             entityBox2.RemoveSelection();
 
-            foreach ( Entity entity in entityBox1._entities)
+            foreach ( Entity entity in entityBox1.GetEntities())
             {
-                if ( EntityBox.IsEntityVias(entity) && entity.Label == name )
+                if (entity.IsVias() && entity.Label == name )
                 {
                     entity.Selected = true;
                     entityBox1.EnsureVisible(entity);
                 }
             }
 
-            foreach (Entity entity in entityBox2._entities)
+            foreach (Entity entity in entityBox2.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity) && entity.Label == name)
+                if (entity.IsVias() && entity.Label == name)
                 {
                     entity.Selected = true;
                     entityBox2.EnsureVisible(entity);
@@ -1199,7 +1201,7 @@ namespace RubberTool
 
         private void entityBox1_OnEntityScroll(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 UpdateKeypointCoords(entity, true);
             }
@@ -1207,7 +1209,7 @@ namespace RubberTool
 
         private void entityBox2_OnEntityScroll(object sender, Entity entity, EventArgs e)
         {
-            if (EntityBox.IsEntityVias(entity))
+            if (entity.IsVias())
             {
                 UpdateKeypointCoords(entity, false);
             }

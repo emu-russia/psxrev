@@ -50,19 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Deroute\Entity.cs">
-      <Link>Entity.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Deroute\EntityBox.cs">
-      <Link>EntityBox.cs</Link>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\Deroute\FontXmlConverter.cs">
-      <Link>FontXmlConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Deroute\PointFConverter.cs">
-      <Link>PointFConverter.cs</Link>
-    </Compile>
     <Compile Include="Delaunay.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -122,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DelaunayIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EntityBox\EntityBox.csproj">
+      <Project>{b054bdba-d0a2-4712-bb9f-4368c37be0eb}</Project>
+      <Name>EntityBox</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "patterns", "patterns.vcxproj", "{26A15F6F-5FF4-470B-8BF1-1C262E68A5BD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\..\libjpeg\libjpeg\libjpeg.vcxproj", "{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,19 @@ Global
 		{26A15F6F-5FF4-470B-8BF1-1C262E68A5BD}.Release|Win32.Build.0 = Release|Win32
 		{26A15F6F-5FF4-470B-8BF1-1C262E68A5BD}.Release|x64.ActiveCfg = Release|x64
 		{26A15F6F-5FF4-470B-8BF1-1C262E68A5BD}.Release|x64.Build.0 = Release|x64
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Debug|Win32.Build.0 = Debug|Win32
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Debug|x64.ActiveCfg = Debug|x64
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Debug|x64.Build.0 = Debug|x64
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Release|Win32.ActiveCfg = Release|Win32
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Release|Win32.Build.0 = Release|Win32
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Release|x64.ActiveCfg = Release|x64
+		{526EE0C8-DD95-45A8-BFE7-1DAA15AB00BC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD81E5C7-067E-4154-A474-CEDB7E7C608F}
 	EndGlobalSection
 EndGlobal

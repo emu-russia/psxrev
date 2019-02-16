@@ -82,7 +82,7 @@ namespace RubberTool
             Delaunay delaunay = new Delaunay();
             List<Point2D> points = new List<Point2D>();
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 Point screen = entityBox1.LambdaToScreen(entity.LambdaX, entity.LambdaY);
                 points.Add(new Point2D(screen.X, screen.Y));
@@ -124,9 +124,9 @@ namespace RubberTool
         {
             List<Entity> ents = new List<Entity>();
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
-                if (EntityBox.IsEntityWire(entity))
+                if (entity.IsWire())
                 {
                     ents.Add(entity);
                 }
@@ -134,7 +134,7 @@ namespace RubberTool
 
             foreach (Entity entity in ents)
             {
-                entityBox1._entities.Remove(entity);
+                entity.parent.Children.Remove(entity);
             }
 
             entityBox1.Invalidate();
@@ -144,9 +144,9 @@ namespace RubberTool
         {
             List<Entity> ents = new List<Entity>();
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
-                if (EntityBox.IsEntityVias(entity))
+                if (entity.IsVias())
                 {
                     ents.Add(entity);
                 }
@@ -154,7 +154,7 @@ namespace RubberTool
 
             foreach (Entity entity in ents)
             {
-                entityBox1._entities.Remove(entity);
+                entity.parent.Children.Remove(entity);
             }
 
             entityBox1.Invalidate();
@@ -179,7 +179,7 @@ namespace RubberTool
 
         private void LerpPath ()
         {
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 entity.LambdaX = Lerp(entity.LambdaX, entity.LambdaEndX, 1F / (float)stepsAmount);
                 entity.LambdaY = Lerp(entity.LambdaY, entity.LambdaEndY, 1F / (float)stepsAmount);
@@ -193,7 +193,7 @@ namespace RubberTool
         {
             Random rnd = new Random();
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 entity.LambdaEndX = entity.LambdaX + ( -10 + (float)rnd.NextDouble() * 20) ;
                 entity.LambdaEndY = entity.LambdaY + ( -10 + (float)rnd.NextDouble() * 20) ;
@@ -209,7 +209,7 @@ namespace RubberTool
 
         private void entityBox1_OnEntityAdd(object sender, Entity entity, EventArgs e)
         {
-            if (!Spawning && EntityBox.IsEntityVias(entity))
+            if (!Spawning && entity.IsVias())
                 CreatePath();
         }
     }

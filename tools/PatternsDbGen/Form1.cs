@@ -215,7 +215,7 @@ namespace PatternsDbGen
                     RectangleF rect = new RectangleF( planar.X, planar.Y,
                                                       ScanWindowWidth * 2, ScanWindowWidth * 2);
 
-                    foreach (Entity entity in entityBox1._entities)
+                    foreach (Entity entity in entityBox1.GetEntities())
                     {
                         if (entity.Type == EntityType.ViasFloating && entity.Label.Length > 0 &&
                              rect.Contains(new PointF(entity.LambdaX, entity.LambdaY)) &&
@@ -277,7 +277,7 @@ namespace PatternsDbGen
                                                    unlabeled.LambdaX - labeled.LambdaX,
                                                    unlabeled.LambdaY - labeled.LambdaY);
 
-            foreach ( Entity vias in entityBox1._entities )
+            foreach ( Entity vias in entityBox1.GetEntities())
             {
                 PointF point = new PointF(vias.LambdaX, vias.LambdaY);
 
@@ -326,7 +326,7 @@ namespace PatternsDbGen
 
             if ( cell.PCount == 0 || cell.NCount == 0)
             {
-                foreach ( Entity entity in entityBox1._entities )
+                foreach ( Entity entity in entityBox1.GetEntities())
                 {
                     PointF point = new PointF(entity.LambdaX, entity.LambdaY);
 
@@ -370,7 +370,7 @@ namespace PatternsDbGen
             // Get cell wires (not m1)
             //
 
-            foreach ( Entity entity in entityBox1._entities )
+            foreach ( Entity entity in entityBox1.GetEntities())
             {
                 PointF pointStart = new PointF(entity.LambdaX, entity.LambdaY);
                 PointF pointEnd = new PointF(entity.LambdaEndX, entity.LambdaEndY);
@@ -387,7 +387,7 @@ namespace PatternsDbGen
             // Get p regions
             //
 
-            foreach ( Entity entity in entityBox1._entities )
+            foreach ( Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.Region)
                     continue;
@@ -404,7 +404,7 @@ namespace PatternsDbGen
             // Get n regions
             //
 
-            foreach ( Entity entity in entityBox1._entities )
+            foreach ( Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.Region)
                     continue;
@@ -537,7 +537,7 @@ namespace PatternsDbGen
         {
             float min = float.PositiveInfinity;
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.ViasFloating)
                     continue;
@@ -553,7 +553,7 @@ namespace PatternsDbGen
         {
             float max = float.NegativeInfinity;
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.ViasFloating)
                     continue;
@@ -569,7 +569,7 @@ namespace PatternsDbGen
         {
             float min = float.PositiveInfinity;
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.ViasFloating)
                     continue;
@@ -585,7 +585,7 @@ namespace PatternsDbGen
         {
             float max = float.NegativeInfinity;
 
-            foreach (Entity entity in entityBox1._entities)
+            foreach (Entity entity in entityBox1.GetEntities())
             {
                 if (entity.Type != EntityType.ViasFloating)
                     continue;
