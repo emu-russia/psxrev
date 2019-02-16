@@ -72,6 +72,10 @@ namespace MachineLearningKit
 
                             entityBox1.AddVias(EntityType.ViasConnect, screenPoint.X, screenPoint.Y, 
                                 entityBox1.ViasConnectColor );
+
+                            /// Skip whole tile
+
+                            x += 16 - deltaStepX;
                         }
                     }
 
@@ -82,5 +86,12 @@ namespace MachineLearningKit
 
         }
 
+        private void saveEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                entityBox1.Serialize(saveFileDialog1.FileName);
+            }
+        }
     }
 }

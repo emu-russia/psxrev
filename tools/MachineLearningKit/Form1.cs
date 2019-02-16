@@ -29,6 +29,7 @@ namespace MachineLearningKit
         private Bitmap sourceBitmap;
         private Random rnd = new Random(DateTime.Now.Millisecond);
         private List<EntityNetwork.Feature> features = new List<EntityNetwork.Feature>();
+        private FormDebugger debugger = null;
 
         public Form1()
         {
@@ -235,6 +236,9 @@ namespace MachineLearningKit
                 label2.Text = "Не могу распознать";
                 pictureBox4.Image = null;
             }
+
+            if (debugger != null)
+                debugger.UpdateNetworkView();
         }
 
         // Source: https://stackoverflow.com/questions/1922040/resize-an-image-c-sharp
@@ -362,6 +366,9 @@ namespace MachineLearningKit
                 int id = listView1.SelectedIndices[0];
 
                 nn.Train(pictureBox2.Image, id);
+
+                if (debugger != null)
+                    debugger.UpdateNetworkView();
             }
         }
 
@@ -455,5 +462,23 @@ namespace MachineLearningKit
 
         }
 
+        private void debuggerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (debugger == null)
+            {
+                debugger = new FormDebugger(nn);
+                debugger.FormClosed += Debugger_FormClosed;
+                debugger.Show();
+            }
+            else
+            {
+                debugger.Focus();
+            }
+        }
+
+        private void Debugger_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            debugger = null;
+        }
     }
 }

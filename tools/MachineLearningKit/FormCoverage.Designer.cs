@@ -34,10 +34,15 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -51,6 +56,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.entityBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.menuStrip1);
             // 
             // splitContainer1.Panel2
             // 
@@ -93,7 +99,7 @@
             this.entityBox1.ImageOpacity1 = 100;
             this.entityBox1.ImageOpacity2 = 100;
             this.entityBox1.Lambda = 5F;
-            this.entityBox1.Location = new System.Drawing.Point(0, 0);
+            this.entityBox1.Location = new System.Drawing.Point(0, 24);
             this.entityBox1.LockScroll0 = false;
             this.entityBox1.LockScroll1 = false;
             this.entityBox1.LockScroll2 = false;
@@ -113,13 +119,13 @@
             this.entityBox1.SelectEntitiesAfterAdd = true;
             this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
             this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(837, 461);
+            this.entityBox1.Size = new System.Drawing.Size(837, 437);
             this.entityBox1.TabIndex = 0;
             this.entityBox1.Text = "entityBox1";
             this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
             this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
             this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox1.ViasBaseSize = 4;
+            this.entityBox1.ViasBaseSize = 2;
             this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
             this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
             this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
@@ -172,6 +178,36 @@
             this.comboBox1.Size = new System.Drawing.Size(157, 21);
             this.comboBox1.TabIndex = 0;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(837, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveEntitiesToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // saveEntitiesToolStripMenuItem
+            // 
+            this.saveEntitiesToolStripMenuItem.Name = "saveEntitiesToolStripMenuItem";
+            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveEntitiesToolStripMenuItem.Text = "Save entities...";
+            this.saveEntitiesToolStripMenuItem.Click += new System.EventHandler(this.saveEntitiesToolStripMenuItem_Click);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "xml";
+            this.saveFileDialog1.Filter = "XML Files|*.xml|All files|*.*";
+            // 
             // FormCoverage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -179,13 +215,17 @@
             this.ClientSize = new System.Drawing.Size(837, 527);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormCoverage";
             this.Text = "Feature Coverage";
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -197,5 +237,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.EntityBox entityBox1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveEntitiesToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

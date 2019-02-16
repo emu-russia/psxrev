@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{46A30FE0-638D-470F-8A41-788837182276}</ProjectGuid>
+    <ProjectGuid>{97DA8B67-74DD-4A5F-AB7D-CD817E0E8174}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MachineLearningKit</RootNamespace>
-    <AssemblyName>MachineLearningKit</AssemblyName>
+    <RootNamespace>CollinearSolver</RootNamespace>
+    <AssemblyName>CollinearSolver</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Build\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,13 +26,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Build\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Dnn.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,74 +51,19 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormAbout.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormAbout.Designer.cs">
-      <DependentUpon>FormAbout.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormCollection.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormCollection.Designer.cs">
-      <DependentUpon>FormCollection.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormCoverage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormCoverage.Designer.cs">
-      <DependentUpon>FormCoverage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormCreateNetwork.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormCreateNetwork.designer.cs">
-      <DependentUpon>FormCreateNetwork.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormDebugger.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormDebugger.Designer.cs">
-      <DependentUpon>FormDebugger.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormRenameNetwork.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormRenameNetwork.Designer.cs">
-      <DependentUpon>FormRenameNetwork.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormAbout.resx">
-      <DependentUpon>FormAbout.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormCollection.resx">
-      <DependentUpon>FormCollection.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormCoverage.resx">
-      <DependentUpon>FormCoverage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormCreateNetwork.resx">
-      <DependentUpon>FormCreateNetwork.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormDebugger.resx">
-      <DependentUpon>FormDebugger.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormRenameNetwork.resx">
-      <DependentUpon>FormRenameNetwork.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -137,17 +79,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dnn.ico" />
-    <None Include="Resources\Dnn.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\EntityBox\EntityBox.csproj">
       <Project>{b054bdba-d0a2-4712-bb9f-4368c37be0eb}</Project>
       <Name>EntityBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NeuralNetwork\NeuralNetwork.csproj">
-      <Project>{e443218b-b079-4aa4-830d-3b9561f1d6ec}</Project>
-      <Name>NeuralNetwork</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

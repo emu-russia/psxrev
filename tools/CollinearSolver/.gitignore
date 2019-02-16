@@ -1,0 +1,6 @@
+*.suo
+bin
+Build
+obj
+.vs
+temp

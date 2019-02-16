@@ -22,7 +22,7 @@ namespace System.Windows.Forms
             return "Beacon" + NumBeacons.ToString();
         }
 
-        private Entity AddBeacon(int ScreenX, int ScreenY)
+        private Entity AddBeacon(int ScreenX, int ScreenY, bool update=true)
         {
             Entity item = new Entity();
 
@@ -43,8 +43,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
@@ -52,7 +56,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        public Entity AddVias(EntityType Type, int ScreenX, int ScreenY, Color debugColor)
+        public Entity AddVias(EntityType Type, int ScreenX, int ScreenY, Color debugColor, bool update=true)
         {
             Entity item = new Entity();
 
@@ -95,8 +99,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
@@ -104,7 +112,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        public Entity AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        public Entity AddWire(EntityType Type, int StartX, int StartY, int EndX, int EndY, bool update=true)
         {
             Entity item = new Entity();
 
@@ -138,8 +146,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
@@ -147,7 +159,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        public Entity AddWireOnImage(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        public Entity AddWireOnImage(EntityType Type, int StartX, int StartY, int EndX, int EndY, bool update=true)
         {
             Entity item = new Entity();
 
@@ -181,8 +193,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
@@ -190,7 +206,7 @@ namespace System.Windows.Forms
             return item;
         }
 
-        public Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY)
+        public Entity AddCell(EntityType Type, int StartX, int StartY, int EndX, int EndY, bool update=true)
         {
             Entity item = new Entity();
 
@@ -255,8 +271,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
@@ -268,7 +288,7 @@ namespace System.Windows.Forms
         // Add region
         //
 
-        public Entity AddRegion(List<Point> points, Color color)
+        public Entity AddRegion(List<Point> points, Color color, bool update=true)
         {
             //
             // Fill path (minimum 3 points)
@@ -311,8 +331,12 @@ namespace System.Windows.Forms
             while (DrawInProgress) ;
 
             insertionNode.Children.Add(item);
-            SortEntities();
-            Invalidate();
+
+            if (update)
+            {
+                SortEntities();
+                Invalidate();
+            }
 
             OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             OnEntityAdd?.Invoke(this, item, EventArgs.Empty);
