@@ -70,6 +70,22 @@ namespace System.Windows.Forms
             return point;
         }
 
+        public Point LambdaToImage(PointF imageScroll, PointF origin)
+        {
+            Point dest = new Point();
+            dest.X = (int)((origin.X - imageScroll.X) * Lambda);
+            dest.Y = (int)((origin.Y - imageScroll.Y) * Lambda);
+            return dest;
+        }
+
+        public PointF ImageToLamda(PointF imageScroll, Point origin)
+        {
+            PointF dest = new PointF();
+            dest.X = (float)origin.X / Lambda + imageScroll.X;
+            dest.Y = (float)origin.Y / Lambda + imageScroll.Y;
+            return dest;
+        }
+
         // Detect intersection of various objects
 
         public static bool LineIntersectsRect(PointF p1, PointF p2, RectangleF r)
