@@ -129,6 +129,7 @@ namespace MachineLearningKit
         {
             if ( openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                toolStripStatusLabel8.Text = openFileDialog1.FileName;
                 sourceImage = Image.FromFile(openFileDialog1.FileName);
                 sourceBitmap = new Bitmap(sourceImage);
             }

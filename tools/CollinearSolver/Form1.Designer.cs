@@ -35,14 +35,14 @@
             this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.solveSingleSegmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.solveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.solveSingleSegmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.solveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,28 +72,51 @@
             // loadEntitiesToolStripMenuItem
             // 
             this.loadEntitiesToolStripMenuItem.Name = "loadEntitiesToolStripMenuItem";
-            this.loadEntitiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadEntitiesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.loadEntitiesToolStripMenuItem.Text = "Add entities...";
             this.loadEntitiesToolStripMenuItem.Click += new System.EventHandler(this.loadEntitiesToolStripMenuItem_Click);
             // 
             // saveEntitiesToolStripMenuItem
             // 
             this.saveEntitiesToolStripMenuItem.Name = "saveEntitiesToolStripMenuItem";
-            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.saveEntitiesToolStripMenuItem.Text = "Save entities...";
             this.saveEntitiesToolStripMenuItem.Click += new System.EventHandler(this.saveEntitiesToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.solveSingleSegmentToolStripMenuItem,
+            this.solveAllToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // solveSingleSegmentToolStripMenuItem
+            // 
+            this.solveSingleSegmentToolStripMenuItem.Name = "solveSingleSegmentToolStripMenuItem";
+            this.solveSingleSegmentToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.solveSingleSegmentToolStripMenuItem.Text = "Solve single segment (Space)";
+            this.solveSingleSegmentToolStripMenuItem.Click += new System.EventHandler(this.solveSingleSegmentToolStripMenuItem_Click);
+            // 
+            // solveAllToolStripMenuItem
+            // 
+            this.solveAllToolStripMenuItem.Name = "solveAllToolStripMenuItem";
+            this.solveAllToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.solveAllToolStripMenuItem.Text = "Solve all";
+            this.solveAllToolStripMenuItem.Click += new System.EventHandler(this.solveAllToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -108,6 +131,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // entityBox1
             // 
@@ -203,29 +227,6 @@
             this.saveFileDialog1.DefaultExt = "xml";
             this.saveFileDialog1.Filter = "XML files|*.xml|All files|*.*";
             // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.solveSingleSegmentToolStripMenuItem,
-            this.solveAllToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // solveSingleSegmentToolStripMenuItem
-            // 
-            this.solveSingleSegmentToolStripMenuItem.Name = "solveSingleSegmentToolStripMenuItem";
-            this.solveSingleSegmentToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
-            this.solveSingleSegmentToolStripMenuItem.Text = "Solve single segment (Space)";
-            this.solveSingleSegmentToolStripMenuItem.Click += new System.EventHandler(this.solveSingleSegmentToolStripMenuItem_Click);
-            // 
-            // solveAllToolStripMenuItem
-            // 
-            this.solveAllToolStripMenuItem.Name = "solveAllToolStripMenuItem";
-            this.solveAllToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.solveAllToolStripMenuItem.Text = "Solve all";
-            this.solveAllToolStripMenuItem.Click += new System.EventHandler(this.solveAllToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -233,6 +234,7 @@
             this.ClientSize = new System.Drawing.Size(688, 394);
             this.Controls.Add(this.entityBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";

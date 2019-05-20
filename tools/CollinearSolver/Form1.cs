@@ -12,9 +12,13 @@ namespace CollinearSolver
 {
     public partial class Form1 : Form
     {
+        string savedText;
+
         public Form1()
         {
             InitializeComponent();
+
+            savedText = Text;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -26,6 +30,8 @@ namespace CollinearSolver
         {
             if ( openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                Text = savedText + " - " + openFileDialog1.FileName;
+
                 entityBox1.Unserialize(openFileDialog1.FileName, true);
             }
         }
@@ -206,6 +212,10 @@ namespace CollinearSolver
             }
         }
 
-
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormAbout about = new FormAbout();
+            about.ShowDialog();
+        }
     }
 }
