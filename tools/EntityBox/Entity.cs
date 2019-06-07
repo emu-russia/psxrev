@@ -336,4 +336,35 @@ public class Entity
         return (Type == EntityType.Region);
     }
 
+    public float WireLength()
+    {
+        if (!IsWire())
+            return 0.0F;
+
+        return (float)Math.Sqrt(Math.Pow(LambdaEndX - LambdaX, 2) +
+                                Math.Pow(LambdaEndY - LambdaY, 2));
+    }
+
+    [Category("Entity Properties")]
+    public float WireLengthLambda
+    {
+        get { return WireLength(); }
+        set { }
+    }
+
+    public float Tangent()
+    {
+        if (!IsWire())
+            return float.NaN;
+
+        return (float)(LambdaEndY - LambdaY) / (LambdaEndX - LambdaX + float.Epsilon);
+    }
+
+    [Category("Entity Properties")]
+    public float WireTangent
+    {
+        get { return Tangent(); }
+        set { }
+    }
+
 }

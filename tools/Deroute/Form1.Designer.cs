@@ -153,6 +153,8 @@
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
+            this.removeSmallWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeNotOrthogonalWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -294,40 +296,42 @@
             // selectAllViasesToolStripMenuItem
             // 
             this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
-            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
             this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
             // 
             // selectAllWiresToolStripMenuItem
             // 
             this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
-            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
             this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
             // 
             // selectAllCellsToolStripMenuItem
             // 
             this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
-            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
             this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.routeSingleWireToolStripMenuItem});
+            this.routeSingleWireToolStripMenuItem,
+            this.removeSmallWiresToolStripMenuItem,
+            this.removeNotOrthogonalWiresToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -335,7 +339,7 @@
             // routeSingleWireToolStripMenuItem
             // 
             this.routeSingleWireToolStripMenuItem.Name = "routeSingleWireToolStripMenuItem";
-            this.routeSingleWireToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.routeSingleWireToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.routeSingleWireToolStripMenuItem.Text = "Route single wire";
             this.routeSingleWireToolStripMenuItem.Click += new System.EventHandler(this.routeSingleWireToolStripMenuItem_Click);
             // 
@@ -1366,6 +1370,20 @@
             this.myTreeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterCheck);
             this.myTreeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterSelect);
             // 
+            // removeSmallWiresToolStripMenuItem
+            // 
+            this.removeSmallWiresToolStripMenuItem.Name = "removeSmallWiresToolStripMenuItem";
+            this.removeSmallWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.removeSmallWiresToolStripMenuItem.Text = "Remove small wires";
+            this.removeSmallWiresToolStripMenuItem.Click += new System.EventHandler(this.removeSmallWiresToolStripMenuItem_Click);
+            // 
+            // removeNotOrthogonalWiresToolStripMenuItem
+            // 
+            this.removeNotOrthogonalWiresToolStripMenuItem.Name = "removeNotOrthogonalWiresToolStripMenuItem";
+            this.removeNotOrthogonalWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.removeNotOrthogonalWiresToolStripMenuItem.Text = "Remove not orthogonal wires";
+            this.removeNotOrthogonalWiresToolStripMenuItem.Click += new System.EventHandler(this.removeNotOrthogonalWiresToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1535,6 +1553,8 @@
         private System.Windows.Forms.TabPage tabPage4;
         private MyTreeView myTreeView1;
         private System.Windows.Forms.EntityBox entityBox1;
+        private System.Windows.Forms.ToolStripMenuItem removeSmallWiresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeNotOrthogonalWiresToolStripMenuItem;
     }
 }
 

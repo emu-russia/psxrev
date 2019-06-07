@@ -127,6 +127,7 @@
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "KeyBind";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Key Bindings";
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyBind_KeyUp);
             this.ResumeLayout(false);

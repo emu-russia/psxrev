@@ -743,102 +743,6 @@ namespace DerouteSharp
             entityBox1.ImageOpacity1 = temp;
         }
 
-        private void routeSingleWireToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Entity vias1 = null;
-            Entity vias2 = null;
-            List<Entity> shapes = new List<Entity>();
-
-            //
-            // Get selected vias
-            //
-
-            List<Entity> selected = entityBox1.GetSelected();
-
-            foreach ( Entity entity in selected )
-            {
-                if (entity.IsVias() )
-                {
-                    if (vias1 == null)
-                    {
-                        vias1 = entity;
-                        continue;
-                    }
-
-                    if (vias2 == null)
-                    {
-                        vias2 = entity;
-                        continue;
-                    }
-
-                    if ( vias1 != null && vias2 != null )
-                    {
-                        break;
-                    }
-                }
-            }
-
-            //
-            // Check 
-            //
-
-            if (vias1 == null || vias2 == null)
-            {
-                MessageBox.Show("Two selected vias required", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                return;
-            }
-
-            //
-            // Get shapes
-            //
-
-            foreach (Entity entity in entityBox1.GetEntities() )
-            {
-                if (entity.IsCell() || entity.IsRegion())
-                {
-                    shapes.Add(entity);
-                }
-            }
-
-            //
-            // Add wire corners as artifical cells
-            //
-
-            foreach (Entity entity in entityBox1.GetEntities())
-            {
-                if (entity.IsWire())
-                {
-                    Entity artifical1 = new Entity();
-
-                    artifical1.Type = EntityType.CellOther;
-                    artifical1.LambdaX = entity.LambdaX;
-                    artifical1.LambdaY = entity.LambdaY;
-                    artifical1.LambdaWidth = 1;
-                    artifical1.LambdaHeight = 1;
-
-                    Entity artifical2 = new Entity();
-
-                    artifical2.Type = EntityType.CellOther;
-                    artifical2.LambdaX = entity.LambdaEndX;
-                    artifical2.LambdaY = entity.LambdaEndY;
-                    artifical2.LambdaWidth = 1;
-                    artifical2.LambdaHeight = 1;
-
-                    shapes.Add(artifical1);
-                    shapes.Add(artifical2);
-                }
-            }
-
-            Cursor = Cursors.WaitCursor;
-
-            List<Entity> wires = entityBox1.Route(vias1, vias2, shapes, true);
-
-            Cursor = Cursors.Default;
-
-            vias1.Selected = false;
-            vias2.Selected = false;
-        }
 
         #region "Hierarchy"
 
@@ -980,8 +884,143 @@ namespace DerouteSharp
             return false;
         }
 
+
         #endregion
 
+
+        #region "Tools"
+
+        private void routeSingleWireToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Entity vias1 = null;
+            Entity vias2 = null;
+            List<Entity> shapes = new List<Entity>();
+
+            //
+            // Get selected vias
+            //
+
+            List<Entity> selected = entityBox1.GetSelected();
+
+            foreach (Entity entity in selected)
+            {
+                if (entity.IsVias())
+                {
+                    if (vias1 == null)
+                    {
+                        vias1 = entity;
+                        continue;
+                    }
+
+                    if (vias2 == null)
+                    {
+                        vias2 = entity;
+                        continue;
+                    }
+
+                    if (vias1 != null && vias2 != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //
+            // Check 
+            //
+
+            if (vias1 == null || vias2 == null)
+            {
+                MessageBox.Show("Two selected vias required", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            //
+            // Get shapes
+            //
+
+            foreach (Entity entity in entityBox1.GetEntities())
+            {
+                if (entity.IsCell() || entity.IsRegion())
+                {
+                    shapes.Add(entity);
+                }
+            }
+
+            //
+            // Add wire corners as artifical cells
+            //
+
+            foreach (Entity entity in entityBox1.GetEntities())
+            {
+                if (entity.IsWire())
+                {
+                    Entity artifical1 = new Entity();
+
+                    artifical1.Type = EntityType.CellOther;
+                    artifical1.LambdaX = entity.LambdaX;
+                    artifical1.LambdaY = entity.LambdaY;
+                    artifical1.LambdaWidth = 1;
+                    artifical1.LambdaHeight = 1;
+
+                    Entity artifical2 = new Entity();
+
+                    artifical2.Type = EntityType.CellOther;
+                    artifical2.LambdaX = entity.LambdaEndX;
+                    artifical2.LambdaY = entity.LambdaEndY;
+                    artifical2.LambdaWidth = 1;
+                    artifical2.LambdaHeight = 1;
+
+                    shapes.Add(artifical1);
+                    shapes.Add(artifical2);
+                }
+            }
+
+            Cursor = Cursors.WaitCursor;
+
+            List<Entity> wires = entityBox1.Route(vias1, vias2, shapes, true);
+
+            Cursor = Cursors.Default;
+
+            vias1.Selected = false;
+            vias2.Selected = false;
+        }
+
+        private void removeSmallWiresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int wireCount = entityBox1.GetWireCount();
+
+            if ( wireCount == 0)
+            {
+                MessageBox.Show("No wires!");
+                return;
+            }
+
+            FormEnterValue enterValue = new FormEnterValue("Remove wires smaller than (lambda):");
+
+            enterValue.FormClosed += EnterRemoveSize_FormClosed;
+            enterValue.ShowDialog();
+        }
+
+        private void EnterRemoveSize_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            FormEnterValue enterValue = (FormEnterValue)sender;
+
+            if (enterValue.DialogResult == DialogResult.OK)
+            {
+                float smallerThanSize = (float)enterValue.Value;
+
+                entityBox1.RemoveSmallWires(smallerThanSize);
+            }
+        }
+
+        private void removeNotOrthogonalWiresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.RemoveNonOrthogonalWires();
+        }
+
+        #endregion
 
     }       // Form1
 }

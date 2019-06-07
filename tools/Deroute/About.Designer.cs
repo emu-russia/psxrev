@@ -120,6 +120,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "About";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.About_KeyUp);
             this.ResumeLayout(false);

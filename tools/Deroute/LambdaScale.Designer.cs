@@ -181,6 +181,7 @@
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "LambdaScale";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Lambda Scale";
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LambdaScale_KeyUp);
             this.ResumeLayout(false);
