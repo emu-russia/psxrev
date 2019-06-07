@@ -32,20 +32,6 @@ namespace System.Windows.Forms
             return wire;
         }
 
-        private float WireTangentInclination(Entity wire)
-        {
-            PointF start = new PointF(wire.LambdaX, wire.LambdaY);
-            PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
-
-            //
-            // Calculate tangent inclination 
-            //
-
-            float a = end.Y - start.Y;
-            float b = end.X - start.X;
-            return (float)Math.Atan(a / b);
-        }
-
         public void WireExtendHead()
         {
             Entity wire = FirstSelectedWire();
@@ -57,7 +43,7 @@ namespace System.Windows.Forms
             // Extend
             //
 
-            float alpha = WireTangentInclination(wire);
+            float alpha = (float)Math.Atan(wire.Tangent());
 
             if (wire.LambdaEndX < wire.LambdaX)
             {
@@ -69,6 +55,8 @@ namespace System.Windows.Forms
                 wire.LambdaX -= (float)Math.Cos(alpha);
                 wire.LambdaY -= (float)Math.Sin(alpha);
             }
+
+            Invalidate();
         }
 
         public void WireExtendTail()
@@ -82,7 +70,7 @@ namespace System.Windows.Forms
             // Extend
             //
 
-            float alpha = WireTangentInclination(wire);
+            float alpha = (float)Math.Atan(wire.Tangent());
 
             if (wire.LambdaEndX < wire.LambdaX)
             {
@@ -94,6 +82,8 @@ namespace System.Windows.Forms
                 wire.LambdaEndX += (float)Math.Cos(alpha);
                 wire.LambdaEndY += (float)Math.Sin(alpha);
             }
+
+            Invalidate();
         }
 
         public void WireShortenHead()
@@ -107,7 +97,7 @@ namespace System.Windows.Forms
             // Extend
             //
 
-            float alpha = WireTangentInclination(wire);
+            float alpha = (float)Math.Atan(wire.Tangent());
 
             if (wire.LambdaEndX < wire.LambdaX)
             {
@@ -119,6 +109,8 @@ namespace System.Windows.Forms
                 wire.LambdaX += (float)Math.Cos(alpha);
                 wire.LambdaY += (float)Math.Sin(alpha);
             }
+
+            Invalidate();
         }
 
         public void WireShortenTail()
@@ -132,7 +124,7 @@ namespace System.Windows.Forms
             // Extend
             //
 
-            float alpha = WireTangentInclination(wire);
+            float alpha = (float)Math.Atan(wire.Tangent());
 
             if (wire.LambdaEndX < wire.LambdaX)
             {
@@ -144,6 +136,8 @@ namespace System.Windows.Forms
                 wire.LambdaEndX -= (float)Math.Cos(alpha);
                 wire.LambdaEndY -= (float)Math.Sin(alpha);
             }
+
+            Invalidate();
         }
 
     }

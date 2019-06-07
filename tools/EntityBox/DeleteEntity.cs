@@ -20,15 +20,13 @@ namespace System.Windows.Forms
         {
             foreach (Entity entity in GetEntities())
             {
-                if (OnEntityRemove != null)
-                    OnEntityRemove(this, entity, EventArgs.Empty);
+                OnEntityRemove?.Invoke(this, entity, EventArgs.Empty);
             }
 
             root.Children.Clear();
             Invalidate();
 
-            if (OnEntityCountChanged != null)
-                OnEntityCountChanged(this, EventArgs.Empty);
+            OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
 
             SetDestinationNode(root);
         }
@@ -49,8 +47,7 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in pendingDelete)
             {
-                if (OnEntityRemove != null)
-                    OnEntityRemove(this, entity, EventArgs.Empty);
+                OnEntityRemove?.Invoke(this, entity, EventArgs.Empty);
 
                 entity.parent.Children.Remove(entity);
             }
@@ -59,8 +56,7 @@ namespace System.Windows.Forms
             {
                 Invalidate();
 
-                if (OnEntityCountChanged != null)
-                    OnEntityCountChanged(this, EventArgs.Empty);
+                OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
             }
 
             if (entityGrid != null)
@@ -70,22 +66,15 @@ namespace System.Windows.Forms
         }
 
 
-        private void DeleteGarbage()
+        public void RemoveSmallWires (float smallerThanLambda)
         {
-            //
-            // Wipe small wires (< 1 lambda)
-            //
-
             List<Entity> pendingDelete = new List<Entity>();
 
             foreach (Entity entity in GetEntities())
             {
                 if (entity.IsWire())
                 {
-                    float len = (float)Math.Sqrt(Math.Pow(entity.LambdaEndX - entity.LambdaX, 2) +
-                                                   Math.Pow(entity.LambdaEndY - entity.LambdaY, 2));
-
-                    if (len < 1.0F)
+                    if (entity.WireLength() < smallerThanLambda)
                         pendingDelete.Add(entity);
                 }
             }
@@ -94,13 +83,62 @@ namespace System.Windows.Forms
             {
                 foreach (Entity entity in pendingDelete)
                 {
-                    entity.parent.Children.Remove(entity);
+                    RemoveEntity(entity);
                 }
 
                 SetDestinationNode(root);
+                Invalidate();
             }
         }
 
+        private void DeleteGarbage()
+        {
+            //
+            // Wipe small wires (< 1 lambda)
+            //
+
+            RemoveSmallWires(1.0F);
+        }
+
+        public void RemoveNonOrthogonalWires ()
+        {
+            List<Entity> pendingDelete = new List<Entity>();
+
+            foreach (Entity entity in GetEntities())
+            {
+                if (entity.IsWire())
+                {
+                    float tangent = Math.Abs(entity.Tangent());
+
+                    if (tangent < 0.015F)
+                        continue;
+                    if (tangent >= 100)
+                        continue;
+
+                    pendingDelete.Add(entity);
+                }
+            }
+
+            if (pendingDelete.Count > 0)
+            {
+                foreach (Entity entity in pendingDelete)
+                {
+                    RemoveEntity(entity);
+                }
+
+                SetDestinationNode(root);
+                Invalidate();
+            }
+        }
+
+        public void RemoveEntity(Entity entity)
+        {
+            entity.parent.Children.Remove(entity);
+
+            OnEntityRemove?.Invoke(this, entity, EventArgs.Empty);
+
+            OnEntityCountChanged?.Invoke(this, EventArgs.Empty);
+        }
 
     }
 }
