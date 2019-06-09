@@ -51,6 +51,8 @@
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.routeSingleWireToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeSmallWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeNotOrthogonalWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyCtrlCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteCtrlVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -149,12 +151,13 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel15 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelTimeSpent = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
-            this.removeSmallWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeNotOrthogonalWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -296,33 +299,33 @@
             // selectAllViasesToolStripMenuItem
             // 
             this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
-            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
             this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
             // 
             // selectAllWiresToolStripMenuItem
             // 
             this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
-            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
             this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
             // 
             // selectAllCellsToolStripMenuItem
             // 
             this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
-            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
             this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
@@ -342,6 +345,20 @@
             this.routeSingleWireToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.routeSingleWireToolStripMenuItem.Text = "Route single wire";
             this.routeSingleWireToolStripMenuItem.Click += new System.EventHandler(this.routeSingleWireToolStripMenuItem_Click);
+            // 
+            // removeSmallWiresToolStripMenuItem
+            // 
+            this.removeSmallWiresToolStripMenuItem.Name = "removeSmallWiresToolStripMenuItem";
+            this.removeSmallWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.removeSmallWiresToolStripMenuItem.Text = "Remove small wires";
+            this.removeSmallWiresToolStripMenuItem.Click += new System.EventHandler(this.removeSmallWiresToolStripMenuItem_Click);
+            // 
+            // removeNotOrthogonalWiresToolStripMenuItem
+            // 
+            this.removeNotOrthogonalWiresToolStripMenuItem.Name = "removeNotOrthogonalWiresToolStripMenuItem";
+            this.removeNotOrthogonalWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.removeNotOrthogonalWiresToolStripMenuItem.Text = "Remove not orthogonal wires";
+            this.removeNotOrthogonalWiresToolStripMenuItem.Click += new System.EventHandler(this.removeNotOrthogonalWiresToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -545,6 +562,7 @@
             this.entityBox1.ZoomImage0 = 100;
             this.entityBox1.ZoomImage1 = 100;
             this.entityBox1.ZoomImage2 = 100;
+            this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
             // 
             // button7
             // 
@@ -1223,7 +1241,9 @@
             this.toolStripStatusLabel11,
             this.toolStripStatusLabel12,
             this.toolStripStatusLabel13,
-            this.toolStripStatusLabel14});
+            this.toolStripStatusLabel14,
+            this.toolStripStatusLabel15,
+            this.toolStripStatusLabelTimeSpent});
             this.statusStrip1.Location = new System.Drawing.Point(0, 644);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1218, 24);
@@ -1316,9 +1336,22 @@
             // 
             // toolStripStatusLabel14
             // 
+            this.toolStripStatusLabel14.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.toolStripStatusLabel14.Name = "toolStripStatusLabel14";
-            this.toolStripStatusLabel14.Size = new System.Drawing.Size(36, 19);
+            this.toolStripStatusLabel14.Size = new System.Drawing.Size(40, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
+            // 
+            // toolStripStatusLabel15
+            // 
+            this.toolStripStatusLabel15.Name = "toolStripStatusLabel15";
+            this.toolStripStatusLabel15.Size = new System.Drawing.Size(69, 19);
+            this.toolStripStatusLabel15.Text = "Time spent:";
+            // 
+            // toolStripStatusLabelTimeSpent
+            // 
+            this.toolStripStatusLabelTimeSpent.Name = "toolStripStatusLabelTimeSpent";
+            this.toolStripStatusLabelTimeSpent.Size = new System.Drawing.Size(49, 19);
+            this.toolStripStatusLabelTimeSpent.Text = "00:00:00";
             // 
             // splitContainer3
             // 
@@ -1370,19 +1403,9 @@
             this.myTreeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterCheck);
             this.myTreeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterSelect);
             // 
-            // removeSmallWiresToolStripMenuItem
+            // backgroundWorkerTimeSpent
             // 
-            this.removeSmallWiresToolStripMenuItem.Name = "removeSmallWiresToolStripMenuItem";
-            this.removeSmallWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
-            this.removeSmallWiresToolStripMenuItem.Text = "Remove small wires";
-            this.removeSmallWiresToolStripMenuItem.Click += new System.EventHandler(this.removeSmallWiresToolStripMenuItem_Click);
-            // 
-            // removeNotOrthogonalWiresToolStripMenuItem
-            // 
-            this.removeNotOrthogonalWiresToolStripMenuItem.Name = "removeNotOrthogonalWiresToolStripMenuItem";
-            this.removeNotOrthogonalWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
-            this.removeNotOrthogonalWiresToolStripMenuItem.Text = "Remove not orthogonal wires";
-            this.removeNotOrthogonalWiresToolStripMenuItem.Click += new System.EventHandler(this.removeNotOrthogonalWiresToolStripMenuItem_Click);
+            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
             // 
             // Form1
             // 
@@ -1555,6 +1578,9 @@
         private System.Windows.Forms.EntityBox entityBox1;
         private System.Windows.Forms.ToolStripMenuItem removeSmallWiresToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeNotOrthogonalWiresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel15;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelTimeSpent;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerTimeSpent;
     }
 }
 
