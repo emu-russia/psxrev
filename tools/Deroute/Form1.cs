@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using System.Runtime.InteropServices;
+using System.Threading;
 
 //
 // Nothing to comment here. Everything is self-explanatory (GUI stubs)
@@ -21,6 +22,8 @@ namespace DerouteSharp
         [DllImport("kernel32")]
         static extern bool AllocConsole();
 #endif
+
+        private TimeSpentStats timeStats = new TimeSpentStats();
 
         public Form1()
         {
@@ -43,6 +46,11 @@ namespace DerouteSharp
             entityBox1.OnDestinationNodeChanged += EntityBox1_OnDestinationNodeChanged;
 
             entityBox1.BeaconImage = Properties.Resources.beacon_entity;
+
+            timeStats.normalFont = Font;
+            timeStats.penaltyFont = new Font(Font, FontStyle.Bold);
+
+            backgroundWorkerTimeSpent.RunWorkerAsync();
 
 #if DEBUG && (!__MonoCS__)
             AllocConsole ();
@@ -743,6 +751,50 @@ namespace DerouteSharp
             entityBox1.ImageOpacity1 = temp;
         }
 
+        /// <summary>
+        /// Worker wich updates time spent info
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorkerTimeSpent_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                Thread.Sleep(1000);
+
+                var secondsFromLastActiviy = (DateTime.Now - timeStats.lastActivityTime).TotalSeconds;
+
+                if (secondsFromLastActiviy < timeStats.activityPenalty)
+                {
+                    timeStats.seconds++;
+
+                    TimeSpan span = TimeSpan.FromSeconds(timeStats.seconds);
+                    string timeSpentStr = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                        span.Hours,
+                        span.Minutes,
+                        span.Seconds);
+
+                    toolStripStatusLabelTimeSpent.Font = timeStats.normalFont;
+                    toolStripStatusLabelTimeSpent.Text = timeSpentStr;
+                }
+                else
+                {
+                    toolStripStatusLabelTimeSpent.Font = timeStats.penaltyFont;
+                    toolStripStatusLabelTimeSpent.Text = timeStats.penaltyText;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update last activity time
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void entityBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            timeStats.lastActivityTime = DateTime.Now;
+        }
+
 
         #region "Hierarchy"
 
@@ -1020,7 +1072,29 @@ namespace DerouteSharp
             entityBox1.RemoveNonOrthogonalWires();
         }
 
+
+
         #endregion
 
+
     }       // Form1
+
+
+    internal class TimeSpentStats
+    {
+        public Font normalFont;
+        public Font penaltyFont;
+
+        public string penaltyText = "Go work lazy bitch!";
+        public int activityPenalty = 10;
+        public int seconds = 0;
+
+        /// <summary>
+        /// Activiy updates when user: clicks mouse
+        /// </summary>
+
+        public DateTime lastActivityTime = DateTime.Now;
+    }
+
+
 }
