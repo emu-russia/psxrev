@@ -562,34 +562,6 @@ namespace DerouteSharp
             SetLayerOrigin();
         }
 
-        private void loadWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DialogResult result = openFileDialog2.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                Cursor = Cursors.WaitCursor;
-
-                entityBox1.LoadWorkspace(openFileDialog2.FileName);
-
-                Cursor = Cursors.Default;
-            }
-        }
-
-        private void saveWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DialogResult result = saveFileDialog2.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                Cursor = Cursors.WaitCursor;
-
-                entityBox1.SaveWorkspace(saveFileDialog2.FileName);
-
-                Cursor = Cursors.Default;
-            }
-        }
-
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
             entityBox1.DrawWireBetweenSelectedViases();

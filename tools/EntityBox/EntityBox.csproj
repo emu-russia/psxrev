@@ -104,9 +104,6 @@
     <Compile Include="WireExtend.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Workspace.cs">
-      <SubType>Component</SubType>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
