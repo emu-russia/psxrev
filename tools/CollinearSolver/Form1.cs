@@ -40,6 +40,8 @@ namespace CollinearSolver
         {
             if ( saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                Text = savedText + " - " + saveFileDialog1.FileName;
+
                 entityBox1.Serialize(saveFileDialog1.FileName);
             }
         }

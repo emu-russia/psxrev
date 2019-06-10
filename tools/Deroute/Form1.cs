@@ -23,6 +23,7 @@ namespace DerouteSharp
         static extern bool AllocConsole();
 #endif
 
+        private string savedText;
         private TimeSpentStats timeStats = new TimeSpentStats();
 
         public Form1()
@@ -51,6 +52,8 @@ namespace DerouteSharp
             timeStats.penaltyFont = new Font(Font, FontStyle.Bold);
 
             backgroundWorkerTimeSpent.RunWorkerAsync();
+
+            savedText = Text;
 
 #if DEBUG && (!__MonoCS__)
             AllocConsole ();
@@ -172,6 +175,8 @@ namespace DerouteSharp
 
             if (result == DialogResult.OK)
             {
+                Text = savedText + " - " + openFileDialog2.FileName;
+
                 entityBox1.Unserialize(openFileDialog2.FileName, true);
             }
         }
@@ -182,6 +187,8 @@ namespace DerouteSharp
 
             if (result == DialogResult.OK)
             {
+                Text = savedText + " - " + saveFileDialog2.FileName;
+
                 entityBox1.Serialize(saveFileDialog2.FileName);
             }
         }
