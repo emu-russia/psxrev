@@ -38,9 +38,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.loadWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -185,9 +182,9 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.selectionToolStripMenuItem,
             this.toolsToolStripMenuItem,
-            this.editToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -204,9 +201,6 @@
             this.toolStripSeparator1,
             this.loadEntitiesToolStripMenuItem,
             this.saveEntitiesToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.loadWorkspaceToolStripMenuItem,
-            this.saveWorkspaceToolStripMenuItem,
             this.toolStripSeparator4,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -253,25 +247,6 @@
             this.saveEntitiesToolStripMenuItem.Text = "Save entities...";
             this.saveEntitiesToolStripMenuItem.Click += new System.EventHandler(this.saveEntitiesToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
-            // 
-            // loadWorkspaceToolStripMenuItem
-            // 
-            this.loadWorkspaceToolStripMenuItem.Name = "loadWorkspaceToolStripMenuItem";
-            this.loadWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.loadWorkspaceToolStripMenuItem.Text = "Load Workspace...";
-            this.loadWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.loadWorkspaceToolStripMenuItem_Click);
-            // 
-            // saveWorkspaceToolStripMenuItem
-            // 
-            this.saveWorkspaceToolStripMenuItem.Name = "saveWorkspaceToolStripMenuItem";
-            this.saveWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.saveWorkspaceToolStripMenuItem.Text = "Save Workspace...";
-            this.saveWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.saveWorkspaceToolStripMenuItem_Click);
-            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -299,33 +274,33 @@
             // selectAllViasesToolStripMenuItem
             // 
             this.selectAllViasesToolStripMenuItem.Name = "selectAllViasesToolStripMenuItem";
-            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllViasesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllViasesToolStripMenuItem.Text = "Select all viases";
             this.selectAllViasesToolStripMenuItem.Click += new System.EventHandler(this.selectAllViasesToolStripMenuItem_Click);
             // 
             // selectAllWiresToolStripMenuItem
             // 
             this.selectAllWiresToolStripMenuItem.Name = "selectAllWiresToolStripMenuItem";
-            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllWiresToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllWiresToolStripMenuItem.Text = "Select all wires";
             this.selectAllWiresToolStripMenuItem.Click += new System.EventHandler(this.selectAllWiresToolStripMenuItem_Click);
             // 
             // selectAllCellsToolStripMenuItem
             // 
             this.selectAllCellsToolStripMenuItem.Name = "selectAllCellsToolStripMenuItem";
-            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllCellsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllCellsToolStripMenuItem.Text = "Select all cells";
             this.selectAllCellsToolStripMenuItem.Click += new System.EventHandler(this.selectAllCellsToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(163, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.selectAllToolStripMenuItem.Text = "Select all (Ctrl+A)";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
@@ -1466,7 +1441,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem loadEntitiesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveEntitiesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolStripMenuItem saveSceneAsImageToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
@@ -1516,8 +1490,6 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ToolStripMenuItem setLayerScrollToOriginToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadWorkspaceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
