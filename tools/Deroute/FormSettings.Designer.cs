@@ -42,12 +42,22 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.propertyGridColors = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridPriority = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridOpacity = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridSize = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridShape = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridGlobal = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,6 +99,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.propertyGridGlobal);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -110,6 +121,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.propertyGridPriority);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(825, 415);
@@ -119,6 +131,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.propertyGridOpacity);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(825, 415);
@@ -128,6 +141,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.propertyGridSize);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(825, 415);
@@ -137,6 +151,7 @@
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.propertyGridShape);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(825, 415);
@@ -192,6 +207,46 @@
             this.propertyGridColors.Size = new System.Drawing.Size(819, 409);
             this.propertyGridColors.TabIndex = 0;
             // 
+            // propertyGridPriority
+            // 
+            this.propertyGridPriority.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridPriority.Location = new System.Drawing.Point(0, 0);
+            this.propertyGridPriority.Name = "propertyGridPriority";
+            this.propertyGridPriority.Size = new System.Drawing.Size(825, 415);
+            this.propertyGridPriority.TabIndex = 0;
+            // 
+            // propertyGridOpacity
+            // 
+            this.propertyGridOpacity.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridOpacity.Location = new System.Drawing.Point(0, 0);
+            this.propertyGridOpacity.Name = "propertyGridOpacity";
+            this.propertyGridOpacity.Size = new System.Drawing.Size(825, 415);
+            this.propertyGridOpacity.TabIndex = 0;
+            // 
+            // propertyGridSize
+            // 
+            this.propertyGridSize.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridSize.Location = new System.Drawing.Point(0, 0);
+            this.propertyGridSize.Name = "propertyGridSize";
+            this.propertyGridSize.Size = new System.Drawing.Size(825, 415);
+            this.propertyGridSize.TabIndex = 0;
+            // 
+            // propertyGridShape
+            // 
+            this.propertyGridShape.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridShape.Location = new System.Drawing.Point(0, 0);
+            this.propertyGridShape.Name = "propertyGridShape";
+            this.propertyGridShape.Size = new System.Drawing.Size(825, 415);
+            this.propertyGridShape.TabIndex = 0;
+            // 
+            // propertyGridGlobal
+            // 
+            this.propertyGridGlobal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridGlobal.Location = new System.Drawing.Point(3, 3);
+            this.propertyGridGlobal.Name = "propertyGridGlobal";
+            this.propertyGridGlobal.Size = new System.Drawing.Size(819, 409);
+            this.propertyGridGlobal.TabIndex = 0;
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -209,7 +264,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
             this.tabPage7.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -230,5 +290,10 @@
         private System.Windows.Forms.TabPage tabPage7;
         private System.Windows.Forms.PropertyGrid propertyGridEntityBox;
         private System.Windows.Forms.PropertyGrid propertyGridColors;
+        private System.Windows.Forms.PropertyGrid propertyGridPriority;
+        private System.Windows.Forms.PropertyGrid propertyGridGlobal;
+        private System.Windows.Forms.PropertyGrid propertyGridOpacity;
+        private System.Windows.Forms.PropertyGrid propertyGridSize;
+        private System.Windows.Forms.PropertyGrid propertyGridShape;
     }
 }
