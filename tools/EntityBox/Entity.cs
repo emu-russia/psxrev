@@ -46,7 +46,7 @@ public enum ViasShape
 
 public enum TextAlignment
 {
-    GlobalSettings,
+    GlobalSettings = 0,
     Top,
     TopLeft,
     TopRight,

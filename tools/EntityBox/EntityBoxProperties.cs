@@ -172,10 +172,6 @@ namespace System.Windows.Forms
             set
             {
                 _lambda = value;
-
-                ViasBaseSize = Math.Max(1, (int)Lambda - 1);
-                WireBaseSize = (int)Lambda;
-
                 Invalidate();
             }
         }
@@ -477,8 +473,8 @@ namespace System.Windows.Forms
         private void DefaultEntityAppearance()
         {
             _viasShape = ViasShape.Round;
-            _viasBaseSize = Math.Max(1, (int)Lambda - 1);
-            _wireBaseSize = (int)Lambda;
+            _viasBaseSize = 4;
+            _wireBaseSize = 5;
             _cellTextAlignment = TextAlignment.TopLeft;
             _viasTextAlignment = TextAlignment.Top;
             _wireTextAlignment = TextAlignment.TopLeft;
