@@ -383,10 +383,62 @@ namespace DerouteSharp
             color.ViasFloatingColor = settings.ViasFloatingColor;
             color.ViasPowerColor = settings.ViasPowerColor;
             color.ViasGroundColor = settings.ViasGroundColor;
-
-            /// ...
+            color.WireInterconnectColor = settings.WireInterconnectColor;
+            color.WirePowerColor = settings.WirePowerColor;
+            color.WireGroundColor = settings.WireGroundColor;
+            color.CellNotColor = settings.CellNotColor;
+            color.CellBufferColor = settings.CellBufferColor;
+            color.CellMuxColor = settings.CellMuxColor;
+            color.CellLogicColor = settings.CellLogicColor;
+            color.CellAdderColor = settings.CellAdderColor;
+            color.CellBusSuppColor = settings.CellBusSuppColor;
+            color.CellFlipFlopColor = settings.CellFlipFlopColor;
+            color.CellLatchColor = settings.CellLatchColor;
+            color.CellOtherColor = settings.CellOtherColor;
+            color.UnitRegfileColor = settings.UnitRegfileColor;
+            color.UnitMemoryColor = settings.UnitMemoryColor;
+            color.UnitCustomColor = settings.UnitCustomColor;
+            color.SelectionColor = settings.SelectionColor;
+            color.ViasOverrideColor = settings.ViasOverrideColor;
+            color.WireOverrideColor = settings.WireOverrideColor;
+            color.CellOverrideColor = settings.CellOverrideColor;
+            color.RegionOverrideColor = settings.RegionOverrideColor;
 
             color.Save();
+
+            /// Load priority settings
+            /// 
+
+            PrioritySettings priority = new PrioritySettings(entityBox);
+
+            priority.ViasPriority = settings.ViasPriority;
+            priority.WirePriority = settings.WirePriority;
+            priority.CellPriority = settings.CellPriority;
+            priority.BeaconPriority = settings.BeaconPriority;
+            priority.RegionPriority = settings.RegionPriority;
+            priority.AutoPriority = settings.AutoPriority;
+
+            priority.Save();
+
+            /// Load opacity settings
+            /// 
+
+            OpacitySettings opacity = new OpacitySettings(entityBox);
+
+            opacity.ViasOpacity = settings.ViasOpacity;
+            opacity.WireOpacity = settings.WireOpacity;
+            opacity.CellOpacity = settings.CellOpacity;
+
+            opacity.Save();
+
+            /// Load shape settings
+            /// 
+
+            ShapeSettings shape = new ShapeSettings(entityBox);
+
+            shape.ViasShape = (ViasShape)settings.ViasShape;
+
+            shape.Save();
 
             entityBox.Invalidate();
         }
@@ -427,8 +479,54 @@ namespace DerouteSharp
             settings.ViasFloatingColor = color.ViasFloatingColor;
             settings.ViasPowerColor = color.ViasPowerColor;
             settings.ViasGroundColor = color.ViasGroundColor;
+            settings.WireInterconnectColor = color.WireInterconnectColor;
+            settings.WirePowerColor = color.WirePowerColor;
+            settings.WireGroundColor = color.WireGroundColor;
+            settings.CellNotColor = color.CellNotColor;
+            settings.CellBufferColor = color.CellBufferColor;
+            settings.CellMuxColor = color.CellMuxColor;
+            settings.CellLogicColor = color.CellLogicColor;
+            settings.CellAdderColor = color.CellAdderColor;
+            settings.CellBusSuppColor = color.CellBusSuppColor;
+            settings.CellFlipFlopColor = color.CellFlipFlopColor;
+            settings.CellLatchColor = color.CellLatchColor;
+            settings.CellOtherColor = color.CellOtherColor;
+            settings.UnitRegfileColor = color.UnitRegfileColor;
+            settings.UnitMemoryColor = color.UnitMemoryColor;
+            settings.UnitCustomColor = color.UnitCustomColor;
+            settings.SelectionColor = color.SelectionColor;
+            settings.ViasOverrideColor = color.ViasOverrideColor;
+            settings.WireOverrideColor = color.WireOverrideColor;
+            settings.CellOverrideColor = color.CellOverrideColor;
+            settings.RegionOverrideColor = color.RegionOverrideColor;
 
-            /// ...
+            /// Save priority settings
+            /// 
+
+            PrioritySettings priority = new PrioritySettings(entityBox);
+
+            settings.ViasPriority = priority.ViasPriority;
+            settings.WirePriority = priority.WirePriority;
+            settings.CellPriority = priority.CellPriority;
+            settings.BeaconPriority = priority.BeaconPriority;
+            settings.RegionPriority = priority.RegionPriority;
+            settings.AutoPriority = priority.AutoPriority;
+
+            /// Save opacity settings
+            /// 
+
+            OpacitySettings opacity = new OpacitySettings(entityBox);
+
+            settings.ViasOpacity = opacity.ViasOpacity;
+            settings.WireOpacity = opacity.WireOpacity;
+            settings.CellOpacity = opacity.CellOpacity;
+
+            /// Save shape settings
+            /// 
+
+            ShapeSettings shape = new ShapeSettings(entityBox);
+
+            settings.ViasShape = (int)shape.ViasShape;
 
             settings.Save();
         }
