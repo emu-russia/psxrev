@@ -55,6 +55,8 @@ namespace DerouteSharp
 
             savedText = Text;
 
+            FormSettings.LoadSettings(entityBox1);
+
 #if DEBUG && (!__MonoCS__)
             AllocConsole ();
 #endif

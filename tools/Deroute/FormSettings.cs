@@ -19,9 +19,13 @@ namespace DerouteSharp
         private SizeSettings sizeSettings;
         private ShapeSettings shapeSettings;
 
+        private EntityBox savedEntityBox;
+
         public FormSettings(EntityBox entityBox)
         {
             InitializeComponent();
+
+            savedEntityBox = entityBox;
 
             propertyGridEntityBox.SelectedObject = entityBox;
 
@@ -62,6 +66,8 @@ namespace DerouteSharp
             sizeSettings.Save();
             shapeSettings.Save();
 
+            SaveSettings(savedEntityBox);
+
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -86,7 +92,6 @@ namespace DerouteSharp
             public bool LockZoom2 { get; set; }
             public bool HideGrid { get; set; }
             public bool HideLambdaMetrics { get; set; }
-
             public TextAlignment CellTextAlignment { get; set; }
             public TextAlignment ViasTextAlignment { get; set; }
             public TextAlignment WireTextAlignment { get; set; }
@@ -337,6 +342,95 @@ namespace DerouteSharp
             {
                 savedEntityBox.ViasShape = ViasShape;
             }
+        }
+
+
+        public static void LoadSettings (EntityBox entityBox)
+        {
+            Properties.Settings settings = Properties.Settings.Default;
+
+            /// Load global settings
+
+            GlobalSettings global = new GlobalSettings(entityBox);
+
+            global.SelectEntitiesAfterAdd = settings.SelectEntitiesAfterAdd;
+            global.Grayscale = settings.Grayscale;
+            global.Lambda = settings.Lambda;
+            global.LockScroll0 = settings.LockScroll0;
+            global.LockScroll1 = settings.LockScroll1;
+            global.LockScroll2 = settings.LockScroll2;
+            global.LockZoom0 = settings.LockZoom0;
+            global.LockZoom1 = settings.LockZoom1;
+            global.LockZoom2 = settings.LockZoom2;
+            global.HideGrid = settings.HideGrid;
+            global.HideLambdaMetrics = settings.HideLambdaMetrics;
+            global.CellTextAlignment = (TextAlignment)settings.CellTextAlignment;
+            global.ViasTextAlignment = (TextAlignment)settings.ViasTextAlignment;
+            global.WireTextAlignment = (TextAlignment)settings.WireTextAlignment;
+
+            global.Save();
+
+            /// Load color settings
+            /// 
+
+            ColorSettings color = new ColorSettings(entityBox);
+
+            color.SelectionBoxColor = settings.SelectionBoxColor;
+            color.ViasInputColor = settings.ViasInputColor;
+            color.ViasOutputColor = settings.ViasOutputColor;
+            color.ViasInoutColor = settings.ViasInoutColor;
+            color.ViasConnectColor = settings.ViasConnectColor;
+            color.ViasFloatingColor = settings.ViasFloatingColor;
+            color.ViasPowerColor = settings.ViasPowerColor;
+            color.ViasGroundColor = settings.ViasGroundColor;
+
+            /// ...
+
+            color.Save();
+
+            entityBox.Invalidate();
+        }
+
+        public static void SaveSettings (EntityBox entityBox)
+        {
+            Properties.Settings settings = Properties.Settings.Default;
+
+            /// Save global settings
+
+            GlobalSettings global = new GlobalSettings(entityBox);
+
+            settings.SelectEntitiesAfterAdd = global.SelectEntitiesAfterAdd;
+            settings.Grayscale = global.Grayscale;
+            settings.Lambda = global.Lambda;
+            settings.LockScroll0 = global.LockScroll0;
+            settings.LockScroll1 = global.LockScroll1;
+            settings.LockScroll2 = global.LockScroll2;
+            settings.LockZoom0 = global.LockZoom0;
+            settings.LockZoom1 = global.LockZoom1;
+            settings.LockZoom2 = global.LockZoom2;
+            settings.HideGrid = global.HideGrid;
+            settings.HideLambdaMetrics = global.HideLambdaMetrics;
+            settings.CellTextAlignment = (int)global.CellTextAlignment;
+            settings.ViasTextAlignment = (int)global.ViasTextAlignment;
+            settings.WireTextAlignment = (int)global.WireTextAlignment;
+
+            /// Save color settings
+            /// 
+
+            ColorSettings color = new ColorSettings(entityBox);
+
+            settings.SelectionBoxColor = color.SelectionBoxColor;
+            settings.ViasInputColor = color.ViasInputColor;
+            settings.ViasOutputColor = color.ViasOutputColor;
+            settings.ViasInoutColor = color.ViasInoutColor;
+            settings.ViasConnectColor = color.ViasConnectColor;
+            settings.ViasFloatingColor = color.ViasFloatingColor;
+            settings.ViasPowerColor = color.ViasPowerColor;
+            settings.ViasGroundColor = color.ViasGroundColor;
+
+            /// ...
+
+            settings.Save();
         }
 
 
