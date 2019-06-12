@@ -435,7 +435,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case ID_HELP_ABOUT:
-			MessageBox(NULL, "patterns, v.1.0\n(c) 2018, http://psxdev.ru", "About patterns",
+			MessageBox(NULL, "patterns, v.1.0\n(c) 2019, http://psxdev.ru", "About patterns",
 				MB_ICONINFORMATION | MB_OK);
 			break;
 		case ID_HELP_HOTKEYS:
