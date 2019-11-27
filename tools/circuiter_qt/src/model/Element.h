@@ -1,9 +1,10 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-#include "../GraphicsItem.h"
+#include "../gui/GraphicsItem.h"
 
 class Connect;
+class Container;
 class Line;
 
 
@@ -17,7 +18,7 @@ public:
         Connect* connect;
     };
 
-    Element();
+    Element( Container* parent );
     virtual ~Element();
 
     virtual Element* Copy() = 0;
@@ -33,6 +34,8 @@ public:
     void ClearConnects();
     std::vector< Contact >& GetContacts();
 
+    Container* GetContainer();
+
 protected:
     void mousePressEvent( QGraphicsSceneMouseEvent* event ) override;
     void mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
@@ -41,6 +44,8 @@ protected:
 protected:
     bool m_Visited;
     std::vector< Contact > m_Contacts;
+
+    Container* m_Container;
 };
 
 

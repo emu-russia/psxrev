@@ -1,17 +1,18 @@
-#include "Ground.h"
+#include "Power.h"
 
-#include "../Circuit.h"
-#include "../Connect.h"
-#include "../Line.h"
+#include "Connect.h"
+#include "Line.h"
+#include "../gui/GraphicsScene.h"
 
 #include <QtWidgets>
 
 
 
-Ground::Ground():
-    m_Value( 0 )
+Power::Power( Container* parent ):
+    Element( parent ),
+    m_Value( 1 )
 {
-    m_ItemType = IT_GROUND;
+    m_ItemType = IT_POWER;
 
     Contact con;
     con.point = QPoint( 0, 0 );
@@ -22,36 +23,38 @@ Ground::Ground():
 
 
 
-Ground::~Ground()
+Power::~Power()
 {
 }
 
 
 
 Element*
-Ground::Copy()
+Power::Copy()
 {
-    Element* element = new Ground();
+    Element* element = new Power( GetContainer() );
     return element;
 }
 
 
 
 QRectF
-Ground::boundingRect() const
+Power::boundingRect() const
 {
-    return QRectF( -14, -4, 28, 8 );
+    return QRectF( -14, -13, 28, 19 );
 }
 
 
 
 void
-Ground::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget )
+Power::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget )
 {
     Q_UNUSED( widget );
-    painter->setPen( QPen( Qt::black, 6, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin ) );
+    painter->setPen( QPen( Qt::black, 4, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin ) );
     painter->setBrush( Qt::NoBrush );
-    painter->drawLine( -10, 0, 10, 0 );
+    painter->drawLine( 0, 0, 0, -5 );
+    painter->drawLine( 0, -9, -10, 2 );
+    painter->drawLine( 0, -9, 10, 2 );
     painter->setPen( QPen( CONNECT_COLOR ) );
     painter->setBrush( CONNECT_COLOR );
     painter->drawEllipse( -3, -3, 6, 6 );
@@ -67,7 +70,7 @@ Ground::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidge
 
 
 void
-Ground::Update()
+Power::Update()
 {
     if( m_Contacts[ 0 ].connect != 0 )
     {
@@ -83,7 +86,7 @@ Ground::Update()
 
 
 void
-Ground::Trace( Line* line, Connect* connect )
+Power::Trace( Line* line, Connect* connect )
 {
     line->SetValue( m_Value );
     m_Visited = true;
@@ -92,7 +95,7 @@ Ground::Trace( Line* line, Connect* connect )
 
 
 void
-Ground::SetValue( const int value, Connect* connect )
+Power::SetValue( const int value, Connect* connect )
 {
     m_Visited = false;
 }

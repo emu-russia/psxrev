@@ -4,6 +4,7 @@
 #include <vector>
 #include <QGraphicsScene>
 
+class Container;
 class Connect;
 class GraphicsItem;
 class Element;
@@ -11,13 +12,13 @@ class Wire;
 
 
 
-class Circuit : public QGraphicsScene
+class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    Circuit( QObject* parent );
-    virtual ~Circuit();
+    GraphicsScene( QObject* parent );
+    virtual ~GraphicsScene();
 
     void ConnectElement( Element* element );
     void ConnectWire( Wire* wire );
@@ -35,6 +36,7 @@ public:
     void InsertNfet();
     void InsertPfet();
 
+    Container* GetCurrentContainer();
     std::vector< Element* >& GetElements();
     std::vector< Wire* >& GetWires();
 
@@ -70,6 +72,9 @@ protected:
     QPoint PointAlign( const QPoint& pos );
 
 private:
+    Container* m_RootContainer;
+    Container* m_CurrentContainer;
+
     std::vector< Element* > m_Elements;
     std::vector< Element* > m_UpdateCurrent;
     std::vector< Element* > m_UpdateNext;
@@ -98,7 +103,7 @@ private:
 
 
 
-extern Circuit* test_circuit;
+extern GraphicsScene* test_circuit;
 
 
 

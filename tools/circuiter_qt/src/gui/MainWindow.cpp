@@ -6,14 +6,14 @@
 #include <QXmlSimpleReader>
 
 #include "GraphicsItem.h"
-#include "View.h"
-#include "core/Circuit.h"
-#include "core/Wire.h"
-#include "core/elements/Ground.h"
-#include "core/elements/Nfet.h"
-#include "core/elements/Pfet.h"
-#include "core/elements/Power.h"
-#include "core/elements/Pin.h"
+#include "Frame.h"
+#include "GraphicsScene.h"
+#include "model/Wire.h"
+#include "model/Ground.h"
+#include "model/Nfet.h"
+#include "model/Pfet.h"
+#include "model/Power.h"
+#include "model/Pin.h"
 
 
 
@@ -36,36 +36,40 @@ MainWindow::MainWindow( QWidget *parent ):
     m_FileMenu->addAction( m_ExitAct );
 
     m_ToolBar = addToolBar( tr( "Elements" ) );
+    QAction* insert_container = new QAction( QIcon( QPixmap( ":/images/container.png" ) ), tr( "&InsertContainer" ), this );
+    insert_container->setStatusTip( tr( "Inserts new Container element." ) );
+    connect( insert_container, &QAction::triggered, this, &MainWindow::InsertContainer );
+    m_ToolBar->addAction( insert_container );
     QAction* insert_pin = new QAction( QIcon( QPixmap( ":/images/pin.png" ) ), tr( "&InsertPin" ), this );
     insert_pin->setStatusTip( tr( "Inserts new Pin element." ) );
-    connect( insert_pin, &QAction::triggered, this, &InsertPin );
+    connect( insert_pin, &QAction::triggered, this, &MainWindow::InsertPin );
     m_ToolBar->addAction( insert_pin );
     QAction* insert_ground = new QAction( QIcon( QPixmap( ":/images/ground.png" ) ), tr( "&InsertGround" ), this );
     insert_ground->setStatusTip( tr( "Inserts new Ground element." ) );
-    connect( insert_ground, &QAction::triggered, this, &InsertGround );
+    connect( insert_ground, &QAction::triggered, this, &MainWindow::InsertGround );
     m_ToolBar->addAction( insert_ground );
     QAction* insert_power = new QAction( QIcon( QPixmap( ":/images/power.png" ) ), tr( "&InsertPower" ), this );
     insert_power->setStatusTip( tr( "Inserts new Power element." ) );
-    connect( insert_power, &QAction::triggered, this, &InsertPower );
+    connect( insert_power, &QAction::triggered, this, &MainWindow::InsertPower );
     m_ToolBar->addAction( insert_power );
     QAction* insert_nfet = new QAction( QIcon( QPixmap( ":/images/nfet.png" ) ), tr( "&InsertNfet" ), this );
     insert_nfet->setStatusTip( tr( "Inserts new Nfet element." ) );
-    connect( insert_nfet, &QAction::triggered, this, &InsertNfet );
+    connect( insert_nfet, &QAction::triggered, this, &MainWindow::InsertNfet );
     m_ToolBar->addAction( insert_nfet );
     QAction* insert_pfet = new QAction( QIcon( QPixmap( ":/images/pfet.png" ) ), tr( "&InsertPfet" ), this );
     insert_pfet->setStatusTip( tr( "Inserts new Pfet element." ) );
-    connect( insert_pfet, &QAction::triggered, this, &InsertPfet );
+    connect( insert_pfet, &QAction::triggered, this, &MainWindow::InsertPfet );
     m_ToolBar->addAction( insert_pfet );
 
     m_Splitter = new QSplitter();
     m_Splitter->setOrientation( Qt::Horizontal );
 
-    m_Circuit = new Circuit( this );
-    m_Circuit->setSceneRect( -32000, -32000, 64000, 64000 );
+    m_Scene = new GraphicsScene( this );
+    m_Scene->setSceneRect( -32000, -32000, 64000, 64000 );
 
     m_View = new View();
     m_Splitter->addWidget( m_View );
-    m_View->view()->setScene( m_Circuit );
+    m_View->view()->setScene( m_Scene );
     setCentralWidget( m_Splitter );
 
     setWindowTitle( tr( "Circuter" ) );
@@ -80,9 +84,9 @@ MainWindow::MainWindow( QWidget *parent ):
 
 MainWindow::~MainWindow()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        delete m_Circuit;
+        delete m_Scene;
     }
 }
 
@@ -93,25 +97,25 @@ MainWindow::~MainWindow()
 void
 MainWindow::Open()
 {
-    QString filename = QFileDialog::getOpenFileName( this, tr( "Open Circuit File" ), QDir::currentPath(), tr( "Circuit Files (*.xml)" ) );
+    QString filename = QFileDialog::getOpenFileName( this, tr( "Open GraphicsScene File" ), QDir::currentPath(), tr( "GraphicsScene Files (*.xml)" ) );
     if( filename.isEmpty() )
     {
         return;
     }
 
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        delete m_Circuit;
+        delete m_Scene;
     }
 
-    m_Circuit = new Circuit( this );
-    m_Circuit->setSceneRect( -32000, -32000, 64000, 64000 );
-    m_View->view()->setScene( m_Circuit );
+    m_Scene = new GraphicsScene( this );
+    m_Scene->setSceneRect( -32000, -32000, 64000, 64000 );
+    m_View->view()->setScene( m_Scene );
 
     QFile file( filename );
     if( !file.open( QFile::ReadOnly | QFile::Text ) )
     {
-        QMessageBox::warning( this, tr( "Circuit Load Error" ), tr( "Cannot read file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
+        QMessageBox::warning( this, tr( "GraphicsScene Load Error" ), tr( "Cannot read file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
         return;
     }
 
@@ -132,7 +136,7 @@ MainWindow::Open()
                     {
                         wire = new Wire();
                         wire->SetLine( QLine( vec[ 0 ].toInt(), vec[ 1 ].toInt(), vec[ 2 ].toInt(), vec[ 3 ].toInt() ) );
-                        m_Circuit->ConnectWire( wire );
+                        m_Scene->ConnectWire( wire );
                     }
                 }
                 else if( xml.name() == "element" )
@@ -145,27 +149,27 @@ MainWindow::Open()
                         QString type = xml.attributes().value( "type" ).toString();
                         if( type == "pin" )
                         {
-                            el = new Pin();
+                            el = new Pin( NULL );
                         }
                         else if( type == "ground" )
                         {
-                            el = new Ground();
+                            el = new Ground( NULL );
                         }
                         else if( type == "power" )
                         {
-                            el = new Power();
+                            el = new Power( NULL );
                         }
                         else if( type == "nfet" )
                         {
-                            el = new Nfet();
+                            el = new Nfet( NULL );
                         }
                         else if( type == "pfet" )
                         {
-                            el = new Pfet();
+                            el = new Pfet( NULL );
                         }
                         el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
                         el->setRotation( xml.attributes().value( "rot" ).toInt() );
-                        m_Circuit->ConnectElement( el );
+                        m_Scene->ConnectElement( el );
                     }
                 }
                 xml.skipCurrentElement();
@@ -179,14 +183,14 @@ MainWindow::Open()
 
     if( xml.error() )
     {
-        QMessageBox::warning( this, tr( "Circuit Load Error" ), tr( "Parse error in file %1:\n\n%2" ).arg( filename ).arg( xml.errorString() ) );
+        QMessageBox::warning( this, tr( "GraphicsScene Load Error" ), tr( "Parse error in file %1:\n\n%2" ).arg( filename ).arg( xml.errorString() ) );
     }
     else
     {
         statusBar()->showMessage( tr( "File %1 loaded" ).arg( filename ), 2000 );
     }
 
-    m_Circuit->UpdateAll();
+    m_Scene->UpdateAll();
 }
 
 
@@ -194,7 +198,7 @@ MainWindow::Open()
 void
 MainWindow::SaveAs()
 {
-    QString filename = QFileDialog::getSaveFileName( this, tr( "Save Circuit File" ), QDir::currentPath(), tr( "Circuit Files (*.xml)" ) );
+    QString filename = QFileDialog::getSaveFileName( this, tr( "Save GraphicsScene File" ), QDir::currentPath(), tr( "GraphicsScene Files (*.xml)" ) );
     if( filename.isEmpty() )
     {
         return;
@@ -203,7 +207,7 @@ MainWindow::SaveAs()
     QFile file( filename );
     if( !file.open( QFile::WriteOnly | QFile::Text ) )
     {
-        QMessageBox::warning( this, tr( "Circuit Save Error" ), tr( "Cannot write file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
+        QMessageBox::warning( this, tr( "GraphicsScene Save Error" ), tr( "Cannot write file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
         return;
     }
 
@@ -211,9 +215,9 @@ MainWindow::SaveAs()
     xml.setAutoFormatting( true );
     xml.writeStartDocument();
     xml.writeStartElement( "circuit" );
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        std::vector< Wire* > wires = m_Circuit->GetWires();
+        std::vector< Wire* > wires = m_Scene->GetWires();
         for( unsigned int i = 0; i < wires.size(); ++i )
         {
             QLine line = wires[ i ]->GetLine();
@@ -224,7 +228,7 @@ MainWindow::SaveAs()
             xml.writeEndElement();
         }
 
-        std::vector< Element* > elements = m_Circuit->GetElements();
+        std::vector< Element* > elements = m_Scene->GetElements();
         for( unsigned int i = 0; i < elements.size(); ++i )
         {
             Element* el = elements[ i ];
@@ -252,10 +256,21 @@ MainWindow::SaveAs()
 void
 MainWindow::CircuitUpdate()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->DoStep();
-        m_Circuit->update( m_Circuit->sceneRect() );
+        m_Scene->DoStep();
+        m_Scene->update( m_Scene->sceneRect() );
+    }
+}
+
+
+
+void
+MainWindow::InsertContainer()
+{
+    if( m_Scene != NULL )
+    {
+        //m_Scene->GetCurrentContainer()->InsertContainer();
     }
 }
 
@@ -264,9 +279,9 @@ MainWindow::CircuitUpdate()
 void
 MainWindow::InsertPin()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->InsertPin();
+        m_Scene->InsertPin();
     }
 }
 
@@ -275,9 +290,9 @@ MainWindow::InsertPin()
 void
 MainWindow::InsertGround()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->InsertGround();
+        m_Scene->InsertGround();
     }
 }
 
@@ -286,9 +301,9 @@ MainWindow::InsertGround()
 void
 MainWindow::InsertPower()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->InsertPower();
+        m_Scene->InsertPower();
     }
 }
 
@@ -297,9 +312,9 @@ MainWindow::InsertPower()
 void
 MainWindow::InsertNfet()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->InsertNfet();
+        m_Scene->InsertNfet();
     }
 }
 
@@ -308,8 +323,8 @@ MainWindow::InsertNfet()
 void
 MainWindow::InsertPfet()
 {
-    if( m_Circuit != 0 )
+    if( m_Scene != 0 )
     {
-        m_Circuit->InsertPfet();
+        m_Scene->InsertPfet();
     }
 }

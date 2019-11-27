@@ -1,14 +1,15 @@
 #include "Pfet.h"
 
-#include "../Circuit.h"
-#include "../Connect.h"
-#include "../Line.h"
+#include "../gui/GraphicsScene.h"
+#include "Connect.h"
+#include "Line.h"
 
 #include <QtWidgets>
 
 
 
-Pfet::Pfet():
+Pfet::Pfet( Container* parent ):
+    Element( parent ),
     m_Switch( -1 )
 {
     m_ItemType = IT_PFET;
@@ -34,7 +35,7 @@ Pfet::~Pfet()
 Element*
 Pfet::Copy()
 {
-    Element* element = new Pfet();
+    Element* element = new Pfet( GetContainer() );
     return element;
 }
 

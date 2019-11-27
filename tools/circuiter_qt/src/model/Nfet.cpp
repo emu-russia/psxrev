@@ -1,14 +1,15 @@
 #include "Nfet.h"
 
-#include "../Circuit.h"
-#include "../Connect.h"
-#include "../Line.h"
+#include "../gui/GraphicsScene.h"
+#include "Connect.h"
+#include "Line.h"
 
 #include <QtWidgets>
 
 
 
-Nfet::Nfet():
+Nfet::Nfet( Container* parent ):
+    Element( parent ),
     m_Switch( -1 )
 {
     m_ItemType = IT_NFET;
@@ -34,7 +35,7 @@ Nfet::~Nfet()
 Element*
 Nfet::Copy()
 {
-    Element* element = new Nfet();
+    Element* element = new Nfet( GetContainer() );
     return element;
 }
 

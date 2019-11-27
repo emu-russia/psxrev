@@ -1,14 +1,15 @@
 #include "Pin.h"
 
-#include "../Circuit.h"
-#include "../Connect.h"
-#include "../Line.h"
+#include "../gui/GraphicsScene.h"
+#include "Connect.h"
+#include "Line.h"
 
 #include <QtWidgets>
 
 
 
-Pin::Pin():
+Pin::Pin( Container* parent ):
+    Element( parent ),
     m_Value( -1 )
 {
     m_ItemType = IT_PIN;
@@ -30,7 +31,7 @@ Pin::~Pin()
 Element*
 Pin::Copy()
 {
-    Element* element = new Pin();
+    Element* element = new Pin( GetContainer() );
     return element;
 }
 

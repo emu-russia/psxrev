@@ -34,37 +34,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES +=\
-    core/Connect.cpp \
-    core/Element.cpp \
-    core/Line.cpp \
-    core/elements/Ground.cpp \
-    core/elements/Nfet.cpp \
-    core/elements/Pfet.cpp \
-    core/elements/Pin.cpp \
+    model/Connect.cpp \
+    model/Container.cpp \
+    model/Element.cpp \
+    model/Ground.cpp \
+    model/Line.cpp \
+    model/Nfet.cpp \
+    model/Pfet.cpp \
+    model/Pin.cpp \
+    model/Power.cpp \
+    model/Wire.cpp \
+    gui/Frame.cpp \
+    gui/GraphicsItem.cpp \
+    gui/GraphicsScene.cpp \
+    gui/GraphicsView.cpp \
+    gui/MainWindow.cpp \
     Main.cpp \
-    MainWindow.cpp \
-    View.cpp \
-    GraphicsItem.cpp \
-    GraphicsView.cpp \
-    core/Wire.cpp \
-    core/elements/Power.cpp \
-    core/Circuit.cpp
 
 HEADERS  += \
-    core/Circuit.h \
-    core/Connect.h \
-    core/Element.h \
-    core/Line.h \
-    core/elements/Ground.h \
-    core/elements/Nfet.h \
-    core/elements/Pfet.h \
-    core/elements/Pin.h \
-    MainWindow.h \
-    View.h \
-    GraphicsItem.h \
-    GraphicsView.h \
-    core/Wire.h \
-    core/elements/Power.h
+    model/Connect.h \
+    model/Container.h \
+    model/Element.h \
+    model/Ground.h \
+    model/Line.h \
+    model/Nfet.h \
+    model/Pfet.h \
+    model/Pin.h \
+    model/Power.h \
+    model/Wire.h \
+    gui/Frame.h \
+    gui/GraphicsItem.h \
+    gui/GraphicsScene.h \
+    gui/GraphicsView.h \
+    gui/MainWindow.h \
 
 RESOURCES += \
     images.qrc

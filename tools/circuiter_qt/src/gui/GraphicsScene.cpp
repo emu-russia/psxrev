@@ -1,19 +1,21 @@
-#include "Circuit.h"
-#include "Connect.h"
-#include "Element.h"
-#include "Wire.h"
-#include "elements/Ground.h"
-#include "elements/Nfet.h"
-#include "elements/Pfet.h"
-#include "elements/Pin.h"
-#include "elements/Power.h"
+#include "GraphicsScene.h"
+
+#include "../model/Container.h"
+#include "../model/Connect.h"
+#include "../model/Element.h"
+#include "../model/Wire.h"
+#include "../model/Ground.h"
+#include "../model/Nfet.h"
+#include "../model/Pfet.h"
+#include "../model/Pin.h"
+#include "../model/Power.h"
 
 #include <QGraphicsItem.h>
 #include <QtWidgets>
 
 
 
-bool SortWireContact( Circuit::WireContact con1, Circuit::WireContact con2 )
+bool SortWireContact( GraphicsScene::WireContact con1, GraphicsScene::WireContact con2 )
 {
     if( con1.pos.x() == con2.pos.x() )
     {
@@ -27,19 +29,22 @@ bool SortWireContact( Circuit::WireContact con1, Circuit::WireContact con2 )
 
 
 
-Circuit::Circuit( QObject* parent ):
+GraphicsScene::GraphicsScene( QObject* parent ):
     QGraphicsScene( parent ),
     m_WireDraw( false ),
-    m_WireMode( Circuit::WIRE_HORIZONTAL ),
+    m_WireMode( GraphicsScene::WIRE_HORIZONTAL ),
     m_MoveStart( false ),
     m_MoveOffset( QPointF( 0, 0 ) ),
     m_MovedHold( false )
 {
+    m_RootContainer = new Container( NULL );
+    m_CurrentContainer = m_RootContainer;
+    m_RootContainer->SetScene( this );
 }
 
 
 
-Circuit::~Circuit()
+GraphicsScene::~GraphicsScene()
 {
     for( unsigned int i = 0; i < m_Elements.size(); ++i )
     {
@@ -70,7 +75,7 @@ Circuit::~Circuit()
 
 
 void
-Circuit::ConnectElement( Element* element )
+GraphicsScene::ConnectElement( Element* element )
 {
     m_Elements.push_back( element );
     element->SetCircuit( this );
@@ -118,7 +123,7 @@ Circuit::ConnectElement( Element* element )
 
 
 void
-Circuit::ConnectWire( Wire* wire )
+GraphicsScene::ConnectWire( Wire* wire )
 {
     // merge given wire with existed wires
     // this deletes old wire and we need to add new - merged one
@@ -280,7 +285,7 @@ Circuit::ConnectWire( Wire* wire )
 
 
 Wire*
-Circuit::MergeWire( Wire* wire )
+GraphicsScene::MergeWire( Wire* wire )
 {
     Wire* ret = wire;
 
@@ -348,7 +353,7 @@ Circuit::MergeWire( Wire* wire )
 
 
 void
-Circuit::DisconnectItems( std::vector< GraphicsItem* >& items )
+GraphicsScene::DisconnectItems( std::vector< GraphicsItem* >& items )
 {
     // get unique connects from disconnect items
     std::vector< Connect* > connects;
@@ -416,7 +421,7 @@ Circuit::DisconnectItems( std::vector< GraphicsItem* >& items )
 
 
 void
-Circuit::AddToUpdate( Element* element )
+GraphicsScene::AddToUpdate( Element* element )
 {
     m_UpdateNext.push_back( element );
 }
@@ -424,7 +429,7 @@ Circuit::AddToUpdate( Element* element )
 
 
 void
-Circuit::DoStep()
+GraphicsScene::DoStep()
 {
     int counter = 0;
     while( m_UpdateNext.size() > 0 )
@@ -448,7 +453,7 @@ Circuit::DoStep()
 
 
 void
-Circuit::UpdateAll()
+GraphicsScene::UpdateAll()
 {
     m_UpdateNext = m_Elements;
     DoStep();
@@ -457,7 +462,7 @@ Circuit::UpdateAll()
 
 
 void
-Circuit::InsertElement( GraphicsItem* element )
+GraphicsScene::InsertElement( GraphicsItem* element )
 {
     m_MovedHold = true;
     QList< QGraphicsView* > view = views();
@@ -473,60 +478,68 @@ Circuit::InsertElement( GraphicsItem* element )
 
 
 void
-Circuit::InsertPin()
+GraphicsScene::InsertPin()
 {
-    GraphicsItem* element = new Pin();
+    GraphicsItem* element = new Pin( NULL );
     InsertElement( element );
 }
 
 
 
 void
-Circuit::InsertGround()
+GraphicsScene::InsertGround()
 {
-    GraphicsItem* element = new Ground();
+    GraphicsItem* element = new Ground( NULL );
     InsertElement( element );
 }
 
 
 
 void
-Circuit::InsertPower()
+GraphicsScene::InsertPower()
 {
-    GraphicsItem* element = new Power();
+    GraphicsItem* element = new Power( NULL );
     InsertElement( element );
 }
 
 
 
 void
-Circuit::InsertNfet()
+GraphicsScene::InsertNfet()
 {
-    GraphicsItem* element = new Nfet();
+    GraphicsItem* element = new Nfet( NULL );
     InsertElement( element );
 }
 
 
 
 void
-Circuit::InsertPfet()
+GraphicsScene::InsertPfet()
 {
-    GraphicsItem* element = new Pfet();
+    GraphicsItem* element = new Pfet( NULL );
     InsertElement( element );
 }
 
 
 
 std::vector< Element* >&
-Circuit::GetElements()
+GraphicsScene::GetElements()
 {
     return m_Elements;
 }
 
 
 
+Container*
+GraphicsScene::GetCurrentContainer()
+{
+    return m_CurrentContainer;
+}
+
+
+
 std::vector< Wire* >&
-Circuit::GetWires()
+GraphicsScene::GetWires()
 {
     return m_Wires;
 }
@@ -534,7 +547,7 @@ Circuit::GetWires()
 
 
 void
-Circuit::drawBackground( QPainter* painter, const QRectF& rect )
+GraphicsScene::drawBackground( QPainter* painter, const QRectF& rect )
 {
     Q_UNUSED( painter );
     Q_UNUSED( rect );
@@ -543,7 +556,7 @@ Circuit::drawBackground( QPainter* painter, const QRectF& rect )
 
 
 void
-Circuit::drawForeground( QPainter* painter, const QRectF& rect )
+GraphicsScene::drawForeground( QPainter* painter, const QRectF& rect )
 {
     painter->setPen( QPen( WIRE_DRAW_COLOR, 4, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin ) );
     for( unsigned int i = 0; i < m_WiresDraw.size(); ++i )
@@ -563,7 +576,7 @@ Circuit::drawForeground( QPainter* painter, const QRectF& rect )
 
 
 void
-Circuit::mousePressEvent( QGraphicsSceneMouseEvent* event )
+GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
     if( event->button() == Qt::LeftButton )
     {
@@ -614,7 +627,7 @@ Circuit::mousePressEvent( QGraphicsSceneMouseEvent* event )
 
 
 void
-Circuit::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
+GraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 {
     // element mode
     if( m_WireDraw == false )
@@ -674,7 +687,7 @@ Circuit::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 
 
 void
-Circuit::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
+GraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 {
     {
         QList< QGraphicsView* > view = views();
@@ -766,7 +779,7 @@ Circuit::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 
 
 void
-Circuit::keyPressEvent( QKeyEvent* event )
+GraphicsScene::keyPressEvent( QKeyEvent* event )
 {
     QList< QGraphicsItem* > select = selectedItems();
     if( select.size() > 0 )
@@ -892,7 +905,7 @@ Circuit::keyPressEvent( QKeyEvent* event )
 
 
 void
-Circuit::CalculateWireDraw()
+GraphicsScene::CalculateWireDraw()
 {
     m_WiresDraw.clear();
     m_WiresConDraw.clear();
@@ -956,7 +969,7 @@ Circuit::CalculateWireDraw()
 
 
 void
-Circuit::CalculateWireElementsIntersect( Wire* wire, std::vector< WireContact >& contacts )
+GraphicsScene::CalculateWireElementsIntersect( Wire* wire, std::vector< WireContact >& contacts )
 {
     QLine line = wire->GetLine();
     QPoint pos = wire->pos().toPoint();
@@ -967,7 +980,7 @@ Circuit::CalculateWireElementsIntersect( Wire* wire, std::vector< WireContact >&
 
 
 void
-Circuit::CalculateWireWiresIntersect( Wire* wire, std::vector< WireContact >& contacts )
+GraphicsScene::CalculateWireWiresIntersect( Wire* wire, std::vector< WireContact >& contacts )
 {
     QLine line = wire->GetLine();
     QPoint pos = wire->pos().toPoint();
@@ -978,7 +991,7 @@ Circuit::CalculateWireWiresIntersect( Wire* wire, std::vector< WireContact >& co
 
 
 void
-Circuit::CalculateLineElementsIntersect( const QLine& line, std::vector< WireContact >& contacts )
+GraphicsScene::CalculateLineElementsIntersect( const QLine& line, std::vector< WireContact >& contacts )
 {
     for( unsigned int i = 0; i < m_Elements.size(); ++i )
     {
@@ -1004,7 +1017,7 @@ Circuit::CalculateLineElementsIntersect( const QLine& line, std::vector< WireCon
 
 
 void
-Circuit::CalculateLineWiresIntersect( const QLine& line, std::vector< WireContact >& contacts, Wire* wire )
+GraphicsScene::CalculateLineWiresIntersect( const QLine& line, std::vector< WireContact >& contacts, Wire* wire )
 {
     for( unsigned int i = 0; i < m_Wires.size(); ++i )
     {
@@ -1060,7 +1073,7 @@ Circuit::CalculateLineWiresIntersect( const QLine& line, std::vector< WireContac
 
 
 void
-Circuit::CalculateElementWiresIntersect( Element* element, std::vector< WireContact >& contacts )
+GraphicsScene::CalculateElementWiresIntersect( Element* element, std::vector< WireContact >& contacts )
 {
     QTransform transform;
     transform.rotate( element->rotation() );
@@ -1089,7 +1102,7 @@ Circuit::CalculateElementWiresIntersect( Element* element, std::vector< WireCont
 
 
 void
-Circuit::CalculateElementElementsIntersect( Element* element, std::vector< WireContact >& contacts )
+GraphicsScene::CalculateElementElementsIntersect( Element* element, std::vector< WireContact >& contacts )
 {
     QTransform transform;
     transform.rotate( element->rotation() );
@@ -1126,7 +1139,7 @@ Circuit::CalculateElementElementsIntersect( Element* element, std::vector< WireC
 
 
 bool
-Circuit::IsLinePointIntersect( const QLine& line, const QPoint& point )
+GraphicsScene::IsLinePointIntersect( const QLine& line, const QPoint& point )
 {
     qreal x1 = line.x1();
     qreal x2 = line.x2();
@@ -1161,7 +1174,7 @@ Circuit::IsLinePointIntersect( const QLine& line, const QPoint& point )
 
 
 QPoint
-Circuit::PointAlign( const QPoint& pos )
+GraphicsScene::PointAlign( const QPoint& pos )
 {
     QPoint res = pos;
     int rem = pos.x() % 15;

@@ -1,17 +1,19 @@
-#ifndef POWER_H
-#define POWER_H
+#ifndef PFET_H
+#define PFET_H
 
-#include "../Element.h"
+#include "Element.h"
 
 class Connect;
+class Container;
+class Line;
 
 
 
-class Power : public Element
+class Pfet : public Element
 {
 public:
-    Power();
-    virtual ~Power();
+    Pfet( Container* parent );
+    virtual ~Pfet();
 
     Element* Copy();
 
@@ -22,10 +24,10 @@ public:
     void Trace( Line* line, Connect* connect );
     void SetValue( const int value, Connect* connect );
 
-private:
-    int m_Value;
+protected:
+    int m_Switch;
 };
 
 
 
-#endif // POWER_H
+#endif // PFET_H

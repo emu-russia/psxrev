@@ -1,4 +1,4 @@
-#include "View.h"
+#include "Frame.h"
 
 #include "GraphicsView.h"
 

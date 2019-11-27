@@ -1,18 +1,17 @@
-#ifndef PFET_H
-#define PFET_H
+#ifndef GROUND_H
+#define GROUND_H
 
-#include "../Element.h"
+#include "Element.h"
 
 class Connect;
-class Line;
+class Container;
 
 
-
-class Pfet : public Element
+class Ground : public Element
 {
 public:
-    Pfet();
-    virtual ~Pfet();
+    Ground( Container* parent );
+    virtual ~Ground();
 
     Element* Copy();
 
@@ -23,10 +22,10 @@ public:
     void Trace( Line* line, Connect* connect );
     void SetValue( const int value, Connect* connect );
 
-protected:
-    int m_Switch;
+private:
+    int m_Value;
 };
 
 
 
-#endif // PFET_H
+#endif // GROUND_H

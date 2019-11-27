@@ -7,7 +7,7 @@
 #include <QTimer>
 
 class QSplitter;
-class Circuit;
+class GraphicsScene;
 class View;
 
 
@@ -25,6 +25,7 @@ private  slots:
     void SaveAs();
     void CircuitUpdate();
 
+    void InsertContainer();
     void InsertPin();
     void InsertGround();
     void InsertPower();
@@ -42,7 +43,7 @@ private:
 
     QTimer m_CircuitTimer;
 
-    Circuit* m_Circuit;
+    GraphicsScene* m_Scene;
 };
 
 

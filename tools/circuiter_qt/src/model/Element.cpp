@@ -1,11 +1,14 @@
 #include "Connect.h"
+
+#include "Container.h"
 #include "Element.h"
 
 #include <QtWidgets>
 
 
 
-Element::Element():
+Element::Element( Container* parent ):
+    m_Container( parent ),
     m_Visited( false )
 {
     setZValue( 2 );
@@ -92,6 +95,14 @@ std::vector< Element::Contact >&
 Element::GetContacts()
 {
     return m_Contacts;
+}
+
+
+
+Container*
+Element::GetContainer()
+{
+    return m_Container;
 }
 
 

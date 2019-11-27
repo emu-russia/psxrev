@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "GraphicsItem.h"
+#include "../gui/GraphicsItem.h"
 
 class Connect;
 

@@ -1,15 +1,17 @@
 #ifndef PIN_H
 #define PIN_H
 
-#include "../Connect.h"
-#include "../Element.h"
+#include "Element.h"
+
+class Connect;
+class Container;
 
 
 
 class Pin : public Element
 {
 public:
-    Pin();
+    Pin( Container* parent );
     virtual ~Pin();
 
     Element* Copy();

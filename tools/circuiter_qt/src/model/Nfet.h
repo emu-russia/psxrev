@@ -1,9 +1,10 @@
 #ifndef NFET_H
 #define NFET_H
 
-#include "../Element.h"
+#include "Element.h"
 
 class Connect;
+class Container;
 class Line;
 
 
@@ -11,7 +12,7 @@ class Line;
 class Nfet : public Element
 {
 public:
-    Nfet();
+    Nfet( Container* parent );
     virtual ~Nfet();
 
     Element* Copy();

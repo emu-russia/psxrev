@@ -1,17 +1,18 @@
-#ifndef GROUND_H
-#define GROUND_H
+#ifndef POWER_H
+#define POWER_H
 
-#include "../Element.h"
+#include "Element.h"
 
 class Connect;
+class Container;
 
 
 
-class Ground : public Element
+class Power : public Element
 {
 public:
-    Ground();
-    virtual ~Ground();
+    Power( Container* parent );
+    virtual ~Power();
 
     Element* Copy();
 
@@ -28,4 +29,4 @@ private:
 
 
 
-#endif // GROUND_H
+#endif // POWER_H
