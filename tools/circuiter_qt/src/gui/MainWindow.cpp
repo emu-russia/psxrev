@@ -8,12 +8,13 @@
 #include "GraphicsItem.h"
 #include "Frame.h"
 #include "GraphicsScene.h"
-#include "model/Wire.h"
+#include "model/Container.h"
 #include "model/Ground.h"
 #include "model/Nfet.h"
 #include "model/Pfet.h"
-#include "model/Power.h"
 #include "model/Pin.h"
+#include "model/Power.h"
+#include "model/Wire.h"
 
 
 
@@ -217,7 +218,7 @@ MainWindow::SaveAs()
     xml.writeStartElement( "circuit" );
     if( m_Scene != 0 )
     {
-        std::vector< Wire* > wires = m_Scene->GetWires();
+        std::vector< Wire* > wires = m_Scene->GetCurrentContainer()->GetWires();
         for( unsigned int i = 0; i < wires.size(); ++i )
         {
             QLine line = wires[ i ]->GetLine();
@@ -228,7 +229,7 @@ MainWindow::SaveAs()
             xml.writeEndElement();
         }
 
-        std::vector< Element* > elements = m_Scene->GetElements();
+        std::vector< Element* > elements = m_Scene->GetCurrentContainer()->GetElements();
         for( unsigned int i = 0; i < elements.size(); ++i )
         {
             Element* el = elements[ i ];
@@ -270,7 +271,7 @@ MainWindow::InsertContainer()
 {
     if( m_Scene != NULL )
     {
-        //m_Scene->GetCurrentContainer()->InsertContainer();
+        m_Scene->InsertContainer();
     }
 }
 

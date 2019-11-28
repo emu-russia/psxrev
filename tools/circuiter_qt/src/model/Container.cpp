@@ -15,6 +15,7 @@ Container::Container( Container* parent ):
     counter = 0;
 
     Contact con;
+    con.connect = 0;
     con.point = QPoint( -15, -45 );
     m_Contacts.push_back( con );
     con.point = QPoint( 15, -45 );
@@ -30,6 +31,16 @@ Container::~Container()
     for( size_t i = 0; i < m_Elements.size(); ++i )
     {
         delete m_Elements[ i ];
+    }
+
+    for( size_t i = 0; i < m_Connects.size(); ++i )
+    {
+        delete m_Connects[ i ];
+    }
+
+    for( size_t i = 0; i < m_Wires.size(); ++i )
+    {
+        delete m_Wires[ i ];
     }
 }
 
@@ -119,36 +130,68 @@ void
 Container::SetScene( GraphicsScene* scene )
 {
     m_Scene = scene;
+}
 
-    for( size_t i = 0; i < m_Elements.size(); ++i )
-    {
-        m_Scene->addItem( m_Elements[ i ] );
-    }
+
+
+std::vector< Element* >&
+Container::GetElements()
+{
+    return m_Elements;
+}
+
+
+
+std::vector< Wire* >&
+Container::GetWires()
+{
+    return m_Wires;
 }
 
 
 
 void
-Container::UnsetScene()
+Container::InsertElement( Element* element )
 {
-    for( size_t i = 0; i < m_Elements.size(); ++i )
-    {
-        m_Scene->removeItem( m_Elements[ i ] );
-    }
-
-    m_Scene = NULL;
-}
-
-
-
-void
-Container::InsertContainer()
-{
-    Element* element = new Container( this );
     m_Elements.push_back( element );
+}
 
-    if( m_Scene != NULL )
-    {
-        m_Scene->addItem( element );
-    }
+
+
+void
+Container::RemoveElement( Element* element )
+{
+    m_Elements.erase( std::remove( m_Elements.begin(), m_Elements.end(), element ), m_Elements.end() );
+}
+
+
+
+void
+Container::InsertConnect( Connect* connect )
+{
+    m_Connects.push_back( connect );
+}
+
+
+
+void
+Container::RemoveConnect( Connect* connect )
+{
+    m_Connects.erase( std::remove( m_Connects.begin(), m_Connects.end(), connect ), m_Connects.end() );
+}
+
+
+
+void
+Container::InsertWire( Wire* wire )
+{
+    m_Wires.push_back( wire );
+}
+
+
+
+void
+Container::RemoveWire( Wire* wire )
+{
+    m_Wires.erase( std::remove( m_Wires.begin(), m_Wires.end(), wire ), m_Wires.end() );
 }

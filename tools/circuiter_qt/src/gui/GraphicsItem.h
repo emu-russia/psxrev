@@ -24,8 +24,6 @@ public:
     QRectF boundingRect() const override = 0;
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* item, QWidget* widget ) override = 0;
 
-    void SetCircuit( GraphicsScene* circuit );
-
     enum ItemType
     {
         IT_WIRE,
@@ -39,7 +37,6 @@ public:
     ItemType GetType() const;
 
 protected:
-    GraphicsScene* m_Circuit;
     ItemType m_ItemType;
 };
 

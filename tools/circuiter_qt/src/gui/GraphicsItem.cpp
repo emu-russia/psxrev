@@ -6,8 +6,7 @@
 
 
 
-GraphicsItem::GraphicsItem():
-    m_Circuit( 0 )
+GraphicsItem::GraphicsItem()
 {
     setFlags( ItemIsSelectable | ItemIsMovable | ItemIsFocusable | ItemSendsGeometryChanges );
 }
@@ -16,15 +15,6 @@ GraphicsItem::GraphicsItem():
 
 GraphicsItem::~GraphicsItem()
 {
-}
-
-
-
-
-void
-GraphicsItem::SetCircuit( GraphicsScene* circuit )
-{
-    m_Circuit = circuit;
 }
 
 

@@ -5,7 +5,10 @@
 
 #include <vector>
 
+class Connect;
 class GraphicsScene;
+class Line;
+class Wire;
 
 
 
@@ -25,12 +28,21 @@ public:
     void SetValue( const int value, Connect* connect );
 
     void SetScene( GraphicsScene* scene );
-    void UnsetScene();
 
-    void InsertContainer();
+    std::vector< Element* >& GetElements();
+    std::vector< Wire* >& GetWires();
+
+    void InsertElement( Element* element );
+    void RemoveElement( Element* element );
+    void InsertConnect( Connect* connect );
+    void RemoveConnect( Connect* connect );
+    void InsertWire( Wire* wire );
+    void RemoveWire( Wire* wire );
 
 private:
     std::vector< Element* > m_Elements;
+    std::vector< Connect* > m_Connects;
+    std::vector< Wire* > m_Wires;
 
     GraphicsScene* m_Scene;
 

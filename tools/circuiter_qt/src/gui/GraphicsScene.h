@@ -24,21 +24,19 @@ public:
     void ConnectWire( Wire* wire );
     Wire* MergeWire( Wire* wire );
     void DisconnectItems( std::vector< GraphicsItem* >& items );
-    void AddToUpdate( Element* element );
     void InsertElement( GraphicsItem* element );
 
     void DoStep();
     void UpdateAll();
 
+    Container* GetCurrentContainer();
+
+    void InsertContainer();
     void InsertPin();
     void InsertGround();
     void InsertPower();
     void InsertNfet();
     void InsertPfet();
-
-    Container* GetCurrentContainer();
-    std::vector< Element* >& GetElements();
-    std::vector< Wire* >& GetWires();
 
     struct WireContact
     {
@@ -74,12 +72,6 @@ protected:
 private:
     Container* m_RootContainer;
     Container* m_CurrentContainer;
-
-    std::vector< Element* > m_Elements;
-    std::vector< Element* > m_UpdateCurrent;
-    std::vector< Element* > m_UpdateNext;
-    std::vector< Connect* > m_Connects;
-    std::vector< Wire* > m_Wires;
 
     enum WireMode
     {

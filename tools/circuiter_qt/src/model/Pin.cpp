@@ -122,7 +122,6 @@ Pin::UserSetValue( const int value )
 {
     if( m_Value != value )
     {
-        m_Circuit->AddToUpdate( this );
         m_Value = value;
     }
 }

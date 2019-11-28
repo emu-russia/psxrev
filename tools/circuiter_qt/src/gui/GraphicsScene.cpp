@@ -46,21 +46,6 @@ GraphicsScene::GraphicsScene( QObject* parent ):
 
 GraphicsScene::~GraphicsScene()
 {
-    for( unsigned int i = 0; i < m_Elements.size(); ++i )
-    {
-        delete m_Elements[ i ];
-    }
-
-    for( unsigned int i = 0; i < m_Connects.size(); ++i )
-    {
-        delete m_Connects[ i ];
-    }
-
-    for( unsigned int i = 0; i < m_Wires.size(); ++i )
-    {
-        delete m_Wires[ i ];
-    }
-
     for( unsigned int i = 0; i < m_MovedItem.size(); ++i )
     {
         delete m_MovedItem[ i ];
@@ -77,8 +62,7 @@ GraphicsScene::~GraphicsScene()
 void
 GraphicsScene::ConnectElement( Element* element )
 {
-    m_Elements.push_back( element );
-    element->SetCircuit( this );
+    m_CurrentContainer->InsertElement( element );
     addItem( element );
 
     std::vector< Wire* > wires_for_update;
@@ -90,9 +74,9 @@ GraphicsScene::ConnectElement( Element* element )
     {
         if( contacts[ i ].wire_point == 0 )
         {
-            wires_for_update.push_back( m_Wires[ contacts[ i ].wire_id ] );
+            wires_for_update.push_back( m_CurrentContainer->GetWires()[ contacts[ i ].wire_id ] );
         }
-        element->AddConnect( m_Wires[ contacts[ i ].wire_id ]->GetConnect(), contacts[ i ].self_contact_id );
+        element->AddConnect( m_CurrentContainer->GetWires()[ contacts[ i ].wire_id ]->GetConnect(), contacts[ i ].self_contact_id );
     }
 
     // calculate if this element connects with other elements directly
@@ -101,12 +85,12 @@ GraphicsScene::ConnectElement( Element* element )
     CalculateElementElementsIntersect( element, contacts );
     for( unsigned int i = 0; i < contacts.size(); ++i )
     {
-        Connect* connect = m_Elements[ contacts[ i ].element_id ]->GetContacts()[ contacts[ i ].contact_id ].connect;
+        Connect* connect = m_CurrentContainer->GetElements()[ contacts[ i ].element_id ]->GetContacts()[ contacts[ i ].contact_id ].connect;
         if( connect == 0 )
         {
             connect = new Connect();
-            m_Connects.push_back( connect );
-            m_Elements[ contacts[ i ].element_id ]->AddConnect( connect, contacts[ i ].contact_id );
+            m_CurrentContainer->InsertConnect( connect );
+            m_CurrentContainer->GetElements()[ contacts[ i ].element_id ]->AddConnect( connect, contacts[ i ].contact_id );
         }
         element->AddConnect( connect, contacts[ i ].self_contact_id );
     }
@@ -115,7 +99,7 @@ GraphicsScene::ConnectElement( Element* element )
     for( unsigned int i = 0; i < wires_for_update.size(); ++i )
     {
         wires_for_update[ i ]->GetConnect()->RemoveWire( wires_for_update[ i ] );
-        m_Wires.erase( std::remove( m_Wires.begin(), m_Wires.end(), wires_for_update[ i ] ), m_Wires.end() );
+        m_CurrentContainer->RemoveWire( wires_for_update[ i ] );
         ConnectWire( wires_for_update[ i ] );
     }
 }
@@ -178,8 +162,7 @@ GraphicsScene::ConnectWire( Wire* wire )
     for( unsigned int sub_id = 0; sub_id < wires.size(); sub_id++ )
     {
         wire = wires[ sub_id ];
-        m_Wires.push_back( wire );
-        wire->SetCircuit( this );
+        m_CurrentContainer->InsertWire( wire );
         addItem( wire );
 
         // calculate if this wire connects to something and connect it to it
@@ -193,7 +176,7 @@ GraphicsScene::ConnectWire( Wire* wire )
         {
             if( contacts[ i ].wire_point == 0 )
             {
-                wires_for_update.push_back( m_Wires[ contacts[ i ].wire_id ] );
+                wires_for_update.push_back( m_CurrentContainer->GetWires()[ contacts[ i ].wire_id ] );
             }
 
             // add point on wire for drawing
@@ -218,16 +201,16 @@ GraphicsScene::ConnectWire( Wire* wire )
 
             if( connect == 0 )
             {
-                connect = m_Wires[ contacts[ i ].wire_id ]->GetConnect();
+                connect = m_CurrentContainer->GetWires()[ contacts[ i ].wire_id ]->GetConnect();
             }
             else
             {
-                Connect* existed = m_Wires[ contacts[ i ].wire_id ]->GetConnect();
+                Connect* existed = m_CurrentContainer->GetWires()[ contacts[ i ].wire_id ]->GetConnect();
                 if( connect != existed )
                 {
                     connect->Merge( existed );
                     delete existed;
-                    m_Connects.erase( std::remove( m_Connects.begin(), m_Connects.end(), existed ), m_Connects.end() );
+                    m_CurrentContainer->RemoveConnect( existed );
                 }
             }
         }
@@ -239,11 +222,11 @@ GraphicsScene::ConnectWire( Wire* wire )
         CalculateWireElementsIntersect( wire, contacts );
         for( unsigned int i = 0; i < contacts.size(); ++i )
         {
-            Connect* existed = m_Elements[ contacts[ i ].element_id ]->GetContacts()[ contacts[ i ].contact_id ].connect;
+            Connect* existed = m_CurrentContainer->GetElements()[ contacts[ i ].element_id ]->GetContacts()[ contacts[ i ].contact_id ].connect;
             if( existed == 0 && connect == 0 )
             {
                 connect = new Connect();
-                m_Connects.push_back( connect );
+                m_CurrentContainer->InsertConnect( connect );
             }
             else if( existed != 0 && connect == 0 )
             {
@@ -255,10 +238,10 @@ GraphicsScene::ConnectWire( Wire* wire )
                 {
                     connect->Merge( existed );
                     delete existed;
-                    m_Connects.erase( std::remove( m_Connects.begin(), m_Connects.end(), existed ), m_Connects.end() );
+                    m_CurrentContainer->RemoveConnect( existed );
                 }
             }
-            m_Elements[ contacts[ i ].element_id ]->AddConnect( connect, contacts[ i ].contact_id );
+            m_CurrentContainer->GetElements()[ contacts[ i ].element_id ]->AddConnect( connect, contacts[ i ].contact_id );
         }
 
         // if this new wire don't connected to other wires
@@ -266,7 +249,7 @@ GraphicsScene::ConnectWire( Wire* wire )
         if( connect == 0 )
         {
             connect = new Connect();
-            m_Connects.push_back( connect );
+            m_CurrentContainer->InsertConnect( connect );
         }
 
         // add this wire to collection of wires in connect to update
@@ -277,7 +260,7 @@ GraphicsScene::ConnectWire( Wire* wire )
     for( unsigned int i = 0; i < wires_for_update.size(); ++i )
     {
         wires_for_update[ i ]->GetConnect()->RemoveWire( wires_for_update[ i ] );
-        m_Wires.erase( std::remove( m_Wires.begin(), m_Wires.end(), wires_for_update[ i ] ), m_Wires.end() );
+        m_CurrentContainer->RemoveWire( wires_for_update[ i ] );
         ConnectWire( wires_for_update[ i ] );
     }
 }
@@ -289,8 +272,10 @@ GraphicsScene::MergeWire( Wire* wire )
 {
     Wire* ret = wire;
 
+    std::vector< Wire* > wires = m_CurrentContainer->GetWires();
+
     // go through all wire and search for matching
-    for( std::vector< Wire* >::iterator it = m_Wires.begin(); it != m_Wires.end(); )
+    for( std::vector< Wire* >::iterator it = wires.begin(); it != wires.end(); )
     {
         // return line can update during merge
         QLine line_new = ret->GetLine();
@@ -318,7 +303,7 @@ GraphicsScene::MergeWire( Wire* wire )
                 ret = *it;
                 ret->GetConnect()->RemoveWire( ret );
                 removeItem( *it );
-                it = m_Wires.erase( it );
+                it = wires.erase( it );
                 continue;
             }
             // if both points of old line on given line
@@ -327,7 +312,7 @@ GraphicsScene::MergeWire( Wire* wire )
                 removeItem( *it );
                 ( *it )->GetConnect()->RemoveWire( *it );
                 delete *it;
-                it = m_Wires.erase( it );
+                it = wires.erase( it );
                 continue;
             }
             // if one point from both line on other line
@@ -340,7 +325,7 @@ GraphicsScene::MergeWire( Wire* wire )
                 removeItem( *it );
                 ( *it )->GetConnect()->RemoveWire( *it );
                 delete *it;
-                it = m_Wires.erase( it );
+                it = wires.erase( it );
                 continue;
             }
         }
@@ -365,8 +350,7 @@ GraphicsScene::DisconnectItems( std::vector< GraphicsItem* >& items )
         }
         else
         {
-            m_Elements.erase( std::remove( m_Elements.begin(), m_Elements.end(), items[ i ] ), m_Elements.end() );
-            items[ i ]->SetCircuit( 0 );
+            m_CurrentContainer->RemoveElement( ( Element* )items[ i ] );
             removeItem( items[ i ] );
 
             std::vector< Element::Contact > contacts = ( ( Element* )( items[ i ] ) )->GetContacts();
@@ -390,15 +374,14 @@ GraphicsScene::DisconnectItems( std::vector< GraphicsItem* >& items )
         std::vector< Wire* > new_wires = connects[ i ]->GetWires();
         con_wires.insert( con_wires.end(), new_wires.begin(), new_wires.end() );
         connects[ i ]->ClearAll();
-        m_Connects.erase( std::remove( m_Connects.begin(), m_Connects.end(), connects[ i ] ), m_Connects.end() );
+        m_CurrentContainer->RemoveConnect( connects[ i ] );
         delete connects[ i ];
     }
 
     // remove all wires that was connected to removed connects
     for( unsigned int i = 0; i < con_wires.size(); ++i )
     {
-        m_Wires.erase( std::remove( m_Wires.begin(), m_Wires.end(), con_wires[ i ] ), m_Wires.end() );
-        con_wires[ i ]->SetCircuit( 0 );
+        m_CurrentContainer->RemoveWire( con_wires[ i ] );
         removeItem( con_wires[ i ] );
     }
 
@@ -421,33 +404,9 @@ GraphicsScene::DisconnectItems( std::vector< GraphicsItem* >& items )
 
 
 void
-GraphicsScene::AddToUpdate( Element* element )
-{
-    m_UpdateNext.push_back( element );
-}
-
-
-
-void
 GraphicsScene::DoStep()
 {
-    int counter = 0;
-    while( m_UpdateNext.size() > 0 )
-    {
-        m_UpdateCurrent = m_UpdateNext;
-        m_UpdateNext.clear();
-
-        for( unsigned int i = 0; i < m_UpdateCurrent.size(); ++i )
-        {
-            m_UpdateCurrent[ i ]->Update();
-        }
-
-        ++counter;
-        if( counter > 1000 )
-        {
-            return;
-        }
-    }
+    m_RootContainer->Update();
 }
 
 
@@ -455,8 +414,15 @@ GraphicsScene::DoStep()
 void
 GraphicsScene::UpdateAll()
 {
-    m_UpdateNext = m_Elements;
     DoStep();
+}
+
+
+
+Container*
+GraphicsScene::GetCurrentContainer()
+{
+    return m_CurrentContainer;
 }
 
 
@@ -478,9 +444,18 @@ GraphicsScene::InsertElement( GraphicsItem* element )
 
 
 void
+GraphicsScene::InsertContainer()
+{
+    GraphicsItem* element = new Container( m_CurrentContainer );
+    InsertElement( element );
+}
+
+
+
+void
 GraphicsScene::InsertPin()
 {
-    GraphicsItem* element = new Pin( NULL );
+    GraphicsItem* element = new Pin( m_CurrentContainer );
     InsertElement( element );
 }
 
@@ -489,7 +464,7 @@ GraphicsScene::InsertPin()
 void
 GraphicsScene::InsertGround()
 {
-    GraphicsItem* element = new Ground( NULL );
+    GraphicsItem* element = new Ground( m_CurrentContainer );
     InsertElement( element );
 }
 
@@ -498,7 +473,7 @@ GraphicsScene::InsertGround()
 void
 GraphicsScene::InsertPower()
 {
-    GraphicsItem* element = new Power( NULL );
+    GraphicsItem* element = new Power( m_CurrentContainer );
     InsertElement( element );
 }
 
@@ -507,7 +482,7 @@ GraphicsScene::InsertPower()
 void
 GraphicsScene::InsertNfet()
 {
-    GraphicsItem* element = new Nfet( NULL );
+    GraphicsItem* element = new Nfet( m_CurrentContainer );
     InsertElement( element );
 }
 
@@ -516,32 +491,8 @@ GraphicsScene::InsertNfet()
 void
 GraphicsScene::InsertPfet()
 {
-    GraphicsItem* element = new Pfet( NULL );
+    GraphicsItem* element = new Pfet( m_CurrentContainer );
     InsertElement( element );
-}
-
-
-
-std::vector< Element* >&
-GraphicsScene::GetElements()
-{
-    return m_Elements;
-}
-
-
-
-Container*
-GraphicsScene::GetCurrentContainer()
-{
-    return m_CurrentContainer;
-}
-
-
-
-std::vector< Wire* >&
-GraphicsScene::GetWires()
-{
-    return m_Wires;
 }
 
 
@@ -993,12 +944,13 @@ GraphicsScene::CalculateWireWiresIntersect( Wire* wire, std::vector< WireContact
 void
 GraphicsScene::CalculateLineElementsIntersect( const QLine& line, std::vector< WireContact >& contacts )
 {
-    for( unsigned int i = 0; i < m_Elements.size(); ++i )
+    std::vector< Element* > elements = m_CurrentContainer->GetElements();
+    for( unsigned int i = 0; i < elements.size(); ++i )
     {
-        std::vector< Element::Contact > cont = m_Elements[ i ]->GetContacts();
+        std::vector< Element::Contact > cont = elements[ i ]->GetContacts();
         QTransform transform;
-        transform.rotate( m_Elements[ i ]->rotation() );
-        QPoint pos = m_Elements[ i ]->pos().toPoint();
+        transform.rotate( elements[ i ]->rotation() );
+        QPoint pos = elements[ i ]->pos().toPoint();
         for( unsigned int j = 0; j < cont.size(); ++j )
         {
             QPoint contact = transform.map( cont[ j ].point ) + pos;
@@ -1019,12 +971,13 @@ GraphicsScene::CalculateLineElementsIntersect( const QLine& line, std::vector< W
 void
 GraphicsScene::CalculateLineWiresIntersect( const QLine& line, std::vector< WireContact >& contacts, Wire* wire )
 {
-    for( unsigned int i = 0; i < m_Wires.size(); ++i )
+    std::vector< Wire* > wires = m_CurrentContainer->GetWires();
+    for( unsigned int i = 0; i < wires.size(); ++i )
     {
-        if( wire != m_Wires[ i ] )
+        if( wire != wires[ i ] )
         {
-            QLine line2 = m_Wires[ i ]->GetLine();
-            QPoint pos = m_Wires[ i ]->pos().toPoint();
+            QLine line2 = wires[ i ]->GetLine();
+            QPoint pos = wires[ i ]->pos().toPoint();
             line2.translate( pos );
             QPoint l1p1 = line.p1();
             QPoint l1p2 = line.p2();
@@ -1081,11 +1034,12 @@ GraphicsScene::CalculateElementWiresIntersect( Element* element, std::vector< Wi
     QPoint pos = element->pos().toPoint();
     for( unsigned int i = 0; i < cont.size(); ++i )
     {
+        std::vector< Wire* > wires = m_CurrentContainer->GetWires();
         QPoint contact = transform.map( cont[ i ].point ) + pos;
-        for( unsigned int j = 0; j < m_Wires.size(); ++j )
+        for( unsigned int j = 0; j < wires.size(); ++j )
         {
-            QLine check_wire = m_Wires[ j ]->GetLine();
-            QPoint pos = m_Wires[ j ]->pos().toPoint();
+            QLine check_wire = wires[ j ]->GetLine();
+            QPoint pos = wires[ j ]->pos().toPoint();
             check_wire.translate( pos );
             if( IsLinePointIntersect( check_wire, contact ) == true )
             {
@@ -1110,15 +1064,16 @@ GraphicsScene::CalculateElementElementsIntersect( Element* element, std::vector<
     QPoint pos = element->pos().toPoint();
     for( unsigned int i = 0; i < cont.size(); ++i )
     {
+        std::vector< Element* > elements = m_CurrentContainer->GetElements();
         QPoint contact = transform.map( cont[ i ].point ) + pos;
-        for( unsigned int j = 0; j < m_Elements.size(); ++j )
+        for( unsigned int j = 0; j < elements.size(); ++j )
         {
-            if( m_Elements[ j ] != element )
+            if( elements[ j ] != element )
             {
                 QTransform el_trans;
-                el_trans.rotate( m_Elements[ j ]->rotation() );
-                std::vector< Element::Contact > el_cont = m_Elements[ j ]->GetContacts();
-                QPoint el_pos = m_Elements[ j ]->pos().toPoint();
+                el_trans.rotate( elements[ j ]->rotation() );
+                std::vector< Element::Contact > el_cont = elements[ j ]->GetContacts();
+                QPoint el_pos = elements[ j ]->pos().toPoint();
                 for( unsigned int k = 0; k < el_cont.size(); ++k )
                 {
                     QPoint el_contact = el_trans.map( el_cont[ k ].point ) + el_pos;
