@@ -168,6 +168,10 @@ MainWindow::Open()
                         {
                             el = new Pfet( NULL );
                         }
+                        else if( type == "container" )
+                        {
+                            el = new Container( NULL );
+                        }
                         el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
                         el->setRotation( xml.attributes().value( "rot" ).toInt() );
                         m_Scene->ConnectElement( el );
@@ -241,6 +245,7 @@ MainWindow::SaveAs()
                 case GraphicsItem::IT_POWER: xml.writeAttribute( "type", "power" ); break;
                 case GraphicsItem::IT_NFET: xml.writeAttribute( "type", "nfet" ); break;
                 case GraphicsItem::IT_PFET: xml.writeAttribute( "type", "pfet" ); break;
+                case GraphicsItem::IT_CONTAINER: xml.writeAttribute( "type", "container" ); break;
             }
             xml.writeAttribute( "pos", tr( "%1 %2" ).arg( el->pos().x() ).arg( el->pos().y() ) );
             xml.writeAttribute( "rot", tr( "%1" ).arg( el->rotation() ) );

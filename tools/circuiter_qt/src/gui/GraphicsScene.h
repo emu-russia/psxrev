@@ -1,5 +1,5 @@
-#ifndef CIRCUIT_H
-#define CIRCUIT_H
+#ifndef GRAPHICS_SCENE_H
+#define GRAPHICS_SCENE_H
 
 #include <vector>
 #include <QGraphicsScene>
@@ -19,6 +19,8 @@ class GraphicsScene : public QGraphicsScene
 public:
     GraphicsScene( QObject* parent );
     virtual ~GraphicsScene();
+
+    void RemoveAll();
 
     void ConnectElement( Element* element );
     void ConnectWire( Wire* wire );
@@ -56,6 +58,7 @@ protected:
     void mousePressEvent( QGraphicsSceneMouseEvent* event );
     void mouseReleaseEvent( QGraphicsSceneMouseEvent* event );
     void mouseMoveEvent( QGraphicsSceneMouseEvent* event );
+    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event );
     void keyPressEvent( QKeyEvent* event );
 
     void CalculateWireDraw();
@@ -99,4 +102,4 @@ extern GraphicsScene* test_circuit;
 
 
 
-#endif // CIRCUIT_H
+#endif // GRAPHICS_SCENE_H

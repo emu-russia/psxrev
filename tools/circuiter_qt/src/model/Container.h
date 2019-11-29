@@ -6,7 +6,6 @@
 #include <vector>
 
 class Connect;
-class GraphicsScene;
 class Line;
 class Wire;
 
@@ -27,8 +26,6 @@ public:
     void Trace( Line* line, Connect* connect );
     void SetValue( const int value, Connect* connect );
 
-    void SetScene( GraphicsScene* scene );
-
     std::vector< Element* >& GetElements();
     std::vector< Wire* >& GetWires();
 
@@ -43,10 +40,6 @@ private:
     std::vector< Element* > m_Elements;
     std::vector< Connect* > m_Connects;
     std::vector< Wire* > m_Wires;
-
-    GraphicsScene* m_Scene;
-
-    int counter;
 };
 
 

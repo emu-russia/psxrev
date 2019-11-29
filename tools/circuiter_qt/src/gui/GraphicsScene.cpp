@@ -10,7 +10,7 @@
 #include "../model/Pin.h"
 #include "../model/Power.h"
 
-#include <QGraphicsItem.h>
+#include <QGraphicsItem>
 #include <QtWidgets>
 
 
@@ -39,7 +39,6 @@ GraphicsScene::GraphicsScene( QObject* parent ):
 {
     m_RootContainer = new Container( NULL );
     m_CurrentContainer = m_RootContainer;
-    m_RootContainer->SetScene( this );
 }
 
 
@@ -54,6 +53,19 @@ GraphicsScene::~GraphicsScene()
     for( unsigned int i = 0; i < m_CopiedItem.size(); ++i )
     {
         delete m_CopiedItem[ i ];
+    }
+}
+
+
+
+void
+GraphicsScene::RemoveAll()
+{
+    QList< QGraphicsItem* > item_list = items();
+
+    for( size_t i = 0; i < item_list.size(); i++ )
+    {
+        removeItem( item_list[ i ] );
     }
 }
 
@@ -275,17 +287,17 @@ GraphicsScene::MergeWire( Wire* wire )
     std::vector< Wire* > wires = m_CurrentContainer->GetWires();
 
     // go through all wire and search for matching
-    for( std::vector< Wire* >::iterator it = wires.begin(); it != wires.end(); )
+    for( size_t i = 0; i < wires.size(); ++i )
     {
         // return line can update during merge
         QLine line_new = ret->GetLine();
         QPoint pos_new = ret->pos().toPoint();
         line_new.translate( pos_new );
 
-        if( ret != *it )
+        if( ret != wires[ i ] )
         {
-            QLine line_old = ( *it )->GetLine();
-            QPoint pos_old = ( *it )->pos().toPoint();
+            QLine line_old = wires[ i ]->GetLine();
+            QPoint pos_old = wires[ i ]->pos().toPoint();
             line_old.translate( pos_old );
             QPoint p_new1 = line_new.p1();
             QPoint p_new2 = line_new.p2();
@@ -300,20 +312,18 @@ GraphicsScene::MergeWire( Wire* wire )
             if( p_new1_old == true && p_new2_old == true )
             {
                 delete ret;
-                ret = *it;
+                ret = wires[ i ];
                 ret->GetConnect()->RemoveWire( ret );
-                removeItem( *it );
-                it = wires.erase( it );
-                continue;
+                removeItem( ret );
+                m_CurrentContainer->RemoveWire( wires[ i ] );
             }
             // if both points of old line on given line
             else if( p_old1_new == true && p_old2_new == true )
             {
-                removeItem( *it );
-                ( *it )->GetConnect()->RemoveWire( *it );
-                delete *it;
-                it = wires.erase( it );
-                continue;
+                wires[ i ]->GetConnect()->RemoveWire( wires[ i ] );
+                removeItem( wires[ i ] );
+                m_CurrentContainer->RemoveWire( wires[ i ] );
+                delete wires[ i ];
             }
             // if one point from both line on other line
             else if( ( p_new1_old == true || p_new2_old == true ) && ( p_old1_new == true || p_old2_new == true ) && (
@@ -322,14 +332,12 @@ GraphicsScene::MergeWire( Wire* wire )
             {
                 ret->SetLine( QLine( ( p_new2_old == true ) ? p_new1 : p_new2, ( p_old2_new == true ) ? p_old1 : p_old2 ) );
                 ret->setPos( QPoint( 0, 0 ) );
-                removeItem( *it );
-                ( *it )->GetConnect()->RemoveWire( *it );
-                delete *it;
-                it = wires.erase( it );
-                continue;
+                wires[ i ]->GetConnect()->RemoveWire( wires[ i ] );
+                removeItem( wires[ i ] );
+                m_CurrentContainer->RemoveWire( wires[ i ] );
+                delete wires[ i ];
             }
         }
-        ++it;
     }
 
     return ret;
@@ -354,7 +362,7 @@ GraphicsScene::DisconnectItems( std::vector< GraphicsItem* >& items )
             removeItem( items[ i ] );
 
             std::vector< Element::Contact > contacts = ( ( Element* )( items[ i ] ) )->GetContacts();
-            for( unsigned int j = 0; i < contacts.size(); ++i )
+            for( unsigned int j = 0; j < contacts.size(); ++j )
             {
                 if( contacts[ j ].connect != 0 )
                 {
@@ -529,6 +537,9 @@ GraphicsScene::drawForeground( QPainter* painter, const QRectF& rect )
 void
 GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
+    QGraphicsScene::mousePressEvent( event );
+
+/*
     if( event->button() == Qt::LeftButton )
     {
         if( selectedItems().size() > 0 )
@@ -546,7 +557,7 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
             {
                 m_MoveOffset = QPointF( 0, 0 );
             }
-            event->accept();
+            //event->accept();
         }
         else
         {
@@ -559,7 +570,7 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
             {
                 m_WireDraw = true;
                 m_WireStart = mouse_pos;
-                event->accept();
+                //event->accept();
             }
             else
             {
@@ -568,11 +579,12 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
                 if( item != 0 )
                 {
                     sendEvent( item, event );
-                    event->accept();
+                    //event->accept();
                 }
             }
         }
     }
+*/
 }
 
 
@@ -580,6 +592,9 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
 void
 GraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 {
+    QGraphicsScene::mouseReleaseEvent( event );
+
+/*
     // element mode
     if( m_WireDraw == false )
     {
@@ -633,6 +648,7 @@ GraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
             }
         }
     }
+*/
 }
 
 
@@ -644,7 +660,7 @@ GraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
         QList< QGraphicsView* > view = views();
         QPoint origin = view[ 0 ]->mapFromGlobal( QCursor::pos() );
         QPointF relative_origin = view[ 0 ]->mapToScene( origin );
-        printf( "%f %f, %f %f\n", relative_origin.x(), relative_origin.y(), event->scenePos().x(), event->scenePos().y() );
+        //printf( "%f %f, %f %f\n", relative_origin.x(), relative_origin.y(), event->scenePos().x(), event->scenePos().y() );
     }
 
     if( m_WireDraw == false )
@@ -724,6 +740,61 @@ GraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
         m_WireFinish = PointAlign( event->scenePos().toPoint() );
         CalculateWireDraw();
         event->accept();
+    }
+}
+
+
+
+void
+GraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
+{
+    printf( "%f %f\n", event->scenePos().x(), event->scenePos().y() );
+
+    //QGraphicsScene::mouseDoubleClickEvent( event );
+
+    if( event->buttons() & Qt::RightButton )
+    {
+        Container* container = m_CurrentContainer->GetContainer();
+        if( container != NULL )
+        {
+            RemoveAll();
+
+            m_CurrentContainer = container;
+
+            std::vector< Element* > elements = m_CurrentContainer->GetElements();
+            for( size_t i = 0; i < elements.size(); ++i )
+            {
+                addItem( elements[ i ] );
+            }
+            std::vector< Wire* > wires = m_CurrentContainer->GetWires();
+            for( size_t i = 0; i < wires.size(); ++i )
+            {
+                addItem( wires[ i ] );
+            }
+        }
+    }
+    else if( event->buttons() & Qt::LeftButton )
+    {
+        Element* item = ( Element* )itemAt( event->scenePos(), ( ( QGraphicsView* )event->widget()->parentWidget() )->viewportTransform() );
+        if( item != NULL )
+        {
+            if( item->GetType() == GraphicsItem::IT_CONTAINER )
+            {
+                RemoveAll();
+
+                m_CurrentContainer = ( Container* )item;
+                std::vector< Element* > elements = m_CurrentContainer->GetElements();
+                for( size_t i = 0; i < elements.size(); ++i )
+                {
+                    addItem( elements[ i ] );
+                }
+                std::vector< Wire* > wires = m_CurrentContainer->GetWires();
+                for( size_t i = 0; i < wires.size(); ++i )
+                {
+                    addItem( wires[ i ] );
+                }
+            }
+        }
     }
 }
 

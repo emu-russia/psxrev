@@ -7,12 +7,9 @@
 
 
 Container::Container( Container* parent ):
-    Element( parent ),
-    m_Scene( NULL )
+    Element( parent )
 {
     m_ItemType = IT_CONTAINER;
-
-    counter = 0;
 
     Contact con;
     con.connect = 0;
@@ -84,7 +81,7 @@ Container::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWi
     painter->setFont( font );
     painter->save();
     painter->scale( 1, 1 );
-    painter->drawText( 0, 0, QString("Counter: %1").arg( counter) );
+    painter->drawText( -20, 0, QString( "Container" ) );
     painter->restore();
 
     if( option->state & QStyle::State_Selected )
@@ -100,8 +97,6 @@ Container::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWi
 void
 Container::Update()
 {
-    ++counter;
-
     for( size_t i = 0; i < m_Elements.size(); ++i )
     {
         m_Elements[ i ]->Update();
@@ -122,14 +117,6 @@ void
 Container::SetValue( const int value, Connect* connect )
 {
     m_Visited = false;
-}
-
-
-
-void
-Container::SetScene( GraphicsScene* scene )
-{
-    m_Scene = scene;
 }
 
 

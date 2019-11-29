@@ -112,6 +112,10 @@ Element::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
     if( isSelected() == true )
     {
+        QGraphicsItem::mousePressEvent( event );
+    }
+    else
+    {
         event->accept();
     }
 }
@@ -121,6 +125,14 @@ Element::mousePressEvent( QGraphicsSceneMouseEvent* event )
 void
 Element::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 {
+    if( isSelected() == true )
+    {
+        QGraphicsItem::mouseReleaseEvent( event );
+    }
+    else
+    {
+        event->accept();
+    }
 }
 
 
@@ -128,4 +140,12 @@ Element::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 void
 Element::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 {
+    if( isSelected() == true )
+    {
+        QGraphicsItem::mouseMoveEvent( event );
+    }
+    else
+    {
+        event->accept();
+    }
 }
