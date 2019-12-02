@@ -88,7 +88,6 @@ GraphicsView::mousePressEvent( QMouseEvent* event )
     {
         QGraphicsView::mousePressEvent( event );
     }
-    event->accept();
 }
 
 
@@ -97,7 +96,6 @@ void
 GraphicsView::mouseReleaseEvent( QMouseEvent* event )
 {
     QGraphicsView::mouseReleaseEvent( event );
-    event->accept();
 }
 
 
@@ -118,7 +116,6 @@ GraphicsView::mouseMoveEvent( QMouseEvent *event )
     {
         QGraphicsView::mouseMoveEvent( event );
     }
-    event->accept();
 }
 
 
@@ -126,5 +123,5 @@ GraphicsView::mouseMoveEvent( QMouseEvent *event )
 void
 GraphicsView::mouseDoubleClickEvent( QMouseEvent* event )
 {
-    event->accept();
+    QGraphicsView::mouseDoubleClickEvent( event );
 }

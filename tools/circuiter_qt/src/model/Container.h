@@ -37,6 +37,8 @@ public:
     void RemoveWire( Wire* wire );
 
 private:
+    QString m_Def;
+
     std::vector< Element* > m_Elements;
     std::vector< Connect* > m_Connects;
     std::vector< Wire* > m_Wires;

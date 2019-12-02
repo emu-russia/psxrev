@@ -537,9 +537,6 @@ GraphicsScene::drawForeground( QPainter* painter, const QRectF& rect )
 void
 GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
-    QGraphicsScene::mousePressEvent( event );
-
-/*
     if( event->button() == Qt::LeftButton )
     {
         if( selectedItems().size() > 0 )
@@ -557,7 +554,7 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
             {
                 m_MoveOffset = QPointF( 0, 0 );
             }
-            //event->accept();
+            event->accept();
         }
         else
         {
@@ -570,7 +567,7 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
             {
                 m_WireDraw = true;
                 m_WireStart = mouse_pos;
-                //event->accept();
+                event->accept();
             }
             else
             {
@@ -579,12 +576,11 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
                 if( item != 0 )
                 {
                     sendEvent( item, event );
-                    //event->accept();
+                    event->accept();
                 }
             }
         }
     }
-*/
 }
 
 
@@ -592,9 +588,6 @@ GraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent* event )
 void
 GraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
 {
-    QGraphicsScene::mouseReleaseEvent( event );
-
-/*
     // element mode
     if( m_WireDraw == false )
     {
@@ -648,7 +641,6 @@ GraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
             }
         }
     }
-*/
 }
 
 
@@ -748,10 +740,6 @@ GraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 void
 GraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
 {
-    printf( "%f %f\n", event->scenePos().x(), event->scenePos().y() );
-
-    //QGraphicsScene::mouseDoubleClickEvent( event );
-
     if( event->buttons() & Qt::RightButton )
     {
         Container* container = m_CurrentContainer->GetContainer();
