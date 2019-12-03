@@ -7,5 +7,6 @@
         <file>images/pfet.png</file>
         <file>images/pin.png</file>
         <file>images/power.png</file>
+        <file>images/container.png</file>
     </qresource>
 </RCC>
