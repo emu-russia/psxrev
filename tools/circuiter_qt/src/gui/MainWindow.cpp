@@ -98,7 +98,7 @@ MainWindow::~MainWindow()
 void
 MainWindow::Open()
 {
-    QString filename = QFileDialog::getOpenFileName( this, tr( "Open GraphicsScene File" ), QDir::currentPath(), tr( "GraphicsScene Files (*.xml)" ) );
+    QString filename = QFileDialog::getOpenFileName( this, tr( "Open Circuit File" ), QDir::currentPath(), tr( "Circuit Files (*.xml)" ) );
     if( filename.isEmpty() )
     {
         return;
@@ -116,7 +116,7 @@ MainWindow::Open()
     QFile file( filename );
     if( !file.open( QFile::ReadOnly | QFile::Text ) )
     {
-        QMessageBox::warning( this, tr( "GraphicsScene Load Error" ), tr( "Cannot read file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
+        QMessageBox::warning( this, tr( "Circuit Load Error" ), tr( "Cannot read file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
         return;
     }
 
@@ -125,70 +125,84 @@ MainWindow::Open()
     QXmlStreamReader xml( &file );
     if( xml.readNextStartElement() )
     {
-        if( xml.name() == "circuit" )
+        if( xml.name() == "project" )
         {
             while( xml.readNextStartElement() )
             {
-                if( xml.name() == "wire")
+                if( xml.name() == "container" )
                 {
-                    QStringRef str = xml.attributes().value( "line" );
-                    QVector< QStringRef > vec = str.split( " " );
-                    if( vec.size() >= 4 )
+                    QStringRef def = xml.attributes().value( "def" );
+                    Container* container = new Container( NULL );
+                    m_Scene->AddContainerDef( container );
+
+                    while( xml.readNextStartElement() )
                     {
-                        wire = new Wire();
-                        wire->SetLine( QLine( vec[ 0 ].toInt(), vec[ 1 ].toInt(), vec[ 2 ].toInt(), vec[ 3 ].toInt() ) );
-                        m_Scene->ConnectWire( wire );
+                        if( xml.name() == "wire" )
+                        {
+                            QStringRef str = xml.attributes().value( "line" );
+                            QVector< QStringRef > vec = str.split( " " );
+                            if( vec.size() >= 4 )
+                            {
+                                wire = new Wire();
+                                wire->SetLine( QLine( vec[ 0 ].toInt(), vec[ 1 ].toInt(), vec[ 2 ].toInt(), vec[ 3 ].toInt() ) );
+                                container->InsertWire( wire );
+                            }
+                        }
+                        else if( xml.name() == "element" )
+                        {
+                            QStringRef str = xml.attributes().value( "pos" );
+                            QVector< QStringRef > vec = str.split( " " );
+                            if( vec.size() >= 2 )
+                            {
+                                el = 0;
+                                QString type = xml.attributes().value( "type" ).toString();
+                                if( type == "pin" )
+                                {
+                                    el = new Pin( NULL );
+                                }
+                                else if( type == "ground" )
+                                {
+                                    el = new Ground( NULL );
+                                }
+                                else if( type == "power" )
+                                {
+                                    el = new Power( NULL );
+                                }
+                                else if( type == "nfet" )
+                                {
+                                    el = new Nfet( NULL );
+                                }
+                                else if( type == "pfet" )
+                                {
+                                    el = new Pfet( NULL );
+                                }
+                                else if( type == "container" )
+                                {
+                                    el = new Container( NULL );
+                                }
+                                el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
+                                el->setRotation( xml.attributes().value( "rot" ).toInt() );
+                                container->InsertElement( el );
+                            }
+                        }
+                        xml.skipCurrentElement();
                     }
                 }
-                else if( xml.name() == "element" )
+                else
                 {
-                    QStringRef str = xml.attributes().value( "pos" );
-                    QVector< QStringRef > vec = str.split( " " );
-                    if( vec.size() >= 2 )
-                    {
-                        el = 0;
-                        QString type = xml.attributes().value( "type" ).toString();
-                        if( type == "pin" )
-                        {
-                            el = new Pin( NULL );
-                        }
-                        else if( type == "ground" )
-                        {
-                            el = new Ground( NULL );
-                        }
-                        else if( type == "power" )
-                        {
-                            el = new Power( NULL );
-                        }
-                        else if( type == "nfet" )
-                        {
-                            el = new Nfet( NULL );
-                        }
-                        else if( type == "pfet" )
-                        {
-                            el = new Pfet( NULL );
-                        }
-                        else if( type == "container" )
-                        {
-                            el = new Container( NULL );
-                        }
-                        el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
-                        el->setRotation( xml.attributes().value( "rot" ).toInt() );
-                        m_Scene->ConnectElement( el );
-                    }
+                    xml.raiseError( QObject::tr( "The file is not circuit file. No <container> in <project>." ) );
                 }
-                xml.skipCurrentElement();
             }
         }
         else
         {
-            xml.raiseError( QObject::tr( "The file is not circuit file. No <circuit> in root." ) );
+            xml.raiseError( QObject::tr( "The file is not circuit file. No <project> in root." ) );
         }
     }
 
     if( xml.error() )
     {
-        QMessageBox::warning( this, tr( "GraphicsScene Load Error" ), tr( "Parse error in file %1:\n\n%2" ).arg( filename ).arg( xml.errorString() ) );
+        QMessageBox::warning( this, tr( "Circuit Load Error" ), tr( "Parse error in file %1:\n\n%2" ).arg( filename ).arg( xml.errorString() ) );
     }
     else
     {
@@ -203,7 +217,7 @@ MainWindow::Open()
 void
 MainWindow::SaveAs()
 {
-    QString filename = QFileDialog::getSaveFileName( this, tr( "Save GraphicsScene File" ), QDir::currentPath(), tr( "GraphicsScene Files (*.xml)" ) );
+    QString filename = QFileDialog::getSaveFileName( this, tr( "Save Circuit File" ), QDir::currentPath(), tr( "Circuit Files (*.xml)" ) );
     if( filename.isEmpty() )
     {
         return;
@@ -212,7 +226,7 @@ MainWindow::SaveAs()
     QFile file( filename );
     if( !file.open( QFile::WriteOnly | QFile::Text ) )
     {
-        QMessageBox::warning( this, tr( "GraphicsScene Save Error" ), tr( "Cannot write file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
+        QMessageBox::warning( this, tr( "Circuit Save Error" ), tr( "Cannot write file %1:\n%2." ).arg( filename ).arg( file.errorString() ) );
         return;
     }
 

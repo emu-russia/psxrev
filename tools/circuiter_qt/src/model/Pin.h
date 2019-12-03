@@ -14,7 +14,7 @@ public:
     Pin( Container* parent );
     virtual ~Pin();
 
-    Element* Copy();
+    Element* Copy( Container* parent );
 
     QRectF boundingRect() const override;
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* item, QWidget* widget ) override;

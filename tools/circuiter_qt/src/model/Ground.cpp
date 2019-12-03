@@ -30,9 +30,9 @@ Ground::~Ground()
 
 
 Element*
-Ground::Copy()
+Ground::Copy( Container* parent )
 {
-    Element* element = new Ground( GetContainer() );
+    Element* element = new Ground( parent );
     return element;
 }
 

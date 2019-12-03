@@ -44,9 +44,9 @@ Container::~Container()
 
 
 Element*
-Container::Copy()
+Container::Copy( Container* parent )
 {
-    Element* element = new Container( GetContainer() );
+    Element* element = new Container( parent );
     return element;
 }
 

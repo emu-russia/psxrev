@@ -28,9 +28,12 @@ public:
     void DisconnectItems( std::vector< GraphicsItem* >& items );
     void InsertElement( GraphicsItem* element );
 
+    void AddContainerDef( Container* container );
+
     void DoStep();
     void UpdateAll();
 
+    void SetCurrentContainer( Container* container );
     Container* GetCurrentContainer();
 
     void InsertContainer();
@@ -75,6 +78,7 @@ protected:
 private:
     Container* m_RootContainer;
     Container* m_CurrentContainer;
+    std::vector< Container* > m_ContainerDefs;
 
     enum WireMode
     {
