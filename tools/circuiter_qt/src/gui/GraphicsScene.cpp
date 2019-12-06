@@ -72,6 +72,11 @@ GraphicsScene::RemoveAll()
     {
         removeItem( item_list[ i ] );
     }
+
+    for( size_t i = 0; i < m_MovedItem.size(); ++i )
+    {
+        delete m_MovedItem[ i ];
+    }
 }
 
 
@@ -489,7 +494,6 @@ void
 GraphicsScene::InsertContainer()
 {
     GraphicsItem* element = new Container( m_CurrentContainer );
-    InsertElement( element );
 
     if( m_ContainerDefs.size() > 0 )
     {
@@ -500,17 +504,21 @@ GraphicsScene::InsertContainer()
         std::vector< Element* > elements = m_ContainerDefs[ 0 ]->GetElements();
         for( size_t i = 0; i < elements.size(); ++i )
         {
-            ConnectElement( elements[ i ] );
+            Element* element = elements[ i ]->Copy( m_CurrentContainer );
+            element->setPos( elements[ i ]->pos() );
+            ConnectElement( element );
         }
 
         std::vector< Wire* > wires = m_ContainerDefs[ 0 ]->GetWires();
         for( size_t i = 0; i < wires.size(); ++i )
         {
-            ConnectWire( wires[ i ] );
+            //ConnectWire( wires[ i ] );
         }
 
         SetCurrentContainer( temp );
     }
+
+    InsertElement( element );
 }
 
 

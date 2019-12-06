@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <container def="sub">
-        <element type="power" pos="-300 -135" rot="0"/>
+        <element type="power" pos="0 0" rot="0"/>
     </container>
 </project>
