@@ -14,6 +14,8 @@ namespace LogisimYed
     {
         public class LogisimModel
         {
+            public string name = "";
+
             public List<LogisimComp> comps = new List<LogisimComp>();
             public List<LogisimWire> wires = new List<LogisimWire>();
             public List<LogisimVias> viases = new List<LogisimVias>();
@@ -58,6 +60,11 @@ namespace LogisimYed
 
             LogisimModel model = new LogisimModel();
 
+            if ( circuit.Attributes["name"] != null)
+            {
+                model.name = circuit.Attributes["name"].Value;
+            }
+
             // Get components
 
             foreach ( XmlNode node in circuit)
@@ -66,7 +73,10 @@ namespace LogisimYed
                 {
                     LogisimComp comp = new LogisimComp();
 
-                    comp.lib = int.Parse(node.Attributes["lib"].Value);
+                    if (node.Attributes["lib"] != null)
+                    {
+                        comp.lib = int.Parse(node.Attributes["lib"].Value);
+                    }
                     comp.loc = ParseLoc(node.Attributes["loc"].Value);
                     comp.name = node.Attributes["name"].Value;
 
@@ -170,6 +180,8 @@ namespace LogisimYed
 
         private static void DumpLogisimModel(LogisimModel model)
         {
+            Console.WriteLine(model.name + ":");
+
             foreach (var comp in model.comps)
             {
                 comp.Dump();

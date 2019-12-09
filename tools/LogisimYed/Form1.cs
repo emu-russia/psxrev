@@ -97,9 +97,12 @@ namespace LogisimYed
             Console.WriteLine(YedGraphml.OuterXml);
         }
 
-        private void VisualizeLogisim (LogisimConverter.LogisimModel model)
+        private void VisualizeLogisim(LogisimConverter.LogisimModel model)
         {
             canvasControl1.RemoveAllItems();
+
+            int nfetCounter = 1;
+            int pfetCounter = 1;
 
             // Comps
 
@@ -118,11 +121,21 @@ namespace LogisimYed
                 {
                     if (comp.props.ContainsKey("type"))
                     {
-                        rect.Text = comp.props["type"] == "n" ? "nfet" : "pfet";
+                        if (comp.props["type"] == "n")
+                        {
+                            rect.Text = "nfet_" + nfetCounter.ToString();
+                            nfetCounter++;
+                        }
+                        else
+                        {
+                            rect.Text = "pfet_" + pfetCounter.ToString();
+                            pfetCounter++;
+                        }
                     }
                     else
                     {
-                        rect.Text = "pfet";
+                        rect.Text = "pfet_" + pfetCounter.ToString();
+                        pfetCounter++;
                     }
                     if (!comp.props.ContainsKey("facing"))
                     {
@@ -133,21 +146,21 @@ namespace LogisimYed
                         case "north":
                             rect.Pos = new PointF(
                                 rect.Pos.X,
-                                rect.Pos.Y + rect.Height);
+                                rect.Pos.Y + rect.Height - 4);
                             break;
                         case "south":
                             rect.Pos = new PointF(
                                 rect.Pos.X,
-                                rect.Pos.Y - rect.Height);
+                                rect.Pos.Y - rect.Height + 4);
                             break;
                         case "west":
                             rect.Pos = new PointF(
-                                rect.Pos.X + rect.Width,
+                                rect.Pos.X + rect.Width - 4,
                                 rect.Pos.Y);
                             break;
                         case "east":
                             rect.Pos = new PointF(
-                                rect.Pos.X - rect.Width,
+                                rect.Pos.X - rect.Width + 4,
                                 rect.Pos.Y);
                             break;
                     }
@@ -234,6 +247,11 @@ namespace LogisimYed
                 }
 
                 canvasControl1.AddItem(rect);
+
+                if (rect.Text.Contains("nfet") || rect.Text.Contains("pfet"))
+                {
+                    AddTrans(rect, comp);
+                }
             }
 
             // Wires
@@ -253,6 +271,138 @@ namespace LogisimYed
             }
 
             canvasControl1.Invalidate();
+        }
+
+        private void AddTrans (CanvasRect bbox, LogisimConverter.LogisimComp comp)
+        {
+            CanvasLine source = null;
+            CanvasLine drain = null;
+            CanvasLine gate = null;
+            CanvasPoint sourcePad = null;
+            CanvasPoint drainPad = null;
+            CanvasPoint gatePad = null;
+
+            int delta = 12;
+
+            bool br = false;
+
+            if (comp.props.ContainsKey("gate"))
+            {
+                br = comp.props["gate"] == "br" ? true : false;
+            }
+
+            switch (comp.props["facing"])
+            {
+                case "north":
+                    source = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height),
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height + delta), Color.Black);
+                    drain = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y),
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y - delta), Color.Black);
+                    if (br)
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width, bbox.Pos.Y + bbox.Height / 2),
+                            new PointF(bbox.Pos.X + bbox.Width + delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    }
+                    else
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X, bbox.Pos.Y + bbox.Height / 2),
+                            new PointF(bbox.Pos.X - delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    }
+                    sourcePad = new CanvasPoint(source.PosEnd, 5, Color.Gold);
+                    drainPad = new CanvasPoint(drain.PosEnd, 5, Color.Gold);
+                    gatePad = new CanvasPoint(gate.PosEnd, 5, Color.Gold);
+                    break;
+                case "south":
+                    source = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y - delta),
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y), Color.Black);
+                    drain = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height),
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height + delta), Color.Black);
+                    if (br)
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width, bbox.Pos.Y + bbox.Height / 2),
+                            new PointF(bbox.Pos.X + bbox.Width + delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    }
+                    else
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X, bbox.Pos.Y + bbox.Height / 2),
+                            new PointF(bbox.Pos.X - delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    }
+                    sourcePad = new CanvasPoint(source.Pos, 5, Color.Gold);
+                    drainPad = new CanvasPoint(drain.PosEnd, 5, Color.Gold);
+                    gatePad = new CanvasPoint(gate.PosEnd, 5, Color.Gold);
+                    break;
+                case "west":
+                    source = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width + delta, bbox.Pos.Y + bbox.Height / 2),
+                        new PointF(bbox.Pos.X + bbox.Width, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    drain = new CanvasLine(
+                        new PointF(bbox.Pos.X, bbox.Pos.Y + bbox.Height / 2),
+                        new PointF(bbox.Pos.X - delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    if (br)
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height),
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height + delta), Color.Black);
+                    }
+                    else
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y),
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y - delta), Color.Black);
+                    }
+                    sourcePad = new CanvasPoint(source.Pos, 5, Color.Gold);
+                    drainPad = new CanvasPoint(drain.PosEnd, 5, Color.Gold);
+                    gatePad = new CanvasPoint(gate.PosEnd, 5, Color.Gold);
+                    break;
+                case "east":
+                    source = new CanvasLine(
+                        new PointF(bbox.Pos.X - delta, bbox.Pos.Y + bbox.Height / 2),
+                        new PointF(bbox.Pos.X, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    drain = new CanvasLine(
+                        new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height / 2),
+                        new PointF(bbox.Pos.X + bbox.Width + delta, bbox.Pos.Y + bbox.Height / 2), Color.Black);
+                    if (br)
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height),
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y + bbox.Height + delta), Color.Black);
+                    }
+                    else
+                    {
+                        gate = new CanvasLine(
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y),
+                            new PointF(bbox.Pos.X + bbox.Width / 2, bbox.Pos.Y - delta), Color.Black);
+                    }
+                    sourcePad = new CanvasPoint(source.Pos, 5, Color.Gold);
+                    drainPad = new CanvasPoint(drain.PosEnd, 5, Color.Gold);
+                    gatePad = new CanvasPoint(gate.PosEnd, 5, Color.Gold);
+                    break;
+            }
+
+            if (source != null)
+            {
+                canvasControl1.AddItem(source);
+                canvasControl1.AddItem(sourcePad);
+            }
+            if (drain != null)
+            {
+                canvasControl1.AddItem(drain);
+                canvasControl1.AddItem(drainPad);
+            }
+            if (gate != null)
+            {
+                gate.Text = "g";
+                canvasControl1.AddItem(gate);
+                canvasControl1.AddItem(gatePad);
+            }
         }
 
     }
