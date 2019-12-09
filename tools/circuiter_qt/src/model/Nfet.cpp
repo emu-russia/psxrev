@@ -33,9 +33,9 @@ Nfet::~Nfet()
 
 
 Element*
-Nfet::Copy()
+Nfet::Copy( Container* parent )
 {
-    Element* element = new Nfet( GetContainer() );
+    Element* element = new Nfet( parent );
     return element;
 }
 

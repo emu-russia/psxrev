@@ -21,7 +21,7 @@ public:
     Element( Container* parent );
     virtual ~Element();
 
-    virtual Element* Copy() = 0;
+    virtual Element* Copy( Container* parent ) = 0;
 
     virtual void Update() = 0;
     virtual void Trace( Line* line, Connect* connect ) = 0;

@@ -29,9 +29,9 @@ Pin::~Pin()
 
 
 Element*
-Pin::Copy()
+Pin::Copy( Container* parent )
 {
-    Element* element = new Pin( GetContainer() );
+    Element* element = new Pin( parent );
     return element;
 }
 

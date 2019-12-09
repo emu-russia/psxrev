@@ -54,6 +54,11 @@ GraphicsScene::~GraphicsScene()
     {
         delete m_CopiedItem[ i ];
     }
+
+    for( unsigned int i = 0; i < m_ContainerDefs.size(); ++i )
+    {
+        delete m_ContainerDefs[ i ];
+    }
 }
 
 
@@ -66,6 +71,11 @@ GraphicsScene::RemoveAll()
     for( size_t i = 0; i < item_list.size(); i++ )
     {
         removeItem( item_list[ i ] );
+    }
+
+    for( size_t i = 0; i < m_MovedItem.size(); ++i )
+    {
+        delete m_MovedItem[ i ];
     }
 }
 
@@ -427,6 +437,27 @@ GraphicsScene::UpdateAll()
 
 
 
+void
+GraphicsScene::SetCurrentContainer( Container* container )
+{
+    RemoveAll();
+
+    m_CurrentContainer = container;
+
+    std::vector< Element* > elements = m_CurrentContainer->GetElements();
+    for( size_t i = 0; i < elements.size(); ++i )
+    {
+        addItem( elements[ i ] );
+    }
+    std::vector< Wire* > wires = m_CurrentContainer->GetWires();
+    for( size_t i = 0; i < wires.size(); ++i )
+    {
+        addItem( wires[ i ] );
+    }
+}
+
+
+
 Container*
 GraphicsScene::GetCurrentContainer()
 {
@@ -452,9 +483,41 @@ GraphicsScene::InsertElement( GraphicsItem* element )
 
 
 void
+GraphicsScene::AddContainerDef( Container* container )
+{
+    m_ContainerDefs.push_back( container );
+}
+
+
+
+void
 GraphicsScene::InsertContainer()
 {
     GraphicsItem* element = new Container( m_CurrentContainer );
+
+    if( m_ContainerDefs.size() > 0 )
+    {
+        Container* temp = m_CurrentContainer;
+
+        SetCurrentContainer( ( Container* )element );
+
+        std::vector< Element* > elements = m_ContainerDefs[ 0 ]->GetElements();
+        for( size_t i = 0; i < elements.size(); ++i )
+        {
+            Element* element = elements[ i ]->Copy( m_CurrentContainer );
+            element->setPos( elements[ i ]->pos() );
+            ConnectElement( element );
+        }
+
+        std::vector< Wire* > wires = m_ContainerDefs[ 0 ]->GetWires();
+        for( size_t i = 0; i < wires.size(); ++i )
+        {
+            //ConnectWire( wires[ i ] );
+        }
+
+        SetCurrentContainer( temp );
+    }
+
     InsertElement( element );
 }
 
@@ -745,20 +808,7 @@ GraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
         Container* container = m_CurrentContainer->GetContainer();
         if( container != NULL )
         {
-            RemoveAll();
-
-            m_CurrentContainer = container;
-
-            std::vector< Element* > elements = m_CurrentContainer->GetElements();
-            for( size_t i = 0; i < elements.size(); ++i )
-            {
-                addItem( elements[ i ] );
-            }
-            std::vector< Wire* > wires = m_CurrentContainer->GetWires();
-            for( size_t i = 0; i < wires.size(); ++i )
-            {
-                addItem( wires[ i ] );
-            }
+            SetCurrentContainer( container );
         }
     }
     else if( event->buttons() & Qt::LeftButton )
@@ -768,19 +818,7 @@ GraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
         {
             if( item->GetType() == GraphicsItem::IT_CONTAINER )
             {
-                RemoveAll();
-
-                m_CurrentContainer = ( Container* )item;
-                std::vector< Element* > elements = m_CurrentContainer->GetElements();
-                for( size_t i = 0; i < elements.size(); ++i )
-                {
-                    addItem( elements[ i ] );
-                }
-                std::vector< Wire* > wires = m_CurrentContainer->GetWires();
-                for( size_t i = 0; i < wires.size(); ++i )
-                {
-                    addItem( wires[ i ] );
-                }
+                SetCurrentContainer( ( Container* )item );
             }
         }
     }
@@ -853,7 +891,7 @@ GraphicsScene::keyPressEvent( QKeyEvent* event )
                         }
                         else
                         {
-                            Element* element = ( ( Element* )( select[ i ] ) )->Copy();
+                            Element* element = ( ( Element* )( select[ i ] ) )->Copy( m_CurrentContainer );
                             element->setPos( select[ i ]->pos() );
                             element->setRotation( select[ i ]->rotation() );
                             m_CopiedItem.push_back( element );
@@ -895,7 +933,7 @@ GraphicsScene::keyPressEvent( QKeyEvent* event )
                     }
                     else
                     {
-                        Element* element = ( ( Element* )m_CopiedItem[ i ] )->Copy();
+                        Element* element = ( ( Element* )m_CopiedItem[ i ] )->Copy( m_CurrentContainer );
                         element->setPos( m_CopiedItem[ i ]->pos() + QPoint( 15, 15 ) );
                         element->setRotation( m_CopiedItem[ i ]->rotation() );
                         m_MoveOffset = QPointF( 0, 0 );

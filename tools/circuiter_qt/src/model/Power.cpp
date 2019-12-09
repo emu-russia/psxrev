@@ -30,9 +30,9 @@ Power::~Power()
 
 
 Element*
-Power::Copy()
+Power::Copy( Container* parent )
 {
-    Element* element = new Power( GetContainer() );
+    Element* element = new Power( parent );
     return element;
 }
 

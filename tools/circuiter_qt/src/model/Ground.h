@@ -13,7 +13,7 @@ public:
     Ground( Container* parent );
     virtual ~Ground();
 
-    Element* Copy();
+    Element* Copy( Container* parent );
 
     QRectF boundingRect() const override;
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* item, QWidget* widget ) override;

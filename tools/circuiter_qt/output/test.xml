@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<circuit>
-    <wire line="-405 -135 -405 -120"/>
-    <wire line="-405 -120 -405 -105"/>
-    <wire line="-420 -120 -405 -120"/>
-    <wire line="-405 -120 -390 -120"/>
-</circuit>
+<project>
+    <container def="sub">
+        <element type="power" pos="0 0" rot="0"/>
+    </container>
+</project>

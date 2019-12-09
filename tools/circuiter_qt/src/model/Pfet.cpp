@@ -33,9 +33,9 @@ Pfet::~Pfet()
 
 
 Element*
-Pfet::Copy()
+Pfet::Copy( Container* parent )
 {
-    Element* element = new Pfet( GetContainer() );
+    Element* element = new Pfet( parent );
     return element;
 }
 

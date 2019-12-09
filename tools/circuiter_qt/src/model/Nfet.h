@@ -15,7 +15,7 @@ public:
     Nfet( Container* parent );
     virtual ~Nfet();
 
-    Element* Copy();
+    Element* Copy( Container* parent );
 
     QRectF boundingRect() const override;
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* item, QWidget* widget ) override;
