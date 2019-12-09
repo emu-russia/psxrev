@@ -81,11 +81,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CanvasControl\CanvasControl.csproj">
-      <Project>{b14906c8-73d5-414d-a573-26dd2e7482ae}</Project>
-      <Name>CanvasControl</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
