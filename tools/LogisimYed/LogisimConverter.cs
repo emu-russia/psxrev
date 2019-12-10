@@ -79,6 +79,7 @@ namespace LogisimYed
                     }
                     comp.loc = ParseLoc(node.Attributes["loc"].Value);
                     comp.name = node.Attributes["name"].Value;
+                    comp.id = GetNextId(model);
 
                     foreach (XmlNode a in node)
                     {
@@ -422,22 +423,29 @@ namespace LogisimYed
                     break;
             }
 
-            if (source != null)
-            {
-                model.wires.Add(source);
-                model.viases.Add(sourcePad);
-            }
-            if (drain != null)
-            {
-                model.wires.Add(drain);
-                model.viases.Add(drainPad);
-            }
-            if (gate != null)
-            {
-                gate.name = "g";
-                model.wires.Add(gate);
-                model.viases.Add(gatePad);
-            }
+            sourcePad.id = GetNextId(model);
+            drainPad.id = GetNextId(model);
+            gatePad.id = GetNextId(model);
+
+            gate.name = "g";
+
+            source.source = sourcePad;
+            source.dest = comp;
+
+            model.wires.Add(source);
+            model.viases.Add(sourcePad);
+
+            drain.source = comp;
+            drain.dest = drainPad;
+
+            model.wires.Add(drain);
+            model.viases.Add(drainPad);
+
+            gate.source = gatePad;
+            gate.dest = comp;
+
+            model.wires.Add(gate);
+            model.viases.Add(gatePad);
         }
 
         /// <summary>
@@ -448,6 +456,29 @@ namespace LogisimYed
         public static void Reduce(LogisimModel model)
         {
 
+        }
+
+        public static int GetNextId (LogisimModel model)
+        {
+            int id = -1;
+            
+            foreach (var comp in model.comps)
+            {
+                if (comp.id > id)
+                {
+                    id = comp.id;
+                }
+            }
+
+            foreach (var vias in model.viases)
+            {
+                if (vias.id > id)
+                {
+                    id = vias.id;
+                }
+            }
+
+            return id + 1;
         }
 
         /// <summary>
@@ -484,6 +515,7 @@ namespace LogisimYed
 
         public class LogisimNode
         {
+            public int id = -1;
             public virtual string GetName()
             {
                 return "<Unassigned>";
@@ -491,14 +523,15 @@ namespace LogisimYed
         }
 
         public class LogisimEdge
-        {}
+        {
+            public LogisimNode source = new LogisimNode();
+            public LogisimNode dest = new LogisimNode();
+        }
 
         public class LogisimWire : LogisimEdge
         {
             public List<Point> path = new List<Point>();
             public string name = "";
-            public LogisimNode source = new LogisimNode();
-            public LogisimNode dest = new LogisimNode();
 
             public LogisimWire() {}
 
@@ -529,6 +562,10 @@ namespace LogisimYed
 
                 path.Clear();
                 path = pathrev;
+
+                var temp = source;
+                source = dest;
+                dest = temp;
             }
 
             public void Dump()
@@ -556,7 +593,7 @@ namespace LogisimYed
 
             public override string GetName()
             {
-                return name;
+                return name + "(" + id.ToString() + ")";
             }
 
             public void Dump()
@@ -582,7 +619,7 @@ namespace LogisimYed
 
             public override string GetName()
             {
-                return "Vias";
+                return "Vias(" + id.ToString() + ")";
             }
 
             public void Dump()
