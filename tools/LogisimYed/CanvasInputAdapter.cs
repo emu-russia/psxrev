@@ -26,8 +26,11 @@ namespace LogisimYed
         private bool draggingBegin = false;
         private List<CanvasItem> selectedDragItems = new List<CanvasItem>();
 
-        public CanvasInputAdapter (CanvasControl.CanvasControl control)
+        private Form1 parentForm;
+
+        public CanvasInputAdapter (CanvasControl.CanvasControl control, Form1 _parentForm)
         {
+            parentForm = _parentForm;
             canvas = control;
 
             canvas.MouseDown += Canvas_MouseDown;
@@ -312,6 +315,13 @@ namespace LogisimYed
                 case Keys.Down:
                     canvas.Scroll.Y -= 10F;
                     canvas.Invalidate();
+                    break;
+                case Keys.Escape:
+                    canvas.UnselectAll();
+                    canvas.Invalidate();
+                    break;
+                case Keys.Space:
+                    parentForm.FlipSelectedWires();
                     break;
             }
         }

@@ -330,26 +330,26 @@ namespace LogisimYed
             {
                 case "north":
                     source = new LogisimWire(
-                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
-                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta),
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height));
                     drain = new LogisimWire(
                         new Point(bbox.X + bbox.Width / 2, bbox.Y),
                         new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
                     if (br)
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2),
-                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
+                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2));
                     }
                     else
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X, bbox.Y + bbox.Height / 2),
-                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2));
+                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X, bbox.Y + bbox.Height / 2));
                     }
-                    sourcePad = new LogisimVias(source.To());
+                    sourcePad = new LogisimVias(source.From());
                     drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.To());
+                    gatePad = new LogisimVias(gate.From());
                     break;
                 case "south":
                     source = new LogisimWire(
@@ -361,18 +361,18 @@ namespace LogisimYed
                     if (br)
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2),
-                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
+                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2));
                     }
                     else
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X, bbox.Y + bbox.Height / 2),
-                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2));
+                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X, bbox.Y + bbox.Height / 2));
                     }
                     sourcePad = new LogisimVias(source.From());
                     drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.To());
+                    gatePad = new LogisimVias(gate.From());
                     break;
                 case "west":
                     source = new LogisimWire(
@@ -384,41 +384,41 @@ namespace LogisimYed
                     if (br)
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height));
                     }
                     else
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y),
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y));
                     }
                     sourcePad = new LogisimVias(source.From());
                     drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.To());
+                    gatePad = new LogisimVias(gate.From());
                     break;
                 case "east":
                     source = new LogisimWire(
                         new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
                         new Point(bbox.X, bbox.Y + bbox.Height / 2));
                     drain = new LogisimWire(
-                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height / 2),
+                        new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2),
                         new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
                     if (br)
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height));
                     }
                     else
                     {
                         gate = new LogisimWire(
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y),
-                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y));
                     }
                     sourcePad = new LogisimVias(source.From());
                     drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.To());
+                    gatePad = new LogisimVias(gate.From());
                     break;
             }
 
@@ -445,7 +445,7 @@ namespace LogisimYed
         /// </summary>
         /// <param name="model"></param>
 
-        private static void Reduce(LogisimModel model)
+        public static void Reduce(LogisimModel model)
         {
 
         }
@@ -503,6 +503,19 @@ namespace LogisimYed
             public Point To()
             {
                 return path[path.Count - 1];
+            }
+
+            public void Flip()
+            {
+                List<Point> pathrev = new List<Point>();
+
+                for (int i=path.Count-1; i>=0; i--)
+                {
+                    pathrev.Add(new Point(path[i].X, path[i].Y));
+                }
+
+                path.Clear();
+                path = pathrev;
             }
 
             public void Dump()

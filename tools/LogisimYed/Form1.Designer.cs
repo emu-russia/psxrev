@@ -41,6 +41,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.canvasControl1 = new CanvasControl.CanvasControl();
+            this.reduceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipWiretSpaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,6 +98,8 @@
             // controlToolStripMenuItem
             // 
             this.controlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.flipWiretSpaceToolStripMenuItem,
+            this.reduceToolStripMenuItem,
             this.convertToolStripMenuItem});
             this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
             this.controlToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
@@ -104,7 +108,7 @@
             // convertToolStripMenuItem
             // 
             this.convertToolStripMenuItem.Name = "convertToolStripMenuItem";
-            this.convertToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.convertToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.convertToolStripMenuItem.Text = "Convert";
             this.convertToolStripMenuItem.Click += new System.EventHandler(this.convertToolStripMenuItem_Click);
             // 
@@ -147,6 +151,20 @@
             this.canvasControl1.Text = "canvasControl1";
             this.canvasControl1.Zoom = 100;
             // 
+            // reduceToolStripMenuItem
+            // 
+            this.reduceToolStripMenuItem.Name = "reduceToolStripMenuItem";
+            this.reduceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reduceToolStripMenuItem.Text = "Reduce";
+            this.reduceToolStripMenuItem.Click += new System.EventHandler(this.reduceToolStripMenuItem_Click);
+            // 
+            // flipWiretSpaceToolStripMenuItem
+            // 
+            this.flipWiretSpaceToolStripMenuItem.Name = "flipWiretSpaceToolStripMenuItem";
+            this.flipWiretSpaceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.flipWiretSpaceToolStripMenuItem.Text = "Flip Wire (Space)";
+            this.flipWiretSpaceToolStripMenuItem.Click += new System.EventHandler(this.flipWiretSpaceToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -179,6 +197,8 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private CanvasControl.CanvasControl canvasControl1;
+        private System.Windows.Forms.ToolStripMenuItem reduceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem flipWiretSpaceToolStripMenuItem;
     }
 }
 
