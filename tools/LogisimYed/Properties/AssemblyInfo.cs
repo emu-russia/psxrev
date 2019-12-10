@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CanvasControl")]
+[assembly: AssemblyTitle("LogisimYed")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CanvasControl")]
+[assembly: AssemblyProduct("LogisimYed")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b14906c8-73d5-414d-a573-26dd2e7482ae")]
+[assembly: Guid("d74fc87d-7686-44b7-b967-d59243180132")]
 
 // Version information for an assembly consists of the following four values:
 //
