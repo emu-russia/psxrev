@@ -482,10 +482,23 @@ namespace LogisimYed
             }
         }
 
-        public class LogisimWire
+        public class LogisimNode
+        {
+            public virtual string GetName()
+            {
+                return "<Unassigned>";
+            }
+        }
+
+        public class LogisimEdge
+        {}
+
+        public class LogisimWire : LogisimEdge
         {
             public List<Point> path = new List<Point>();
             public string name = "";
+            public LogisimNode source = new LogisimNode();
+            public LogisimNode dest = new LogisimNode();
 
             public LogisimWire() {}
 
@@ -524,17 +537,27 @@ namespace LogisimYed
 
                 foreach(var p in path)
                 {
-                    Console.Write("- {0, 1}", p.X, p.Y);
+                    Console.Write("({0}, {1})", p.X, p.Y);
                 }
+
+                Console.Write(", {0} -> {1}", source.GetName(), dest.GetName());
+
+                Console.WriteLine("");
+
             }
         }
 
-        public class LogisimComp
+        public class LogisimComp : LogisimNode
         {
             public int lib = 0;
             public Point loc = new Point();
             public string name;
             public Dictionary<string, string> props = new Dictionary<string, string>();
+
+            public override string GetName()
+            {
+                return name;
+            }
 
             public void Dump()
             {
@@ -546,7 +569,7 @@ namespace LogisimYed
             }
         }
 
-        public class LogisimVias
+        public class LogisimVias : LogisimNode
         {
             public Point loc = new Point();
 
@@ -555,6 +578,11 @@ namespace LogisimYed
             public LogisimVias(Point p)
             {
                 loc = p;
+            }
+
+            public override string GetName()
+            {
+                return "Vias";
             }
 
             public void Dump()
