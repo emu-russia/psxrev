@@ -168,8 +168,8 @@ namespace LogisimYed
             {
                 CanvasPoint point = new CanvasPoint(vias.loc, 5, Color.Gold);
 #if DEBUG
-                point.Text = vias.id.ToString();
-                point.TextColor = Color.DeepPink;
+                //point.Text = vias.id.ToString();
+                //point.TextColor = Color.DeepPink;
 #endif
                 canvasControl1.AddItem(point);
             }

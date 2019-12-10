@@ -628,18 +628,6 @@ namespace LogisimYed
             return id + 1;
         }
 
-        /// <summary>
-        /// Convert logisim model to yEd Xml
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public static XmlDocument ToYed (LogisimModel model)
-        {
-            XmlDocument doc = new XmlDocument();
-
-            return doc;
-        }
-
         public static void DumpLogisimModel(LogisimModel model)
         {
             Console.WriteLine(model.name + ":");
@@ -865,6 +853,101 @@ namespace LogisimYed
                     loc.X, loc.Y );
             }
         }
+
+        /// <summary>
+        /// Convert logisim model to yEd Xml
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static XmlDocument ToYed(LogisimModel model)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            // Create an XML declaration
+            XmlDeclaration xmldecl;
+            xmldecl = doc.CreateXmlDeclaration("1.0", "UTF-8", "no");
+
+            // Add the new node to the document
+            XmlElement root = doc.DocumentElement;
+            doc.InsertBefore(xmldecl, root);
+
+            // Convert Logisim Model to Yed Model
+
+            YedModel yed = new YedModel();
+
+            foreach (var comp in model.comps)
+            {
+                YedNode node = new YedNode();
+                node.id = "n" + comp.id.ToString();
+                yed.nodes.Add(node);
+            }
+
+            foreach (var vias in model.viases)
+            {
+                YedNode node = new YedNode();
+                node.id = "n" + vias.id.ToString();
+                yed.nodes.Add(node);
+            }
+
+            int edgeId = 0;     // Doesn't matter..
+
+            foreach (var wire in model.wires)
+            {
+                YedEdge edge = new YedEdge();
+                edge.id = "e" + edgeId.ToString();
+                edge.source = "n" + wire.source.id.ToString();
+                edge.target = "n" + wire.dest.id.ToString();
+                edgeId++;
+                yed.edges.Add(edge);
+            }
+
+            // Convert Yed Model to Xml
+
+            var nav = doc.CreateNavigator();
+
+            using (var writer = nav.AppendChild())
+            {
+                var ser = new XmlSerializer(typeof(YedModel));
+                ser.Serialize(writer, yed);
+            }
+
+            return doc;
+        }
+
+        [XmlRoot("graphml")]
+        public class YedModel
+        {
+            [XmlElement(ElementName ="key")]
+            public List<YedKey> keys = new List<YedKey>();
+            [XmlElement(ElementName = "node")]
+            public List<YedNode> nodes = new List<YedNode>();
+            [XmlElement(ElementName = "edge")]
+            public List<YedEdge> edges = new List<YedEdge>();
+        }
+
+        public class YedKey
+        {
+            [XmlAttribute]
+            public string id;
+        }
+
+        public class YedNode
+        {
+            [XmlAttribute]
+            public string id = "";
+        }
+
+        public class YedEdge
+        {
+            [XmlAttribute]
+            public string id = "";
+            [XmlAttribute]
+            public string source = "";
+            [XmlAttribute]
+            public string target = "";
+        }
+
+
 
     }
 }
