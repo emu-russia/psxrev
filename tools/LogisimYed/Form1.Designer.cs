@@ -35,14 +35,20 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipWiretSpaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reduceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.canvasControl1 = new CanvasControl.CanvasControl();
-            this.reduceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.flipWiretSpaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,6 +69,9 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadLogisimToolStripMenuItem,
             this.saveYEdToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.loadModelToolStripMenuItem,
+            this.saveModelToolStripMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -100,10 +109,25 @@
             this.controlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.flipWiretSpaceToolStripMenuItem,
             this.reduceToolStripMenuItem,
-            this.convertToolStripMenuItem});
+            this.convertToolStripMenuItem,
+            this.dumpModelToolStripMenuItem});
             this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
             this.controlToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.controlToolStripMenuItem.Text = "Control";
+            // 
+            // flipWiretSpaceToolStripMenuItem
+            // 
+            this.flipWiretSpaceToolStripMenuItem.Name = "flipWiretSpaceToolStripMenuItem";
+            this.flipWiretSpaceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.flipWiretSpaceToolStripMenuItem.Text = "Flip Wire (Space)";
+            this.flipWiretSpaceToolStripMenuItem.Click += new System.EventHandler(this.flipWiretSpaceToolStripMenuItem_Click);
+            // 
+            // reduceToolStripMenuItem
+            // 
+            this.reduceToolStripMenuItem.Name = "reduceToolStripMenuItem";
+            this.reduceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reduceToolStripMenuItem.Text = "Reduce";
+            this.reduceToolStripMenuItem.Click += new System.EventHandler(this.reduceToolStripMenuItem_Click);
             // 
             // convertToolStripMenuItem
             // 
@@ -151,19 +175,41 @@
             this.canvasControl1.Text = "canvasControl1";
             this.canvasControl1.Zoom = 100;
             // 
-            // reduceToolStripMenuItem
+            // dumpModelToolStripMenuItem
             // 
-            this.reduceToolStripMenuItem.Name = "reduceToolStripMenuItem";
-            this.reduceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.reduceToolStripMenuItem.Text = "Reduce";
-            this.reduceToolStripMenuItem.Click += new System.EventHandler(this.reduceToolStripMenuItem_Click);
+            this.dumpModelToolStripMenuItem.Name = "dumpModelToolStripMenuItem";
+            this.dumpModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dumpModelToolStripMenuItem.Text = "Dump Model";
+            this.dumpModelToolStripMenuItem.Click += new System.EventHandler(this.dumpModelToolStripMenuItem_Click);
             // 
-            // flipWiretSpaceToolStripMenuItem
+            // loadModelToolStripMenuItem
             // 
-            this.flipWiretSpaceToolStripMenuItem.Name = "flipWiretSpaceToolStripMenuItem";
-            this.flipWiretSpaceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.flipWiretSpaceToolStripMenuItem.Text = "Flip Wire (Space)";
-            this.flipWiretSpaceToolStripMenuItem.Click += new System.EventHandler(this.flipWiretSpaceToolStripMenuItem_Click);
+            this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
+            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadModelToolStripMenuItem.Text = "Load Model...";
+            this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
+            // 
+            // saveModelToolStripMenuItem
+            // 
+            this.saveModelToolStripMenuItem.Name = "saveModelToolStripMenuItem";
+            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveModelToolStripMenuItem.Text = "Save Model...";
+            this.saveModelToolStripMenuItem.Click += new System.EventHandler(this.saveModelToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.DefaultExt = "model";
+            this.openFileDialog2.Filter = "Logisim Model Files|*.model|All files|*.*";
+            // 
+            // saveFileDialog2
+            // 
+            this.saveFileDialog2.DefaultExt = "model";
+            this.saveFileDialog2.Filter = "Logisim Model Files|*.model|All files|*.*";
             // 
             // Form1
             // 
@@ -199,6 +245,12 @@
         private CanvasControl.CanvasControl canvasControl1;
         private System.Windows.Forms.ToolStripMenuItem reduceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flipWiretSpaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem loadModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveModelToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     }
 }
 

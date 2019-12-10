@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Xml;
 using CanvasControl;
+using System.Xml.Serialization;
 
 namespace LogisimYed
 {
@@ -130,6 +131,10 @@ namespace LogisimYed
                     rect.FrontColor = Color.LimeGreen;
                 }
 
+#if DEBUG
+                //rect.Text += " #" + comp.id.ToString();
+#endif
+
                 canvasControl1.AddItem(rect);
             }
 
@@ -161,6 +166,10 @@ namespace LogisimYed
             foreach (var vias in model.viases)
             {
                 CanvasPoint point = new CanvasPoint(vias.loc, 5, Color.Gold);
+#if DEBUG
+                //point.Text = vias.id.ToString();
+                //point.TextColor = Color.DeepPink;
+#endif
                 canvasControl1.AddItem(point);
             }
 
@@ -284,5 +293,48 @@ namespace LogisimYed
 
             canvasControl1.Invalidate();
         }
+
+        private void dumpModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CircuitModel != null)
+            {
+                LogisimConverter.DumpLogisimModel(CircuitModel);
+            }
+        }
+
+        private void loadModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ( openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                XmlSerializer ser = new XmlSerializer(typeof(LogisimConverter.LogisimModel));
+
+                using (FileStream fs = new FileStream(openFileDialog2.FileName, FileMode.Open))
+                {
+                    CircuitModel = (LogisimConverter.LogisimModel)ser.Deserialize(fs);
+
+                    // Restore wire linkage
+
+                    LogisimConverter.RestoreLinkage(CircuitModel);
+
+                    VisualizeLogisim(CircuitModel);
+
+                    this.Text = SavedText + " - " + Path.GetFileName(openFileDialog2.FileName);
+                }
+            }
+        }
+
+        private void saveModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                XmlSerializer ser = new XmlSerializer(typeof(LogisimConverter.LogisimModel));
+
+                using (FileStream fs = new FileStream(saveFileDialog2.FileName, FileMode.Create))
+                {
+                    ser.Serialize(fs, CircuitModel);
+                }
+            }
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace LogisimYed
 {
@@ -110,6 +111,10 @@ namespace LogisimYed
                 }
             }
 
+            // Connect wires with components
+
+            PreProcessing(model);
+
             // Get wires interconnections (produce viases)
 
             foreach (var wire in model.wires)
@@ -124,7 +129,10 @@ namespace LogisimYed
                             LogisimVias vias = new LogisimVias(wire.From());
 
                             if (!model.ViasExists(vias))
+                            {
+                                vias.id = GetNextId(model);
                                 model.viases.Add(vias);
+                            }
                         }
 
                         if ( wire.To().Equals(another.To()) ||
@@ -133,7 +141,10 @@ namespace LogisimYed
                             LogisimVias vias = new LogisimVias(wire.To());
 
                             if (!model.ViasExists(vias))
+                            {
+                                vias.id = GetNextId(model);
                                 model.viases.Add(vias);
+                            }
                         }
                     }
                 }
@@ -165,6 +176,29 @@ namespace LogisimYed
             point.Y = int.Parse(match[0].Groups["to"].Value);
 
             return point;
+        }
+
+        /// <summary>
+        /// Connect wires with components
+        /// </summary>
+        /// <param name="model"></param>
+        private static void PreProcessing(LogisimModel model)
+        {
+            foreach(var wire in model.wires)
+            {
+                foreach (var comp in model.comps)
+                {
+                    if (comp.loc.Equals(wire.From()) && wire.source.id < 0)
+                    {
+                        wire.source = comp;
+                    }
+
+                    if (comp.loc.Equals(wire.To()) && wire.dest.id < 0)
+                    {
+                        wire.dest = comp;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -307,6 +341,25 @@ namespace LogisimYed
                     AddTrans( new Rectangle(comp.loc.X, comp.loc.Y, compSize, compSize), comp, model);
                 }
             }
+
+            // Link wires with viases
+
+            foreach (var wire in model.wires)
+            {
+                foreach (var vias in model.viases)
+                {
+                    if (vias.loc.Equals(wire.From()) && wire.source.id < 0)
+                    {
+                        wire.source = vias;
+                    }
+
+                    if (vias.loc.Equals(wire.To()) && wire.dest.id < 0)
+                    {
+                        wire.dest = vias;
+                    }
+                }
+            }
+
         }
 
         private static void AddTrans(Rectangle bbox, LogisimComp comp, LogisimModel model)
@@ -423,9 +476,11 @@ namespace LogisimYed
                     break;
             }
 
-            sourcePad.id = GetNextId(model);
-            drainPad.id = GetNextId(model);
-            gatePad.id = GetNextId(model);
+            int nextId = GetNextId(model);
+
+            sourcePad.id = nextId;
+            drainPad.id = nextId + 1;
+            gatePad.id = nextId + 2;
 
             gate.name = "g";
 
@@ -493,7 +548,7 @@ namespace LogisimYed
             return doc;
         }
 
-        private static void DumpLogisimModel(LogisimModel model)
+        public static void DumpLogisimModel(LogisimModel model)
         {
             Console.WriteLine(model.name + ":");
 
@@ -513,6 +568,40 @@ namespace LogisimYed
             }
         }
 
+        /// <summary>
+        /// Restore wire linkage
+        /// </summary>
+        /// <param name="model"></param>
+        public static void RestoreLinkage(LogisimModel model)
+        {
+            foreach (var wire in model.wires)
+            {
+                foreach(var comp in model.comps)
+                {
+                    if (wire.sourceId == comp.id)
+                    {
+                        wire.source = comp;
+                    }
+                    if (wire.destId == comp.id)
+                    {
+                        wire.dest = comp;
+                    }
+                }
+
+                foreach (var vias in model.viases)
+                {
+                    if (wire.sourceId == vias.id)
+                    {
+                        wire.source = vias;
+                    }
+                    if (wire.destId == vias.id)
+                    {
+                        wire.dest = vias;
+                    }
+                }
+            }
+        }
+
         public class LogisimNode
         {
             public int id = -1;
@@ -524,8 +613,40 @@ namespace LogisimYed
 
         public class LogisimEdge
         {
-            public LogisimNode source = new LogisimNode();
-            public LogisimNode dest = new LogisimNode();
+            private LogisimNode _source = new LogisimNode();
+            private LogisimNode _dest = new LogisimNode();
+
+            public int sourceId = -1;
+            public int destId = -1;
+
+            [XmlIgnore]
+            public LogisimNode source
+            {
+                set
+                {
+                    _source = value;
+                    sourceId = _source.id;
+                }
+                get
+                {
+                    return _source;
+                }
+            }
+
+            [XmlIgnore]
+            public LogisimNode dest
+            {
+                set
+                {
+                    _dest = value;
+                    destId = _dest.id;
+                }
+                get
+                {
+                    return _dest;
+                }
+            }
+
         }
 
         public class LogisimWire : LogisimEdge
@@ -577,18 +698,17 @@ namespace LogisimYed
                     Console.Write("({0}, {1})", p.X, p.Y);
                 }
 
-                Console.Write(", {0} -> {1}", source.GetName(), dest.GetName());
-
-                Console.WriteLine("");
-
+                Console.WriteLine(", {0} -> {1}", source.GetName(), dest.GetName());
             }
         }
 
         public class LogisimComp : LogisimNode
         {
+            [XmlIgnore]
             public int lib = 0;
             public Point loc = new Point();
             public string name;
+            [XmlIgnore]
             public Dictionary<string, string> props = new Dictionary<string, string>();
 
             public override string GetName()
@@ -598,7 +718,7 @@ namespace LogisimYed
 
             public void Dump()
             {
-                Console.WriteLine("comp: lib={0}, loc=({1},{2}), name={3}", lib, loc.X, loc.Y, name);
+                Console.WriteLine("comp: lib={0}, loc=({1},{2}), name={3}({4})", lib, loc.X, loc.Y, name, id);
                 foreach (var prop in props)
                 {
                     Console.WriteLine("   a {0} = {1}", prop.Key, prop.Value);
