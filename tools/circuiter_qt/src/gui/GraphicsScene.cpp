@@ -512,7 +512,9 @@ GraphicsScene::InsertContainer()
         std::vector< Wire* > wires = m_ContainerDefs[ 0 ]->GetWires();
         for( size_t i = 0; i < wires.size(); ++i )
         {
-            //ConnectWire( wires[ i ] );
+            Wire* wire = new Wire();
+            wire->SetLine( wires[ i ]->GetLine() );
+            ConnectWire( wire );
         }
 
         SetCurrentContainer( temp );
