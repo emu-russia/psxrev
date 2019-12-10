@@ -68,15 +68,15 @@
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>6</sourceId>
-      <destId>4</destId>
+      <sourceId>4</sourceId>
+      <destId>6</destId>
       <path>
         <Point>
-          <X>290</X>
+          <X>310</X>
           <Y>260</Y>
         </Point>
         <Point>
-          <X>310</X>
+          <X>290</X>
           <Y>260</Y>
         </Point>
       </path>
@@ -98,15 +98,15 @@
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>9</sourceId>
-      <destId>7</destId>
+      <sourceId>7</sourceId>
+      <destId>9</destId>
       <path>
         <Point>
-          <X>260</X>
+          <X>300</X>
           <Y>300</Y>
         </Point>
         <Point>
-          <X>300</X>
+          <X>260</X>
           <Y>300</Y>
         </Point>
       </path>
@@ -128,52 +128,52 @@
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>3</sourceId>
-      <destId>6</destId>
+      <sourceId>6</sourceId>
+      <destId>3</destId>
       <path>
-        <Point>
-          <X>290</X>
-          <Y>230</Y>
-        </Point>
         <Point>
           <X>290</X>
           <Y>260</Y>
         </Point>
+        <Point>
+          <X>290</X>
+          <Y>230</Y>
+        </Point>
       </path>
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>15</sourceId>
-      <destId>8</destId>
+      <sourceId>8</sourceId>
+      <destId>15</destId>
       <path>
-        <Point>
-          <X>330</X>
-          <Y>280</Y>
-        </Point>
         <Point>
           <X>330</X>
           <Y>300</Y>
         </Point>
+        <Point>
+          <X>330</X>
+          <Y>280</Y>
+        </Point>
       </path>
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>12</sourceId>
-      <destId>9</destId>
+      <sourceId>9</sourceId>
+      <destId>12</destId>
       <path>
-        <Point>
-          <X>260</X>
-          <Y>280</Y>
-        </Point>
         <Point>
           <X>260</X>
           <Y>300</Y>
         </Point>
+        <Point>
+          <X>260</X>
+          <Y>280</Y>
+        </Point>
       </path>
       <name />
     </LogisimWire>
     <LogisimWire>
-      <sourceId>10</sourceId>
+      <sourceId>1</sourceId>
       <destId>2</destId>
       <path>
         <Point>
@@ -218,7 +218,7 @@
       <name>g</name>
     </LogisimWire>
     <LogisimWire>
-      <sourceId>13</sourceId>
+      <sourceId>5</sourceId>
       <destId>4</destId>
       <path>
         <Point>
@@ -293,13 +293,6 @@
       </loc>
     </LogisimVias>
     <LogisimVias>
-      <id>10</id>
-      <loc>
-        <X>240</X>
-        <Y>260</Y>
-      </loc>
-    </LogisimVias>
-    <LogisimVias>
       <id>11</id>
       <loc>
         <X>280</X>
@@ -311,13 +304,6 @@
       <loc>
         <X>260</X>
         <Y>280</Y>
-      </loc>
-    </LogisimVias>
-    <LogisimVias>
-      <id>13</id>
-      <loc>
-        <X>350</X>
-        <Y>260</Y>
       </loc>
     </LogisimVias>
     <LogisimVias>

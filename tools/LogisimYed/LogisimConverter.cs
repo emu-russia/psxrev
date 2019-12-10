@@ -13,6 +13,8 @@ namespace LogisimYed
 {
     public class LogisimConverter
     {
+        public const int CompSize = 16;            // Size of standard component (e.g. pad, transistor) in pixels
+
         public class LogisimModel
         {
             public string name = "";
@@ -214,7 +216,6 @@ namespace LogisimYed
 
             foreach (var comp in model.comps)
             {
-                int compSize = 16;
                 string facingDefault = "east";
 
                 if (comp.name == "Transistor")
@@ -246,21 +247,21 @@ namespace LogisimYed
                         case "north":
                             comp.loc = new Point(
                                 comp.loc.X,
-                                comp.loc.Y + compSize - 4);
+                                comp.loc.Y + CompSize - 4);
                             break;
                         case "south":
                             comp.loc = new Point(
                                 comp.loc.X,
-                                comp.loc.Y - compSize + 4);
+                                comp.loc.Y - CompSize + 4);
                             break;
                         case "west":
                             comp.loc = new Point(
-                                comp.loc.X + compSize - 4,
+                                comp.loc.X + CompSize - 4,
                                 comp.loc.Y);
                             break;
                         case "east":
                             comp.loc = new Point(
-                                comp.loc.X - compSize + 4,
+                                comp.loc.X - CompSize + 4,
                                 comp.loc.Y);
                             break;
                     }
@@ -315,30 +316,30 @@ namespace LogisimYed
                     {
                         case "north":
                             comp.loc = new Point(
-                                comp.loc.X - compSize / 2,
+                                comp.loc.X - CompSize / 2,
                                 comp.loc.Y);
                             break;
                         case "south":
                             comp.loc = new Point(
-                                comp.loc.X - compSize / 2,
-                                comp.loc.Y - compSize);
+                                comp.loc.X - CompSize / 2,
+                                comp.loc.Y - CompSize);
                             break;
                         case "west":
                             comp.loc = new Point(
                                 comp.loc.X,
-                                comp.loc.Y - compSize / 2);
+                                comp.loc.Y - CompSize / 2);
                             break;
                         case "east":
                             comp.loc = new Point(
-                                comp.loc.X - compSize,
-                                comp.loc.Y - compSize / 2);
+                                comp.loc.X - CompSize,
+                                comp.loc.Y - CompSize / 2);
                             break;
                     }
                 }
 
                 if (comp.name.Contains("nfet") || comp.name.Contains("pfet"))
                 {
-                    AddTrans( new Rectangle(comp.loc.X, comp.loc.Y, compSize, compSize), comp, model);
+                    AddTrans( new Rectangle(comp.loc.X, comp.loc.Y, CompSize, CompSize), comp, model);
                 }
             }
 
@@ -375,10 +376,15 @@ namespace LogisimYed
 
             bool br = false;
 
+            // Gate direction (br? wtf is br?)
+
             if (comp.props.ContainsKey("gate"))
             {
                 br = comp.props["gate"] == "br" ? true : false;
             }
+
+            // Facing of drain
+            // TODO: Some translational symmetry here.. make code more compact.. and complicated
 
             switch (comp.props["facing"])
             {
@@ -465,6 +471,8 @@ namespace LogisimYed
                     break;
             }
 
+            // Create actual nodes/edges and link them
+
             sourcePad = GetViasByLoc(model, source.From());
             if (sourcePad == null)
                 sourcePad = new LogisimVias(source.From());
@@ -483,25 +491,61 @@ namespace LogisimYed
             drainPad.id = nextId + 1;
             gatePad.id = nextId + 2;
 
-            gate.name = "g";
+            gate.name = "g";        // Required by GraphFlow
 
-            source.source = sourcePad;
+            // Source
+
+            LogisimComp sourceComp = ViasIntersectComp(model, sourcePad);
+            if (sourceComp != null)
+            {
+                source.source = sourceComp;
+                sourcePad = null;
+            }
+            else
+            {
+                source.source = sourcePad;
+            }
             source.dest = comp;
 
             model.wires.Add(source);
-            model.viases.Add(sourcePad);
+            if (sourcePad != null)
+                model.viases.Add(sourcePad);
 
+            // Drain
+
+            LogisimComp drainComp = ViasIntersectComp(model, drainPad);
+            if (drainComp != null)
+            {
+                drain.dest = drainComp;
+                drainPad = null;
+            }
+            else
+            {
+                drain.dest = drainPad;
+            }
             drain.source = comp;
-            drain.dest = drainPad;
 
             model.wires.Add(drain);
-            model.viases.Add(drainPad);
+            if (drainPad != null)
+                model.viases.Add(drainPad);
 
-            gate.source = gatePad;
+            // Gate
+
+            LogisimComp gateComp = ViasIntersectComp(model, gatePad);
+            if (gateComp != null)
+            {
+                gate.source = gateComp;
+                gatePad = null;
+            }
+            else
+            {
+                gate.source = gatePad;
+            }
             gate.dest = comp;
 
             model.wires.Add(gate);
-            model.viases.Add(gatePad);
+            if (gatePad != null)
+                model.viases.Add(gatePad);
         }
 
         /// <summary>
@@ -603,13 +647,28 @@ namespace LogisimYed
             }
         }
 
-        public static LogisimVias GetViasByLoc(LogisimModel model, Point loc)
+        private static LogisimVias GetViasByLoc(LogisimModel model, Point loc)
         {
             foreach (var vias in model.viases)
             {
                 if (vias.loc.Equals(loc))
                     return vias;
             }
+            return null;
+        }
+
+        private static LogisimComp ViasIntersectComp (LogisimModel model, LogisimVias vias)
+        {
+            foreach (var comp in model.comps)
+            {
+                Rectangle rect = new Rectangle( comp.loc.X, comp.loc.Y, CompSize + 2, CompSize + 2);
+
+                if (rect.Contains(vias.loc))
+                {
+                    return comp;
+                }
+            }
+
             return null;
         }
 

@@ -113,7 +113,8 @@ namespace LogisimYed
 
             foreach (var comp in model.comps)
             {
-                CanvasRect rect = new CanvasRect((PointF)comp.loc, 16, 16, Color.Gold);
+                CanvasRect rect = new CanvasRect((PointF)comp.loc, 
+                    LogisimConverter.CompSize, LogisimConverter.CompSize, Color.Gold);
 
                 rect.Text = comp.name;
 
@@ -167,8 +168,8 @@ namespace LogisimYed
             {
                 CanvasPoint point = new CanvasPoint(vias.loc, 5, Color.Gold);
 #if DEBUG
-                //point.Text = vias.id.ToString();
-                //point.TextColor = Color.DeepPink;
+                point.Text = vias.id.ToString();
+                point.TextColor = Color.DeepPink;
 #endif
                 canvasControl1.AddItem(point);
             }
