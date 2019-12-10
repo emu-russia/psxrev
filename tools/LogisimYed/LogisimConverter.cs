@@ -401,9 +401,7 @@ namespace LogisimYed
                             new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
                             new Point(bbox.X, bbox.Y + bbox.Height / 2));
                     }
-                    sourcePad = new LogisimVias(source.From());
-                    drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.From());
+
                     break;
                 case "south":
                     source = new LogisimWire(
@@ -424,9 +422,6 @@ namespace LogisimYed
                             new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
                             new Point(bbox.X, bbox.Y + bbox.Height / 2));
                     }
-                    sourcePad = new LogisimVias(source.From());
-                    drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.From());
                     break;
                 case "west":
                     source = new LogisimWire(
@@ -447,9 +442,6 @@ namespace LogisimYed
                             new Point(bbox.X + bbox.Width / 2, bbox.Y - delta),
                             new Point(bbox.X + bbox.Width / 2, bbox.Y));
                     }
-                    sourcePad = new LogisimVias(source.From());
-                    drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.From());
                     break;
                 case "east":
                     source = new LogisimWire(
@@ -470,11 +462,20 @@ namespace LogisimYed
                             new Point(bbox.X + bbox.Width / 2, bbox.Y - delta),
                             new Point(bbox.X + bbox.Width / 2, bbox.Y));
                     }
-                    sourcePad = new LogisimVias(source.From());
-                    drainPad = new LogisimVias(drain.To());
-                    gatePad = new LogisimVias(gate.From());
                     break;
             }
+
+            sourcePad = GetViasByLoc(model, source.From());
+            if (sourcePad == null)
+                sourcePad = new LogisimVias(source.From());
+
+            drainPad = GetViasByLoc(model, drain.To());
+            if (drainPad == null)
+                drainPad = new LogisimVias(drain.To());
+
+            gatePad = GetViasByLoc(model, gate.From());
+            if (gatePad == null)
+                gatePad = new LogisimVias(gate.From());
 
             int nextId = GetNextId(model);
 
@@ -600,6 +601,16 @@ namespace LogisimYed
                     }
                 }
             }
+        }
+
+        public static LogisimVias GetViasByLoc(LogisimModel model, Point loc)
+        {
+            foreach (var vias in model.viases)
+            {
+                if (vias.loc.Equals(loc))
+                    return vias;
+            }
+            return null;
         }
 
         public class LogisimNode
