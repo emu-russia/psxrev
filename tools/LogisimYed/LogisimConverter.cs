@@ -100,10 +100,10 @@ namespace LogisimYed
             {
                 if (node.Name == "wire")
                 {
-                    LogisimWire wire = new LogisimWire();
+                    Point start = ParseLoc(node.Attributes["from"].Value);
+                    Point end = ParseLoc(node.Attributes["to"].Value);
 
-                    wire.from = ParseLoc(node.Attributes["from"].Value);
-                    wire.to = ParseLoc(node.Attributes["to"].Value);
+                    LogisimWire wire = new LogisimWire(start, end);
 
                     model.wires.Add(wire);
                 }
@@ -117,23 +117,19 @@ namespace LogisimYed
                 {
                     if (wire != another)
                     {
-                        if (wire.from.Equals(another.from) || 
-                            wire.from.Equals(another.to) )
+                        if (wire.From().Equals(another.From()) || 
+                            wire.From().Equals(another.To()) )
                         {
-                            LogisimVias vias = new LogisimVias();
-
-                            vias.loc = wire.from;
+                            LogisimVias vias = new LogisimVias(wire.From());
 
                             if (!model.ViasExists(vias))
                                 model.viases.Add(vias);
                         }
 
-                        if ( wire.to.Equals(another.to) ||
-                            wire.to.Equals(another.from) )
+                        if ( wire.To().Equals(another.To()) ||
+                            wire.To().Equals(another.From()) )
                         {
-                            LogisimVias vias = new LogisimVias();
-
-                            vias.loc = wire.to;
+                            LogisimVias vias = new LogisimVias(wire.To());
 
                             if (!model.ViasExists(vias))
                                 model.viases.Add(vias);
@@ -141,6 +137,10 @@ namespace LogisimYed
                     }
                 }
             }
+
+            PostProcessing(model);
+
+            Reduce(model);
 
             DumpLogisimModel(model);
 
@@ -164,6 +164,290 @@ namespace LogisimYed
             point.Y = int.Parse(match[0].Groups["to"].Value);
 
             return point;
+        }
+
+        /// <summary>
+        /// Modify model to look nice
+        /// </summary>
+        /// <param name="model"></param>
+        private static void PostProcessing(LogisimModel model)
+        {
+            int nfetCounter = 1;
+            int pfetCounter = 1;
+
+            // Comps
+
+            foreach (var comp in model.comps)
+            {
+                int compSize = 16;
+                string facingDefault = "east";
+
+                if (comp.name == "Transistor")
+                {
+                    if (comp.props.ContainsKey("type"))
+                    {
+                        if (comp.props["type"] == "n")
+                        {
+                            comp.name = "nfet_" + nfetCounter.ToString();
+                            nfetCounter++;
+                        }
+                        else
+                        {
+                            comp.name = "pfet_" + pfetCounter.ToString();
+                            pfetCounter++;
+                        }
+                    }
+                    else
+                    {
+                        comp.name = "pfet_" + pfetCounter.ToString();
+                        pfetCounter++;
+                    }
+                    if (!comp.props.ContainsKey("facing"))
+                    {
+                        comp.props["facing"] = facingDefault;
+                    }
+                    switch (comp.props["facing"])
+                    {
+                        case "north":
+                            comp.loc = new Point(
+                                comp.loc.X,
+                                comp.loc.Y + compSize - 4);
+                            break;
+                        case "south":
+                            comp.loc = new Point(
+                                comp.loc.X,
+                                comp.loc.Y - compSize + 4);
+                            break;
+                        case "west":
+                            comp.loc = new Point(
+                                comp.loc.X + compSize - 4,
+                                comp.loc.Y);
+                            break;
+                        case "east":
+                            comp.loc = new Point(
+                                comp.loc.X - compSize + 4,
+                                comp.loc.Y);
+                            break;
+                    }
+                }
+                else if (comp.name == "Power")
+                {
+                    comp.name = "1";
+                    if (!comp.props.ContainsKey("facing"))
+                    {
+                        comp.props["facing"] = facingDefault;
+                    }
+                    if (comp.props["facing"] == "west")
+                    {
+                        comp.props["facing"] = "east";
+                    }
+                    else if (comp.props["facing"] == "east")
+                    {
+                        comp.props["facing"] = "west";
+                    }
+                }
+                else if (comp.name == "Ground")
+                {
+                    comp.name = "0";
+                    if (!comp.props.ContainsKey("facing"))
+                    {
+                        comp.props["facing"] = facingDefault;
+                    }
+                    if (comp.props["facing"] == "west")
+                    {
+                        comp.props["facing"] = "east";
+                    }
+                    else if (comp.props["facing"] == "east")
+                    {
+                        comp.props["facing"] = "west";
+                    }
+                }
+                else if (comp.name == "Pin")
+                {
+                    if (comp.props.ContainsKey("label"))
+                    {
+                        comp.name = comp.props["label"];
+                    }
+                    if (!comp.props.ContainsKey("facing"))
+                    {
+                        comp.props["facing"] = facingDefault;
+                    }
+                }
+
+                if (comp.props.ContainsKey("facing"))
+                {
+                    switch (comp.props["facing"])
+                    {
+                        case "north":
+                            comp.loc = new Point(
+                                comp.loc.X - compSize / 2,
+                                comp.loc.Y);
+                            break;
+                        case "south":
+                            comp.loc = new Point(
+                                comp.loc.X - compSize / 2,
+                                comp.loc.Y - compSize);
+                            break;
+                        case "west":
+                            comp.loc = new Point(
+                                comp.loc.X,
+                                comp.loc.Y - compSize / 2);
+                            break;
+                        case "east":
+                            comp.loc = new Point(
+                                comp.loc.X - compSize,
+                                comp.loc.Y - compSize / 2);
+                            break;
+                    }
+                }
+
+                if (comp.name.Contains("nfet") || comp.name.Contains("pfet"))
+                {
+                    AddTrans( new Rectangle(comp.loc.X, comp.loc.Y, compSize, compSize), comp, model);
+                }
+            }
+        }
+
+        private static void AddTrans(Rectangle bbox, LogisimComp comp, LogisimModel model)
+        {
+            LogisimWire source = null;
+            LogisimWire drain = null;
+            LogisimWire gate = null;
+            LogisimVias sourcePad = null;
+            LogisimVias drainPad = null;
+            LogisimVias gatePad = null;
+
+            int delta = 12;
+
+            bool br = false;
+
+            if (comp.props.ContainsKey("gate"))
+            {
+                br = comp.props["gate"] == "br" ? true : false;
+            }
+
+            switch (comp.props["facing"])
+            {
+                case "north":
+                    source = new LogisimWire(
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                    drain = new LogisimWire(
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y),
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
+                    if (br)
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
+                    }
+                    else
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2));
+                    }
+                    sourcePad = new LogisimVias(source.To());
+                    drainPad = new LogisimVias(drain.To());
+                    gatePad = new LogisimVias(gate.To());
+                    break;
+                case "south":
+                    source = new LogisimWire(
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y - delta),
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y));
+                    drain = new LogisimWire(
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                    if (br)
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
+                    }
+                    else
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X, bbox.Y + bbox.Height / 2),
+                            new Point(bbox.X - delta, bbox.Y + bbox.Height / 2));
+                    }
+                    sourcePad = new LogisimVias(source.From());
+                    drainPad = new LogisimVias(drain.To());
+                    gatePad = new LogisimVias(gate.To());
+                    break;
+                case "west":
+                    source = new LogisimWire(
+                        new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2),
+                        new Point(bbox.X + bbox.Width, bbox.Y + bbox.Height / 2));
+                    drain = new LogisimWire(
+                        new Point(bbox.X, bbox.Y + bbox.Height / 2),
+                        new Point(bbox.X - delta, bbox.Y + bbox.Height / 2));
+                    if (br)
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                    }
+                    else
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
+                    }
+                    sourcePad = new LogisimVias(source.From());
+                    drainPad = new LogisimVias(drain.To());
+                    gatePad = new LogisimVias(gate.To());
+                    break;
+                case "east":
+                    source = new LogisimWire(
+                        new Point(bbox.X - delta, bbox.Y + bbox.Height / 2),
+                        new Point(bbox.X, bbox.Y + bbox.Height / 2));
+                    drain = new LogisimWire(
+                        new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height / 2),
+                        new Point(bbox.X + bbox.Width + delta, bbox.Y + bbox.Height / 2));
+                    if (br)
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y + bbox.Height + delta));
+                    }
+                    else
+                    {
+                        gate = new LogisimWire(
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y),
+                            new Point(bbox.X + bbox.Width / 2, bbox.Y - delta));
+                    }
+                    sourcePad = new LogisimVias(source.From());
+                    drainPad = new LogisimVias(drain.To());
+                    gatePad = new LogisimVias(gate.To());
+                    break;
+            }
+
+            if (source != null)
+            {
+                model.wires.Add(source);
+                model.viases.Add(sourcePad);
+            }
+            if (drain != null)
+            {
+                model.wires.Add(drain);
+                model.viases.Add(drainPad);
+            }
+            if (gate != null)
+            {
+                gate.name = "g";
+                model.wires.Add(gate);
+                model.viases.Add(gatePad);
+            }
+        }
+
+        /// <summary>
+        /// Reduce simple vias connections
+        /// </summary>
+        /// <param name="model"></param>
+
+        private static void Reduce(LogisimModel model)
+        {
+
         }
 
         /// <summary>
@@ -200,14 +484,35 @@ namespace LogisimYed
 
         public class LogisimWire
         {
-            public Point from = new Point();
-            public Point to = new Point();
+            public List<Point> path = new List<Point>();
+            public string name = "";
+
+            public LogisimWire() {}
+
+            public LogisimWire(Point s, Point e)
+            {
+                path.Add(s);
+                path.Add(e);
+            }
+
+            public Point From()
+            {
+                return path[0];
+            }
+
+            public Point To()
+            {
+                return path[path.Count - 1];
+            }
 
             public void Dump()
             {
-                Console.WriteLine("wire ({0},{1}) - ({2},{3})",
-                    from.X, from.Y,
-                    to.X, to.Y);
+                Console.Write("wire {0} ", name);
+
+                foreach(var p in path)
+                {
+                    Console.Write("- {0, 1}", p.X, p.Y);
+                }
             }
         }
 
@@ -231,6 +536,13 @@ namespace LogisimYed
         public class LogisimVias
         {
             public Point loc = new Point();
+
+            public LogisimVias() {}
+
+            public LogisimVias(Point p)
+            {
+                loc = p;
+            }
 
             public void Dump()
             {
