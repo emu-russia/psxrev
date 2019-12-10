@@ -257,6 +257,7 @@ namespace LogisimYed
             }
 
             LogisimConverter.Reduce(CircuitModel);
+            VisualizeLogisim(CircuitModel);
         }
 
         private void flipWiretSpaceToolStripMenuItem_Click(object sender, EventArgs e)

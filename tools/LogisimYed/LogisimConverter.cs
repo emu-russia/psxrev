@@ -555,7 +555,54 @@ namespace LogisimYed
 
         public static void Reduce(LogisimModel model)
         {
+            bool found = false;
 
+            do
+            {
+                found = false;
+
+                foreach ( var vias in model.viases)
+                {
+                    // Count inputs/outputs for vias
+
+                    int inputCount = 0;
+                    int outputCount = 0;
+
+                    LogisimWire wireIn = null;
+                    LogisimWire wireOut = null;
+
+                    foreach (var wire in model.wires)
+                    {
+                        if (wire.dest == vias)
+                        {
+                            if (wireIn == null)
+                                wireIn = wire;
+                            inputCount++;
+                        }
+                        if (wire.source == vias)
+                        {
+                            if (wireOut == null)
+                                wireOut = wire;
+                            outputCount++;
+                        }
+                    }
+
+                    // If exactly 1/1 - delete vias and reduce wire
+
+                    if (inputCount == 1 && outputCount == 1)
+                    {
+                        Point last = wireIn.To();
+                        wireIn.path.Remove(last);
+                        wireIn.path.AddRange(wireOut.path);
+                        wireIn.dest = wireOut.dest;
+                        model.wires.Remove(wireOut);
+                        model.viases.Remove(vias);
+                        found = true;
+                        break;
+                    }
+                }
+
+            } while (found);
         }
 
         public static int GetNextId (LogisimModel model)
