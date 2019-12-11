@@ -597,6 +597,10 @@ namespace LogisimYed
                         wireIn.dest = wireOut.dest;
                         model.wires.Remove(wireOut);
                         model.viases.Remove(vias);
+                        if (wireIn.name == "")
+                        {
+                            wireIn.name = wireOut.name;
+                        }
                         found = true;
                         break;
                     }
@@ -895,16 +899,34 @@ namespace LogisimYed
 
                 d6.key = "d6";
 
-                d6.shape = new YedShapeNode();
-                d6.shape.geometry = new YedGeometry();
-                d6.shape.shape = new YedShape();
+                d6.node = new YedShapeNode();
+                d6.node.geometry = new YedGeometry();
+                d6.node.fill = new YedFill();
+                d6.node.label = new YedNodeLabel();
+                d6.node.shape = new YedShape();
 
-                d6.shape.geometry.x = comp.loc.X;
-                d6.shape.geometry.y = comp.loc.Y;
-                d6.shape.geometry.width = CompSize;
-                d6.shape.geometry.height = CompSize;
+                d6.node.geometry.x = comp.loc.X;
+                d6.node.geometry.y = comp.loc.Y;
+                d6.node.geometry.width = CompSize;
+                d6.node.geometry.height = CompSize;
 
-                d6.shape.shape.type = "rectangle";
+                if (comp.name == "1")
+                {
+                    d6.node.fill.color = "#FF6600";
+                }
+                else if (comp.name == "0")
+                {
+                    d6.node.fill.color = "#339966";
+                }
+                else
+                {
+                    d6.node.fill.color = "#FFCC00";
+                }
+                d6.node.fill.transparent = false;
+
+                d6.node.label.text = comp.name;
+
+                d6.node.shape.type = "rectangle";
 
                 yed.graph.nodes.Add(node);
             }
@@ -920,16 +942,20 @@ namespace LogisimYed
 
                 d6.key = "d6";
 
-                d6.shape = new YedShapeNode();
-                d6.shape.geometry = new YedGeometry();
-                d6.shape.shape = new YedShape();
+                d6.node = new YedShapeNode();
+                d6.node.geometry = new YedGeometry();
+                d6.node.fill = new YedFill();
+                d6.node.shape = new YedShape();
 
-                d6.shape.geometry.x = vias.loc.X;
-                d6.shape.geometry.y = vias.loc.Y;
-                d6.shape.geometry.width = 5;
-                d6.shape.geometry.height = 5;
+                d6.node.geometry.width = 5;
+                d6.node.geometry.height = 5;
+                d6.node.geometry.x = vias.loc.X - d6.node.geometry.width / 2;
+                d6.node.geometry.y = vias.loc.Y - d6.node.geometry.height / 2;
 
-                d6.shape.shape.type = "ellipse";
+                d6.node.fill.color = "#FFCC00";
+                d6.node.fill.transparent = false;
+
+                d6.node.shape.type = "ellipse";
 
                 yed.graph.nodes.Add(node);
             }
@@ -943,6 +969,26 @@ namespace LogisimYed
                 edge.source = "n" + wire.source.id.ToString();
                 edge.target = "n" + wire.dest.id.ToString();
                 edgeId++;
+
+                YedData d10 = new YedData();
+                d10.key = "d10";
+                edge.data.Add(d10);
+
+                d10.edge = new YedPolyLineEdge();
+
+                if (wire.path.Count > 2)
+                {
+                    for (int i=1; i<wire.path.Count-1; i++)
+                    {
+                        d10.edge.path.points.Add(new YedPoint(wire.path[i].X, wire.path[i].Y));
+                    }
+                }
+
+                if (wire.name != "")
+                {
+                    d10.edge.label = new YedEdgeLabel(wire.name);
+                }
+
                 yed.graph.edges.Add(edge);
             }
 
@@ -1039,12 +1085,11 @@ namespace LogisimYed
 
         public class YedEdge
         {
-            [XmlAttribute]
-            public string id;
-            [XmlAttribute]
-            public string source;
-            [XmlAttribute]
-            public string target;
+            [XmlAttribute] public string id;
+            [XmlAttribute] public string source;
+            [XmlAttribute] public string target;
+            [XmlElement(ElementName = "data")]
+            public List<YedData> data = new List<YedData>();
         }
 
         public class YedData
@@ -1054,27 +1099,52 @@ namespace LogisimYed
             [XmlAttribute(AttributeName = "xml:space")]
             public string xmlSpace;
             [XmlElement(ElementName = "ShapeNode", Namespace = "http://www.yworks.com/xml/graphml")]
-            public YedShapeNode shape;
+            public YedShapeNode node;
+            [XmlElement(ElementName = "PolyLineEdge", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedPolyLineEdge edge;
         }
 
         public class YedShapeNode
         {
             [XmlElement(ElementName = "Geometry", Namespace = "http://www.yworks.com/xml/graphml")]
             public YedGeometry geometry;
+            [XmlElement(ElementName = "Fill", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedFill fill;
+            [XmlElement(ElementName = "NodeLabel", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedNodeLabel label;
             [XmlElement(ElementName = "Shape", Namespace = "http://www.yworks.com/xml/graphml")]
             public YedShape shape;
         }
 
         public class YedGeometry
         {
-            [XmlAttribute]
-            public float x;
-            [XmlAttribute]
-            public float y;
-            [XmlAttribute]
-            public float width;
-            [XmlAttribute]
-            public float height;
+            [XmlAttribute] public float x;
+            [XmlAttribute] public float y;
+            [XmlAttribute] public float width;
+            [XmlAttribute] public float height;
+        }
+
+        public class YedFill
+        {
+            [XmlAttribute] public string color;
+            [XmlAttribute] public bool transparent;
+        }
+
+        public class YedNodeLabel
+        {
+            [XmlAttribute] public string alignment = "center";
+            [XmlAttribute] public int fontSize = 5;
+            [XmlAttribute] public string fontStyle = "plain";
+            [XmlAttribute] public string horizontalTextPosition = "center";
+            [XmlAttribute] public string textColor = "#000000";
+            [XmlAttribute] public string verticalTextPosition = "bottom";
+            [XmlAttribute] public bool visible = true;
+            [XmlAttribute] public float x = 3;
+            [XmlAttribute] public float y = 0;
+            [XmlAttribute] public float width = 13;
+            [XmlAttribute] public float height = 18;
+            [XmlText]
+            public string text;
         }
 
         public class YedShape
@@ -1083,9 +1153,88 @@ namespace LogisimYed
             public string type;
         }
 
+        public class YedPolyLineEdge
+        {
+            [XmlElement(ElementName = "Path", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedPath path = new YedPath();
+            [XmlElement(ElementName = "LineStyle", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedLineStyle lineStyle = new YedLineStyle();
+            [XmlElement(ElementName = "Arrows", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedArrows arrows = new YedArrows();
+            [XmlElement(ElementName = "EdgeLabel", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedEdgeLabel label;
+        }
 
+        public class YedPath
+        {
+            [XmlAttribute] public float sx = 0;
+            [XmlAttribute] public float sy = 0;
+            [XmlAttribute] public float tx = 0;
+            [XmlAttribute] public float ty = 0;
+            [XmlElement(ElementName = "Point", Namespace = "http://www.yworks.com/xml/graphml")]
+            public List<YedPoint> points = new List<YedPoint>();
+        }
 
+        public class YedPoint
+        {
+            [XmlAttribute]
+            public float x = 0;
+            [XmlAttribute]
+            public float y = 0;
 
+            public YedPoint() {}
+
+            public YedPoint(float _x, float _y)
+            {
+                x = _x;
+                y = _y;
+            }
+        }
+
+        public class YedLineStyle
+        {
+            [XmlAttribute] public string color = "#000000";
+            [XmlAttribute] public string type = "line";
+            [XmlAttribute] public float width = 1.0F;
+        }
+
+        public class YedArrows
+        {
+            [XmlAttribute]
+            public string source = "none";
+            [XmlAttribute]
+            public string target = "standard";
+        }
+
+        public class YedEdgeLabel
+        {
+            // Not sure wtf is this, just set to some nice values
+
+            [XmlAttribute] public string alignment = "center";
+            [XmlAttribute] public string configuration = "AutoFlippingLabel";
+            [XmlAttribute] public float distance = 2;
+            [XmlAttribute] public string fontFamily = "Dialog";
+            [XmlAttribute] public int fontSize = 5;
+            [XmlAttribute] public string fontStyle = "plain";
+            [XmlAttribute] public bool hasBackgroundColor = false;
+            [XmlAttribute] public bool hasLineColor = false;
+            [XmlAttribute] public string horizontalTextPosition = "center";
+            [XmlAttribute] public string modelName = "centered";
+            [XmlAttribute] public string modelPosition = "center";
+            [XmlAttribute] public string preferredPlacement = "anywhere";
+            [XmlAttribute] public string textColor = "#000000";
+            [XmlAttribute] public string verticalTextPosition = "bottom";
+            [XmlAttribute] public bool visible = true;
+
+            [XmlText]
+            public string text;
+            public YedEdgeLabel() {}
+
+            public YedEdgeLabel (string _text)
+            {
+                text = _text;
+            }
+        }
 
     }
 }
