@@ -14,7 +14,7 @@ class Wire;
 class Container : public Element
 {
 public:
-    Container( Container* parent );
+    Container( Container* parent, const QString& def );
     virtual ~Container();
 
     Element* Copy( Container* parent );
@@ -25,6 +25,8 @@ public:
     void Update();
     void Trace( Line* line, Connect* connect );
     void SetValue( const int value, Connect* connect );
+
+    QString GetDef() const;
 
     std::vector< Element* >& GetElements();
     std::vector< Wire* >& GetWires();

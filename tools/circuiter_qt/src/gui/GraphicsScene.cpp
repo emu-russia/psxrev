@@ -37,7 +37,7 @@ GraphicsScene::GraphicsScene( QObject* parent ):
     m_MoveOffset( QPointF( 0, 0 ) ),
     m_MovedHold( false )
 {
-    m_RootContainer = new Container( NULL );
+    m_RootContainer = new Container( NULL, "" );
     m_CurrentContainer = m_RootContainer;
 }
 
@@ -491,17 +491,25 @@ GraphicsScene::AddContainerDef( Container* container )
 
 
 void
-GraphicsScene::InsertContainer()
+GraphicsScene::InsertEmptyContainer()
 {
-    GraphicsItem* element = new Container( m_CurrentContainer );
+    GraphicsItem* element = new Container( m_CurrentContainer, "" );
+    InsertElement( element );
+}
 
-    if( m_ContainerDefs.size() > 0 )
+
+
+void
+GraphicsScene::InsertDefContainer( const size_t id )
+{
+    if( m_ContainerDefs.size() > id )
     {
+        GraphicsItem* element = new Container( m_CurrentContainer, m_ContainerDefs[ id ]->GetDef() );
         Container* temp = m_CurrentContainer;
 
         SetCurrentContainer( ( Container* )element );
 
-        std::vector< Element* > elements = m_ContainerDefs[ 0 ]->GetElements();
+        std::vector< Element* > elements = m_ContainerDefs[ id ]->GetElements();
         for( size_t i = 0; i < elements.size(); ++i )
         {
             Element* element = elements[ i ]->Copy( m_CurrentContainer );
@@ -509,7 +517,7 @@ GraphicsScene::InsertContainer()
             ConnectElement( element );
         }
 
-        std::vector< Wire* > wires = m_ContainerDefs[ 0 ]->GetWires();
+        std::vector< Wire* > wires = m_ContainerDefs[ id ]->GetWires();
         for( size_t i = 0; i < wires.size(); ++i )
         {
             Wire* wire = new Wire();
@@ -518,9 +526,9 @@ GraphicsScene::InsertContainer()
         }
 
         SetCurrentContainer( temp );
-    }
 
-    InsertElement( element );
+        InsertElement( element );
+    }
 }
 
 

@@ -39,7 +39,7 @@ MainWindow::MainWindow( QWidget *parent ):
     m_ToolBar = addToolBar( tr( "Elements" ) );
     QAction* insert_container = new QAction( QIcon( QPixmap( ":/images/container.png" ) ), tr( "&InsertContainer" ), this );
     insert_container->setStatusTip( tr( "Inserts new Container element." ) );
-    connect( insert_container, &QAction::triggered, this, &MainWindow::InsertContainer );
+    connect( insert_container, &QAction::triggered, this, &MainWindow::InsertEmptyContainer );
     m_ToolBar->addAction( insert_container );
     QAction* insert_pin = new QAction( QIcon( QPixmap( ":/images/pin.png" ) ), tr( "&InsertPin" ), this );
     insert_pin->setStatusTip( tr( "Inserts new Pin element." ) );
@@ -113,6 +113,9 @@ MainWindow::Open()
     m_Scene->setSceneRect( -32000, -32000, 64000, 64000 );
     m_View->view()->setScene( m_Scene );
 
+    m_ContainerBar = addToolBar( tr( "Containers" ) );
+    QSignalMapper* mapper = new QSignalMapper( this );
+
     QFile file( filename );
     if( !file.open( QFile::ReadOnly | QFile::Text ) )
     {
@@ -123,15 +126,24 @@ MainWindow::Open()
     Wire* wire;
     Element* el;
     QXmlStreamReader xml( &file );
+    size_t id = 0;
     if( ( xml.readNextStartElement() ) && ( xml.name() == "project" ) )
     {
         while( xml.readNextStartElement() )
         {
             if( xml.name() == "container" )
             {
-                QStringRef def = xml.attributes().value( "def" );
-                Container* container = new Container( NULL );
+                QString def = xml.attributes().value( "def" ).toString();
+                Container* container = new Container( NULL, def );
                 m_Scene->AddContainerDef( container );
+
+                QAction* insert_container = new QAction( QIcon( QPixmap( ":/images/container.png" ) ), def, this );
+                insert_container->setStatusTip( tr( "Inserts new Container element." ) );
+                mapper->setMapping( insert_container, id );
+                connect( insert_container, SIGNAL( triggered() ), mapper, SLOT( map() ) );
+
+                m_ContainerBar->addAction( insert_container );
+                ++id;
 
                 while( xml.readNextStartElement() )
                 {
@@ -176,7 +188,7 @@ MainWindow::Open()
                             }
                             else if( type == "container" )
                             {
-                                el = new Container( NULL );
+                                el = new Container( NULL, "" );
                             }
                             el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
                             el->setRotation( xml.attributes().value( "rot" ).toInt() );
@@ -205,6 +217,8 @@ MainWindow::Open()
     {
         statusBar()->showMessage( tr( "File %1 loaded" ).arg( filename ), 2000 );
     }
+
+    connect( mapper, SIGNAL( mapped( int ) ), this, SLOT( InsertDefContainer( int ) ) );
 
     m_Scene->UpdateAll();
 }
@@ -283,11 +297,22 @@ MainWindow::CircuitUpdate()
 
 
 void
-MainWindow::InsertContainer()
+MainWindow::InsertEmptyContainer()
 {
     if( m_Scene != NULL )
     {
-        m_Scene->InsertContainer();
+        m_Scene->InsertEmptyContainer();
+    }
+}
+
+
+
+void
+MainWindow::InsertDefContainer( int id )
+{
+    if( m_Scene != NULL )
+    {
+        m_Scene->InsertDefContainer( id );
     }
 }
 

@@ -36,7 +36,8 @@ public:
     void SetCurrentContainer( Container* container );
     Container* GetCurrentContainer();
 
-    void InsertContainer();
+    void InsertEmptyContainer();
+    void InsertDefContainer( const size_t id );
     void InsertPin();
     void InsertGround();
     void InsertPower();

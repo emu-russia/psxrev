@@ -25,7 +25,8 @@ private  slots:
     void SaveAs();
     void CircuitUpdate();
 
-    void InsertContainer();
+    void InsertEmptyContainer();
+    void InsertDefContainer( int id );
     void InsertPin();
     void InsertGround();
     void InsertPower();
@@ -36,6 +37,7 @@ private:
     QSplitter* m_Splitter;
     QMenu* m_FileMenu;
     QToolBar* m_ToolBar;
+    QToolBar* m_ContainerBar;
     QAction* m_OpenAct;
     QAction* m_SaveAsAct;
     QAction* m_ExitAct;

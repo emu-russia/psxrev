@@ -6,8 +6,9 @@
 
 
 
-Container::Container( Container* parent ):
-    Element( parent )
+Container::Container( Container* parent, const QString& def ):
+    Element( parent ),
+    m_Def( def )
 {
     m_ItemType = IT_CONTAINER;
 
@@ -46,7 +47,7 @@ Container::~Container()
 Element*
 Container::Copy( Container* parent )
 {
-    Element* element = new Container( parent );
+    Element* element = new Container( parent, m_Def );
     return element;
 }
 
@@ -81,7 +82,7 @@ Container::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWi
     painter->setFont( font );
     painter->save();
     painter->scale( 1, 1 );
-    painter->drawText( -20, 0, QString( "Container" ) );
+    painter->drawText( -20, 0, m_Def );
     painter->restore();
 
     if( option->state & QStyle::State_Selected )
@@ -117,6 +118,14 @@ void
 Container::SetValue( const int value, Connect* connect )
 {
     m_Visited = false;
+}
+
+
+
+QString
+Container::GetDef() const
+{
+    return m_Def;
 }
 
 
