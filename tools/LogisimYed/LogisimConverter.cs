@@ -875,18 +875,63 @@ namespace LogisimYed
 
             YedModel yed = new YedModel();
 
+            AddYedKeys(yed);
+
+            YedData graphData = new YedData();
+
+            graphData.key = "d0";
+            graphData.xmlSpace = "preserve";
+
+            yed.graph.data.Add(graphData);
+
             foreach (var comp in model.comps)
             {
                 YedNode node = new YedNode();
                 node.id = "n" + comp.id.ToString();
-                yed.nodes.Add(node);
+
+                YedData d6 = new YedData();
+
+                node.data.Add(d6);
+
+                d6.key = "d6";
+
+                d6.shape = new YedShapeNode();
+                d6.shape.geometry = new YedGeometry();
+                d6.shape.shape = new YedShape();
+
+                d6.shape.geometry.x = comp.loc.X;
+                d6.shape.geometry.y = comp.loc.Y;
+                d6.shape.geometry.width = CompSize;
+                d6.shape.geometry.height = CompSize;
+
+                d6.shape.shape.type = "rectangle";
+
+                yed.graph.nodes.Add(node);
             }
 
             foreach (var vias in model.viases)
             {
                 YedNode node = new YedNode();
                 node.id = "n" + vias.id.ToString();
-                yed.nodes.Add(node);
+
+                YedData d6 = new YedData();
+
+                node.data.Add(d6);
+
+                d6.key = "d6";
+
+                d6.shape = new YedShapeNode();
+                d6.shape.geometry = new YedGeometry();
+                d6.shape.shape = new YedShape();
+
+                d6.shape.geometry.x = vias.loc.X;
+                d6.shape.geometry.y = vias.loc.Y;
+                d6.shape.geometry.width = 5;
+                d6.shape.geometry.height = 5;
+
+                d6.shape.shape.type = "ellipse";
+
+                yed.graph.nodes.Add(node);
             }
 
             int edgeId = 0;     // Doesn't matter..
@@ -898,20 +943,42 @@ namespace LogisimYed
                 edge.source = "n" + wire.source.id.ToString();
                 edge.target = "n" + wire.dest.id.ToString();
                 edgeId++;
-                yed.edges.Add(edge);
+                yed.graph.edges.Add(edge);
             }
 
             // Convert Yed Model to Xml
 
             var nav = doc.CreateNavigator();
+            var ns = new XmlSerializerNamespaces();
+            ns.Add("java", "http://www.yworks.com/xml/yfiles-common/1.0/java");
+            ns.Add("sys", "http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0");
+            ns.Add("x", "http://www.yworks.com/xml/yfiles-common/markup/2.0");
+            ns.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            ns.Add("y", "http://www.yworks.com/xml/graphml");
+            ns.Add("yed", "http://www.yworks.com/xml/yed/3");
 
             using (var writer = nav.AppendChild())
             {
                 var ser = new XmlSerializer(typeof(YedModel));
-                ser.Serialize(writer, yed);
+                ser.Serialize(writer, yed, ns);
             }
 
             return doc;
+        }
+
+        private static void AddYedKeys(YedModel yed)
+        {
+            yed.keys.Add(new YedKey("d0", "Description", "string", "graph", null));
+            yed.keys.Add(new YedKey("d1", null, null, "port", "portgraphics"));
+            yed.keys.Add(new YedKey("d2", null, null, "port", "portgeometry"));
+            yed.keys.Add(new YedKey("d3", null, null, "port", "portuserdata"));
+            yed.keys.Add(new YedKey("d4", "url", "string", "node", null));
+            yed.keys.Add(new YedKey("d5", "description", "string", "node", null));
+            yed.keys.Add(new YedKey("d6", null, null, "node", "nodegraphics"));
+            yed.keys.Add(new YedKey("d7", null, null, "graphml", "resources"));
+            yed.keys.Add(new YedKey("d8", "url", "string", "edge", null));
+            yed.keys.Add(new YedKey("d9", "description", "string", "edge", null));
+            yed.keys.Add(new YedKey("d10", null, null, "edge", "edgegraphics"));
         }
 
         [XmlRoot("graphml")]
@@ -919,6 +986,18 @@ namespace LogisimYed
         {
             [XmlElement(ElementName ="key")]
             public List<YedKey> keys = new List<YedKey>();
+            [XmlElement]
+            public YedGraph graph = new YedGraph();
+        }
+
+        public class YedGraph
+        {
+            [XmlAttribute]
+            public string edgedefault = "directed";
+            [XmlAttribute]
+            public string id = "G";
+            [XmlElement(ElementName = "data")]
+            public List<YedData> data = new List<YedData>();
             [XmlElement(ElementName = "node")]
             public List<YedNode> nodes = new List<YedNode>();
             [XmlElement(ElementName = "edge")]
@@ -929,23 +1008,82 @@ namespace LogisimYed
         {
             [XmlAttribute]
             public string id;
+            [XmlAttribute(AttributeName = "attr.name")]
+            public string attrName;
+            [XmlAttribute(AttributeName = "attr.type")]
+            public string attrType;
+            [XmlAttribute(AttributeName = "for")]
+            public string For;
+            [XmlAttribute(AttributeName = "yfiles.type")]
+            public string yfilesType;
+
+            public YedKey() {}
+
+            public YedKey (string _id, string _attrName, string _attrType, string _for, string _yfilesType)
+            {
+                id = _id;
+                attrName = _attrName;
+                attrType = _attrType;
+                For = _for;
+                yfilesType = _yfilesType;
+            }
         }
 
         public class YedNode
         {
             [XmlAttribute]
-            public string id = "";
+            public string id;
+            [XmlElement(ElementName = "data")]
+            public List<YedData> data = new List<YedData>();
         }
 
         public class YedEdge
         {
             [XmlAttribute]
-            public string id = "";
+            public string id;
             [XmlAttribute]
-            public string source = "";
+            public string source;
             [XmlAttribute]
-            public string target = "";
+            public string target;
         }
+
+        public class YedData
+        {
+            [XmlAttribute]
+            public string key;
+            [XmlAttribute(AttributeName = "xml:space")]
+            public string xmlSpace;
+            [XmlElement(ElementName = "ShapeNode", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedShapeNode shape;
+        }
+
+        public class YedShapeNode
+        {
+            [XmlElement(ElementName = "Geometry", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedGeometry geometry;
+            [XmlElement(ElementName = "Shape", Namespace = "http://www.yworks.com/xml/graphml")]
+            public YedShape shape;
+        }
+
+        public class YedGeometry
+        {
+            [XmlAttribute]
+            public float x;
+            [XmlAttribute]
+            public float y;
+            [XmlAttribute]
+            public float width;
+            [XmlAttribute]
+            public float height;
+        }
+
+        public class YedShape
+        {
+            [XmlAttribute]
+            public string type;
+        }
+
+
 
 
 
