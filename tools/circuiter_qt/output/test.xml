@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+    <main def="main" />
+    <container def="main">
+        <wire line="-210 -105 -210 -75"/>
+        <wire line="-300 -105 -210 -105"/>
+        <wire line="-300 -135 -300 -105"/>
+        <wire line="-180 -105 -180 -75"/>
+        <wire line="-120 -105 -120 60"/>
+        <wire line="-195 15 -195 60"/>
+        <wire line="-150 -135 -150 -105"/>
+        <wire line="-180 -105 -150 -105"/>
+        <wire line="-150 -105 -120 -105"/>
+        <wire line="-165 60 -165 90"/>
+        <wire line="-195 60 -165 60"/>
+        <wire line="-165 60 -120 60"/>
+        <element type="container" def="sub" pos="-195 -30" rot="0"/>
+        <element type="power" pos="-300 -135" rot="0"/>
+        <element type="ground" pos="-150 -135" rot="0"/>
+        <element type="nfet" pos="-165 90" rot="0"/>
+    </container>
     <container def="sub">
-        <element type="power" pos="0 0" rot="0"/>
+        <element type="power" pos="0 0" rot="0" />
     </container>
 </project>

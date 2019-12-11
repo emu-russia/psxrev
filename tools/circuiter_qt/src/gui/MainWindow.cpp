@@ -123,81 +123,78 @@ MainWindow::Open()
     Wire* wire;
     Element* el;
     QXmlStreamReader xml( &file );
-    if( xml.readNextStartElement() )
+    if( ( xml.readNextStartElement() ) && ( xml.name() == "project" ) )
     {
-        if( xml.name() == "project" )
+        while( xml.readNextStartElement() )
         {
-            while( xml.readNextStartElement() )
+            if( xml.name() == "container" )
             {
-                if( xml.name() == "container" )
-                {
-                    QStringRef def = xml.attributes().value( "def" );
-                    Container* container = new Container( NULL );
-                    m_Scene->AddContainerDef( container );
+                QStringRef def = xml.attributes().value( "def" );
+                Container* container = new Container( NULL );
+                m_Scene->AddContainerDef( container );
 
-                    while( xml.readNextStartElement() )
-                    {
-                        if( xml.name() == "wire" )
-                        {
-                            QStringRef str = xml.attributes().value( "line" );
-                            QVector< QStringRef > vec = str.split( " " );
-                            if( vec.size() >= 4 )
-                            {
-                                wire = new Wire();
-                                wire->SetLine( QLine( vec[ 0 ].toInt(), vec[ 1 ].toInt(), vec[ 2 ].toInt(), vec[ 3 ].toInt() ) );
-                                container->InsertWire( wire );
-                            }
-                        }
-                        else if( xml.name() == "element" )
-                        {
-                            QStringRef str = xml.attributes().value( "pos" );
-                            QVector< QStringRef > vec = str.split( " " );
-                            if( vec.size() >= 2 )
-                            {
-                                el = 0;
-                                QString type = xml.attributes().value( "type" ).toString();
-                                if( type == "pin" )
-                                {
-                                    el = new Pin( NULL );
-                                }
-                                else if( type == "ground" )
-                                {
-                                    el = new Ground( NULL );
-                                }
-                                else if( type == "power" )
-                                {
-                                    el = new Power( NULL );
-                                }
-                                else if( type == "nfet" )
-                                {
-                                    el = new Nfet( NULL );
-                                }
-                                else if( type == "pfet" )
-                                {
-                                    el = new Pfet( NULL );
-                                }
-                                else if( type == "container" )
-                                {
-                                    el = new Container( NULL );
-                                }
-                                el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
-                                el->setRotation( xml.attributes().value( "rot" ).toInt() );
-                                container->InsertElement( el );
-                            }
-                        }
-                        xml.skipCurrentElement();
-                    }
-                }
-                else
+                while( xml.readNextStartElement() )
                 {
-                    xml.raiseError( QObject::tr( "The file is not circuit file. No <container> in <project>." ) );
+                    if( xml.name() == "wire" )
+                    {
+                        QStringRef str = xml.attributes().value( "line" );
+                        QVector< QStringRef > vec = str.split( " " );
+                        if( vec.size() >= 4 )
+                        {
+                            wire = new Wire();
+                            wire->SetLine( QLine( vec[ 0 ].toInt(), vec[ 1 ].toInt(), vec[ 2 ].toInt(), vec[ 3 ].toInt() ) );
+                            container->InsertWire( wire );
+                        }
+                    }
+                    else if( xml.name() == "element" )
+                    {
+                        QStringRef str = xml.attributes().value( "pos" );
+                        QVector< QStringRef > vec = str.split( " " );
+                        if( vec.size() >= 2 )
+                        {
+                            el = 0;
+                            QString type = xml.attributes().value( "type" ).toString();
+                            if( type == "pin" )
+                            {
+                                el = new Pin( NULL );
+                            }
+                            else if( type == "ground" )
+                            {
+                                el = new Ground( NULL );
+                            }
+                            else if( type == "power" )
+                            {
+                                el = new Power( NULL );
+                            }
+                            else if( type == "nfet" )
+                            {
+                                el = new Nfet( NULL );
+                            }
+                            else if( type == "pfet" )
+                            {
+                                el = new Pfet( NULL );
+                            }
+                            else if( type == "container" )
+                            {
+                                el = new Container( NULL );
+                            }
+                            el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
+                            el->setRotation( xml.attributes().value( "rot" ).toInt() );
+                            container->InsertElement( el );
+                        }
+                    }
+                    xml.skipCurrentElement();
                 }
             }
+            else
+            {
+                xml.skipCurrentElement();
+            }
         }
-        else
-        {
-            xml.raiseError( QObject::tr( "The file is not circuit file. No <project> in root." ) );
-        }
+    }
+    else
+    {
+        xml.raiseError( QObject::tr( "The file is not circuit file. No <project> in root." ) );
     }
 
     if( xml.error() )
