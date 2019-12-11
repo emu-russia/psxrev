@@ -188,7 +188,8 @@ MainWindow::Open()
                             }
                             else if( type == "container" )
                             {
-                                el = new Container( NULL, "" );
+                                QString def = xml.attributes().value( "def" ).toString();
+                                el = new Container( NULL, def );
                             }
                             el->setPos( QPointF( vec[ 0 ].toInt(), vec[ 1 ].toInt() ) );
                             el->setRotation( xml.attributes().value( "rot" ).toInt() );
