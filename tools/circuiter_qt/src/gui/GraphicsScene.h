@@ -33,11 +33,12 @@ public:
     void DoStep();
     void UpdateAll();
 
-    void SetCurrentContainer( Container* container );
+    void SetContainerToScene( Container* container );
     Container* GetCurrentContainer();
 
     void InsertEmptyContainer();
-    void InsertDefContainer( const size_t id );
+    void InsertDefContainer( const QString& def );
+    Element* InsertSubContainer( const QString& def );
     void InsertPin();
     void InsertGround();
     void InsertPower();
@@ -79,6 +80,7 @@ protected:
 private:
     Container* m_RootContainer;
     Container* m_CurrentContainer;
+    std::vector< Container* > m_Containers;
     std::vector< Container* > m_ContainerDefs;
 
     enum WireMode

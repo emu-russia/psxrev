@@ -26,7 +26,7 @@ private  slots:
     void CircuitUpdate();
 
     void InsertEmptyContainer();
-    void InsertDefContainer( int id );
+    void InsertDefContainer( const QString& def );
     void InsertPin();
     void InsertGround();
     void InsertPower();

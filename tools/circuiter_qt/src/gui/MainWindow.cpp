@@ -126,7 +126,6 @@ MainWindow::Open()
     Wire* wire;
     Element* el;
     QXmlStreamReader xml( &file );
-    size_t id = 0;
     if( ( xml.readNextStartElement() ) && ( xml.name() == "project" ) )
     {
         while( xml.readNextStartElement() )
@@ -139,11 +138,10 @@ MainWindow::Open()
 
                 QAction* insert_container = new QAction( QIcon( QPixmap( ":/images/container.png" ) ), def, this );
                 insert_container->setStatusTip( tr( "Inserts new Container element." ) );
-                mapper->setMapping( insert_container, id );
+                mapper->setMapping( insert_container, def );
                 connect( insert_container, SIGNAL( triggered() ), mapper, SLOT( map() ) );
 
                 m_ContainerBar->addAction( insert_container );
-                ++id;
 
                 while( xml.readNextStartElement() )
                 {
@@ -219,7 +217,7 @@ MainWindow::Open()
         statusBar()->showMessage( tr( "File %1 loaded" ).arg( filename ), 2000 );
     }
 
-    connect( mapper, SIGNAL( mapped( int ) ), this, SLOT( InsertDefContainer( int ) ) );
+    connect( mapper, SIGNAL( mapped( const QString ) ), this, SLOT( InsertDefContainer( const QString ) ) );
 
     m_Scene->UpdateAll();
 }
@@ -309,11 +307,11 @@ MainWindow::InsertEmptyContainer()
 
 
 void
-MainWindow::InsertDefContainer( int id )
+MainWindow::InsertDefContainer( const QString& def )
 {
     if( m_Scene != NULL )
     {
-        m_Scene->InsertDefContainer( id );
+        m_Scene->InsertDefContainer( def );
     }
 }
 
