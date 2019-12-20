@@ -1,8 +1,0 @@
-*.suo
-*.sdf
-*.opensdf
-bin
-obj
-Debug
-Release
-.vs
