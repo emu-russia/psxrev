@@ -133,7 +133,7 @@ namespace LogisimYed
                 }
 
 #if DEBUG
-                //rect.Text += " #" + comp.id.ToString();
+                rect.Text += " #" + comp.id.ToString();
 #endif
 
                 canvasControl1.AddItem(rect);

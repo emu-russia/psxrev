@@ -964,6 +964,10 @@ namespace LogisimYed
 
             foreach (var wire in model.wires)
             {
+                // Skip wires to nowhere
+                if (wire.source.id < 0 || wire.dest.id < 0)
+                    continue;
+
                 YedEdge edge = new YedEdge();
                 edge.id = "e" + edgeId.ToString();
                 edge.source = "n" + wire.source.id.ToString();
