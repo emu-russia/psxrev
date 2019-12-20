@@ -48,7 +48,7 @@ Local copy of logisim in case of WW3.
 
 Convert Logisim Circuits (.circ) to yEd Diagrams (.graphml)
 
-![LogisimYedDemo1](LogisimYes/ScreenShots/LogisimYedDemo1.png)
+![LogisimYedDemo1](LogisimYed/ScreenShots/LogisimYedDemo1.png)
 
 ## MachineLearningKit
 
