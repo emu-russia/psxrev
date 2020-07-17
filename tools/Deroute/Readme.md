@@ -1,6 +1,6 @@
 # Deroute
 
-Utility for untangling wires.
+Tool for untangling wires.
 
 ![JPEG](/tools/Deroute/Build/sample.jpg)
 
@@ -8,7 +8,7 @@ It can be used for reverse engineering of inegrated circuits and printed circuit
 
 ## Features
 
-At the center of the utility is a custom control called the EntityBox. Its task is to store and display a set of "Entities".
+At the center of the tool is a custom control called the EntityBox. Its task is to store and display a set of "Entities".
 
 Entities are any connected elements that are used to build the topology of integrated circuits and printed circuit boards: wires, connecting contacts (vias), standard cells, register and memory blocks, other ICs and connectors.
 
