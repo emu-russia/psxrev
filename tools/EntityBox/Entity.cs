@@ -36,6 +36,7 @@ public enum EntityType
     UnitCustom,
     Beacon,
     Region,
+    Layer,          // Invisible entity-container
 }
 
 public enum ViasShape
