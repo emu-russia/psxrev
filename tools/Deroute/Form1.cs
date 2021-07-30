@@ -919,6 +919,121 @@ namespace DerouteSharp
             return false;
         }
 
+        private void myTreeView1_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void myTreeView1_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void myTreeView1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                TreeNode node = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+                TreeView treeView = (TreeView)sender;
+
+                Point pt = treeView.PointToClient(new Point(e.X, e.Y));
+                TreeNode destinationNode = treeView.GetNodeAt(pt);
+
+                if (destinationNode.Tag is Entity && node.Tag is Entity)
+                {
+                    Entity dest = (Entity)destinationNode.Tag;
+                    Entity source = (Entity)node.Tag;
+
+                    // It is forbidden to move the root
+
+                    if (source.parent == null)
+                    {
+                        return;
+                    }
+
+                    if (source != dest)
+                    {
+                        source.parent.Children.Remove(source);
+                        source.parent = dest;
+                        dest.Children.Add(source);
+
+                        PopulateTree();
+                        entityBox1.Invalidate();
+                    }
+                }
+            }
+        }
+
+        private void myTreeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            TreeNode sourceNode = myTreeView1.SelectedNode;
+            TreeNode neighbourNode = null;
+
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Up:
+                        neighbourNode = sourceNode.PrevNode;
+                        break;
+
+                    case Keys.Down:
+                        neighbourNode = sourceNode.NextNode;
+                        break;
+                }
+            }
+            else
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Delete:
+                        Entity entity = sourceNode.Tag as Entity;
+                        if (entity.Type != EntityType.Root)
+                        {
+                            entityBox1.RemoveEntity(entity);
+                            entityBox1.Invalidate();
+                        }
+                        break;
+                }
+            }
+
+            if (neighbourNode != null)
+            {
+                if (neighbourNode.Tag is Entity)
+                {
+                    SwapNodes(sourceNode, neighbourNode);
+
+                    myTreeView1.SelectedNode = neighbourNode;
+                    myTreeView1.Focus();
+
+                    entityBox1.Invalidate();
+                }
+            }
+        }
+
+        private void SwapNodes(TreeNode a, TreeNode b)
+        {
+            string temp = a.Text;
+            a.Text = b.Text;
+            b.Text = temp;
+
+            Entity aEnt = a.Tag as Entity;
+            Entity bEnt = b.Tag as Entity;
+
+            object tempTag = a.Tag;
+            a.Tag = b.Tag;
+            b.Tag = tempTag;
+
+            Entity parent = aEnt.parent;
+
+            int aCtrlIdx = parent.Children.IndexOf(aEnt);
+            int bCtrlIdx = parent.Children.IndexOf(bEnt);
+
+            Entity tempEntity = parent.Children[aCtrlIdx];
+            parent.Children[aCtrlIdx] = parent.Children[bCtrlIdx];
+            parent.Children[bCtrlIdx] = tempEntity;
+        }
 
         #endregion
 
@@ -1054,6 +1169,8 @@ namespace DerouteSharp
         {
             entityBox1.RemoveNonOrthogonalWires();
         }
+
+
 
 
 

@@ -55,10 +55,13 @@ namespace System.Windows.Forms
 
         private void FixupParentLinksAndSelectionRecursive (Entity parent)
         {
+            parent.SetParentControl(this);
+
             foreach (var entity in parent.Children)
             {
                 entity.parent = parent;
                 entity.Selected = SelectEntitiesAfterAdd;
+                entity.SetParentControl(this);
 
                 FixupParentLinksAndSelectionRecursive(entity);
             }
