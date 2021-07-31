@@ -29,6 +29,11 @@ namespace DerouteSharp
             {
                 nn = nnToShow;
                 button1.Visible = false;
+
+                textBox1.Text = nn._state._weightHiddenOutput[0].Length.ToString();
+                textBox2.Text = nn._state._learningRate.ToString();
+                textBox3.Text = nn._state.name;
+
                 textBox1.ReadOnly = true;
                 textBox2.ReadOnly = true;
                 textBox3.ReadOnly = true;

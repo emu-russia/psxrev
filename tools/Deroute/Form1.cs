@@ -1173,6 +1173,13 @@ namespace DerouteSharp
         private void Form_FormCreateMLClosed(object sender, FormClosedEventArgs e)
         {
             FormCreateMLModel form = (FormCreateMLModel)sender;
+
+            if (form.nn._state.features.Count == 0)
+            {
+                MessageBox.Show("The model is missing features, you need to add at least one for the correct operation of the model.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
             nn = form.nn;
             toolStripStatusLabel17.Text = "Not saved!";
         }
