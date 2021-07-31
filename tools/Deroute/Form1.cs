@@ -727,9 +727,9 @@ namespace DerouteSharp
             {
                 Thread.Sleep(1000);
 
-                var secondsFromLastActiviy = (DateTime.Now - timeStats.lastActivityTime).TotalSeconds;
+                var secondsFromLastActivity = (DateTime.Now - timeStats.lastActivityTime).TotalSeconds;
 
-                if (secondsFromLastActiviy < timeStats.activityPenalty)
+                if (secondsFromLastActivity < timeStats.activityPenalty)
                 {
                     timeStats.seconds++;
 
