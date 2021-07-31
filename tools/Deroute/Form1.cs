@@ -1165,7 +1165,15 @@ namespace DerouteSharp
 
         private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            FormCreateMLModel form = new FormCreateMLModel(false, null);
+            form.FormClosed += Form_FormCreateMLClosed;
+            form.ShowDialog();
+        }
 
+        private void Form_FormCreateMLClosed(object sender, FormClosedEventArgs e)
+        {
+            FormCreateMLModel form = (FormCreateMLModel)sender;
+            nn = form.nn;
             toolStripStatusLabel17.Text = "Not saved!";
         }
 
@@ -1231,8 +1239,17 @@ namespace DerouteSharp
 
         }
 
-        #endregion "Machine Learning"
+        private void toolStripStatusLabel16_Click(object sender, EventArgs e)
+        {
+            if (nn != null)
+            {
+                FormCreateMLModel form = new FormCreateMLModel(true, nn);
+                form.ShowDialog();
+            }
+        }
 
+
+        #endregion "Machine Learning"
 
     }       // Form1
 

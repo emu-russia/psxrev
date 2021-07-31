@@ -150,6 +150,8 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel16 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel17 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel15 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelTimeSpent = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -157,8 +159,6 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
-            this.toolStripStatusLabel16 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel17 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -1109,40 +1109,40 @@
             // createMLModelToolStripMenuItem
             // 
             this.createMLModelToolStripMenuItem.Name = "createMLModelToolStripMenuItem";
-            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.createMLModelToolStripMenuItem.Text = "Create Model";
             this.createMLModelToolStripMenuItem.Click += new System.EventHandler(this.createMLModelToolStripMenuItem_Click);
             // 
             // loadMLModelToolStripMenuItem
             // 
             this.loadMLModelToolStripMenuItem.Name = "loadMLModelToolStripMenuItem";
-            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.loadMLModelToolStripMenuItem.Text = "Load Model";
             this.loadMLModelToolStripMenuItem.Click += new System.EventHandler(this.loadMLModelToolStripMenuItem_Click);
             // 
             // saveMLModelToolStripMenuItem
             // 
             this.saveMLModelToolStripMenuItem.Name = "saveMLModelToolStripMenuItem";
-            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.saveMLModelToolStripMenuItem.Text = "Save Model";
             this.saveMLModelToolStripMenuItem.Click += new System.EventHandler(this.saveMLModelToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(142, 6);
             // 
             // trainModelToolStripMenuItem
             // 
             this.trainModelToolStripMenuItem.Name = "trainModelToolStripMenuItem";
-            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.trainModelToolStripMenuItem.Text = "Train Model";
             this.trainModelToolStripMenuItem.Click += new System.EventHandler(this.trainModelToolStripMenuItem_Click);
             // 
             // runModelToolStripMenuItem
             // 
             this.runModelToolStripMenuItem.Name = "runModelToolStripMenuItem";
-            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.runModelToolStripMenuItem.Text = "Run Model";
             this.runModelToolStripMenuItem.Click += new System.EventHandler(this.runModelToolStripMenuItem_Click);
             // 
@@ -1313,6 +1313,20 @@
             this.toolStripStatusLabel14.Size = new System.Drawing.Size(42, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
             // 
+            // toolStripStatusLabel16
+            // 
+            this.toolStripStatusLabel16.Name = "toolStripStatusLabel16";
+            this.toolStripStatusLabel16.Size = new System.Drawing.Size(82, 19);
+            this.toolStripStatusLabel16.Text = "Neural model:";
+            this.toolStripStatusLabel16.Click += new System.EventHandler(this.toolStripStatusLabel16_Click);
+            // 
+            // toolStripStatusLabel17
+            // 
+            this.toolStripStatusLabel17.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel17.Name = "toolStripStatusLabel17";
+            this.toolStripStatusLabel17.Size = new System.Drawing.Size(38, 19);
+            this.toolStripStatusLabel17.Text = "none";
+            // 
             // toolStripStatusLabel15
             // 
             this.toolStripStatusLabel15.Name = "toolStripStatusLabel15";
@@ -1383,19 +1397,6 @@
             // backgroundWorkerTimeSpent
             // 
             this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
-            // 
-            // toolStripStatusLabel16
-            // 
-            this.toolStripStatusLabel16.Name = "toolStripStatusLabel16";
-            this.toolStripStatusLabel16.Size = new System.Drawing.Size(82, 19);
-            this.toolStripStatusLabel16.Text = "Neural model:";
-            // 
-            // toolStripStatusLabel17
-            // 
-            this.toolStripStatusLabel17.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.toolStripStatusLabel17.Name = "toolStripStatusLabel17";
-            this.toolStripStatusLabel17.Size = new System.Drawing.Size(38, 19);
-            this.toolStripStatusLabel17.Text = "none";
             // 
             // Form1
             // 
