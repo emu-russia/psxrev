@@ -5,10 +5,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using static NeuralNetwork.EntityNetwork;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -100,7 +102,8 @@ namespace DerouteSharp
                 {
                     object[] row = { feature.name,
                         feature.description,
-                        feature.image };
+                        feature.image,
+                        feature.entities };
 
                     int rowIndex = grid.Rows.Add(row);
 
@@ -144,7 +147,9 @@ namespace DerouteSharp
                 imageCell = (DataGridViewImageCell)grid.Rows[i].Cells[2];           // image
                 item.image = (Image)imageCell.Value;
 
-                // TODO: Entities
+                textCell = (DataGridViewTextBoxCell)grid.Rows[i].Cells[3];          // entities
+                if (textCell.Value != null)
+                    item.entities = ((string)textCell.Value).Trim();
 
                 items.Add(item);
             }
@@ -156,6 +161,9 @@ namespace DerouteSharp
         {
             int column = e.ColumnIndex;
             int row = e.RowIndex;
+
+            if (ShowMode)
+                return;
 
             switch (e.ColumnIndex)
             {
@@ -175,9 +183,51 @@ namespace DerouteSharp
                 // Edit feature entities
 
                 case 3:
+                    DataGridViewCell dataGridViewCell = (DataGridViewCell)dataGridView1.Rows[row].Cells[column];
+                    FormMiniEntityBox ebox = new FormMiniEntityBox(dataGridViewCell,
+                        UnserializeEntities((string)dataGridViewCell.Value) );
+                    ebox.FormClosed += Ebox_FormClosed;
+                    ebox.ShowDialog();
                     break;
 
             }
         }
+
+        private void Ebox_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            FormMiniEntityBox ebox = (FormMiniEntityBox)sender;
+            DataGridViewCell dataGridViewCell = (DataGridViewCell)ebox.custom;
+            dataGridViewCell.Value = SerializeEntities(ebox.root);
+        }
+
+        private string SerializeEntities(Entity root)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                ser.Serialize(textWriter, root.Children);
+                return textWriter.ToString();
+            }
+        }
+
+        private Entity UnserializeEntities (string text)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+            
+            Entity root = new Entity();
+            root.Type = EntityType.Root;
+
+            if (text == null)
+                return root;
+
+            using (StringReader textReader = new StringReader(text))
+            {
+                root.Children = (List<Entity>)ser.Deserialize(textReader);
+            }
+
+            return root;
+        }
+
     }
 }

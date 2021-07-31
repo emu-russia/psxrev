@@ -79,6 +79,12 @@
     <Compile Include="FormEnterValue.Designer.cs">
       <DependentUpon>FormEnterValue.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormMiniEntityBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMiniEntityBox.Designer.cs">
+      <DependentUpon>FormMiniEntityBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,6 +120,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormEnterValue.resx">
       <DependentUpon>FormEnterValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMiniEntityBox.resx">
+      <DependentUpon>FormMiniEntityBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>

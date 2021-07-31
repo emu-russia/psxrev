@@ -1318,6 +1318,7 @@
             this.toolStripStatusLabel16.Name = "toolStripStatusLabel16";
             this.toolStripStatusLabel16.Size = new System.Drawing.Size(82, 19);
             this.toolStripStatusLabel16.Text = "Neural model:";
+            this.toolStripStatusLabel16.ToolTipText = "Click here to see the current ML model.";
             this.toolStripStatusLabel16.Click += new System.EventHandler(this.toolStripStatusLabel16_Click);
             // 
             // toolStripStatusLabel17
