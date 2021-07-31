@@ -49,6 +49,14 @@ namespace System.Windows.Forms
             {
                 OnEntityRemove?.Invoke(this, entity, EventArgs.Empty);
 
+                bool contains;
+                HierarchyContainsDestinationNodeRecursive(entity, out contains);
+
+                if (contains)
+                {
+                    SetDestinationNode(entity.parent != null ? entity.parent : root);
+                }
+
                 entity.parent.Children.Remove(entity);
             }
 
@@ -61,10 +69,27 @@ namespace System.Windows.Forms
 
             if (entityGrid != null)
                 entityGrid.SelectedObject = null;
-
-            SetDestinationNode(root);
         }
 
+        private void HierarchyContainsDestinationNodeRecursive (Entity entity, out bool contains)
+        {
+            if (entity == insertionNode)
+            {
+                contains = true;
+                return;
+            }
+
+            foreach (var child in entity.Children)
+            {
+                HierarchyContainsDestinationNodeRecursive(child, out contains);
+                if (contains)
+                {
+                    return;
+                }
+            }
+
+            contains = false;
+        }
 
         public void RemoveSmallWires (float smallerThanLambda)
         {
