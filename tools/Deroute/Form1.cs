@@ -9,6 +9,10 @@ using System.Windows.Forms;
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using NeuralNetwork;
+using static NeuralNetwork.EntityNetwork;
+using System.IO;
+using System.Xml.Serialization;
 
 //
 // Nothing to comment here. Everything is self-explanatory (GUI stubs)
@@ -1157,28 +1161,73 @@ namespace DerouteSharp
 
         #region "Machine Learning"
 
+        private NeuralNetwork.EntityNetwork nn = null;
+
         private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+            toolStripStatusLabel17.Text = "Not saved!";
         }
 
         private void loadMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult res = openFileDialog2.ShowDialog();
 
+            if (res == DialogResult.OK)
+            {
+                string filename = openFileDialog2.FileName;
+
+                XmlSerializer ser = new XmlSerializer(typeof(EntityNetwork.State));
+
+                using (FileStream fs = new FileStream(filename, FileMode.Open))
+                {
+                    nn = new EntityNetwork((EntityNetwork.State)ser.Deserialize(fs));
+                    toolStripStatusLabel17.Text = Path.GetFileName(filename);
+                }
+            }
         }
 
         private void saveMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (nn == null)
+            {
+                MessageBox.Show("Load or create neural model first", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
 
+            DialogResult res = saveFileDialog2.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                string filename = saveFileDialog2.FileName;
+
+                XmlSerializer ser = new XmlSerializer(typeof(EntityNetwork.State));
+
+                using (FileStream fs = new FileStream(filename, FileMode.Create))
+                {
+                    ser.Serialize(fs, nn._state);
+                    toolStripStatusLabel17.Text = Path.GetFileName(filename);
+                }
+            }
         }
 
         private void trainModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (nn == null)
+            {
+                MessageBox.Show("Load a trained neural model", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
 
         }
 
         private void runModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (nn == null)
+            {
+                MessageBox.Show("Load a trained neural model", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
 
         }
 

@@ -64,6 +64,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.button3 = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button2 = new System.Windows.Forms.Button();
@@ -123,6 +124,12 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.createMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.trainModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
             this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.traverseTIER2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,15 +155,10 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
-            this.entityBox1 = new System.Windows.Forms.EntityBox();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
-            this.createMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.trainModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
+            this.toolStripStatusLabel16 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel17 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -464,6 +466,91 @@
             this.splitContainer2.Size = new System.Drawing.Size(699, 581);
             this.splitContainer2.SplitterDistance = 515;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // entityBox1
+            // 
+            this.entityBox1.AutoPriority = true;
+            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.entityBox1.BeaconPriority = 4;
+            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
+            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
+            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
+            this.entityBox1.CellLatchColor = System.Drawing.Color.Cyan;
+            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
+            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
+            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
+            this.entityBox1.CellOpacity = 128;
+            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
+            this.entityBox1.CellOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.CellPriority = 1;
+            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
+            this.entityBox1.Grayscale = false;
+            this.entityBox1.HideCells = false;
+            this.entityBox1.HideGrid = false;
+            this.entityBox1.HideImage = false;
+            this.entityBox1.HideLambdaMetrics = false;
+            this.entityBox1.HideRegions = false;
+            this.entityBox1.HideVias = false;
+            this.entityBox1.HideWires = false;
+            this.entityBox1.ImageOpacity0 = 100;
+            this.entityBox1.ImageOpacity1 = 100;
+            this.entityBox1.ImageOpacity2 = 100;
+            this.entityBox1.Lambda = 5F;
+            this.entityBox1.Location = new System.Drawing.Point(0, 0);
+            this.entityBox1.LockScroll0 = true;
+            this.entityBox1.LockScroll1 = true;
+            this.entityBox1.LockScroll2 = true;
+            this.entityBox1.LockZoom0 = true;
+            this.entityBox1.LockZoom1 = true;
+            this.entityBox1.LockZoom2 = true;
+            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
+            this.entityBox1.Name = "entityBox1";
+            this.entityBox1.RegionOpacity = 128;
+            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.RegionPriority = 0;
+            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
+            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
+            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
+            this.entityBox1.ScrollX = 0F;
+            this.entityBox1.ScrollY = 0F;
+            this.entityBox1.SelectEntitiesAfterAdd = true;
+            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
+            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
+            this.entityBox1.Size = new System.Drawing.Size(699, 515);
+            this.entityBox1.TabIndex = 0;
+            this.entityBox1.Text = "entityBox1";
+            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
+            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
+            this.entityBox1.ViasBaseSize = 4;
+            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
+            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
+            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
+            this.entityBox1.ViasOpacity = 255;
+            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
+            this.entityBox1.ViasOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
+            this.entityBox1.ViasPriority = 3;
+            this.entityBox1.ViasShape = ViasShape.Round;
+            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
+            this.entityBox1.WireBaseSize = 3;
+            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
+            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
+            this.entityBox1.WireOpacity = 128;
+            this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
+            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
+            this.entityBox1.WirePriority = 2;
+            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
+            this.entityBox1.Zoom = 100;
+            this.entityBox1.ZoomImage0 = 100;
+            this.entityBox1.ZoomImage1 = 100;
+            this.entityBox1.ZoomImage2 = 100;
+            this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
             // 
             // button3
             // 
@@ -1019,6 +1106,46 @@
             this.toolStripDropDownButton6.Text = "toolStripDropDownButton6";
             this.toolStripDropDownButton6.ToolTipText = "Machine Learning Tools";
             // 
+            // createMLModelToolStripMenuItem
+            // 
+            this.createMLModelToolStripMenuItem.Name = "createMLModelToolStripMenuItem";
+            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createMLModelToolStripMenuItem.Text = "Create Model";
+            this.createMLModelToolStripMenuItem.Click += new System.EventHandler(this.createMLModelToolStripMenuItem_Click);
+            // 
+            // loadMLModelToolStripMenuItem
+            // 
+            this.loadMLModelToolStripMenuItem.Name = "loadMLModelToolStripMenuItem";
+            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadMLModelToolStripMenuItem.Text = "Load Model";
+            this.loadMLModelToolStripMenuItem.Click += new System.EventHandler(this.loadMLModelToolStripMenuItem_Click);
+            // 
+            // saveMLModelToolStripMenuItem
+            // 
+            this.saveMLModelToolStripMenuItem.Name = "saveMLModelToolStripMenuItem";
+            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMLModelToolStripMenuItem.Text = "Save Model";
+            this.saveMLModelToolStripMenuItem.Click += new System.EventHandler(this.saveMLModelToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // trainModelToolStripMenuItem
+            // 
+            this.trainModelToolStripMenuItem.Name = "trainModelToolStripMenuItem";
+            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.trainModelToolStripMenuItem.Text = "Train Model";
+            this.trainModelToolStripMenuItem.Click += new System.EventHandler(this.trainModelToolStripMenuItem_Click);
+            // 
+            // runModelToolStripMenuItem
+            // 
+            this.runModelToolStripMenuItem.Name = "runModelToolStripMenuItem";
+            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runModelToolStripMenuItem.Text = "Run Model";
+            this.runModelToolStripMenuItem.Click += new System.EventHandler(this.runModelToolStripMenuItem_Click);
+            // 
             // toolStripDropDownButton5
             // 
             this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1082,6 +1209,8 @@
             this.toolStripStatusLabel12,
             this.toolStripStatusLabel13,
             this.toolStripStatusLabel14,
+            this.toolStripStatusLabel16,
+            this.toolStripStatusLabel17,
             this.toolStripStatusLabel15,
             this.toolStripStatusLabelTimeSpent});
             this.statusStrip1.Location = new System.Drawing.Point(0, 644);
@@ -1235,95 +1364,6 @@
             this.tabPage4.Text = "Hierarchy";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // backgroundWorkerTimeSpent
-            // 
-            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
-            // 
-            // entityBox1
-            // 
-            this.entityBox1.AutoPriority = true;
-            this.entityBox1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.entityBox1.BeaconPriority = 4;
-            this.entityBox1.CellAdderColor = System.Drawing.Color.Red;
-            this.entityBox1.CellBufferColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellBusSuppColor = System.Drawing.Color.DarkViolet;
-            this.entityBox1.CellFlipFlopColor = System.Drawing.Color.Lime;
-            this.entityBox1.CellLatchColor = System.Drawing.Color.Cyan;
-            this.entityBox1.CellLogicColor = System.Drawing.Color.Yellow;
-            this.entityBox1.CellMuxColor = System.Drawing.Color.DarkOrange;
-            this.entityBox1.CellNotColor = System.Drawing.Color.Navy;
-            this.entityBox1.CellOpacity = 128;
-            this.entityBox1.CellOtherColor = System.Drawing.Color.Snow;
-            this.entityBox1.CellOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.CellPriority = 1;
-            this.entityBox1.CellTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBox1.ForeColor = System.Drawing.Color.Snow;
-            this.entityBox1.Grayscale = false;
-            this.entityBox1.HideCells = false;
-            this.entityBox1.HideGrid = false;
-            this.entityBox1.HideImage = false;
-            this.entityBox1.HideLambdaMetrics = false;
-            this.entityBox1.HideRegions = false;
-            this.entityBox1.HideVias = false;
-            this.entityBox1.HideWires = false;
-            this.entityBox1.ImageOpacity0 = 100;
-            this.entityBox1.ImageOpacity1 = 100;
-            this.entityBox1.ImageOpacity2 = 100;
-            this.entityBox1.Lambda = 5F;
-            this.entityBox1.Location = new System.Drawing.Point(0, 0);
-            this.entityBox1.LockScroll0 = true;
-            this.entityBox1.LockScroll1 = true;
-            this.entityBox1.LockScroll2 = true;
-            this.entityBox1.LockZoom0 = true;
-            this.entityBox1.LockZoom1 = true;
-            this.entityBox1.LockZoom2 = true;
-            this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
-            this.entityBox1.Name = "entityBox1";
-            this.entityBox1.RegionOpacity = 128;
-            this.entityBox1.RegionOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.RegionPriority = 0;
-            this.entityBox1.ScrollImage0 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage0")));
-            this.entityBox1.ScrollImage1 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage1")));
-            this.entityBox1.ScrollImage2 = ((System.Drawing.PointF)(resources.GetObject("entityBox1.ScrollImage2")));
-            this.entityBox1.ScrollX = 0F;
-            this.entityBox1.ScrollY = 0F;
-            this.entityBox1.SelectEntitiesAfterAdd = true;
-            this.entityBox1.SelectionBoxColor = System.Drawing.Color.Red;
-            this.entityBox1.SelectionColor = System.Drawing.Color.LimeGreen;
-            this.entityBox1.Size = new System.Drawing.Size(699, 515);
-            this.entityBox1.TabIndex = 0;
-            this.entityBox1.Text = "entityBox1";
-            this.entityBox1.UnitCustomColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitMemoryColor = System.Drawing.Color.Snow;
-            this.entityBox1.UnitRegfileColor = System.Drawing.Color.Snow;
-            this.entityBox1.ViasBaseSize = 4;
-            this.entityBox1.ViasConnectColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasFloatingColor = System.Drawing.Color.Gray;
-            this.entityBox1.ViasGroundColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasInoutColor = System.Drawing.Color.Yellow;
-            this.entityBox1.ViasInputColor = System.Drawing.Color.Green;
-            this.entityBox1.ViasOpacity = 255;
-            this.entityBox1.ViasOutputColor = System.Drawing.Color.Red;
-            this.entityBox1.ViasOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPowerColor = System.Drawing.Color.Black;
-            this.entityBox1.ViasPriority = 3;
-            this.entityBox1.ViasShape = ViasShape.Round;
-            this.entityBox1.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox1.WireBaseSize = 3;
-            this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
-            this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
-            this.entityBox1.WireOpacity = 128;
-            this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
-            this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
-            this.entityBox1.WirePriority = 2;
-            this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
-            this.entityBox1.Zoom = 100;
-            this.entityBox1.ZoomImage0 = 100;
-            this.entityBox1.ZoomImage1 = 100;
-            this.entityBox1.ZoomImage2 = 100;
-            this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
-            // 
             // myTreeView1
             // 
             this.myTreeView1.AllowDrop = true;
@@ -1340,45 +1380,22 @@
             this.myTreeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragEnter);
             this.myTreeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myTreeView1_KeyDown);
             // 
-            // createMLModelToolStripMenuItem
+            // backgroundWorkerTimeSpent
             // 
-            this.createMLModelToolStripMenuItem.Name = "createMLModelToolStripMenuItem";
-            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.createMLModelToolStripMenuItem.Text = "Create Model";
-            this.createMLModelToolStripMenuItem.Click += new System.EventHandler(this.createMLModelToolStripMenuItem_Click);
+            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
             // 
-            // loadMLModelToolStripMenuItem
+            // toolStripStatusLabel16
             // 
-            this.loadMLModelToolStripMenuItem.Name = "loadMLModelToolStripMenuItem";
-            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.loadMLModelToolStripMenuItem.Text = "Load Model";
-            this.loadMLModelToolStripMenuItem.Click += new System.EventHandler(this.loadMLModelToolStripMenuItem_Click);
+            this.toolStripStatusLabel16.Name = "toolStripStatusLabel16";
+            this.toolStripStatusLabel16.Size = new System.Drawing.Size(82, 19);
+            this.toolStripStatusLabel16.Text = "Neural model:";
             // 
-            // saveMLModelToolStripMenuItem
+            // toolStripStatusLabel17
             // 
-            this.saveMLModelToolStripMenuItem.Name = "saveMLModelToolStripMenuItem";
-            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveMLModelToolStripMenuItem.Text = "Save Model";
-            this.saveMLModelToolStripMenuItem.Click += new System.EventHandler(this.saveMLModelToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
-            // 
-            // trainModelToolStripMenuItem
-            // 
-            this.trainModelToolStripMenuItem.Name = "trainModelToolStripMenuItem";
-            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.trainModelToolStripMenuItem.Text = "Train Model";
-            this.trainModelToolStripMenuItem.Click += new System.EventHandler(this.trainModelToolStripMenuItem_Click);
-            // 
-            // runModelToolStripMenuItem
-            // 
-            this.runModelToolStripMenuItem.Name = "runModelToolStripMenuItem";
-            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.runModelToolStripMenuItem.Text = "Run Model";
-            this.runModelToolStripMenuItem.Click += new System.EventHandler(this.runModelToolStripMenuItem_Click);
+            this.toolStripStatusLabel17.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel17.Name = "toolStripStatusLabel17";
+            this.toolStripStatusLabel17.Size = new System.Drawing.Size(38, 19);
+            this.toolStripStatusLabel17.Text = "none";
             // 
             // Form1
             // 
@@ -1552,6 +1569,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem trainModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel16;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel17;
     }
 }
 
