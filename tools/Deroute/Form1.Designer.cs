@@ -65,11 +65,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
-            this.button7 = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.button6 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -153,8 +149,8 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
+            this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -456,10 +452,6 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.button7);
-            this.splitContainer2.Panel2.Controls.Add(this.button6);
-            this.splitContainer2.Panel2.Controls.Add(this.button5);
-            this.splitContainer2.Panel2.Controls.Add(this.button4);
             this.splitContainer2.Panel2.Controls.Add(this.button3);
             this.splitContainer2.Panel2.Controls.Add(this.button2);
             this.splitContainer2.Panel2.Controls.Add(this.button1);
@@ -552,18 +544,6 @@
             this.entityBox1.ZoomImage2 = 100;
             this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
             // 
-            // button7
-            // 
-            this.button7.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button7.ImageList = this.imageList1;
-            this.button7.Location = new System.Drawing.Point(623, 7);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(63, 30);
-            this.button7.TabIndex = 6;
-            this.button7.Text = "L0<>L1";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -574,42 +554,6 @@
             this.imageList1.Images.SetKeyName(3, "vias_ground.ico");
             this.imageList1.Images.SetKeyName(4, "selection.ico");
             this.imageList1.Images.SetKeyName(5, "wire.ico");
-            // 
-            // button6
-            // 
-            this.button6.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button6.ImageList = this.imageList1;
-            this.button6.Location = new System.Drawing.Point(416, 7);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(63, 30);
-            this.button6.TabIndex = 5;
-            this.button6.Text = "50%";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button5
-            // 
-            this.button5.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button5.ImageList = this.imageList1;
-            this.button5.Location = new System.Drawing.Point(485, 7);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(63, 30);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "75%";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button4.ImageList = this.imageList1;
-            this.button4.Location = new System.Drawing.Point(554, 7);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(63, 30);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "100%";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
@@ -1214,6 +1158,7 @@
             this.toolStripStatusLabelTimeSpent});
             this.statusStrip1.Location = new System.Drawing.Point(0, 644);
             this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.ShowItemToolTips = true;
             this.statusStrip1.Size = new System.Drawing.Size(1218, 24);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
@@ -1288,6 +1233,8 @@
             this.toolStripStatusLabel11.Name = "toolStripStatusLabel11";
             this.toolStripStatusLabel11.Size = new System.Drawing.Size(32, 19);
             this.toolStripStatusLabel11.Text = "Root";
+            this.toolStripStatusLabel11.ToolTipText = "Specifies the parent entity into which new entities will be added. You can change" +
+    " the parent entity by clicking in the hierarchy tree.";
             // 
             // toolStripStatusLabel12
             // 
@@ -1360,6 +1307,10 @@
             this.tabPage4.Text = "Hierarchy";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // backgroundWorkerTimeSpent
+            // 
+            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
+            // 
             // myTreeView1
             // 
             this.myTreeView1.AllowDrop = true;
@@ -1375,10 +1326,6 @@
             this.myTreeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragDrop);
             this.myTreeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragEnter);
             this.myTreeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myTreeView1_KeyDown);
-            // 
-            // backgroundWorkerTimeSpent
-            // 
-            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
             // 
             // Form1
             // 
@@ -1483,9 +1430,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ToolStripMenuItem setLayerScrollToOriginToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
@@ -1535,7 +1479,6 @@
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton13;
         private System.Windows.Forms.ToolStripMenuItem unloadImageToolStripMenuItem;
-        private System.Windows.Forms.Button button7;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem routeSingleWireToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer3;
