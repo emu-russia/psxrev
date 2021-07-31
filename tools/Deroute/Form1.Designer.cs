@@ -149,8 +149,14 @@
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
-            this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
+            this.myTreeView1 = new DerouteSharp.MyTreeView();
+            this.createMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.trainModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -999,6 +1005,13 @@
             // toolStripDropDownButton6
             // 
             this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createMLModelToolStripMenuItem,
+            this.loadMLModelToolStripMenuItem,
+            this.saveMLModelToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.trainModelToolStripMenuItem,
+            this.runModelToolStripMenuItem});
             this.toolStripDropDownButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton6.Image")));
             this.toolStripDropDownButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton6.Name = "toolStripDropDownButton6";
@@ -1226,22 +1239,6 @@
             // 
             this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
             // 
-            // myTreeView1
-            // 
-            this.myTreeView1.AllowDrop = true;
-            this.myTreeView1.CheckBoxes = true;
-            this.myTreeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.myTreeView1.Location = new System.Drawing.Point(3, 3);
-            this.myTreeView1.Name = "myTreeView1";
-            this.myTreeView1.Size = new System.Drawing.Size(205, 549);
-            this.myTreeView1.TabIndex = 0;
-            this.myTreeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterCheck);
-            this.myTreeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.myTreeView1_ItemDrag);
-            this.myTreeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterSelect);
-            this.myTreeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragDrop);
-            this.myTreeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragEnter);
-            this.myTreeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myTreeView1_KeyDown);
-            // 
             // entityBox1
             // 
             this.entityBox1.AutoPriority = true;
@@ -1326,6 +1323,62 @@
             this.entityBox1.ZoomImage1 = 100;
             this.entityBox1.ZoomImage2 = 100;
             this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
+            // 
+            // myTreeView1
+            // 
+            this.myTreeView1.AllowDrop = true;
+            this.myTreeView1.CheckBoxes = true;
+            this.myTreeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.myTreeView1.Location = new System.Drawing.Point(3, 3);
+            this.myTreeView1.Name = "myTreeView1";
+            this.myTreeView1.Size = new System.Drawing.Size(205, 549);
+            this.myTreeView1.TabIndex = 0;
+            this.myTreeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterCheck);
+            this.myTreeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.myTreeView1_ItemDrag);
+            this.myTreeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.myTreeView1_AfterSelect);
+            this.myTreeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragDrop);
+            this.myTreeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragEnter);
+            this.myTreeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myTreeView1_KeyDown);
+            // 
+            // createMLModelToolStripMenuItem
+            // 
+            this.createMLModelToolStripMenuItem.Name = "createMLModelToolStripMenuItem";
+            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createMLModelToolStripMenuItem.Text = "Create Model";
+            this.createMLModelToolStripMenuItem.Click += new System.EventHandler(this.createMLModelToolStripMenuItem_Click);
+            // 
+            // loadMLModelToolStripMenuItem
+            // 
+            this.loadMLModelToolStripMenuItem.Name = "loadMLModelToolStripMenuItem";
+            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadMLModelToolStripMenuItem.Text = "Load Model";
+            this.loadMLModelToolStripMenuItem.Click += new System.EventHandler(this.loadMLModelToolStripMenuItem_Click);
+            // 
+            // saveMLModelToolStripMenuItem
+            // 
+            this.saveMLModelToolStripMenuItem.Name = "saveMLModelToolStripMenuItem";
+            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMLModelToolStripMenuItem.Text = "Save Model";
+            this.saveMLModelToolStripMenuItem.Click += new System.EventHandler(this.saveMLModelToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // trainModelToolStripMenuItem
+            // 
+            this.trainModelToolStripMenuItem.Name = "trainModelToolStripMenuItem";
+            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.trainModelToolStripMenuItem.Text = "Train Model";
+            this.trainModelToolStripMenuItem.Click += new System.EventHandler(this.trainModelToolStripMenuItem_Click);
+            // 
+            // runModelToolStripMenuItem
+            // 
+            this.runModelToolStripMenuItem.Name = "runModelToolStripMenuItem";
+            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runModelToolStripMenuItem.Text = "Run Model";
+            this.runModelToolStripMenuItem.Click += new System.EventHandler(this.runModelToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1493,6 +1546,12 @@
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton6;
+        private System.Windows.Forms.ToolStripMenuItem createMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem trainModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runModelToolStripMenuItem;
     }
 }
 

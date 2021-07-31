@@ -1150,13 +1150,39 @@ namespace DerouteSharp
             entityBox1.RemoveNonOrthogonalWires();
         }
 
-        #endregion
 
+
+
+        #endregion
 
         #region "Machine Learning"
 
-        #endregion "Machine Learning"
+        private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void loadMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trainModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void runModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion "Machine Learning"
 
 
     }       // Form1
