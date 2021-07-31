@@ -76,6 +76,7 @@ public class Entity
     [XmlIgnore]
     public List<PointF> SavedPathPoints = null;
     private int _WidthOverride;         // vias / wire
+    private List<EntityType> _traverseBlackList = null;
 
     [XmlIgnore]
     public long SelectTimeStamp;
@@ -366,6 +367,18 @@ public class Entity
     {
         get { return Tangent(); }
         set { }
+    }
+
+    [Category("Entity Properties")]
+    [Description("List for prohibiting traverse to specified entity types. It is used when it is necessary, for example, to prevent a wire from going to illegal entities.")]
+    public List<EntityType> TraverseBlackList
+    {
+        get { return _traverseBlackList; }
+        set
+        {
+            _traverseBlackList = value;
+            if (parentBox != null) parentBox.Invalidate();
+        }
     }
 
 }

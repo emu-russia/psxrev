@@ -1,4 +1,6 @@
-// Traverse selection
+// Traverse selection.
+
+// The entity contains a special Blacklist to block switching to unwanted entity types.
 
 using System;
 using System.ComponentModel;
@@ -70,6 +72,9 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
+                    if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
+                        continue;
+
                     if (entity.Selected == false)
                     {
                         //
@@ -161,6 +166,9 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
+                    if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
+                        continue;
+
                     if (entity.Selected == false)
                     {
                         //
@@ -254,6 +262,9 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
+                    if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
+                        continue;
+
                     if (entity.Selected == false &&
                         (entity.Type == EntityType.ViasOutput || entity.Type == EntityType.ViasInout))
                     {
