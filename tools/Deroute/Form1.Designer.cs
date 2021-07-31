@@ -500,12 +500,12 @@
             this.entityBox1.ImageOpacity2 = 100;
             this.entityBox1.Lambda = 5F;
             this.entityBox1.Location = new System.Drawing.Point(0, 0);
-            this.entityBox1.LockScroll0 = false;
-            this.entityBox1.LockScroll1 = false;
-            this.entityBox1.LockScroll2 = false;
-            this.entityBox1.LockZoom0 = false;
-            this.entityBox1.LockZoom1 = false;
-            this.entityBox1.LockZoom2 = false;
+            this.entityBox1.LockScroll0 = true;
+            this.entityBox1.LockScroll1 = true;
+            this.entityBox1.LockScroll2 = true;
+            this.entityBox1.LockZoom0 = true;
+            this.entityBox1.LockZoom1 = true;
+            this.entityBox1.LockZoom2 = true;
             this.entityBox1.Mode = System.Windows.Forms.EntityMode.Selection;
             this.entityBox1.Name = "entityBox1";
             this.entityBox1.RegionOpacity = 128;
@@ -538,7 +538,7 @@
             this.entityBox1.ViasPriority = 3;
             this.entityBox1.ViasShape = ViasShape.Round;
             this.entityBox1.ViasTextAlignment = TextAlignment.Top;
-            this.entityBox1.WireBaseSize = 5;
+            this.entityBox1.WireBaseSize = 3;
             this.entityBox1.WireGroundColor = System.Drawing.Color.Green;
             this.entityBox1.WireInterconnectColor = System.Drawing.Color.Blue;
             this.entityBox1.WireOpacity = 128;

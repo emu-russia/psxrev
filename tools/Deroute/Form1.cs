@@ -840,7 +840,9 @@ namespace DerouteSharp
 
                 entityBox1.RemoveSelection();
 
-                if (entity != entityBox1.root)
+                // Change the focus only if the type is not Layer
+
+                if (entity != entityBox1.root && entity.Type != EntityType.Layer)
                 {
                     entityBox1.SelectEntity(entity);
                     entityBox1.EnsureVisible(entity);
@@ -851,9 +853,7 @@ namespace DerouteSharp
                 propertyGrid2.SelectedObject = entity;
             }
 
-            //
             // Dont loose focus after browing by keyboard arrows
-            //
 
             tree.Focus();
         }
