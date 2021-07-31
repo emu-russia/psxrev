@@ -785,6 +785,14 @@ namespace DerouteSharp
 
         private void PopulateTree()
         {
+            // During initial population all the nodes are collapsed.
+            // The strategy for repopulating the tree is as follows: if there are entities in the tree, then save all the nodes in the Pair<Entity,bool Expanded> list.
+            // When populating, check Tag, which stores reference to Entity and old Expanded value: if it was true - make node expanded.
+            // This will allow to leave hierarchy without convulsions during tree repopulation.
+
+            bool firstTime = myTreeView1.Nodes.Count == 0;
+            List<Tuple<Entity, bool>> expandedList = firstTime ? new List<Tuple<Entity, bool>>() : GetTreeAsList();
+
             myTreeView1.Nodes.Clear();
 
             myTreeView1.BeginUpdate();
@@ -798,14 +806,14 @@ namespace DerouteSharp
 
             foreach(var entity in entityBox1.root.Children)
             {
-                PopulateTreeRecursive(entity, rootNode);
+                PopulateTreeRecursive(entity, rootNode, expandedList);
             }
 
             myTreeView1.EndUpdate();
-            myTreeView1.ExpandAll();
+            rootNode.Expand();
         }
 
-        private void PopulateTreeRecursive (Entity parent, TreeNode nodeParent)
+        private void PopulateTreeRecursive (Entity parent, TreeNode nodeParent, List<Tuple<Entity, bool>> expandedList)
         {
             TreeNode node = new TreeNode(parent.Type.ToString() + " " + parent.Label);
 
@@ -816,7 +824,40 @@ namespace DerouteSharp
 
             foreach (var entity in parent.Children)
             {
-                PopulateTreeRecursive(entity, node);
+                PopulateTreeRecursive(entity, node, expandedList);
+            }
+
+            // The tuple list contains Entity, which was previously associated with a TreeNode, and the TreeNode itself has been expanded.
+
+            bool expanded = expandedList.Any(e => e.Item1 == parent && e.Item2);
+
+            if (expanded)
+            {
+                node.Expand();
+            }
+        }
+
+        private List<Tuple<Entity,bool>> GetTreeAsList()
+        {
+            List<Tuple<Entity, bool>> list = new List<Tuple<Entity, bool>>();
+
+            foreach (TreeNode item in myTreeView1.Nodes)
+            {
+                if (item.Tag is Entity)
+                    list.Add(new Tuple<Entity, bool>(item.Tag as Entity, item.IsExpanded));
+                WalkTreeRecursive(list, item);
+            }
+
+            return list;
+        }
+
+        private void WalkTreeRecursive(List<Tuple<Entity, bool>> list, TreeNode parent)
+        {
+            foreach (TreeNode item in parent.Nodes)
+            {
+                if (item.Tag is Entity)
+                    list.Add(new Tuple<Entity, bool>(item.Tag as Entity, item.IsExpanded));
+                WalkTreeRecursive(list, item);
             }
         }
 
