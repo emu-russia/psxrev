@@ -197,30 +197,6 @@ namespace DerouteSharp
         #endregion
 
 
-        #region "Tools"
-
-        private void toolStripButton2_Click(object sender, EventArgs e)
-        {
-            entityBox1.MergeSelectedWires(false);
-        }
-
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            entityBox1.MergeSelectedWires(true);
-        }
-
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            entityBox1.DeleteSelected();
-        }
-
-        private void deleteAllEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            entityBox1.DeleteAllEntites();
-        }
-
-        #endregion
-
 
         #region "Mode Selection"
 
@@ -443,6 +419,12 @@ namespace DerouteSharp
             WiresButtonHighlight();
         }
 
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityMode.Beacon;
+            BeaconButtonHighlight();
+        }
+
         #endregion
 
 
@@ -488,26 +470,6 @@ namespace DerouteSharp
             }
         }
 
-        private void SetLayerOpacity (int opacity)
-        {
-            switch (entityBox1.Mode)
-            {
-                case EntityMode.ImageLayer0:
-                default:
-                    entityBox1.ImageOpacity0 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-                case EntityMode.ImageLayer1:
-                    entityBox1.ImageOpacity1 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-                case EntityMode.ImageLayer2:
-                    entityBox1.ImageOpacity2 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-            }
-        }
-
         private void SetLayerOrigin()
         {
             PointF zero = new PointF(0, 0);
@@ -530,21 +492,6 @@ namespace DerouteSharp
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(50);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(75);
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(100);
-        }
-
         private void setLayerScrollToOriginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetLayerOrigin();
@@ -555,11 +502,6 @@ namespace DerouteSharp
             entityBox1.DrawWireBetweenSelectedViases();
         }
 
-        private void toolStripButton5_Click(object sender, EventArgs e)
-        {
-            entityBox1.Mode = EntityMode.Beacon;
-            BeaconButtonHighlight();
-        }
 
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
@@ -622,11 +564,6 @@ namespace DerouteSharp
         {
             KeyBind keyBindDialog = new KeyBind();
             keyBindDialog.Show();
-        }
-
-        private void toolStripButton6_Click(object sender, EventArgs e)
-        {
-            entityBox1.WireRecognize();
         }
 
         private void toolStripButton9_Click(object sender, EventArgs e)
@@ -701,19 +638,6 @@ namespace DerouteSharp
         private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             entityBox1.Paste();
-        }
-
-        /// <summary>
-        /// Switch opacity between Image0 and Image1 layers
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            int temp = entityBox1.ImageOpacity0;
-            entityBox1.ImageOpacity0 = entityBox1.ImageOpacity1;
-            entityBox1.ImageOpacity1 = temp;
         }
 
         /// <summary>
@@ -1081,6 +1005,21 @@ namespace DerouteSharp
 
         #region "Tools"
 
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(false);
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(true);
+        }
+
+        private void deleteAllEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.DeleteAllEntites();
+        }
+
         private void routeSingleWireToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Entity vias1 = null;
@@ -1211,12 +1150,13 @@ namespace DerouteSharp
             entityBox1.RemoveNonOrthogonalWires();
         }
 
-
-
-
-
-
         #endregion
+
+
+        #region "Machine Learning"
+
+        #endregion "Machine Learning"
+
 
 
     }       // Form1

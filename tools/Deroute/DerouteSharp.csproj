@@ -173,6 +173,10 @@
       <Project>{b054bdba-d0a2-4712-bb9f-4368c37be0eb}</Project>
       <Name>EntityBox</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NeuralNetwork\NeuralNetwork.csproj">
+      <Project>{e443218b-b079-4aa4-830d-3b9561f1d6ec}</Project>
+      <Name>NeuralNetwork</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
