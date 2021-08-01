@@ -159,6 +159,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerML = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -1399,6 +1400,11 @@
             // 
             this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
             // 
+            // backgroundWorkerML
+            // 
+            this.backgroundWorkerML.WorkerSupportsCancellation = true;
+            this.backgroundWorkerML.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerML_DoWork);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1573,6 +1579,7 @@
         private System.Windows.Forms.ToolStripMenuItem runModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel16;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel17;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerML;
     }
 }
 

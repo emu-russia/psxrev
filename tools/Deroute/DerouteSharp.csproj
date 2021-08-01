@@ -61,6 +61,7 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+    <Compile Include="EntityAligner.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,11 +86,23 @@
     <Compile Include="FormMiniEntityBox.Designer.cs">
       <DependentUpon>FormMiniEntityBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormRunMLModel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRunMLModel.Designer.cs">
+      <DependentUpon>FormRunMLModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormSettings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormSettings.Designer.cs">
       <DependentUpon>FormSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTrainMLModel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTrainMLModel.Designer.cs">
+      <DependentUpon>FormTrainMLModel.cs</DependentUpon>
     </Compile>
     <Compile Include="KeyBind.cs">
       <SubType>Form</SubType>
@@ -124,8 +137,14 @@
     <EmbeddedResource Include="FormMiniEntityBox.resx">
       <DependentUpon>FormMiniEntityBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormRunMLModel.resx">
+      <DependentUpon>FormRunMLModel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTrainMLModel.resx">
+      <DependentUpon>FormTrainMLModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="KeyBind.resx">
       <DependentUpon>KeyBind.cs</DependentUpon>

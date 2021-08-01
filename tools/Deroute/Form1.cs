@@ -13,6 +13,8 @@ using NeuralNetwork;
 using static NeuralNetwork.EntityNetwork;
 using System.IO;
 using System.Xml.Serialization;
+using System.Reflection.Emit;
+using static System.Net.Mime.MediaTypeNames;
 
 //
 // Nothing to comment here. Everything is self-explanatory (GUI stubs)
@@ -29,6 +31,7 @@ namespace DerouteSharp
 
         private string savedText;
         private TimeSpentStats timeStats = new TimeSpentStats();
+        private Random rnd = new Random(DateTime.Now.Millisecond);
 
         public Form1()
         {
@@ -60,6 +63,8 @@ namespace DerouteSharp
             savedText = Text;
 
             FormSettings.LoadSettings(entityBox1);
+
+            PopulateTree();
 
 #if DEBUG && (!__MonoCS__)
             AllocConsole ();
@@ -155,7 +160,7 @@ namespace DerouteSharp
 
             if ( result == DialogResult.OK )
             {
-                Image image = Image.FromFile(openFileDialog1.FileName);
+                System.Drawing.Image image = System.Drawing.Image.FromFile(openFileDialog1.FileName);
                 entityBox1.LoadImage(image);
             }
         }
@@ -1174,6 +1179,9 @@ namespace DerouteSharp
         {
             FormCreateMLModel form = (FormCreateMLModel)sender;
 
+            if (form.nn == null)
+                return;
+
             if (form.nn._state.features.Count == 0)
             {
                 MessageBox.Show("The model is missing features, you need to add at least one for the correct operation of the model.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -1234,6 +1242,14 @@ namespace DerouteSharp
                 return;
             }
 
+            if (entityBox1.Image0 == null)
+            {
+                MessageBox.Show("Load the original image into Image Layer0.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            FormTrainMLModel form = new FormTrainMLModel(nn, entityBox1.Image0);
+            form.ShowDialog();
         }
 
         private void runModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1244,6 +1260,23 @@ namespace DerouteSharp
                 return;
             }
 
+            if (entityBox1.Image0 == null)
+            {
+                MessageBox.Show("Load the original image into Image Layer0.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            DebugStopCounter = 0;
+            backgroundWorkerML.RunWorkerAsync();
+
+            FormRunMLModel form = new FormRunMLModel();
+            form.FormClosed += Form_FormClosed;
+            form.Show();
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            backgroundWorkerML.CancelAsync();
         }
 
         private void toolStripStatusLabel16_Click(object sender, EventArgs e)
@@ -1255,8 +1288,61 @@ namespace DerouteSharp
             }
         }
 
+        /// <summary>
+        /// The main worker, which extracts the features from the original image, tries to find out from the neural network what this feature is,
+        /// and if the neural network recognizes it, it takes the entities from the feature and adds it to the `insertionNode`.
+        /// Entities from the fixture are placed in the center of the window under test.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorkerML_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (DebugStopCounter > 100)
+                return;
+
+            // Pick a random sub-image (window)
+
+            Bitmap sourceBitmap = (Bitmap)entityBox1.Image0;
+
+            Rectangle rect = new Rectangle();
+
+            rect.Width = 16;
+            rect.Height = 16;
+
+            rect.X = rnd.Next(0, sourceBitmap.Width - rect.Width - 1);
+            rect.Y = rnd.Next(0, sourceBitmap.Height - rect.Height - 1);
+
+            Bitmap subImage = sourceBitmap.Clone(rect, sourceBitmap.PixelFormat);
+
+            // Ask the neural network what it is
+
+            int id = nn.Guess(subImage, true);
+
+            EntityNetwork.Feature feature = nn.GetFeature(id);
+
+            if (feature != null)
+            {
+                // If the neural network has detected the feature, get a list of the feature entities and center them in the sub-image window.
+
+                XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+                using (StringReader textReader = new StringReader(feature.entities))
+                {
+                    Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+                    List<Entity> entities = (List<Entity>)ser.Deserialize(textReader);
+                    EntityAligner.CenterFeatureEntities(center, entities);
+                    entityBox1.root.Children.AddRange(entities);
+                    entityBox1.Invalidate();
+                }
+
+                DebugStopCounter++;
+            }
+        }
+
+        private int DebugStopCounter = 0;
 
         #endregion "Machine Learning"
+
 
     }       // Form1
 
