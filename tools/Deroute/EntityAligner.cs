@@ -12,7 +12,7 @@ namespace DerouteSharp
     /// </summary>
     class EntityAligner
     {
-        public static void CenterFeatureEntities(Point point, List<Entity> entities)
+        public static void CenterFeatureEntities(PointF point, List<Entity> entities)
         {
             if (entities.Count == 0)
                 return;

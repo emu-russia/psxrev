@@ -246,6 +246,11 @@ namespace NeuralNetwork
             return _state.features[feature].name;
         }
 
+        public int GetWindowSize ()
+        {
+            return imageSize;
+        }
+
     }
 
 }

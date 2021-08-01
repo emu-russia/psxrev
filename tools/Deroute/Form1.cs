@@ -1167,6 +1167,7 @@ namespace DerouteSharp
         #region "Machine Learning"
 
         private NeuralNetwork.EntityNetwork nn = null;
+        private Bitmap ML_sourceBitmap;
 
         private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1266,7 +1267,8 @@ namespace DerouteSharp
                 return;
             }
 
-            DebugStopCounter = 0;
+            ML_sourceBitmap = (Bitmap)entityBox1.Image0;
+
             backgroundWorkerML.RunWorkerAsync();
 
             FormRunMLModel form = new FormRunMLModel();
@@ -1277,6 +1279,9 @@ namespace DerouteSharp
         private void Form_FormClosed(object sender, FormClosedEventArgs e)
         {
             backgroundWorkerML.CancelAsync();
+
+            PopulateTree();
+            entityBox1.Invalidate();
         }
 
         private void toolStripStatusLabel16_Click(object sender, EventArgs e)
@@ -1297,49 +1302,50 @@ namespace DerouteSharp
         /// <param name="e"></param>
         private void backgroundWorkerML_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (DebugStopCounter > 100)
-                return;
-
-            // Pick a random sub-image (window)
-
-            Bitmap sourceBitmap = (Bitmap)entityBox1.Image0;
-
-            Rectangle rect = new Rectangle();
-
-            rect.Width = 16;
-            rect.Height = 16;
-
-            rect.X = rnd.Next(0, sourceBitmap.Width - rect.Width - 1);
-            rect.Y = rnd.Next(0, sourceBitmap.Height - rect.Height - 1);
-
-            Bitmap subImage = sourceBitmap.Clone(rect, sourceBitmap.PixelFormat);
-
-            // Ask the neural network what it is
-
-            int id = nn.Guess(subImage, true);
-
-            EntityNetwork.Feature feature = nn.GetFeature(id);
-
-            if (feature != null)
+            while (!backgroundWorkerML.CancellationPending)
             {
-                // If the neural network has detected the feature, get a list of the feature entities and center them in the sub-image window.
+                // Pick a random sub-image (window)
 
-                XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+                Rectangle rect = new Rectangle();
 
-                using (StringReader textReader = new StringReader(feature.entities))
+                rect.Width = nn.GetWindowSize();
+                rect.Height = nn.GetWindowSize();
+
+                rect.X = rnd.Next(0, ML_sourceBitmap.Width - rect.Width - 1);
+                rect.Y = rnd.Next(0, ML_sourceBitmap.Height - rect.Height - 1);
+
+                Bitmap subImage = ML_sourceBitmap.Clone(rect, ML_sourceBitmap.PixelFormat);
+
+                // Ask the neural network what it is
+
+                int id = nn.Guess(subImage, false);
+
+                EntityNetwork.Feature feature = nn.GetFeature(id);
+
+                if (feature != null)
                 {
-                    Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-                    List<Entity> entities = (List<Entity>)ser.Deserialize(textReader);
-                    EntityAligner.CenterFeatureEntities(center, entities);
-                    entityBox1.root.Children.AddRange(entities);
-                    entityBox1.Invalidate();
+                    // If the neural network has detected the feature, get a list of the feature entities and center them in the sub-image window.
+
+                    if (feature.entities != null)
+                    {
+                        XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+                        using (StringReader textReader = new StringReader(feature.entities))
+                        {
+                            PointF center = entityBox1.ImageToLambda(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+                            List<Entity> entities = (List<Entity>)ser.Deserialize(textReader);
+                            EntityAligner.CenterFeatureEntities(center, entities);
+                            entityBox1.root.Children.AddRange(entities);
+
+                            Console.WriteLine("Found " + feature.name);
+
+                            //entityBox1.Invalidate();
+                        }
+                    }
                 }
-
-                DebugStopCounter++;
             }
-        }
 
-        private int DebugStopCounter = 0;
+        }
 
         #endregion "Machine Learning"
 
