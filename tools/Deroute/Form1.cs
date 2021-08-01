@@ -9,6 +9,12 @@ using System.Windows.Forms;
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using NeuralNetwork;
+using static NeuralNetwork.EntityNetwork;
+using System.IO;
+using System.Xml.Serialization;
+using System.Reflection.Emit;
+using static System.Net.Mime.MediaTypeNames;
 
 //
 // Nothing to comment here. Everything is self-explanatory (GUI stubs)
@@ -25,6 +31,7 @@ namespace DerouteSharp
 
         private string savedText;
         private TimeSpentStats timeStats = new TimeSpentStats();
+        private Random rnd = new Random(DateTime.Now.Millisecond);
 
         public Form1()
         {
@@ -56,6 +63,8 @@ namespace DerouteSharp
             savedText = Text;
 
             FormSettings.LoadSettings(entityBox1);
+
+            PopulateTree();
 
 #if DEBUG && (!__MonoCS__)
             AllocConsole ();
@@ -151,7 +160,7 @@ namespace DerouteSharp
 
             if ( result == DialogResult.OK )
             {
-                Image image = Image.FromFile(openFileDialog1.FileName);
+                System.Drawing.Image image = System.Drawing.Image.FromFile(openFileDialog1.FileName);
                 entityBox1.LoadImage(image);
             }
         }
@@ -196,30 +205,6 @@ namespace DerouteSharp
 
         #endregion
 
-
-        #region "Tools"
-
-        private void toolStripButton2_Click(object sender, EventArgs e)
-        {
-            entityBox1.MergeSelectedWires(false);
-        }
-
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            entityBox1.MergeSelectedWires(true);
-        }
-
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            entityBox1.DeleteSelected();
-        }
-
-        private void deleteAllEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            entityBox1.DeleteAllEntites();
-        }
-
-        #endregion
 
 
         #region "Mode Selection"
@@ -443,6 +428,12 @@ namespace DerouteSharp
             WiresButtonHighlight();
         }
 
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            entityBox1.Mode = EntityMode.Beacon;
+            BeaconButtonHighlight();
+        }
+
         #endregion
 
 
@@ -488,26 +479,6 @@ namespace DerouteSharp
             }
         }
 
-        private void SetLayerOpacity (int opacity)
-        {
-            switch (entityBox1.Mode)
-            {
-                case EntityMode.ImageLayer0:
-                default:
-                    entityBox1.ImageOpacity0 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-                case EntityMode.ImageLayer1:
-                    entityBox1.ImageOpacity1 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-                case EntityMode.ImageLayer2:
-                    entityBox1.ImageOpacity2 = opacity;
-                    entityBox1.Invalidate();
-                    break;
-            }
-        }
-
         private void SetLayerOrigin()
         {
             PointF zero = new PointF(0, 0);
@@ -530,21 +501,6 @@ namespace DerouteSharp
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(50);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(75);
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            SetLayerOpacity(100);
-        }
-
         private void setLayerScrollToOriginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetLayerOrigin();
@@ -555,11 +511,6 @@ namespace DerouteSharp
             entityBox1.DrawWireBetweenSelectedViases();
         }
 
-        private void toolStripButton5_Click(object sender, EventArgs e)
-        {
-            entityBox1.Mode = EntityMode.Beacon;
-            BeaconButtonHighlight();
-        }
 
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
@@ -622,11 +573,6 @@ namespace DerouteSharp
         {
             KeyBind keyBindDialog = new KeyBind();
             keyBindDialog.Show();
-        }
-
-        private void toolStripButton6_Click(object sender, EventArgs e)
-        {
-            entityBox1.WireRecognize();
         }
 
         private void toolStripButton9_Click(object sender, EventArgs e)
@@ -701,19 +647,6 @@ namespace DerouteSharp
         private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             entityBox1.Paste();
-        }
-
-        /// <summary>
-        /// Switch opacity between Image0 and Image1 layers
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            int temp = entityBox1.ImageOpacity0;
-            entityBox1.ImageOpacity0 = entityBox1.ImageOpacity1;
-            entityBox1.ImageOpacity1 = temp;
         }
 
         /// <summary>
@@ -1081,6 +1014,21 @@ namespace DerouteSharp
 
         #region "Tools"
 
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(false);
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            entityBox1.MergeSelectedWires(true);
+        }
+
+        private void deleteAllEntitiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            entityBox1.DeleteAllEntites();
+        }
+
         private void routeSingleWireToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Entity vias1 = null;
@@ -1214,9 +1162,192 @@ namespace DerouteSharp
 
 
 
-
-
         #endregion
+
+        #region "Machine Learning"
+
+        private NeuralNetwork.EntityNetwork nn = null;
+        private Bitmap ML_sourceBitmap;
+
+        private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormCreateMLModel form = new FormCreateMLModel(false, null);
+            form.FormClosed += Form_FormCreateMLClosed;
+            form.ShowDialog();
+        }
+
+        private void Form_FormCreateMLClosed(object sender, FormClosedEventArgs e)
+        {
+            FormCreateMLModel form = (FormCreateMLModel)sender;
+
+            if (form.nn == null)
+                return;
+
+            if (form.nn._state.features.Count == 0)
+            {
+                MessageBox.Show("The model is missing features, you need to add at least one for the correct operation of the model.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            nn = form.nn;
+            toolStripStatusLabel17.Text = "Not saved!";
+        }
+
+        private void loadMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult res = openFileDialog2.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                string filename = openFileDialog2.FileName;
+
+                XmlSerializer ser = new XmlSerializer(typeof(EntityNetwork.State));
+
+                using (FileStream fs = new FileStream(filename, FileMode.Open))
+                {
+                    nn = new EntityNetwork((EntityNetwork.State)ser.Deserialize(fs));
+                    toolStripStatusLabel17.Text = Path.GetFileName(filename);
+                }
+            }
+        }
+
+        private void saveMLModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (nn == null)
+            {
+                MessageBox.Show("Load or create neural model first", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            DialogResult res = saveFileDialog2.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                string filename = saveFileDialog2.FileName;
+
+                XmlSerializer ser = new XmlSerializer(typeof(EntityNetwork.State));
+
+                using (FileStream fs = new FileStream(filename, FileMode.Create))
+                {
+                    ser.Serialize(fs, nn._state);
+                    toolStripStatusLabel17.Text = Path.GetFileName(filename);
+                }
+            }
+        }
+
+        private void trainModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (nn == null)
+            {
+                MessageBox.Show("Load a trained neural model", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            if (entityBox1.Image0 == null)
+            {
+                MessageBox.Show("Load the original image into Image Layer0.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            FormTrainMLModel form = new FormTrainMLModel(nn, entityBox1.Image0);
+            form.ShowDialog();
+        }
+
+        private void runModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (nn == null)
+            {
+                MessageBox.Show("Load a trained neural model", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            if (entityBox1.Image0 == null)
+            {
+                MessageBox.Show("Load the original image into Image Layer0.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+
+            ML_sourceBitmap = (Bitmap)entityBox1.Image0;
+
+            backgroundWorkerML.RunWorkerAsync();
+
+            FormRunMLModel form = new FormRunMLModel();
+            form.FormClosed += Form_FormClosed;
+            form.Show();
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            backgroundWorkerML.CancelAsync();
+
+            PopulateTree();
+            entityBox1.Invalidate();
+        }
+
+        private void toolStripStatusLabel16_Click(object sender, EventArgs e)
+        {
+            if (nn != null)
+            {
+                FormCreateMLModel form = new FormCreateMLModel(true, nn);
+                form.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// The main worker, which extracts the features from the original image, tries to find out from the neural network what this feature is,
+        /// and if the neural network recognizes it, it takes the entities from the feature and adds it to the `insertionNode`.
+        /// Entities from the fixture are placed in the center of the window under test.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorkerML_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (!backgroundWorkerML.CancellationPending)
+            {
+                // Pick a random sub-image (window)
+
+                Rectangle rect = new Rectangle();
+
+                rect.Width = nn.GetWindowSize();
+                rect.Height = nn.GetWindowSize();
+
+                rect.X = rnd.Next(0, ML_sourceBitmap.Width - rect.Width - 1);
+                rect.Y = rnd.Next(0, ML_sourceBitmap.Height - rect.Height - 1);
+
+                Bitmap subImage = ML_sourceBitmap.Clone(rect, ML_sourceBitmap.PixelFormat);
+
+                // Ask the neural network what it is
+
+                int id = nn.Guess(subImage, false);
+
+                EntityNetwork.Feature feature = nn.GetFeature(id);
+
+                if (feature != null)
+                {
+                    // If the neural network has detected the feature, get a list of the feature entities and center them in the sub-image window.
+
+                    if (feature.entities != null)
+                    {
+                        XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+
+                        using (StringReader textReader = new StringReader(feature.entities))
+                        {
+                            PointF center = entityBox1.ImageToLambda(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+                            List<Entity> entities = (List<Entity>)ser.Deserialize(textReader);
+                            EntityAligner.CenterFeatureEntities(center, entities);
+                            entityBox1.root.Children.AddRange(entities);
+
+                            Console.WriteLine("Found " + feature.name);
+
+                            //entityBox1.Invalidate();
+                        }
+                    }
+                }
+            }
+
+        }
+
+        #endregion "Machine Learning"
 
 
     }       // Form1

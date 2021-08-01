@@ -65,8 +65,8 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.entityBox1 = new System.Windows.Forms.EntityBox();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button3 = new System.Windows.Forms.Button();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -123,7 +123,13 @@
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.createMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMLModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.trainModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
             this.traverseTIER1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.traverseTIER2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,13 +150,16 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel13 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel14 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel16 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel17 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel15 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelTimeSpent = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
             this.myTreeView1 = new DerouteSharp.MyTreeView();
+            this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerML = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -544,17 +553,6 @@
             this.entityBox1.ZoomImage2 = 100;
             this.entityBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.entityBox1_MouseClick);
             // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "deroute.ico");
-            this.imageList1.Images.SetKeyName(1, "vias.ico");
-            this.imageList1.Images.SetKeyName(2, "vias_power.ico");
-            this.imageList1.Images.SetKeyName(3, "vias_ground.ico");
-            this.imageList1.Images.SetKeyName(4, "selection.ico");
-            this.imageList1.Images.SetKeyName(5, "wire.ico");
-            // 
             // button3
             // 
             this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -568,6 +566,17 @@
             this.button3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "deroute.ico");
+            this.imageList1.Images.SetKeyName(1, "vias.ico");
+            this.imageList1.Images.SetKeyName(2, "vias_power.ico");
+            this.imageList1.Images.SetKeyName(3, "vias_ground.ico");
+            this.imageList1.Images.SetKeyName(4, "selection.ico");
+            this.imageList1.Images.SetKeyName(5, "wire.ico");
             // 
             // button2
             // 
@@ -705,7 +714,7 @@
             this.toolStripSeparator6,
             this.toolStripButton4,
             this.toolStripButton13,
-            this.toolStripButton6,
+            this.toolStripDropDownButton6,
             this.toolStripDropDownButton5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
@@ -1081,15 +1090,62 @@
             this.toolStripButton13.Text = "Draw region between selected viases";
             this.toolStripButton13.Click += new System.EventHandler(this.toolStripButton13_Click);
             // 
-            // toolStripButton6
+            // toolStripDropDownButton6
             // 
-            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(36, 36);
-            this.toolStripButton6.Text = "Wire Recognition";
-            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createMLModelToolStripMenuItem,
+            this.loadMLModelToolStripMenuItem,
+            this.saveMLModelToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.trainModelToolStripMenuItem,
+            this.runModelToolStripMenuItem});
+            this.toolStripDropDownButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton6.Image")));
+            this.toolStripDropDownButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton6.Name = "toolStripDropDownButton6";
+            this.toolStripDropDownButton6.Size = new System.Drawing.Size(45, 36);
+            this.toolStripDropDownButton6.Text = "toolStripDropDownButton6";
+            this.toolStripDropDownButton6.ToolTipText = "Machine Learning Tools";
+            // 
+            // createMLModelToolStripMenuItem
+            // 
+            this.createMLModelToolStripMenuItem.Name = "createMLModelToolStripMenuItem";
+            this.createMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.createMLModelToolStripMenuItem.Text = "Create Model";
+            this.createMLModelToolStripMenuItem.Click += new System.EventHandler(this.createMLModelToolStripMenuItem_Click);
+            // 
+            // loadMLModelToolStripMenuItem
+            // 
+            this.loadMLModelToolStripMenuItem.Name = "loadMLModelToolStripMenuItem";
+            this.loadMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.loadMLModelToolStripMenuItem.Text = "Load Model";
+            this.loadMLModelToolStripMenuItem.Click += new System.EventHandler(this.loadMLModelToolStripMenuItem_Click);
+            // 
+            // saveMLModelToolStripMenuItem
+            // 
+            this.saveMLModelToolStripMenuItem.Name = "saveMLModelToolStripMenuItem";
+            this.saveMLModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.saveMLModelToolStripMenuItem.Text = "Save Model";
+            this.saveMLModelToolStripMenuItem.Click += new System.EventHandler(this.saveMLModelToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(142, 6);
+            // 
+            // trainModelToolStripMenuItem
+            // 
+            this.trainModelToolStripMenuItem.Name = "trainModelToolStripMenuItem";
+            this.trainModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.trainModelToolStripMenuItem.Text = "Train Model";
+            this.trainModelToolStripMenuItem.Click += new System.EventHandler(this.trainModelToolStripMenuItem_Click);
+            // 
+            // runModelToolStripMenuItem
+            // 
+            this.runModelToolStripMenuItem.Name = "runModelToolStripMenuItem";
+            this.runModelToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.runModelToolStripMenuItem.Text = "Run Model";
+            this.runModelToolStripMenuItem.Click += new System.EventHandler(this.runModelToolStripMenuItem_Click);
             // 
             // toolStripDropDownButton5
             // 
@@ -1154,6 +1210,8 @@
             this.toolStripStatusLabel12,
             this.toolStripStatusLabel13,
             this.toolStripStatusLabel14,
+            this.toolStripStatusLabel16,
+            this.toolStripStatusLabel17,
             this.toolStripStatusLabel15,
             this.toolStripStatusLabelTimeSpent});
             this.statusStrip1.Location = new System.Drawing.Point(0, 644);
@@ -1256,6 +1314,21 @@
             this.toolStripStatusLabel14.Size = new System.Drawing.Size(42, 19);
             this.toolStripStatusLabel14.Text = "xx ms";
             // 
+            // toolStripStatusLabel16
+            // 
+            this.toolStripStatusLabel16.Name = "toolStripStatusLabel16";
+            this.toolStripStatusLabel16.Size = new System.Drawing.Size(82, 19);
+            this.toolStripStatusLabel16.Text = "Neural model:";
+            this.toolStripStatusLabel16.ToolTipText = "Click here to see the current ML model.";
+            this.toolStripStatusLabel16.Click += new System.EventHandler(this.toolStripStatusLabel16_Click);
+            // 
+            // toolStripStatusLabel17
+            // 
+            this.toolStripStatusLabel17.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabel17.Name = "toolStripStatusLabel17";
+            this.toolStripStatusLabel17.Size = new System.Drawing.Size(38, 19);
+            this.toolStripStatusLabel17.Text = "none";
+            // 
             // toolStripStatusLabel15
             // 
             this.toolStripStatusLabel15.Name = "toolStripStatusLabel15";
@@ -1307,10 +1380,6 @@
             this.tabPage4.Text = "Hierarchy";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // backgroundWorkerTimeSpent
-            // 
-            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
-            // 
             // myTreeView1
             // 
             this.myTreeView1.AllowDrop = true;
@@ -1326,6 +1395,15 @@
             this.myTreeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragDrop);
             this.myTreeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.myTreeView1_DragEnter);
             this.myTreeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myTreeView1_KeyDown);
+            // 
+            // backgroundWorkerTimeSpent
+            // 
+            this.backgroundWorkerTimeSpent.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerTimeSpent_DoWork);
+            // 
+            // backgroundWorkerML
+            // 
+            this.backgroundWorkerML.WorkerSupportsCancellation = true;
+            this.backgroundWorkerML.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerML_DoWork);
             // 
             // Form1
             // 
@@ -1458,7 +1536,6 @@
         private System.Windows.Forms.ToolStripMenuItem traverseTIER3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem traverseTIER5ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keyBindingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton6;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem copyCtrlCToolStripMenuItem;
@@ -1493,6 +1570,16 @@
         private System.ComponentModel.BackgroundWorker backgroundWorkerTimeSpent;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton6;
+        private System.Windows.Forms.ToolStripMenuItem createMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMLModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem trainModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel16;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel17;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerML;
     }
 }
 

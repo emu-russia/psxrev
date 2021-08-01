@@ -86,9 +86,6 @@
     <Compile Include="WireMerger.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WireRecognizer.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="WireRouter.cs">
       <SubType>Component</SubType>
     </Compile>

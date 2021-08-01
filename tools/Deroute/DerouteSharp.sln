@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31521.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DerouteSharp", "DerouteSharp.csproj", "{1BE0D7F9-1464-47A3-AC90-9ECC1E006426}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityBox", "..\EntityBox\EntityBox.csproj", "{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetwork", "..\NeuralNetwork\NeuralNetwork.csproj", "{E443218B-B079-4AA4-830D-3B9561F1D6EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B054BDBA-D0A2-4712-BB9F-4368C37BE0EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E443218B-B079-4AA4-830D-3B9561F1D6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E443218B-B079-4AA4-830D-3B9561F1D6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E443218B-B079-4AA4-830D-3B9561F1D6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E443218B-B079-4AA4-830D-3B9561F1D6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

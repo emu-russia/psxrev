@@ -24,6 +24,7 @@ namespace NeuralNetwork
             public string name;
             public string description;
             [XmlIgnore] public Image image;
+            public string entities;
 
             [XmlElement("image")]
             [Browsable(false)]
@@ -62,11 +63,12 @@ namespace NeuralNetwork
 
             public Feature() {}
 
-            public Feature(string name, string descr, Image image)
+            public Feature(string name, string descr, Image image, string entities)
             {
                 this.image = image;
                 this.name = name;
                 this.description = descr;
+                this.entities = entities;
             }
         }
 
@@ -242,6 +244,11 @@ namespace NeuralNetwork
                 return "Unknown";
 
             return _state.features[feature].name;
+        }
+
+        public int GetWindowSize ()
+        {
+            return imageSize;
         }
 
     }
