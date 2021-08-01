@@ -1168,6 +1168,7 @@ namespace DerouteSharp
 
         private NeuralNetwork.EntityNetwork nn = null;
         private Bitmap ML_sourceBitmap;
+        private Point windowsPos;
 
         private void createMLModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1268,6 +1269,7 @@ namespace DerouteSharp
             }
 
             ML_sourceBitmap = (Bitmap)entityBox1.Image0;
+            windowsPos = new Point(0, 0);
 
             backgroundWorkerML.RunWorkerAsync();
 
@@ -1311,8 +1313,31 @@ namespace DerouteSharp
                 rect.Width = nn.GetWindowSize();
                 rect.Height = nn.GetWindowSize();
 
-                rect.X = rnd.Next(0, ML_sourceBitmap.Width - rect.Width - 1);
-                rect.Y = rnd.Next(0, ML_sourceBitmap.Height - rect.Height - 1);
+                bool zigzag = true;
+
+                if (zigzag)
+                {
+                    rect.X = windowsPos.X;
+                    rect.Y = windowsPos.Y;
+
+                    windowsPos.X += 1;
+                    if (windowsPos.X >= (ML_sourceBitmap.Width - rect.Width))
+                    {
+                        windowsPos.X = 0;
+                        windowsPos.Y += 1;
+
+                        if (windowsPos.Y >= (ML_sourceBitmap.Height - rect.Height))
+                        {
+                            Console.WriteLine("Zigzag scan complete");
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    rect.X = rnd.Next(0, ML_sourceBitmap.Width - rect.Width - 1);
+                    rect.Y = rnd.Next(0, ML_sourceBitmap.Height - rect.Height - 1);
+                }
 
                 Bitmap subImage = ML_sourceBitmap.Clone(rect, ML_sourceBitmap.PixelFormat);
 
