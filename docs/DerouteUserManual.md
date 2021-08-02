@@ -31,7 +31,7 @@ The list of a feature's properties:
 - Name: the name of the feature to display and teach
 - Description: just a description for clarity
 - Image: just a picture for clarity. You may select any icon for purely informational purposes. A click on it will bring up an icon selection dialog box.
-- Entites: Entities which should be added in the place of a recognized icon. Clicking on a cell opens a MiniEntityBox, where you need to draw entities
+- Entites: Entities which should be added in the place of a recognized feature. Clicking on a cell opens a MiniEntityBox, where you need to draw entities
 
 Suggestions for the number of features:
 - You need at least 2 features, so that neural network could make a correct classification.
