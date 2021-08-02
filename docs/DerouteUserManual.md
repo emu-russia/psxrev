@@ -91,3 +91,5 @@ XXX: Currently the entities found are overlapping on top of each other, this wil
 XXX: The dialog currently does not write readiness percentage and does not close automatically, this will be fixed in the next release.
 
 The above flaws do not prevent you from training the model, so your trained model can still be used later, after the above flaws are fixed.
+
+Translated with DeepL.com
