@@ -25,7 +25,7 @@ The model includes neural network hyperparameters (such as `learningRate`), as w
 
 A small chunk of the main image (16x16) is fed to the input of the neural network, and the neural network outputs the result (makes a classification).
 
-In place of the found chip an entity is put, which is specified in the `Entities` column.
+In place of the found feature an entity is put, which is specified in the `Entities` column.
 
 The list of a feature's properties:
 - Name: the name of the feature to display and teach
