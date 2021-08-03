@@ -159,6 +159,13 @@ namespace System.Windows.Forms
         }
 
         [Category("Logic")]
+        public bool WireSelectionAutoTraverse
+        {
+            get { return wireSelectionAutoTraverse; }
+            set { wireSelectionAutoTraverse = value; }
+        }
+
+        [Category("Logic")]
         public bool Grayscale
         {
             get { return grayscale; }

@@ -39,6 +39,27 @@ namespace System.Windows.Forms
 
             foreach (Entity entity in reversed)
             {
+                if (!entity.Visible)
+                    continue;
+
+                // Check that all parents are visible
+
+                Entity parent = entity.parent;
+                bool parentsVisible = true;
+
+                while (parent != null)
+                {
+                    if (!parent.Visible)
+                    {
+                        parentsVisible = false;
+                        break;
+                    }
+
+                    parent = parent.parent;
+                }
+                if (!parentsVisible)
+                    continue;
+
                 if (entity.IsWire() && HideWires == false)
                 {
                     PointF start = LambdaToScreen(entity.LambdaX, entity.LambdaY);
@@ -410,6 +431,10 @@ namespace System.Windows.Forms
                     else
                     {
                         SelectEntity(entity);
+                        if (entity.IsWire() && wireSelectionAutoTraverse)
+                        {
+                            TraversalSelection(1);
+                        }
                         Invalidate();
 
                         if (entityGrid != null)
