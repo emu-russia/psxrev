@@ -102,6 +102,7 @@ namespace System.Windows.Forms
         private bool[] lockScroll = new bool[3];
         private bool[] lockZoom = new bool[3];
         private bool selectEntitiesAfterAdd;
+        private bool wireSelectionAutoTraverse;
         private long UnserializeLastStamp = 0;
         private bool grayscale = false;
         private Point LastRMB = new Point(-1, -1);

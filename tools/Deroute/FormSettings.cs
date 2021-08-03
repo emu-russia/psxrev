@@ -95,6 +95,8 @@ namespace DerouteSharp
             public TextAlignment CellTextAlignment { get; set; }
             public TextAlignment ViasTextAlignment { get; set; }
             public TextAlignment WireTextAlignment { get; set; }
+            [Description("This setting allows for automatic traverse (Tier 1) when any wire is selected. This is similar to pressing F10 after selecting a wire.")]
+            public bool WireSelectionAutoTraverse { get; set; }
 
             private EntityBox savedEntityBox;
 
@@ -116,6 +118,7 @@ namespace DerouteSharp
                 CellTextAlignment = entityBox.CellTextAlignment;
                 ViasTextAlignment = entityBox.ViasTextAlignment;
                 WireTextAlignment = entityBox.WireTextAlignment;
+                WireSelectionAutoTraverse = entityBox.WireSelectionAutoTraverse;
             }
 
             public void Save()
@@ -134,6 +137,7 @@ namespace DerouteSharp
                 savedEntityBox.CellTextAlignment = CellTextAlignment;
                 savedEntityBox.ViasTextAlignment = ViasTextAlignment;
                 savedEntityBox.WireTextAlignment = WireTextAlignment;
+                savedEntityBox.WireSelectionAutoTraverse = WireSelectionAutoTraverse;
             }
         }
 
