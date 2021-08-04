@@ -72,7 +72,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
-                    if (source.TraverseBlackList != null)
+                    if (source.TraverseBlackList != null && entity.TraverseBlackList != null)
                     {
                         if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
                             continue;
@@ -169,7 +169,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
-                    if (source.TraverseBlackList != null)
+                    if (source.TraverseBlackList != null && entity.TraverseBlackList != null)
                     {
                         if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
                             continue;
@@ -268,7 +268,7 @@ namespace System.Windows.Forms
 
                 foreach (Entity entity in GetEntities())
                 {
-                    if (source.TraverseBlackList != null)
+                    if (source.TraverseBlackList != null && entity.TraverseBlackList != null)
                     {
                         if (source.TraverseBlackList.Contains(entity.Type) || entity.TraverseBlackList.Contains(source.Type))
                             continue;
