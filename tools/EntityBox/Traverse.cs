@@ -17,11 +17,11 @@ namespace System.Windows.Forms
 {
     public partial class EntityBox : Control
     {
-        const float traverseLamdaDelta = 0.7F;      // Lambdas
+        const float traverseLambdaDelta = 0.7F;      // Lambdas
 
         private bool IsViasInWire(Entity vias, Entity wire)
         {
-            float delta = traverseLamdaDelta;
+            float delta = traverseLambdaDelta;
 
             PointF start = new PointF(wire.LambdaX, wire.LambdaY);
             PointF end = new PointF(wire.LambdaEndX, wire.LambdaEndY);
@@ -56,7 +56,7 @@ namespace System.Windows.Forms
 
             if (source.IsWire())
             {
-                float maxDist = traverseLamdaDelta;
+                float maxDist = traverseLambdaDelta;
                 float dist;
                 List<Entity> viases = new List<Entity>();
 

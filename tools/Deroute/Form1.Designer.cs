@@ -160,6 +160,7 @@
             this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorkerML = new System.ComponentModel.BackgroundWorker();
+            this.entityLocatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -380,7 +381,8 @@
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.routeSingleWireToolStripMenuItem,
             this.removeSmallWiresToolStripMenuItem,
-            this.removeNotOrthogonalWiresToolStripMenuItem});
+            this.removeNotOrthogonalWiresToolStripMenuItem,
+            this.entityLocatorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -546,6 +548,7 @@
             this.entityBox1.WireOverrideColor = System.Drawing.Color.Black;
             this.entityBox1.WirePowerColor = System.Drawing.Color.Red;
             this.entityBox1.WirePriority = 2;
+            this.entityBox1.WireSelectionAutoTraverse = false;
             this.entityBox1.WireTextAlignment = TextAlignment.TopLeft;
             this.entityBox1.Zoom = 100;
             this.entityBox1.ZoomImage0 = 100;
@@ -1405,6 +1408,13 @@
             this.backgroundWorkerML.WorkerSupportsCancellation = true;
             this.backgroundWorkerML.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerML_DoWork);
             // 
+            // entityLocatorToolStripMenuItem
+            // 
+            this.entityLocatorToolStripMenuItem.Name = "entityLocatorToolStripMenuItem";
+            this.entityLocatorToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.entityLocatorToolStripMenuItem.Text = "Entity Locator";
+            this.entityLocatorToolStripMenuItem.Click += new System.EventHandler(this.entityLocatorToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1580,6 +1590,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel16;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel17;
         private System.ComponentModel.BackgroundWorker backgroundWorkerML;
+        private System.Windows.Forms.ToolStripMenuItem entityLocatorToolStripMenuItem;
     }
 }
 

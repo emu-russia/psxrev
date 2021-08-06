@@ -1159,7 +1159,11 @@ namespace DerouteSharp
             entityBox1.RemoveNonOrthogonalWires();
         }
 
-
+        private void entityLocatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormEntityLocator form = new FormEntityLocator(entityBox1);
+            form.Show();
+        }
 
 
         #endregion
@@ -1372,7 +1376,9 @@ namespace DerouteSharp
 
         }
 
+
         #endregion "Machine Learning"
+
 
 
     }       // Form1
