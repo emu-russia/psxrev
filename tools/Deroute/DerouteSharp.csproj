@@ -80,6 +80,12 @@
     <Compile Include="FormEnterValue.Designer.cs">
       <DependentUpon>FormEnterValue.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormEntityLocator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEntityLocator.Designer.cs">
+      <DependentUpon>FormEntityLocator.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMiniEntityBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormEnterValue.resx">
       <DependentUpon>FormEnterValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEntityLocator.resx">
+      <DependentUpon>FormEntityLocator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMiniEntityBox.resx">
       <DependentUpon>FormMiniEntityBox.cs</DependentUpon>

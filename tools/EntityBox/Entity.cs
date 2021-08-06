@@ -333,6 +333,13 @@ public class Entity
                  Type == EntityType.UnitCustom);
     }
 
+    public bool IsUnit()
+    {
+        return (Type == EntityType.UnitRegfile ||
+                 Type == EntityType.UnitMemory ||
+                 Type == EntityType.UnitCustom);
+    }
+
     public bool IsRegion()
     {
         return (Type == EntityType.Region);

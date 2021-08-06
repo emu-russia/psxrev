@@ -4,8 +4,19 @@
 
 The Deroute utility is designed for reverse engineering chips and motherboards.
 
-XXX: This manual only includes a section on machine learning for now. Basically everything else is self-descriptive and you can just poke the buttons to figure it out.
+XXX: This manual does not yet include all sections. Basically everything else is self-descriptive and you can just poke the buttons to figure it out.
 The instructions will be expanded over time.
+
+## Entity Locator
+
+You can use the entity locator (Tools -> Entity Locator) to quickly get a list of your desired entities.
+
+![entity_locator](imgstore/entity_locator.png)
+
+- You can specify part of the entity name (Label). If the text field is empty, the entity name will be ignored.
+- In the list you can select the types of entities required. Besides specifying the exact type (e.g. `ViasInout`) you can also specify "All Vias", "All Wires", "All Cells" or "All Units".
+
+When you double-click the entity will be shown in the main window.
 
 ## Machine Learning
 
