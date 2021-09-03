@@ -35,6 +35,7 @@
             this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSceneAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSceneAsNetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveEntitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +60,7 @@
             this.routeSingleWireToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeSmallWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNotOrthogonalWiresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.entityLocatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.keyBindingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,7 +162,7 @@
             this.myTreeView1 = new DerouteSharp.MyTreeView();
             this.backgroundWorkerTimeSpent = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorkerML = new System.ComponentModel.BackgroundWorker();
-            this.entityLocatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -203,6 +205,7 @@
             this.loadImageToolStripMenuItem,
             this.unloadImageToolStripMenuItem,
             this.saveSceneAsImageToolStripMenuItem,
+            this.saveSceneAsNetlistToolStripMenuItem,
             this.toolStripSeparator1,
             this.loadEntitiesToolStripMenuItem,
             this.saveEntitiesToolStripMenuItem,
@@ -217,64 +220,71 @@
             // loadImageToolStripMenuItem
             // 
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.loadImageToolStripMenuItem.Text = "Load Image...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
             // unloadImageToolStripMenuItem
             // 
             this.unloadImageToolStripMenuItem.Name = "unloadImageToolStripMenuItem";
-            this.unloadImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.unloadImageToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.unloadImageToolStripMenuItem.Text = "Unload Image";
             this.unloadImageToolStripMenuItem.Click += new System.EventHandler(this.unloadImageToolStripMenuItem_Click);
             // 
             // saveSceneAsImageToolStripMenuItem
             // 
             this.saveSceneAsImageToolStripMenuItem.Name = "saveSceneAsImageToolStripMenuItem";
-            this.saveSceneAsImageToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveSceneAsImageToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.saveSceneAsImageToolStripMenuItem.Text = "Save scene as Image...";
             this.saveSceneAsImageToolStripMenuItem.Click += new System.EventHandler(this.saveSceneAsImageToolStripMenuItem_Click);
+            // 
+            // saveSceneAsNetlistToolStripMenuItem
+            // 
+            this.saveSceneAsNetlistToolStripMenuItem.Name = "saveSceneAsNetlistToolStripMenuItem";
+            this.saveSceneAsNetlistToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.saveSceneAsNetlistToolStripMenuItem.Text = "Save scene as Netlist...";
+            this.saveSceneAsNetlistToolStripMenuItem.Click += new System.EventHandler(this.saveSceneAsNetlistToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(188, 6);
             // 
             // loadEntitiesToolStripMenuItem
             // 
             this.loadEntitiesToolStripMenuItem.Name = "loadEntitiesToolStripMenuItem";
-            this.loadEntitiesToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadEntitiesToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.loadEntitiesToolStripMenuItem.Text = "Add entities...";
             this.loadEntitiesToolStripMenuItem.Click += new System.EventHandler(this.loadEntitiesToolStripMenuItem_Click);
             // 
             // saveEntitiesToolStripMenuItem
             // 
             this.saveEntitiesToolStripMenuItem.Name = "saveEntitiesToolStripMenuItem";
-            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveEntitiesToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.saveEntitiesToolStripMenuItem.Text = "Save entities...";
             this.saveEntitiesToolStripMenuItem.Click += new System.EventHandler(this.saveEntitiesToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.settingsToolStripMenuItem.Text = "Settings...";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(188, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -407,6 +417,13 @@
             this.removeNotOrthogonalWiresToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.removeNotOrthogonalWiresToolStripMenuItem.Text = "Remove not orthogonal wires";
             this.removeNotOrthogonalWiresToolStripMenuItem.Click += new System.EventHandler(this.removeNotOrthogonalWiresToolStripMenuItem_Click);
+            // 
+            // entityLocatorToolStripMenuItem
+            // 
+            this.entityLocatorToolStripMenuItem.Name = "entityLocatorToolStripMenuItem";
+            this.entityLocatorToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.entityLocatorToolStripMenuItem.Text = "Entity Locator";
+            this.entityLocatorToolStripMenuItem.Click += new System.EventHandler(this.entityLocatorToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1408,12 +1425,10 @@
             this.backgroundWorkerML.WorkerSupportsCancellation = true;
             this.backgroundWorkerML.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerML_DoWork);
             // 
-            // entityLocatorToolStripMenuItem
+            // saveFileDialog3
             // 
-            this.entityLocatorToolStripMenuItem.Name = "entityLocatorToolStripMenuItem";
-            this.entityLocatorToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
-            this.entityLocatorToolStripMenuItem.Text = "Entity Locator";
-            this.entityLocatorToolStripMenuItem.Click += new System.EventHandler(this.entityLocatorToolStripMenuItem_Click);
+            this.saveFileDialog3.DefaultExt = "graphml";
+            this.saveFileDialog3.Filter = "GraphML Files|*.graphml|All Files|*.*";
             // 
             // Form1
             // 
@@ -1591,6 +1606,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel17;
         private System.ComponentModel.BackgroundWorker backgroundWorkerML;
         private System.Windows.Forms.ToolStripMenuItem entityLocatorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSceneAsNetlistToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog3;
     }
 }
 

@@ -203,6 +203,18 @@ namespace DerouteSharp
             }
         }
 
+        private void saveSceneAsNetlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = saveFileDialog3.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                string text = GraphMLExport.ExportEntitiesNetlist(entityBox1.GetEntities());
+
+                File.WriteAllText(saveFileDialog3.FileName, text);
+            }
+        }
+
         #endregion
 
 
@@ -1168,6 +1180,7 @@ namespace DerouteSharp
 
         #endregion
 
+
         #region "Machine Learning"
 
         private NeuralNetwork.EntityNetwork nn = null;
@@ -1377,8 +1390,9 @@ namespace DerouteSharp
         }
 
 
-        #endregion "Machine Learning"
 
+
+        #endregion "Machine Learning"
 
 
     }       // Form1

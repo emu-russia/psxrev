@@ -36,12 +36,13 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(383, 236);
+            this.button1.Location = new System.Drawing.Point(383, 235);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(109, 41);
             this.button1.TabIndex = 0;
@@ -55,9 +56,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label1.Location = new System.Drawing.Point(23, 22);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(170, 48);
+            this.label1.Size = new System.Drawing.Size(180, 48);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Deroute Tool 1.03\r\n(c) 2021, psxdev.ru\r\n";
+            this.label1.Text = "Deroute Tool 1.04\r\n(c) 2021, emu-russia\r\n";
             // 
             // label2
             // 
@@ -100,17 +101,28 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(24, 158);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(452, 52);
+            this.label6.Size = new System.Drawing.Size(452, 26);
             this.label6.TabIndex = 6;
             this.label6.Text = "Everything (code, images etc) is public domain (Creative Commons Zero). Use at yo" +
-    "ur own risk)\r\nNo credits required.\r\n\r\nPlayStation logo and trademarks are proper" +
-    "ty of Sony.\r\n";
+    "ur own risk)\r\nNo credits required.\r\n";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(24, 202);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(163, 13);
+            this.linkLabel1.TabIndex = 7;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "https://discord.gg/WJcvqyCHkh";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(504, 288);
+            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -139,5 +151,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }

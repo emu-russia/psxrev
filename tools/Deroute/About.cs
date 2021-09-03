@@ -30,5 +30,10 @@ namespace DerouteSharp
             if (e.KeyCode == Keys.Escape)
                 Close();
         }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(((LinkLabel)sender).Text);
+        }
     }
 }
