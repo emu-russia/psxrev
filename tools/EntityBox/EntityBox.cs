@@ -150,6 +150,10 @@ namespace System.Windows.Forms
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
+        /// <summary>
+        /// Get a list of all entities. The hierarchy is destroyed (you get a regular linear list).
+        /// </summary>
+        /// <returns>A list of all entities.</returns>
         public List<Entity> GetEntities()
         {
             List<Entity> list = new List<Entity>();
