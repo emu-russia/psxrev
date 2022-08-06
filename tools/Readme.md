@@ -28,10 +28,6 @@ Another canvas control, more oriented on chip reversing (wires, vias, etc.)
 
 Split big image on smaller ones.
 
-## libjpeg
-
-Castrated libjpeg for patterns tool.
-
 ## logisim
 
 Local copy of logisim in case of WW3.
@@ -53,10 +49,6 @@ Test neural core.
 ## NeuralNetwork
 
 Basic neural core for MLK.
-
-## patterns
-
-Standard cells matching utility.
 
 ## PatternsDbGen
 
