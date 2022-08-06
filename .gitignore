@@ -11,9 +11,6 @@ m1
 m1/lap1
 m2
 gte_units
-tools/DerouteSharp/bin
-tools/DerouteSharp/obj
-tools/DerouteSharp/.vs
 *.iobj
 *.suo
 m1_cells/3mux
