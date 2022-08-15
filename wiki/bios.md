@@ -4,10 +4,10 @@
 
 Типичный ROM BIOS выглядит примерно вот так:
 
-[[File:ROM BIOS package.jpg|400px]]
+![ROM_BIOS_package](/wiki/imgstore/ROM_BIOS_package.jpg)
 
-- У BIOS [[PU-7]] и старых [[PU-8]] микросхема 40 выводов.
-- Начиная с новых версий [[PU-8]] (и далее) микросхема 32 вывода (в том числе и у PSOne)
+- У BIOS PU-7 и старых PU-8 микросхема 40 выводов.
+- Начиная с новых версий PU-8 (и далее) микросхема 32 вывода (в том числе и у PSOne)
 
 Внутри скорее всего ROM с ионной имплантацией по маске.
 
@@ -41,12 +41,12 @@ TBD.
 
 Исполнение начинается с адреса 0xBFC00000
 
-* Инициализирует недокументированные аппаратные регистры CPU (тайминг и пр.)
-* Очищает память и регистры CPU
-* Если в PSX присутствует устройство PIO - выполняет его программу инициализации (init)
-* Переходит на загрузку ядра (процедура Main)
+- Инициализирует недокументированные аппаратные регистры CPU (тайминг и пр.)
+- Очищает память и регистры CPU
+- Если в PSX присутствует устройство PIO - выполняет его программу инициализации (init)
+- Переходит на загрузку ядра (процедура Main)
 
-Some reversing of SCPH-1001 BIOS :
+Some reversing of SCPH-1001 BIOS:
 
 ```c
 //
@@ -355,17 +355,18 @@ void StartKernel ()      // 0xBFC06784
 
 ## Bootrom Main
 
-Процедура Main работает следующим образом :
-* В память копируется резидентный образ ядра и запускается его процедура инициализации
-* Устанавливаются Kernel Traps (обработчики исключений, прерываний и системных вызовов)
-* Устанавливаются драйвера устройств (TTY, CDROM и MemCard)
-* Инциализируется исполнительная система ядра (Kernel Executive) : Обработчики событий, потоки, события и системные счетчики
-* Распаковывается и запускается SHELL, которая решает - запустить меню или выйти назад в ядро для загрузки диска
-* Если SHELL выходит, то Main продолжает загрузку диска
-* Запускается процедура main устройства PIO (PIO Shell), которое либо перехватывает управление, либо возвращает управление назад в Main.
-* Считывается конфигурация SYSTEM.CNF и ядро производит реинциализацию системных таблиц в соответствии с настройками
-* Загружается исполняемый файл
-* Исполняемый файл запускается на исполнение
+Процедура Main работает следующим образом:
+
+- В память копируется резидентный образ ядра и запускается его процедура инициализации
+- Устанавливаются Kernel Traps (обработчики исключений, прерываний и системных вызовов)
+- Устанавливаются драйвера устройств (TTY, CDROM и MemCard)
+- Инциализируется исполнительная система ядра (Kernel Executive): Обработчики событий, потоки, события и системные счетчики
+- Распаковывается и запускается SHELL, которая решает - запустить меню или выйти назад в ядро для загрузки диска
+- Если SHELL выходит, то Main продолжает загрузку диска
+- Запускается процедура main устройства PIO (PIO Shell), которое либо перехватывает управление, либо возвращает управление назад в Main.
+- Считывается конфигурация SYSTEM.CNF и ядро производит реинциализацию системных таблиц в соответствии с настройками
+- Загружается исполняемый файл
+- Исполняемый файл запускается на исполнение
 
 ```c
 //
@@ -895,21 +896,21 @@ int InitThreads (int Tcbh, int Tcb)     // 0xBFC0472C
 
 SCPH-1001 Kernel map:
 
-* 0x500 : Startup code and system tables (Startup.asm)
-* 0xC80 : Exception handling (Exception.asm)
-* 0x1030 : Memory manager (Memory.c)
-* 0x1420 : Interrupt queue control (Int.c)
-* 0x1508 : Root counters (RCnt.c)
-* 0x1794 : Events (Event.c)
-* 0x1F88 : Threads (Thread.c)
-* 0x27C0 : Device drivers (IO Subsystem)
-* 0x43D0 : PAD driver
-* 0x47C0 : CARD driver
-* 0x609C : Another PAD stuff (PAD_init and PAD_dr)
-* 0x6A50 : Syscall stubs
-* 0x6C60 : Various pre-initialzed data and strings (.sdata)
-* 0x7460 : KernelData struct (zeroed by startup code)
-* 0xE000 : Kernel Heap (0x2000 bytes)
+- 0x500: Startup code and system tables (Startup.asm)
+- 0xC80: Exception handling (Exception.asm)
+- 0x1030: Memory manager (Memory.c)
+- 0x1420: Interrupt queue control (Int.c)
+- 0x1508: Root counters (RCnt.c)
+- 0x1794: Events (Event.c)
+- 0x1F88: Threads (Thread.c)
+- 0x27C0: Device drivers (IO Subsystem)
+- 0x43D0: PAD driver
+- 0x47C0: CARD driver
+- 0x609C: Another PAD stuff (PAD_init and PAD_dr)
+- 0x6A50: Syscall stubs
+- 0x6C60: Various pre-initialzed data and strings (.sdata)
+- 0x7460: KernelData struct (zeroed by startup code)
+- 0xE000: Kernel Heap (0x2000 bytes)
 
 ## Kernel Startup
 

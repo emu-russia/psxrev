@@ -16,30 +16,30 @@ PlayStation, PSX - телевизионная приставка, произве
 
 Кроме центрального процессора, в состав PSX входит так-называемый SUB-CPU, который, как не сложно догадаться, управляет подсистемой CD/SPU.
 
-## Main system
+## Main System
 
 Картинка из одного "конвидендуального" мануала, которая хорошо показывает связи:
 
-[[File:Psx main system.jpg]]
+![Psx_main_system](/wiki/imgstore/Psx_main_system.jpg)
 
 Также к main system можно отнести SIO-интерфейс (контроллеры, карты памяти и последовательный порт). Просто доступ к SIO происходит не по шинам, а через регистры CPU.
 
-## Sub system
+## Sub System
 
 Под-система включает в себя:
 
-* [SPU](spu.md)
-* [SUB-CPU](subcpu.md)
-* [CD-ROM декодер](cd.md) (куча чипов)
-* PIO
-* [BIOS](bios.md)
+- [SPU](spu.md)
+- [SUB-CPU](subcpu.md)
+- [CD-ROM декодер](cd.md) (куча чипов)
+- PIO
+- [BIOS](bios.md)
 
-[[File:Subsystem.JPG|1000px]]
+![Subsystem](/wiki/imgstore/Subsystem.jpg)
 
 ## Периферия
 
-* [Контроллеры](controller.md)
-* Карты памяти
-* PlayStation Mouse
-* Параллельный порт (PIO)
-* Последовательный порт (SIO)
+- [Контроллеры](controller.md)
+- Карты памяти
+- PlayStation Mouse
+- Параллельный порт (PIO)
+- Последовательный порт (SIO)

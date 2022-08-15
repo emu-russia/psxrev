@@ -14,17 +14,15 @@
 
 Также нужно иметь ввиду, что подсистема CD-ROM находится в тесной связи с [SPU](spu.md) и [SUB-CPU](subcpu.md). Вообще все вместе эти системы входят в так называемую `подсистему PSX`.
 
-[[File:Subsystem.JPG|800px]]
-
 ## CD Driver
 
-Задачей [[CD-DRIVER|CD Driver]] является управление движками каретки CD (sled), шпинделем (spindel), фокусировкой и перемещением лазера.
+Задачей [CD Driver](cddriver.md) является управление движками каретки CD (sled), шпинделем (spindel), фокусировкой и перемещением лазера.
 
 Напомню, что CD-привод может вращать диск, перемещать каретку с головкой туда-сюда, а также сама головка может двигаться в каретке в двух взаимно перпендикулярных направлениях (вверх-вниз и влево-вправо, относительно движения каретки).
 
 ## CD RF
 
-[[CD-RF|CD RF]] занимается управлением излучения лазера, а также получением сигнала с него и детектированием ошибок.
+[CD RF](cdrf.md) занимается управлением излучения лазера, а также получением сигнала с него и детектированием ошибок.
 
 Сигнал с лазера поступает на матрицу из 4х детекторов A,B,C,D а также двух боковых E-F, которые приходят на вход CD-RF.
 
@@ -32,7 +30,7 @@
 
 ## CDROM Controller
 
-[[CD-CONTROLLER|CDROM Controller]] - это передаточное звено между центральным процессором (CPU) и всей подсистемой PSX. При этом он имеет собственную память для хранения загружаемых данных с CD-ROM и подпихивает данные в [[SPU]] для воспроизведения CD Audio.
+[CDROM Controller](cdctrl.md) - это передаточное звено между центральным процессором (CPU) и всей подсистемой PSX. При этом он имеет собственную память для хранения загружаемых данных с CD-ROM и подпихивает данные в [SPU](spu.md) для воспроизведения CD Audio.
 
 В состав CD контроллера входят управляющие регистры, которыми управляет SUB-CPU с помощью микрокода, зашитого в SUB-CPU ROM.
 
@@ -40,61 +38,28 @@
 
 ## CD DSP
 
-[[CD-DSP|CD DSP]] занимается декодированием сигнала поступающего с CD-RF в цифровую форму, детектированием ошибок трекинга (TE) и фокусировки (FE), а также управлением CD Driver. Работа CD DSP идёт по программе, заложенной в ROM [[SUB-CPU]]. Управление CD-DSP производится путём отправки специальных командных пакетов.
+[CD DSP](cddsp.md) занимается декодированием сигнала поступающего с CD-RF в цифровую форму, детектированием ошибок трекинга (TE) и фокусировки (FE), а также управлением CD Driver. Работа CD DSP идёт по программе, заложенной в ROM [SUB-CPU](subcpu.md). Управление CD-DSP производится путём отправки специальных командных пакетов.
 Декодированные данные поступают в CDROM Controller, который решает куда их передать - наружу (в CPU) или в звуковой процессор (SPU).
 
 [[Category:CD-ROM]]
 
 ## Оптический девайс (привод)
 
-{|
-|-
-|[[File:Optical device front.jpg|400px]] [[File:Optical device back.jpg|400px]]
-|-
-|[[File:Optical device front noted.jpg|400px]] [[File:Optical device back noted.jpg|400px]]
-|-
-|[[File:Optical device front hand.jpg|400px]] [[File:Optical device back hand.jpg|400px]]
-|}
+![Optical_device_back](/wiki/imgstore/Optical_device_back.jpg)
 
-Ревизии оптического девайса :
-{| cellspacing="0" border="1"
-|-
-|Версия
-|Привод
-|Шлейф
-|PCB
-|Версия консоли
-|-
-|KSM-440 AAM (короткий шлейф)
-|[[File:Aam f1.jpg|100px]] [[File:Aam b1.jpg|100px]]
-|[[File:Ps1-p-009.jpg|100px]]
-|[[PU-7]]
-|SCPH-1000
-|-
-|KSM-440 ACM (короткий шлейф)
-|[[File:Acm f1.jpg|100px]] [[File:Acm b1.jpg|100px]]
-|[[File:Ps1-p-009.jpg|100px]]
-|[[PU-8]]
-|SCPH-1001/2, SCPH-300x
-|-
-|KSM-440 ADM (длинный шлейф)
-|[[File:Adm f1.jpg|100px]] [[File:Adm b1.jpg|100px]]
-|[[File:Ps1-p-010-1.jpg|100px]]
-|[[PU-18]], [[PU-20]]
-|SCPH-500x, SCPH-700x
-|-
-|KSM-440 AEM (средний шлейф)
-|[[File:Aem f1.jpg|100px]] [[File:Aem b.jpg|100px]]
-|[[File:Ps1-p-010.jpg|100px]]
-|[[PU-22]], [[PU-23]]
-|SCPH-750x, SCPH-900x
-|-
-|KSM-440 BAM (короткий шлейф)
-|[[File:Bam f1.jpg|100px]] [[File:Bam b.jpg|100px]]
-|[[File:Ps1-p-009.jpg|100px]]
-|[[PM-41]], [[PM-41(2)]]
-|SCPH-10x (PSOne)
-|}
+![Optical_device_back_noted](/wiki/imgstore/Optical_device_back_noted.jpg)
+
+![Optical_device_back_hand](/wiki/imgstore/Optical_device_back_hand.jpg)
+
+Ревизии оптического девайса:
+
+|Версия|Привод|Шлейф|PCB|Версия консоли|
+|---|---|---|---|---|
+|KSM-440 AAM (короткий шлейф)|![Aam_f1](/wiki/imgstore/Aam_f1.jpg) ![Aam_b1](/wiki/imgstore/Aam_b1.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PU-7|SCPH-1000|
+|KSM-440 ACM (короткий шлейф)|![Acm_f1](/wiki/imgstore/Acm_f1.jpg) ![Acm_b1](/wiki/imgstore/Acm_b1.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PU-8|SCPH-1001/2, SCPH-300x|
+|KSM-440 ADM (длинный шлейф)|![Adm_f1](/wiki/imgstore/Adm_f1.jpg) ![Adm_b1](/wiki/imgstore/Adm_b1.jpg)|![Ps1-p-010-1](/wiki/imgstore/Ps1-p-010-1.jpg)|PU-18, PU-20|SCPH-500x, SCPH-700x|
+|KSM-440 AEM (средний шлейф)|![Aem_f1](/wiki/imgstore/Aem_f1.jpg) ![Aem_b1](/wiki/imgstore/Aem_b1.jpg)|![Ps1-p-010](/wiki/imgstore/Ps1-p-010.jpg)|PU-22, PU-23|SCPH-750x, SCPH-900x|
+|KSM-440 BAM (короткий шлейф)|![Bam_f1](/wiki/imgstore/Bam_f1.jpg) ![Bam_b](/wiki/imgstore/Bam_b.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PM-41, PM-41(2)|SCPH-10x (PSOne)|
 
 На аппаратном уровне (сигнальном) практически все приводы совместимы друг с другом, отличаются только размерами и длиной шлейфа. В редких случаях может быть несовместимость: для некоторых версий PSone (привод KSM-440 BAM) и первых моделей PS1 (KSM-440 AСM).
 
@@ -104,7 +69,7 @@
 
 Эти коннекторы используются для соединения оптического девайса с микросхемами:
 
-[[File:CN701 702.jpg|200px]]
+![CN701_702](/wiki/imgstore/CN701_702.jpg)
 
 Верхняя группа контактов предназначена для соединения с микросхемой CD-RF, а нижняя для микросхемы CD Driver.
 
