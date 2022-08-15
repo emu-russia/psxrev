@@ -2,38 +2,40 @@
 
 512 KB ROM содержит стартовый загрузчик BIOS, копию ядра (kernel) PlayStation OS, а также "оболочку" (shell), которая открывается, если в консоль не вставлен игровой диск и содержит менеджер карт памяти и CD-проигрыватель.
 
-Типичный ROM BIOS выглядит примерно вот так :
+Типичный ROM BIOS выглядит примерно вот так:
 
 [[File:ROM BIOS package.jpg|400px]]
 
-* У BIOS [[PU-7]] и старых [[PU-8]] микросхема 40 выводов.
-* Начиная с новых версий [[PU-8]] (и далее) микросхема 32 вывода (в том числе и у PSOne)
+- У BIOS [[PU-7]] и старых [[PU-8]] микросхема 40 выводов.
+- Начиная с новых версий [[PU-8]] (и далее) микросхема 32 вывода (в том числе и у PSOne)
 
 Внутри скорее всего ROM с ионной имплантацией по маске.
 
-== Тайминги ==
+## Тайминги
 
-== Версии BIOS ==
+TBD.
+
+## Версии BIOS
 
 Вот это сложный вопрос, потому что версии BIOS во-первых отличаются от региона, во вторых они отличаются между моделями материнских плат.
 И даже внутри одной модели материнки могут быть разные версии BIOS, в зависимости от ревизии материнской платы одной модели.
 
-* http://emu-russia.net/ru/files/bios/psx/ 
-* http://www.emu-land.net/consoles/psx/bios
+- http://emu-russia.net/ru/files/bios/psx/ 
+- http://www.emu-land.net/consoles/psx/bios
 
 Эталонной версией BIOS почти все эмуляторы считают SCPH1001.BIN. Этот BIOS был подробно дизассемблирован и считается "стабильным" для работы в эмуляторах.
 
-== Устройство образа BIOS ==
+## Устройство образа BIOS
 
-Образ BIOS состоит из трёх частей. На примере SCPH-1001 :
+Образ BIOS состоит из трёх частей. На примере SCPH-1001:
 
-* 0x0 : Boot. Непосредственно часть BIOS, которая производит загрузку ядра и содержит большую часть системных вызовов таблицы A0.
-* 0x10000 : Kernel. Образ ядра, который копируется в 0x500. Содержит также системные вызовы таблиц B0 и C0.
-* 0x18000 : Shell. Копируется в 0x80030000.
+- 0x0: Boot. Непосредственно часть BIOS, которая производит загрузку ядра и содержит большую часть системных вызовов таблицы A0.
+- 0x10000: Kernel. Образ ядра, который копируется в 0x500. Содержит также системные вызовы таблиц B0 и C0.
+- 0x18000: Shell. Копируется в 0x80030000.
 
 В самом конце Shell находятся какая-то структура со строками о версии BIOS. Где используется пока не обнаружено.
 
-== Boot ==
+## Boot
 
 Программа начальной загрузки (RESET)
 
@@ -46,7 +48,7 @@
 
 Some reversing of SCPH-1001 BIOS :
 
-<syntaxhighlight lang="c">
+```c
 //
 // SCPH1001 Reset
 // Written likely on assembler
@@ -349,9 +351,9 @@ void StartKernel ()      // 0xBFC06784
 
     Main ( Config, Exec );
 }
-</syntaxhighlight>
+```
 
-== Bootrom Main ==
+## Bootrom Main
 
 Процедура Main работает следующим образом :
 * В память копируется резидентный образ ядра и запускается его процедура инициализации
@@ -365,7 +367,7 @@ void StartKernel ()      // 0xBFC06784
 * Загружается исполняемый файл
 * Исполняемый файл запускается на исполнение
 
-<syntaxhighlight lang="c">
+```c
 //
 // Bootrom Main
 //
@@ -877,9 +879,9 @@ int InitThreads (int Tcbh, int Tcb)     // 0xBFC0472C
 
     return dword_10C + dword_114;       // Total size of TCBH and TCB tables
 }
-</syntaxhighlight>
+```
 
-== Kernel (PlayStation OS) ==
+## Kernel (PlayStation OS)
 
 Ядро PS OS резидентно находится в памяти. Доступ к процедурам ядра производится через специальные таблицы (которые находятся по адресам 0xA0, 0xB0, 0xC0).
 
@@ -889,7 +891,7 @@ int InitThreads (int Tcbh, int Tcb)     // 0xBFC0472C
 
 Выполнение пользовательских программ происходит в режиме CPU Kernel Mode, поскольку одновременно может быть запущен только один "процесс" (исполняемый файл игры).
 
-== Kernel memory map ==
+## Kernel memory map
 
 SCPH-1001 Kernel map:
 
@@ -909,9 +911,9 @@ SCPH-1001 Kernel map:
 * 0x7460 : KernelData struct (zeroed by startup code)
 * 0xE000 : Kernel Heap (0x2000 bytes)
 
-== Kernel Startup ==
+## Kernel Startup
 
-<syntaxhighlight lang="c">
+```c
 //
 // Kernel Startup and system tables.
 // Kernel image is hardcopied at 0xA0000500
@@ -1164,11 +1166,11 @@ off_974:        .word cd
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-</syntaxhighlight>
+```
 
-== Kernel Exception handling ==
+## Kernel Exception handling
 
-<syntaxhighlight lang="c">
+```c
 //
 // Kernel exception handling.
 // Written on asm.
@@ -1440,9 +1442,9 @@ PVOID GetKernelSp () 	// 0x1018
 {
 	return KernelSp;
 }
-</syntaxhighlight>
+```
 
-== Shell ==
+## Shell
 
 Оболочка BIOS - это специальным образом созданный исполняемый файл формата PS-X EXE, который находится внутри ROM (без заголовка)
 

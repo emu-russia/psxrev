@@ -25,7 +25,7 @@ The CPU consists of the following components:
 
 Microphotograph of a chip:
 
-![Cpu_chip](/wiki//imgstore/Cpu_chip.jpg)
+![Cpu_chip](/wiki/imgstore/Cpu_chip.jpg)
 
 As you can see most of the chip is taken up by the "mess" of synthesized HDL logic, and at the edges there are various memory and registers.
 
@@ -42,7 +42,7 @@ You can find out the revision of the chip from the marking on the cover, removin
 
 There is also a tattoo on the lower right corner of the chip. The revision of the chip is indicated in the first line:
 
-![6f18eaaedc260890621c89afba5b0b46](/wiki//imgstore/6f18eaaedc260890621c89afba5b0b46.jpg)
+![6f18eaaedc260890621c89afba5b0b46](/wiki/imgstore/6f18eaaedc260890621c89afba5b0b46.jpg)
 
 ## Related ICs
 
@@ -50,7 +50,7 @@ Related chips include [CPU DRAM](dram.md) and [ROM BIOS](bios.md).
 
 In early versions of the motherboard, the DRAM was represented by four 8-bit memory packages. Later it was replaced by a single 32-bit package.
 
-![Cpu_ram_nec_424805al-a60](/wiki//imgstore/Cpu_ram_nec_424805al-a60.jpg)
+![Cpu_ram_nec_424805al-a60](/wiki/imgstore/Cpu_ram_nec_424805al-a60.jpg)
 
 ## Hardware Interface
 
@@ -58,4 +58,4 @@ We will be guided by the picture from the PU-22 (SCPH-7500) service manual when 
 
 Starting with PU-23 (SCPH-9000) the parallel port (PIO) was taken away from it, and in PM-41 (PSOne) the serial port (SIO) was also taken away.
 
-![CPU_Block](/wiki//imgstore/CPU_Block.jpg)
+![CPU_Block](/wiki/imgstore/CPU_Block.jpg)
