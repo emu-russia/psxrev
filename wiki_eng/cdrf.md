@@ -1,15 +1,15 @@
 # CD-RF
 
-CD RF - микросхема отвечающая за управление лазером и получением EFM-сигнала, а также сигнала ошибок фокусировки лазера, трекинга и слежение за выходом с трека на пустое пространство.
+The CD RF is the chip responsible for controlling the laser and getting the EFM signal as well as the laser focus error signal, tracking, and tracking out of the track to an empty space.
 
-Подробное описание работы лазерного девайса и мотора находится тут: http://www.radiofan.ru/faq/cd/part1.htm
+A detailed description of the laser device and motor is available here: http://www.radiofan.ru/faq/cd/part1.htm
 
-Я утащу сюда пару картинок.
+I will include a couple of pictures here.
 
-|![Detectors](/wiki/imgstore/Detectors.gif)|![Laser_beam](/wiki/imgstore/Laser_beam.gif)|
+|![Detectors](/wiki/imgstore/Detectors.gif)|![Laser_beam_Eng](/wiki/imgstore/Laser_beam_Eng.gif)|
 |---|---|
 
-На старых материнках чип CD-RF был представлен микросхемой IC703, но мы лучше будем опираться на более новую реализацию, на базе `IC723`.
+On older motherboards CD-RF chip was represented by IC703 chip, but we'd rather rely on a newer implementation, based on `IC723 `.
 
 ## IC703
 
@@ -17,20 +17,20 @@ CD RF - микросхема отвечающая за управление ла
 
 Full resolution: https://drive.google.com/open?id=1UqA_r6dA5rLRS88AjS1HgKMCfHwhpUQD
 
-## Принцип работы CD RF чипа
+## Principle of Operation
 
 ![IC723_overview](/wiki/imgstore/IC723_overview.jpg)
 
-Слева на картинке находится каретка с матрицей фотодетекторов A-D (EFM), детекторами E и F (боковые лучи), а также выходной контакт на лазерный диод LD и входной сигнал с фотодиода PD для автоматической коррекции мощности излучения лазера.
+On the left in the picture there is a carriage with a matrix of photodetectors A-D (EFM), detectors E and F (side beams), as well as an output contact to the laser diode LD and an input signal from the photodiode PD for automatic correction of the laser radiation power.
 
-При этом A+C объединены в PD1, а B+D объединены в PD2.
+At that, A+C are combined into PD1 and B+D are combined into PD2.
 
-Выходные сигналы и сигналы контроля:
+Output and control signals:
 
-- LDON: включение лазера
-- AL/TE: пока непонятно что делает
-- RFO: выходной EFM-сигнал
-- FE: focus error (ошибка фокусировки)
-- TE: tracking error (ошибка трекинга, луч не точно наведён на трек)
+- LDON: laser on
+- AL/TE: it is not yet clear what it does
+- RFO: EFM output signal
+- FE: focus error
+- TE: tracking error
 - TEO: ?
-- MIRR DET: определяет когда луч вообще не наведен на трек (светит на отражающую поверхность диска)
+- MIRR DET: determines when the beam is not on the track at all (shines on the reflective surface of the disk)
