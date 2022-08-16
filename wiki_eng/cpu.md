@@ -58,61 +58,61 @@ Starting with PU-23 (SCPH-9000) the parallel port (PIO) was taken away from it, 
 
 ![CPU_Block](/wiki/imgstore/CPU_Block.jpg)
 
-Прежде чем изучать управляющие сигналы, нужно отметить, что CPU работает с двумя шинами, которыми управляет bus unit (B/U):
-- Main bus: проходит внутри процессора, а также соединяется с [DRAM](dram.md) и [GPU](gpu.md)
-- Sub bus: на этой шине располагаются все устройства подсистемы (ROM BIOS, [SPU](spu.md), [CD-ROM](cd.md)) и параллельный порт (который на самом деле тоже является своего рода внешним устройством)
-- /SWR0, /SWR1: Sub bus write enable. SWR0 предназначен как для внутренних девайсов Sub bus, так и для PIO, а вот SWR1 подается почему-то эксклюзивно только на PIO.
+Before examining the control signals, it should be noted that the CPU operates with two buses which are controlled by the bus unit (B/U):
+- Main bus: runs inside the CPU and also connects to [DRAM](dram.md) and [GPU](gpu.md)
+- Sub bus: all the subsystem devices (ROM BIOS, [SPU](spu.md), [CD-ROM](cd.md)) and the parallel port (which is really a kind of external device as well) are on this bus
+- /SWR0, /SWR1: Sub bus write enable. SWR0 is intended for both internal Sub bus devices and PIOs, but SWR1 for some reason is exclusively fed only to PIOs.
 - /SRD: Sub bus read enable.
 
 PIO:
-- /CS0: Выбрать PIO на Sub bus. Одновременно на шину может быть подключен только один девайс, во избежание конфликта шин. Этим управляют контакты группы "CS" (chip select).
+- /CS0: Select PIO on the sub bus. Only one device can be connected to the bus at a time to avoid bus conflicts. This is controlled by the terminals in the "CS" (chip select) group.
 - DACK5 / DREQ5: PIO DMA
-- /INTIN10: контакт совмещен с контроллерами/картами памяти и PIO (общий сигнал прерывания).
+- /INTIN10: terminal is combined with controllers/memory cards and PIO (common interrupt signal).
 
 SIO:
-- RXD1, TXD1, /DSR1, /DTR1, /CTS1, /RTS1: классический последовательный интерфейс
+- RXD1, TXD1, /DSR1, /DTR1, /CTS1, /RTS1: conventional serial interface
 
-Контроллеры/карты памяти: представляют собой вариацию SIO
-- /SCK0: тайминг для контроллеров (строб?)
-- RXD0, TXD0, /DSR0, /DTR0A, /DTR0B: последовательный интерфейс. DTR имеет два контакта, поскольку у нас два порта для контроллеров/карт памяти (Port A и Port B)
+Controllers/memory cards: a variation of SIO
+- /SCK0: timing for controllers (strobe?)
+- RXD0, TXD0, /DSR0, /DTR0A, /DTR0B: serial interface. DTR has two pins because we have two ports for controllers/memory cards (Port A and Port B)
 
 ![Front_jack](/wiki/imgstore/Front_jack.jpg)
 
-DRAM: в более новых материнках оперативная память представляет собой один чип (IC106), но раньше их было больше (4). Мы будем ориентироваться на более новый вариант, потому что это удобно.
-- DD : шина данных 32-бит
-- DA : адресная шина 10-бит
-- /DWE : write enable
-- /DRAS0, /DCAS0, /DCAS1, /DCAS2, /DCAS3 : рефреш
+DRAM: in newer motherboards the RAM is a single chip (IC106), but previously there were more (four). We will focus on the newer version because it is convenient.
+- DD: A 32-bit data bus.
+- DA: a 10 bit address bus
+- /DWE: write enable
+- /DRAS0, /DCAS0, /DCAS1, /DCAS2, /DCAS3: refresh
 
-ROM BIOS: ROM подсоединен к Sub bus.
-- /CS2: Подключить ROM к шине Sub bus. Непосредственно обмен данным (OE) включается, если активен сигнал read enable (/SRD). Ну это понятно, ROM можно только читать :smiley:
+ROM BIOS: ROM is connected to the sub bus.
+- /CS2: Connect the ROM to the sub bus. Direct data exchange (OE) is enabled if the read enable signal (/SRD) is active. Well that's understandable, the ROM can only be read :smiley:
 
 GPU:
-- VD: шина данных 32-бит, подключена к Main bus
-- VA2: адресная шина, 1-бит :smiley: Дело в том, что у GPU всего-лишь два 32-разрядных регистра (GP0/GP1), поэтому для их адресации достаточно одной адресной линии.
+- VD: 32-bit data bus, connected to Main bus
+- VA2: address bus, 1bit :smiley: The thing is, the GPU has only two 32-bit registers (GP0/GP1), therefore, one address line is enough to address them.
 - /VRD, /VWR: read/write enable
-- /CS7: Выбрать GPU
-- DREQ2, DACK2: GPU DMA. Когда для передачи данных используется контроллер прямого доступа к памяти, графический 
-процессор посылает сигнал запроса на захват шины, устанавливая низкий логический уровень на контакте GPUDREQ. Получив такой запрос, процессор освобождает шины, извещая об этом установкой низкого логического уровня на выходе GPUDACK.
-- /INTIN0: сигнал прерывания GPU VBLANK
-- TCLK0: выходит с контакта GPU PCK (pixel clock), может использоваться в качестве Root Counter 0 (счетчик точек)
-- TCLK1: выходит с контакта GPU HBLANK, может использоваться в качестве Root Counter 1 (счетчик горизонтальных линий)
-- /INTIN1: общее прерывание GPU (может быть вызвано отправкой специальной команды в GPU, но насколько мне известно в играх не используется)
+- /CS7: Select GPU
+- DREQ2, DACK2: GPU DMA. When a direct memory access controller is used to transfer data, the GPU 
+processor sends a bus-capture request signal by setting the logic low on the GPUDREQ pin. Upon receiving such a request, the processor releases the buses, signaling this by setting a low logic level on the GPUDACK output.
+- /INTIN0: GPU VBLANK interrupt signal
+- TCLK0: comes out of the GPU PCK (pixel clock) pin, can be used as Root Counter 0 ( dot counter)
+- TCLK1: comes out from GPU HBLANK pin, can be used as Root Counter 1 (horizontal line counter)
+- /INTIN1: general interrupt of the GPU (can be caused by sending a special command to the GPU, but is not used in games as far as I know)
 
 CD-ROM: 
-- /CS5: выбрать CD-контроллер
-- /INTIN2: прерывание от CD-контроллера
+- /CS5: select CD-controller
+- /INTIN2: interrupt from CD-Controller
 
 SPU:
-- /CS4: выбрать SPU
-- /INTIN9: прерывание от SPU
+- /CS4: select SPU
+- /INTIN9: interrupt from SPU
 - DACK4, /DREQ4: SPU DMA
 
-Тайминг и сброс CPU:
-- CRYSTALP: входной CLK, 67.73 MHz
-- SYSCLK0: CLK на вход GPU (33.3 MHz)
-- SYSCLK1: CLK на девайсы Sub bus (33.3 MHz)
-- DSYSCLK: CLK * 2 на вход GPU (66.67 MHz NTSC, 64.5 MHz PAL)
-- /EXT RESET: сброс (приходит с общего сигнала RES3.3 от блока питания)
+CPU timing and resetting:
+- CRYSTALP: input CLK, 67.73 MHz
+- SYSCLK0: CLK to GPU input (33.3 MHz)
+- SYSCLK1: CLK on Sub bus devices (33.3 MHz)
+- DSYSCLK: CLK * 2 on GPU input (66.67 MHz NTSC, 64.5 MHz PAL)
+- /EXT RESET: reset (comes from common signal RES3.3 from power supply)
 
 ![CPU_clk](/wiki/imgstore/CPU_clk.jpg)

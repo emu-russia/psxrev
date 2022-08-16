@@ -3,7 +3,8 @@
 SONY PlayStation PCB/chips reverse engineering.
 
  * Headquarters: http://psxdev.ru
- * [Wiki](/wiki/Readme.md)
+ * [Wiki Russian](/wiki/Readme.md)
+ * [Wiki English](/wiki_eng/Readme.md)
  * Board: http://psxdev.ru/board
 
 PlayStation logo and trademarks are property of SONY.

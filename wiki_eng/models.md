@@ -1,23 +1,23 @@
 # PSX Models
 
-![fixme](/wiki/imgstore/fixme.gif) Раздел требует заполнения.
+![fixme](/wiki/imgstore/fixme.gif) The section needs to be filled out.
 
 ## SCPH-1000
 
-Самые первые версии PSX, выпущенные только в Японии.
+The very first PSX versions released only in Japan.
 
-Чипсет японских версий 1000-й серии значительно отличаются от версий других регионов. 
-На самом деле SCPH-1001 и SCPH-1002 базируются на японской SCPH-3000. Поэтому SCPH-1000 уникальная в своём роде (единственная модель PSX на железе Rev. A)
+The chipset of the Japanese versions of the 1000-series is quite different from the versions of other regions. 
+In fact SCPH-1001 and SCPH-1002 are based on the Japanese SCPH-3000. That's why the SCPH-1000 is unique in its kind (the only PSX model on Rev. A hardware).
 
 ![800px-Scph-1000-back](/wiki/imgstore/800px-Scph-1000-back.jpg)
 
 ## SCPH-1001
 
-Американская версия.
+The American version.
 
 ## SCPH-1002
 
-Версия для европейского региона (PAL).
+The version for the European region (PAL).
 
 |![1002_1](/wiki/imgstore/1002_1.jpg)|![1002_2](/wiki/imgstore/1002_2.jpg)|![1002_3](/wiki/imgstore/1002_3.jpg)|
 |---|---|---|
@@ -28,19 +28,19 @@ BIOS:
 
 ## SCPH-5002
 
-Европейская версия консоли вышедшая в мае 1996 года.
+The European version of the console released in May 1996.
 
-- Дата выхода: 1996-05
-- Корпус: большой серый
-- Регион: PAL
-- Версия биоса: Неизвестно (Неизвестно)
-- CPU: Ревизия C
-- Материнская плата: PU-18
-- Порты: Parallel I/O, Serial I/O, AV Multiout
+- Date of release: 1996-05
+- Case: large gray
+- Region: PAL
+- Bios version: Unknown
+- CPU: Revision C
+- Motherboard: PU-18
+- Ports: Parallel I/O, Serial I/O, AV Multiout
 
 ## SCPH-5552
 
-Какая-то особенная версия консоли (Value pack)
+Some special version of the console (Value pack)
 
 |![Scph-5552-box](/wiki/imgstore/Scph-5552-box.jpg)|![Boite_value_pack_5552.3](/wiki/imgstore/Boite_value_pack_5552.3.jpg)|
 |---|---|

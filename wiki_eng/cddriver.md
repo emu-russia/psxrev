@@ -1,15 +1,15 @@
 # CD-DRIVER
 
-CD Driver - специальная микросхема для управления двигателями и катушками [CD-ROM](cd.md):
+CD Driver - special chip for controlling [CD-ROM](cd.md) motors and coils:
 
-- Spindel (шпиндель) - главный двигатель на котором вращается диск. Обычно крутится в одну сторону.
-- Sledge (каретка) - на каретке расположена лазерная головка. Каретка обычно перемещается по червячной передаче.
-- Катушка фокусировки - перемещает лазерный диод перепендикулярно поверхности диска
-- Катушка трекинга - предназначена для точного перемещения лазерного луча по трекам CD
+- Spindel - The main motor on which the disk rotates. Usually spins in one direction.
+- Sledge - The carriage carries the laser head. The carriage is usually driven by a worm gear.
+- Focusing coil - Moves the laser diode perpendicular to the disk surface
+- Tracking coil - designed to move the laser beam precisely over the tracks of the CD
 
-Очень хорошо расписано устройство CD здесь: http://www.radiofan.ru/faq/cd/part1.htm
+A very good summary of CD design is available here: http://www.radiofan.ru/faq/cd/part1.htm
 
-В старых ревизиях материнок CD Driver был представлен микросхемой ROHM (IC704) и кучкой вспомогательных микросхем. В более поздних ревизиях CD Driver был заменён на одну общую микросхему `IC722`. Вот её то мы и возьмём за "эталон".
+Older revisions of motherboards had the CD Driver represented by a ROHM chip (IC704) and a bunch of third party chips. In later revisions the CD Driver was replaced by a single common chip `IC722`. That's what we will take it as a "reference".
 
 ## IC704
 
@@ -17,20 +17,20 @@ CD Driver - специальная микросхема для управлен�
 
 Full resolution: https://drive.google.com/file/d/1tPvfsoNfepg7JGQX0SbOree_kSWo4pOS/view
 
-## Аппаратный интерфейс
+## Hardware Interface
 
 ![IC722_overview](/wiki/imgstore/IC722_overview.jpg)
 
-Управление моторами и катушками осуществляет [CD-DSP](cddsp.md):
+The motors and coils are controlled by [CD-DSP](cddsp.md):
 
-- TFDR/TRDR: управление катушкой трекинга (F-forward, R-reverse)
-- FFDR/FRDR: управление катушкой фокусировки
-- SRDR/SFDR: управление двигателем каретки
-- MDP: motor dirve phase - управление скоростью вращения диска, путём подачи специальных импульсов
+- TFDR/TRDR: Tracking coil control (F-forward, R-reverse)
+- FFDR/FRDR: control of the focus coil
+- SRDR/SFDR: motor carriage control
+- MDP: motor dirve phase: control the speed of the disc, by giving special pulses
 
-Есть возможность установить скорость вращения диска (1x/2x), путём подачи сигнала SPEED, который идёт с [SUB-CPU](subcpu.md)
+It is possible to set the speed of the disc (1x/2x), by giving the SPEED signal, which comes from [SUB-CPU](subcpu.md)
 
-Сигнал MUTE заведён на сигнал RESET3.3 (сброс низковольтных схем подсистемы PSX)
+The MUTE signal is connected to the RESET3.3 signal (resetting the low voltage circuits of the PSX subsystem).
 
 ## Forward/Reverse
 
@@ -38,10 +38,10 @@ TBD.
 
 ## MDP
 
-В документации по CD-DSP есть описание сигнала MDP.
+There is a description of the MDP signal in the CD-DSP documentation.
 
 ![MDP](/wiki/imgstore/MDP.jpg)
 
-Управление мотором может производиться двумя режимами (задается в настройках CD-DSP DCLV PWM MD): с участием MDS и без его участия.
+The motor can be controlled in two modes (set in the CD-DSP DCLV PWM MD settings): with and without the MDS.
 
-В частности IC722 управляется одним контактом MDP (без участия MDS), при этом положительная полярность задает ускорение двигателя, а отрицательная - торможение. Значение ускорения кодируется ШИМ (PWM), при этом n изменяется в диапазоне от 0 до 31.
+In particular IC722 is controlled by a single MDP pin (without MDS involvement), and the positive polarity sets the motor acceleration and the negative polarity sets the motor deceleration. The acceleration value is coded by PWM and n varies from 0 to 31.

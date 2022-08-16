@@ -1,50 +1,46 @@
 # BIOS (BOOT ROM)
 
-512 KB ROM содержит стартовый загрузчик BIOS, копию ядра (kernel) PlayStation OS, а также "оболочку" (shell), которая открывается, если в консоль не вставлен игровой диск и содержит менеджер карт памяти и CD-проигрыватель.
+The 512 KB ROM contains the BIOS boot loader, a copy of the PlayStation OS kernel, and a "shell" which opens if no game disc is inserted in the console and contains the memory card manager and CD player.
 
-Типичный ROM BIOS выглядит примерно вот так:
+A typical ROM BIOS looks like this:
 
 ![ROM_BIOS_package](/wiki/imgstore/ROM_BIOS_package.jpg)
 
-- У BIOS PU-7 и старых PU-8 микросхема 40 выводов.
-- Начиная с новых версий PU-8 (и далее) микросхема 32 вывода (в том числе и у PSOne)
+- The PU-7 and old PU-8 BIOS has a 40 pin chip.
+- From the new versions of PU-8 (and on) the chip has 32 pins (including PSOne).
 
-Внутри скорее всего ROM с ионной имплантацией по маске.
+Inside most likely ROM with ion implantation by mask.
 
-## Тайминги
+## BIOS Versions
 
-TBD.
-
-## Версии BIOS
-
-Вот это сложный вопрос, потому что версии BIOS во-первых отличаются от региона, во вторых они отличаются между моделями материнских плат.
-И даже внутри одной модели материнки могут быть разные версии BIOS, в зависимости от ревизии материнской платы одной модели.
+This is a complicated question, because BIOS versions firstly differ from region to region, and secondly they differ between motherboard models.
+And even within the same motherboard model there can be different versions of BIOS, depending on the revision of the motherboard of the same model.
 
 - http://emu-russia.net/ru/files/bios/psx/ 
 - http://www.emu-land.net/consoles/psx/bios
 
-Эталонной версией BIOS почти все эмуляторы считают SCPH1001.BIN. Этот BIOS был подробно дизассемблирован и считается "стабильным" для работы в эмуляторах.
+Almost all emulators consider SCPH1001.BIN to be the reference BIOS version. This BIOS has been thoroughly disassembled and is considered "stable" to work in emulators.
 
-## Устройство образа BIOS
+## BIOS Image Structure
 
-Образ BIOS состоит из трёх частей. На примере SCPH-1001:
+The BIOS image consists of three parts. Take SCPH-1001 as an example:
 
-- 0x0: Boot. Непосредственно часть BIOS, которая производит загрузку ядра и содержит большую часть системных вызовов таблицы A0.
-- 0x10000: Kernel. Образ ядра, который копируется в 0x500. Содержит также системные вызовы таблиц B0 и C0.
-- 0x18000: Shell. Копируется в 0x80030000.
+- 0x0: Boot. The part of the BIOS that boots the kernel and contains most of the system calls to table A0.
+- 0x10000: Kernel. The kernel image which is copied to 0x500. Also contains system calls to tables B0 and C0.
+- 0x18000: Shell. Copied to 0x80030000.
 
-В самом конце Shell находятся какая-то структура со строками о версии BIOS. Где используется пока не обнаружено.
+At the very end of the Shell is some structure with strings about the BIOS version. Where it is used has not been found yet.
 
 ## Boot
 
-Программа начальной загрузки (RESET)
+Initial boot program (RESET)
 
-Исполнение начинается с адреса 0xBFC00000
+Execution starts at address 0xBFC00000
 
-- Инициализирует недокументированные аппаратные регистры CPU (тайминг и пр.)
-- Очищает память и регистры CPU
-- Если в PSX присутствует устройство PIO - выполняет его программу инициализации (init)
-- Переходит на загрузку ядра (процедура Main)
+- Initializes undocumented hardware CPU registers (timing, etc.)
+- Clears memory and CPU registers
+- Executes PIO initialization program (init) if a PIO device is present in PSX
+- Switches to kernel loading (Main procedure)
 
 Some reversing of SCPH-1001 BIOS:
 
@@ -355,18 +351,18 @@ void StartKernel ()      // 0xBFC06784
 
 ## Bootrom Main
 
-Процедура Main работает следующим образом:
+The Main procedure works as follows:
 
-- В память копируется резидентный образ ядра и запускается его процедура инициализации
-- Устанавливаются Kernel Traps (обработчики исключений, прерываний и системных вызовов)
-- Устанавливаются драйвера устройств (TTY, CDROM и MemCard)
-- Инциализируется исполнительная система ядра (Kernel Executive): Обработчики событий, потоки, события и системные счетчики
-- Распаковывается и запускается SHELL, которая решает - запустить меню или выйти назад в ядро для загрузки диска
-- Если SHELL выходит, то Main продолжает загрузку диска
-- Запускается процедура main устройства PIO (PIO Shell), которое либо перехватывает управление, либо возвращает управление назад в Main.
-- Считывается конфигурация SYSTEM.CNF и ядро производит реинциализацию системных таблиц в соответствии с настройками
-- Загружается исполняемый файл
-- Исполняемый файл запускается на исполнение
+- A resident kernel image is copied into memory and its initialization procedure is run
+- Kernel Traps are installed (handlers of exceptions, interrupts and system calls)
+- Installing device drivers (TTY, CDROM and MemCard).
+- Initialized Kernel Executive: Event handlers, threads, events and system counters
+- Unpack and start SHELL, which decides whether to start the menus or to exit back to the kernel to load the disk
+- If SHELL exits, Main continues to load the disk
+- The main procedure of the PIO device (PIO Shell) is started, which either intercepts control or returns control back to Main.
+- The SYSTEM.CNF configuration is read and the kernel reinitializes the system tables according to the settings
+- Executable file is loaded.
+- Executable file is run for execution
 
 ```c
 //
@@ -884,13 +880,13 @@ int InitThreads (int Tcbh, int Tcb)     // 0xBFC0472C
 
 ## Kernel (PlayStation OS)
 
-Ядро PS OS резидентно находится в памяти. Доступ к процедурам ядра производится через специальные таблицы (которые находятся по адресам 0xA0, 0xB0, 0xC0).
+The PS OS kernel is resident in memory. The kernel procedures are accessed through special tables (which are located at addresses 0xA0, 0xB0, 0xC0).
 
-Второй способ вызова некоторых механизмов ядра - это инструкция Syscall (но набор её функций ограничен, по сути используется только для EnterCriticalSection / ExitCriticalSection)
+The second way to call some kernel mechanisms is through the Syscall instruction (but its function set is limited, in fact it is only used for EnterCriticalSection / ExitCriticalSection)
 
-Также приложениям доступна специальная "Таблица Таблиц" ядра (ToT), через которую программа может получить различные системные описатели и пр.
+Applications also have access to a special kernel "Table of Tables" (ToT), through which the program can get various system descriptors, etc.
 
-Выполнение пользовательских программ происходит в режиме CPU Kernel Mode, поскольку одновременно может быть запущен только один "процесс" (исполняемый файл игры).
+Execution of user programs is done in CPU Kernel Mode, because only one "process" (executable game file) can be running at a time.
 
 ## Kernel memory map
 
@@ -1447,10 +1443,10 @@ PVOID GetKernelSp () 	// 0x1018
 
 ## Shell
 
-Оболочка BIOS - это специальным образом созданный исполняемый файл формата PS-X EXE, который находится внутри ROM (без заголовка)
+The BIOS shell is a specially created executable file in PS-X EXE format, which is located inside the ROM (without a header)
 
-Программа начальной загрузки (процедура Main) загружает его в RAM перед запуском.
+The initial boot program (Main procedure) loads it into RAM before launching it.
 
-Оболочка запускается и перехватывает управление, если в привод не вставлен игровой диск. Иначе управление передаётся назад в ядро для загрузки EXE с диска.
+The shell starts and intercepts control if no game disc is inserted in the drive. Otherwise control is transferred back to the kernel to load the EXE from the disk.
 
-Код Shell содержит много библиотечных вызовов, т.е. он был собран с помощью PsyQ.
+The Shell code contains many library calls, i.e. it has been built with PsyQ.

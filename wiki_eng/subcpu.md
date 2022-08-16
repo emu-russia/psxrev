@@ -1,73 +1,73 @@
 # SUB-CPU
 
-SUB-CPU используется для программного управления [CD RF](cdrf.md), [CD DRIVER](cddriver.md) и [CD-DSP](cddsp.md). SUB-CPU посылает в CD-DSP команды управления через последовательный интерфейс, а также управляет включением лазера, детектированием открытия крышки, устанавливает скорость привода 1X/2X и пр. То есть можно сказать SUB-CPU подготавливает систему CD для чтения данных, а также следит за правильностью её работы и реагирует на внешние факторы. Дополнительно SUB-CPU разбирает команды, поступаемые на CD-декодер и управляет его внутренними регистрами.
+The SUB-CPU is used for the software control of [CD RF] (cdrf.md), [CD DRIVER] (cddriver.md) and [CD-DSP] (cddsp.md). SUB-CPU sends commands to the CD-DSP control via a serial interface, and also controls the turn-on laser, detect the opening of the cover, set the speed of the drive 1X/2X, etc. In other words, SUB-CPU prepares the CD system for data reading as well as monitors its correct operation and reacts to external factors. In addition, SUB-CPU parses the commands received by the CD-decoder and manages its internal registers.
 
-Непосредственно CD-данные передаются в последовательной форме сразу на [CD-декодер](cddec.md).
+CD-data are transferred in serial form directly to the [CD-decoder](cddec.md).
 
-На материнских платах микросхема представлена как `IC304`, при этом она никогда не интегрировалась в состав более крупных микросхем и присутствует на всех ревизиях. 
+On motherboards, the chip is represented as `IC304`, while it has never been integrated into larger chips and is present on all revisions. 
 
-Известно две версии чипа "L16" и "G6". L16 (80pin) использовалась на более старых материнках (PU-7 и более старые PU-8), начиная с новых PU-8 используется ревизия G6 (52pin). По неподтвержденным данным MASK ROM обоих ревизий чипа не менялся.
+Known two versions of the chip "L16" and "G6". L16 (80pin) was used on older motherboards (PU-7 and older PU-8), starting with the new PU-8 the G6 (52pin) revision is used. According to unconfirmed reports the MASK ROM of both revisions of the chip hasn't been changed.
 
-Микрофотографии чипа (слева L16, справа G6):
+Microphotos of the chip:
 
+|L16|G6|
+|---|---|
 |![IC304_L16_sm](/wiki/imgstore/IC304_L16_sm.jpg)|![SubCpu_chip](/wiki/imgstore/SubCpu_chip.jpg)|
+
+The 6805 processor core used here has a [Datasheet](/docs/MC68HC05L16.pdf) available.
+
+## Hardware interface
+
+|Service manual for PU-18|Service manual for PU-22|
 |---|---|
-
-На ядро процессора 6805, которое тут используется, доступен [Datasheet](/docs/MC68HC05L16.pdf).
-
-## Аппаратный интерфейс
-
-Слева картинка из сервисного мануала к PU-18, а справа из сервисного мануала к PU-22:
-
 |![IC304_PU18](/wiki/imgstore/IC304_PU18.jpg)|![IC304_pinout](/wiki/imgstore/IC304_pinout.jpg)|
-|---|---|
 
-PORT A и PORT E соединяются с [CD-декодером](cddec.md), через шины MCD и MCA соответственно. При этом хозяином адресной шины MCA выступает именно SUB-CPU, то есть он обращается к CD-декодеру, а не наоборот. Направление шины данных MCD задается сигналами MRD/MWR, а "выбор чипа" CD-декодера осуществляется сигналом MCS. Очевидно это необходимо для доступа ко внутренним регистрам CD-декодера. На вход SUB-CPU со стороны декодера поступает только сигнал прерывания MINT.
+PORT A and PORT E connect to [CD decoder](cddec.md), via the MCD and MCA buses respectively. At the same host address bus MCA is exactly SUB-CPU, that is, it addresses the CD-decoder, and not vice versa. The direction of the MCD data bus is set by MRD/MWR signals, and the "chip selection" of the CD-decoder is carried out by the MCS signal. Obviously this is necessary to access the internal registers of the CD-decoder. The SUB-CPU input from the decoder side receives only the MINT interrupt signal.
 
-Что касается других сигналов, то они соединяются с остальными компонентами CD:
+As for the other signals, they are connected to the rest of the CD components:
 
-|Номер контакта |Название контакта | Соединяется с |Описание|
+| Number | Name | Connects to | Description |
 |---|---|---|---|
-|1, 3-5, 25, 42, 50-52|NC| |Не подсоединен.|
-|2, 32|Vdd| |Линия питания.|
-|6-10|DECA0-4|=> CD-декодер|Шина MCA (5 бит) для установки адреса на CD-декодер для чтения или записи данных по шине MCD. Управляется внутренним регистром 0х04 (Port E).<br/>pin6  - DECA4 - 0x10<br/>pin7  - DECA3 - 0x08<br/>pin8  - DECA2 - 0x04<br/>pin9  - DECA1 - 0x02<br/>pin10 - DECA0 - 0x01|
-|11, 39|Vss| |Линия земли.|
-|12|NDLY| |Подключен к земле|
-|13|RESET|<= блок питания|Сброс схем 3.3В|
-|14|OSC1|<= CD DSP|Выходная линия FSOF с CD DSP (1/4 от частоты CD-DSP)|
-|15|OSC2||Не подсоединен.|
-|16|FOK (focus OK)| |Не подсоединен. Предполагалось использовать для соотв. контакта CD-DSP.|
-|17|CG|=> IC 706|Присутствует только до PU-18 включительно, в более поздних версиях такого сигнала нет. Подсоединен к микросхеме IC 706 (какая-то заказная аналоговая россыпуха). Скорее всего тактовый сигнал для нее.|
-|18|LMTSW|<= CD-привод|Датчик ограничения хода каретки. Из кода доступен как регистр 0х01 (Port B), бит 0x04.|
-|19|DOOR|<= материнка|Соединяется с кнопкой датчика открытия крышки диска. Из кода доступен как регистр 0х01 (Port B), бит 0x08.|
-|20-21|TEST1-2| |Не подсоединен.|
-|22|COUT| |Не подсоединен. Предполагалось использовать для соотв. контакта CD-DSP (COUT - счетчик треков)|
-|23|SENSE|<= CD DSP|Пин для считывания разнообразной информации с DSP (тактовый сигнал для считывания задается SСLK на DSP и приходит на контакт ROMSEL). В даташите описан в параграфе $3-13. Из кода доступен как регистр 0х01 (Port B), бит 0x80.|
-|24|SUBQ|<= CD DSP|Данные от SUB Q канала. Из кода доступен как регистр 0х02 (Port C), бит 0x04.|
-|26|SQCK|=> CD DSP|Тактовый импульс для передачи SUB Q. Управляется внутренним регистром 0х02 (Port C), бит 0х08.|
-|27|SPEED|=> CD DRIVER|Задает скорость привода 1x/2x. Управляется внутренним регистром 0х02 (Port C), бит 0х10.|
-|28|AL/TE (MIRROR)|=> CD RF|Назначение неизвестно. Управляется внутренним регистром 0х01 (Port B), бит 0х02.|
-|29|ROMSEL|<= CD DSP|Тактовый импульс для считывания SENSE-информации |
-|30|XINT|<= CD-декодер|Прерывание от CD-декодера. Из кода доступен как регистр 0х02 (Port C), бит 0x20.|
-|31|SCOR|<= CD DSP|Subcode sync output. Из кода доступен как регистр 0х02 (Port C), бит 0x02.|
-|33-38, 40-41|DECD0-7|<=> CD-декодер|Шина MCD (8 бит) для обмена данными с CD-декодером. Управляется внутренним регистром 0х00 (Port A).<br/>pin33 - DECD0 - 0x01<br/>pin34 - DECD1 - 0x02<br/>pin35 - DECD2 - 0x04<br/>pin36 - DECD3 - 0x08<br/>pin37 - DECD4 - 0x10<br/>pin38 - DECD5 - 0x20<br/>pin40 - DECD6 - 0x40<br/>pin41 - DECD7 - 0x80|
-|43|DATA|=> CD DSP|Serial data input (DATA, XLT и CLK работают вместе). Управляется внутренним регистром 0х03 (Port D), бит 0х02.|
-|44|XLT|=> CD DSP|Latch input (DATA, XLT и CLK работают вместе). Управляется внутренним регистром 0х03 (Port D), бит 0х04.|
-|45|CLK|=> CD DSP|Serial data transfer clock input (DATA, XLT и CLK работают вместе). Управляется внутренним регистром 0х03 (Port D), бит 0х08.|
-|46|DECCS|=> CD-декодер|Устанавливает CD-декодер для работы с MCA и MCD. Управляется внутренним регистром 0х03 (Port D), бит 0х10.|
-|47|DECWA|=> CD-декодер|Устанавливает направление шины MCD на запись. Управляется внутренним регистром 0х03 (Port D), бит 0х20.|
-|48|DECRD|=> CD-декодер|Устанавливает направление шины MCD на чтение. Управляется внутренним регистром 0х03 (Port D), бит 0х40.|
-|49|LDON|=> CD RF|Включение лазера. Управляется внутренним регистром 0х03 (Port D), бит 0x80.|
+|1, 3-5, 25, 42, 50-52|NC| |Not connected.|
+|2, 32|Vdd| |Power|
+|6-10|DECA0-4|=> CD-decoder|MCA bus (5 bits) to set the address to the CD decoder to read or write data on the MCD bus. It is controlled by the internal register 0x04 (Port E).<br/>pin6  - DECA4 - 0x10<br/>pin7  - DECA3 - 0x08<br/>pin8  - DECA2 - 0x04<br/>pin9  - DECA1 - 0x02<br/>pin10 - DECA0 - 0x01|
+|11, 39|Vss| |Ground|
+|12|NDLY| |Connected to ground|
+|13|RESET|<= power supply|Reset circuits 3.3V|
+|14|OSC1|<= CD DSP|FSOF output line with CD DSP (1/4 of the CD-DSP frequency)|
+|15|OSC2||Not connected.|
+|16|FOK (focus OK)| |Not connected. Supposed to be used for the corresponding CD-DSP contact.|
+|17|CG|=> IC 706|Only present up to and including PU-18, no such signal in later versions. Connected to IC 706 chip (some custom analog placer). Most likely a clock signal for it.|
+|18|LMTSW|<= CD-drive|Carriage limit sensor. Available from the code as register 0x01 (Port B), bit 0x04.|
+|19|DOOR|<= motherboard|Connects to the drive cover open sensor button. Available from the code as register 0x01 (Port B), bit 0x08.|
+|20-21|TEST1-2| |Not connected.|
+|22|COUT| |Not connected. Supposed to use CD-DSP (COUT - track counter) for the corresponding contact|
+|23|SENSE|<= CD DSP|A pin for reading various information from the DSP (the clock signal for reading is set by SCLK on the DSP and goes to the ROMSEL pin). It is described in the datasheet in paragraph $3-13. It is available from the code as register 0x01 (Port B), bit 0x80.|
+|24|SUBQ|<= CD DSP|Data from the SUB Q channel. From the code is available as register 0x02 (Port C), bit 0x04.|
+|26|SQCK|=> CD DSP|The clock pulse for the SUB Q transmission. Controlled by internal register 0x02 (Port C), bit 0x08.|
+|27|SPEED|=> CD DRIVER|Sets the speed of the 1x/2x drive. Controlled by internal register 0x02 (Port C), bit 0x10.|
+|28|AL/TE (MIRROR)|=> CD RF|The assignment is unknown. Controlled by internal register 0x01 (Port B), bit 0x02.|
+|29|ROMSEL|<= CD DSP|Pulse for reading SENSE information |
+|30|XINT|<= CD-decoder|Interrupt from the CD decoder. Available from the code as register 0x02 (Port C), bit 0x20.|
+|31|SCOR|<= CD DSP|Subcode sync output. From the code is available as register 0x02 (Port C), bit 0x02.|
+|33-38, 40-41|DECD0-7|<=> CD-decoder|MCD bus (8 bits) to communicate with the CD decoder. It is controlled by the internal register 0x00 (Port A).<br/>pin33 - DECD0 - 0x01<br/>pin34 - DECD1 - 0x02<br/>pin35 - DECD2 - 0x04<br/>pin36 - DECD3 - 0x08<br/>pin37 - DECD4 - 0x10<br/>pin38 - DECD5 - 0x20<br/>pin40 - DECD6 - 0x40<br/>pin41 - DECD7 - 0x80|
+|43|DATA|=> CD DSP|Serial data input (DATA, XLT and CLK work together). Controlled by internal register 0x03 (Port D), bit 0x02.|
+|44|XLT|=> CD DSP|Latch input (DATA, XLT and CLK work together). Controlled by internal register 0x03 (Port D), bit 0x04.|
+|45|CLK|=> CD DSP|Serial data transfer clock input (DATA, XLT and CLK work together). Controlled by internal register 0x03 (Port D), bit 0x08.|
+|46|DECCS|=> CD-decoder|Sets the CD decoder to work with MCA and MCD. Controlled by internal register 0x03 (Port D), bit 0x10.|
+|47|DECWA|=> CD-decoder|Sets the direction of the MCD bus to write. Controlled by internal register 0x03 (Port D), bit 0x20.|
+|48|DECRD|=> CD-decoder|Sets the direction of the MCD bus to read. Controlled by internal register 0x03 (Port D), bit 0x40.|
+|49|LDON|=> CD RF|Turns the laser on. Controlled by internal register 0x03 (Port D), bit 0x80.|
 
-## Карта памяти
+## Memory Map
 
-|Адрес|Описание|
+|Address|Description|
 |---|---|
 |0x00 - 0x0F|Dual mapped I/O registers (16 bytes)|
 |0x10 - 0x3F|Other I/O registers (48 bytes)|
 |0x40 - 0x23F|Internal RAM (512 bytes)|
 |0x1000 - 0x4FFF|MASK ROM (16 KB)|
-|0xFE00 - 0xFFFF|SELF TEST ROM и векторы прерываний|
+|0xFE00 - 0xFFFF|SELF TEST ROM and interrupt vectors|
 
 ```
 /*
@@ -81,10 +81,10 @@ PORT A и PORT E соединяются с [CD-декодером](cddec.md), ч
             0x02 (pin 43 DATA) - serial data input (DATA, XLT и CLK работают вместе).
             0x04 (pin 44 XLT) - latch input (DATA, XLT и CLK работают вместе).
             0x08 (pin 45 CLK) - serial data transfer clock input (DATA, XLT и CLK работают вместе). 
-            0x10 (pin 46 DECCS) - устанавливает CD-декодер для работы с MCA и MCD.
-            0x20 (pin 47 DECWA) - устанавливает направление шины MCD на запись.
-            0x40 (pin 48 DECRD) - устанавливает направление шины MCD на чтение.
-            0x80 (pin 49 LDON) - включение лазера.
+            0x10 (pin 46 DECCS) - sets the CD decoder to work with MCA and MCD.
+            0x20 (pin 47 DECWA) - sets the direction of the MCD bus to write.
+            0x40 (pin 48 DECRD) - sets the direction of the MCD bus to read.
+            0x80 (pin 49 LDON) - turning on the laser.
 
 004h        PORT E (MCA) CD Controller read and write registers.
             READ

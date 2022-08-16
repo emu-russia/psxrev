@@ -1,51 +1,51 @@
 # CD-DSP
 
-CD-DSP занимается декодированием EFM-сигнала в цифровую форму, контролем за ошибками, а также позиционирование лазерной головки и вообще за правильностью работы CD-привода.
+The CD-DSP takes care of decoding the EFM signal into a digital form, error control, as well as laser head positioning and generally proper operation of the CD drive.
 
-Управление CD-DSP производится специальными командами, которые подаются [SUB-CPU](subcpu.md) на последовательный порт. Выходные CD-данные подаются на [CD-декодер](cddec.md) также через последовательный интерфейс.
+The CD-DSP is controlled by special commands that are sent by [SUB-CPU](subcpu.md) via the serial port. The output CD data is fed to [CD-decoder](cddec.md) also via the serial interface.
 
-Изначально CD-DSP был в виде отдельной микросхемы `IC701` (CXD2510/CXD2545), в последствии он был включен в общую [большую микросхему](subic.md).
+Originally the CD-DSP was as a separate chip `IC701` (CXD2510/CXD2545), later it was included in the shared [big chip](subic.md).
 
 ![CXD2510Q_package](/wiki/imgstore/CXD2510Q_package.jpg)
 
-К счастью, у нас есть мануалы на эту микросхему ([CXD2510Q](/docs/CXD2510Q.pdf), [CXD2545Q](/docs/CXD2545Q.pdf)), поэтому мы имеем возможность полностью изучить подсистему PSX. Если бы не было мануала, то без знания внутренних команд CD-DSP ничего бы не вышло.
+Fortunately, we have manuals for this chip ([CXD2510Q](/docs/CXD2510Q.pdf), [CXD2545Q](/docs/CXD2545Q.pdf)), so we are able to fully explore the PSX subsystem. If there was no manual, without knowing the internal commands of the CD-DSP, nothing would happen.
 
-Есть 2 картинки CD-DSP, одна похуже (из сервисного мануала), вторая получше (из мануала по CD-DSP):
+There are 2 pictures of the CD-DSP, one worse (from the service manual), the other better (from the CD-DSP manual):
 
 ![CDDSP_pinout2](/wiki/imgstore/CDDSP_pinout2.jpg)
 
 ![CDDSP_pinout1](/wiki/imgstore/CDDSP_pinout1.jpg)
 
-Обозначения важных контактов и их назначение:
+Important pin designations and their purpose:
 
-- Слева внизу находятся контакты управления движками шпинделя, каретки и катушками фокусировки и трекинга. Эти сигналы подаются на [CD-Driver](cddriver.md).
-- Справа внизу находится вход с [CD-RF](cdrf.md) - EFM-сигнал (RFAC/RFDC) и сигналы ошибок FE/TE. RFAC используется для чтения данных, а RFDC для управления сервоприводом.
-- Слева вверху группа контактов для чтения данных субканала Q. Данные субканала поступают в [SUB-CPU](subcpu.md).
-- Контакт XRST заведен на общий сброс RESET3.3
-- Справа находится группа контактов для чтения CD-данных (BCLK, LRCK, DATA)
-- Слева находятся контакты для отправки управляющих команд в DSP
-- Назначение выходных контактов COUT, EMPH пока не понятно
-- SENS совместно с SCLK используется для считывания разнообразной информации 
-- C2PO представляет собой статус ошибок при передаче данных
-- Тактовые сигналы FSOF, XTAI и XTAO (идущий на VCKI).
-- Входной сигнал SSTP (обнаружение самого первого внутреннего трека) соединен с LIMIT SWITCH (ограничитель каретки). То есть самым первым треком считается трек, который находится в начальном положении каретки.
+- On the bottom left are the control pins for the spindle motors, carriage, and focus and tracking coils. These signals are fed to the [CD-Driver](cddriver.md).
+- The bottom right input from [CD-RF](cdrf.md) is the EFM signal (RFAC/RFDC) and the FE/TE error signals. RFAC is used to read data and RFDC to control the servo.
+- The upper left is the contact group for reading subchannel Q data. The data of the subchannel goes to [SUB-CPU](subcpu.md).
+- The contact XRST is connected to the general reset RESET3.3
+- On the right is the group of contacts for reading CD data (BCLK, LRCK, DATA)
+- On the left are the pins to send control commands to the DSP
+- The functions of the COUT, EMPH output pins are not clear yet
+- SENS together with SCLK is used to read various information 
+- C2PO represents the status of errors in data transfer
+- The FSOF, XTAI and XTAO (going to VCKI) clock signals.
+- The input signal SSTP (detecting the very first internal track) is connected to the LIMIT SWITCH (carriage limiter). That is, the very first track is the track that is in the initial position of the carriage.
 
-Остальные контакты заведены на питание/землю и играют второстепенную роль.
+The other pins are wired to power/ground and play a secondary role.
 
-Функционально DSP делится на 2 большие части: схема чтения данных и контроля за ошибками и схема управления CD-приводом.
+Functionally, the DSP is divided into 2 large parts: the data reading and error control circuitry and the CD drive control circuitry.
 
 ![CDDSP_block_diagram](/wiki/imgstore/CDDSP_block_diagram.jpg)
 
-## Clock generator и PLL
+## Clock Generator and PLL
 
-Большое количество сигналов, связанных с тактовым сигналом и ФАПЧ (PLL), но на самом деле важных не так много (входная частота - XTAI). Аналоговая ФАПЧ похоже вообще не используется, вместо этого используется встроенная цифровая ФАПЧ.
+A large number of signals associated with the clock signal and PLL, but not really so many important ones (input frequency - XTAI). The analog PLL does not seem to be used at all, instead the built-in digital PLL is used.
 
-- FSOF: 1/4 от входной тактовой частоты
-- C16M: 16.9344 MHz выход (но меняется при изменении частоты variable pitch playback)
-- FSTO: 2/3 от входной тактовой частоты
+- FSOF: 1/4 of the input clock frequency
+- C16M: 16.9344 MHz output (but changes with frequency variable pitch playback)
+- FSTO: 2/3 of input clock frequency
 - XTAI: Master CLK input 16.9344 MHz / 33.8688 MHz
 - XTAO: Master CLK output
-- XTSL: настройка входной тактовой частоты (0: 16.9344 MHz, 1: 33.8688 MHz)
+- XTSL: setting the input clock frequency (0: 16.9344 MHz, 1: 33.8688 MHz)
 - VCKI: Variable pitch clock input (from external VCO). Fcenter = 16.9344 MHz
 - VPCO: Variable pitch PLL charge pump output
 
@@ -57,29 +57,29 @@ CD-DSP занимается декодированием EFM-сигнала в �
 - FILO: Master PLL filter output
 - CLTV: Master PLL VCO control voltage input
 
-В нашем случае случае выходной master CLK (XTAO) идёт на вход variable pitch clock input, это значит что функция variable pitch playback не используется.
+In this case, the output master CLK (XTAO) goes to the variable pitch clock input, which means that the variable pitch playback function is not used.
 
-Variable pitch playback можно представить себе когда диджей крутит пластинку в разные стороны, во время воспроизведения. Только с лазерным диском. На некоторых CD-проигрывателях раньше была кнопка fast-forward или если зажать Next, то диск как-будто "проматывался" вперёд. Вот это и есть variable pitch playback.
+Variable pitch playback can be imagined when a DJ spins a record in different directions during playback. Only with a laser disc. Some CD-players used to have a fast-forward button or if you pressed Next, it was like the disc would "fast-forward". This is what variable pitch playback is all about.
 
-Выходная FSOF (1/4 от частоты CD-DSP) идёт на вход OSC1 [SUB-CPU](subcpu.md).
+The FSOF output (1/4 of the CD-DSP frequency) goes to the OSC1 [SUB-CPU](subcpu.md) input .
 
 ## C2PO
 
-Этот контакт (С2 Pointer) используется для обнаружения ошибок C2 во время передачи данных. Он тактируется одновременно с сигналом LRCK (левый/правый канал), либо по сигналу WCLK (счетчик "слов") (зависит от режима выдачи CDROM звук/данные).
+This pin (C2 Pointer) is used to detect C2 errors during data transfer. It is clocked simultaneously with the LRCK (left/right channel) signal, or by the WCLK (word count) signal (depending on the CDROM audio/data output mode).
 
-Если C2PO = 1 для пачки бит это значит, что данные неверные.
+If C2PO = 1 for a bunch of bits it means that the data is incorrect.
 
-Как известно CD-данные поглощает CD-декодер, причем хавает их сразу секторами. Очевидно, что SUB-CPU просто следит во время передачи за сигналом C2PO и если во время чтения сектора С2PO = 1, то весь сектор забраковывается.
+As you know, CD data is consumed by the CD decoder, and it gets them all at once by sectors. Obviously, the SUB-CPU simply monitors the C2PO signal during the transfer and if during the reading of a sector C2PO = 1, then the entire sector is rejected.
 
-## Команды DSP
+## DSP Commands
 
-Передача DSP-команд производится через контакты последовательного интерфейса DATA, CLOK и XLAT. Данные DATA тактируются CLOK. XLAT сигнализирует окончание пакета данных. Пакеты имеют переменный размер от 8 до 24 бит.
+DSP commands are transmitted through the DATA, CLOK, and XLAT serial interface pins. DATA data is clocked by CLOK. XLAT signals the end of a data packet. Packets have variable size from 8 to 24 bits.
 
 ![CDDSP_cpu_interface](/wiki/imgstore/CDDSP_cpu_interface.jpg)
 
-Такой интерфейс позволяет складывать переменное количество входных битов во временной FIFO-буфер (но не более 24х), а после прихода сигнала XLAT обработать только нужное количество бит (остальные игнорируются).
+This interface allows you to stack a variable number of input bits into a temporary FIFO buffer (but no more than 24x), and after the XLAT signal arrives, process only the right number of bits (the rest are ignored).
 
-Вот так выглядит отправка 8-битной команды CD-DSP со стороны SUB-CPU:
+This is what it looks like to send an 8-bit CD-DSP command from the SUB-CPU side:
 
 ```asm
 CDDSPCommand8:
@@ -114,30 +114,30 @@ send_done:
 		rts
 ```
 
-Результаты выполнения команд идут на регистры DSP. Размер команд определяется размером регистров:
+The results of the commands go to the DSP registers. The size of the commands is determined by the size of the registers:
 
-|Регистры|Размер|
+|Registers|Size|
 |---|---|
-|0-2|8 бит|
-|3|8-24 бит|
-|4-6|16 бит|
-|7|20 бит|
-|8-0xA|16 бит|
-|0xB|20 бит|
-|0xC-0xE|16 бит|
+|0-2|8 bits|
+|3|8-24 bits|
+|4-6|16 bits|
+|7|20 bits|
+|8-0xA|16 bits|
+|0xB|20 bits|
+|0xC-0xE|16 bits|
 
-Описание команд есть в мануале, но для удобство мы утащим сюда наиболее важные (команды установки DSP-коэффициентов нам не особо нужны).
+The commands are described in the manual, but for convenience we will include the most important ones (we don't really need the DSP-coefficients setting commands).
 
 ![CDDSP_regs](/wiki/imgstore/CDDSP_regs.jpg)
 
-## Команды посылаемые SUB CPU
+## Commands sent by SUB CPU
 
 ```
 0x00        Focus servo off. 0V out.
 
 0x20        Sled and tracking servo off.
 
-0x9B00      Function specification. (Команда различается установкой обычной или двойной скорости проигрывания)
+0x9B00      Function specification. (The command is differentiated by the normal or double playback speed setting)
 0x9F00      0x0020 - (0) FLFC.
             0x0040 - (0) BiliGL Sub (with 0x0080 bit are setting for stereo).
             0x0080 - (0) BiliGL Main (with 0x0040 bit are setting for stereo).
@@ -146,14 +146,14 @@ send_done:
             0x0400 - (0 or 1) Double speed playback. Can be set on (1) and off (0).
             0x0800 - (1) Digital CLV on (FSW and MON not required).
 
-0xC600      Servo coefficient setting. (Команда всегда посылается всегда именно в таком виде)
+0xC600      Servo coefficient setting. (The command is always sent in this form)
             0x0040 - (0) Gain DCLV1.
             0x0100 - (0) Gain MDS0.
             0x0200 - (1) Gain MDS1.
             0x0400 - (1) Gain MDP0.
             0x0800 - (0) Gain MDP1.
 
-0xD7        Constant linear velocity сontrol. (Команда всегда посылается всегда именно в таком виде)
+0xD7        Constant linear velocity сontrol. (The command is always sent in this form)
             0x01 - (1) Gain CLVS.
             0x02 - (1) Peak hold in CLVS mode at cycle of RFCK/2.
             0x04 - (1) Bottom hold in CLVS and CLVH modes at cycle of RFCK/16.
