@@ -1,22 +1,22 @@
-# Разработка на PlayStation
+# PlayStation Development
 
-Складываем сюда инфу по различным железкам и программам, которые применялись для официальной разработки на PlayStation.
+This is where you can find information about the different hardware and software that was used for official PlayStation development.
 
-Вот тут много инфы: http://www.lingjr.com/collection_sony_ps.htm
+There's a lot of information here: http://www.lingjr.com/collection_sony_ps.htm
 
-## Общий обзор
+## General overview
 
 ### PsyQ
 
-В комплектах разработчика наблюдается порядочный бардак :smiley:
+The developer kits are quite a mess :smiley:
 
-Главным инструментом для разработки был PsyQ от SN SYSTEMS. PsyQ содержал в своем составе компилятор C (CCPSX), ассемблер (ASPSX), линкер (PSYLINK) и программу для управления библиотеками (PSYLIBD).
+The main development tool was PsyQ from SN SYSTEMS. PsyQ contained a C compiler (CCPSX), an assembler (ASPSX), a linker (PSYLINK), and a library manager (PSYLIBD).
 
-Кроме утилит для построения программ он включал также в свой состав библиотеки написанные Sony, для взаимодействия с железом PlayStation, а также заголовочные файлы (INCLUDE), к этим библиотекам. Версий PsyQ было несколько и отличались они небольшими изменениями (исправлениями ошибок в либах).
+In addition to the utilities for building programs it also included libraries written by Sony to interact with the PlayStation hardware, as well as header files (INCLUDE) for these libraries. There were several versions of PsyQ and they differed with minor changes (bug fixes in the libraries).
 
-Также в состав PsyQ входила базовая документация: Library Overview (LIBOVR) и Library Reference (LIBREF).
+PsyQ also included the basic documentation: Library Overview (LIBOVR) and Library Reference (LIBREF).
 
-Версии PsyQ:
+Versions of PsyQ:
 - 3.3
 - 4.0
 - 4.2
@@ -26,66 +26,66 @@
 - 4.6: 27/JUL/1999
 - 4.7: 02/FEB/2000
 
-### Документация
+### Documentation
 
-Документация поставлялась на специальных дисках, либо по электронной почте. Также были конференции, где разработчикам разжевывались хитрые детали работы с железом (GTE, MDEC), потому что например та же либа для программирования GTE очень тупо написана. Неоднозначные имена функции и очень "низкоуровневая" среда. Фактически разработчикам предлагалось управлять регистрами GTE)))
+The documentation was delivered on special CDs, or via email. Also, there were conferences where developers were taught the tricky details of working with hardware (GTE, MDEC), because for example the GTE programming language is very bluntly written. Ambiguous function names and a very "low-level" environment. In fact, the developers were offered to control GTE registers :smiley:
 
-Известно несколько версий дисков с документацией под кодовым обозначением `DTL-S2003`.
+Several versions of the documentation disks are known, codenamed `DTL-S2003`.
 
-### Утилиты
+### Utilities
 
-Кроме документации также были отдельные диски с набором программ (для работы с графикой, звуком и пр.).
+Aside from the documentation, there were also separate disks with a set of programs (for graphics, sound, etc.).
 
-Известно несколько версий дисков с программами под кодовым обозначением `DTL-S2002`.
+Several versions of disks with programs are known under the codename `DTL-S2002`.
 
-В качестве IDE предлагался CodeWarrior, но сомневаюсь что он нашёл широкое распространение. Проще всего было делать MAKE-файлами.
+CodeWarrior was offered as an IDE, but I doubt it was widely used. The easiest thing to do was to use MAKE files.
 
-### Железо
+### Hardware
 
-Разработчикам предлагались как специальные девкиты (development kit), которые представляли собой модифицированные PlayStation, так и "запасные части", для программирования отдельных частей PSX.
+Developers were offered both special devkits (development kit), which were modified PlayStation, and "spares", for programming individual PSX parts.
 
-Какие были девкиты и железки:
+What were the devkits and the hardware:
 
-Девкиты в виде плат для компьютера, отличительная особенность - увеличенный до 8MB размер оперативки:
-- DTL-H500, DTL-H505: вроде как самый первый девкит
-- DTL-H2000: более новая модель, 2 платы ISA
-- DTL-H2500: уже на PCI
-- DTL-H2700: тоже PCI
+Devkits in the form of computer boards, the distinguishing feature being increased RAM size to 8MB:
+- DTL-H500, DTL-H505: sort of the very first devkit
+- DTL-H2000: newer model, 2 ISA boards
+- DTL-H2500: already on PCI
+- DTL-H2700: also PCI
 
-Также были специальные "проверочные" консоли, которые были раскрашены в синий и зеленый цвета. Размер оперативки в них был такой же как и в Retail-версии консоли (2MB):
-- DTL-H1000: синяя, чипы ревизии "B"
-- DTL-H1100: синяя, чипы ревизии "B"
-- DTL-H1200: зеленая, чипы ревизии "C"
+There were also special "test" consoles which were painted blue and green. They had the same RAM size as the Retail version (2MB):
+- DTL-H1000: blue, "B" revision chips
+- DTL-H1100: blue, "B" revision chips
+- DTL-H1200: Green, "C" revision chips
 
-Отличие от обычных консолей заключалось в отсутствии защиты CD от копирования.
+The difference from normal consoles was the lack of CD copy protection.
 
 ![DTL-H1202](/wiki/imgstore/DTL-H1202.jpg)
 
-И наконец был ещё NetYaroze: девкит для непрофессионалов, который шёл в комплекте с диском NetYaroze SDK. Про этот девкит известно достаточно много.
+And finally there was NetYaroze: a devkit for non-professionals, which came with the NetYaroze SDK. We know quite a lot about this devkit.
 
-Все отладочные версии PSX имели специальный BIOS, нередко существенно отличающийся от "игровой" версии. Одним из существенных отличий заключается отсутствие ROM-шрифтов Kanji, которые прошиты в Retail-версии BIOS, для этого в девкитах используется специальный патч.
+All debug versions of PSX had a special BIOS, often significantly different from the "game" version. One significant difference is the absence of Kanji ROM fonts, which were flashed in the Retail-version BIOS, a special patch is used for this in the devkits.
 
-Отличительной особенностью также является огромное количество патчей вообще. Патчи видимо распространялись через email, потому что интернета тогда как такового не было. Видимо очень сложно было разработчикам быть уверенным, что они используют все актуальные патчи на библиотеки Sony :-)
+A distinctive feature is also a huge number of patches in general. Patches apparently distributed via email, because the Internet as such did not exist at that time. Apparently it was very difficult for the developers to be sure that they use all actual patches for Sony libraries :-)
 
 ## DTL-H700
 
-DTL-H700 - Sound artist board. В состав комплекта входит специальная плата с оптическим выходом для Mac, на борту которой находится оригинальный чип SPU, а также программа DTL-S710 (Sound artist tool for Macintosh).
+DTL-H700 - Sound artist board. The kit includes a special Mac optical output board with the original SPU chip on board, as well as the DTL-S710 (Sound artist tool for Macintosh) software.
 
 http://www.lingjr.com/images/sony_ps/ps_dtlh700_boxed.JPG
 
 ## DTL-H800
 
-Версия Sound artist board для IBM PC.
+The IBM PC version of the Sound artist board.
 
 http://www.lingjr.com/images/sony_ps/ps_dtlh800_boxed_1.JPG
 
 ## DTL-H500 / DTL-H505
 
-Самый первый девкит:
+The very first Devkit:
 
 ![DTL-H500](/wiki/imgstore/DTL-H500.jpg)
 
-Цитата с http://playstationmuseum.com/
+A quote from http://playstationmuseum.com/
 
 The DTL-H505, codename MW.3, is the earliest development hardware with final PlayStation silicon and appeared in late Spring 1994. Most of these target boxes lacked sound hardware (or libraries to make use of it) and there was no CD drive. The museum is under the assumption that it utilized the CD-emulator board. Sony's next move was to consolidate the target box to a standard PC platform by way of two ISA cards (DTL-H2000) and develop an external CD-ROM drive (DTL-H2010).
 
@@ -95,13 +95,13 @@ Note: As you can imagine, there does exist an MW.2 which is believed to be simil
 
 http://www.lingjr.com/images/sony_ps/ps_dtlh2000_boxed_1.JPG
 
-На эту модель есть документация, из которой можно понять что представляет из себя этот комплект:
-- Аппаратно это чудо инженерной мысли представляет собой 2 полноразмерные платы ISA (лол), для IBM PC совместимого компьютера
-- На платах находится железо, идентичное Retail консоли: центральный процессор, GPU, SPU и CD-ROM
-- Оперативная память увеличена до 8MB, но также есть возможность загружать систему с ограничением в 2MB, как на реальной консоли
-- Контроллеры и SIO/PIO были с измененными портами
+This model has documentation from which you can understand what this kit is:
+- Hardware-wise, this engineering marvel is two full-size ISA boards (lol), for an IBM PC compatible computer
+- The hardware on the boards is identical to the Retail console: CPU, GPU, SPU, and CD-ROM
+- RAM is increased to 8MB, but you can also boot the system with a 2MB limit, like on a real console
+- Controllers and SIO/PIO were modified ports
 
-Также в состав девкита входил внешний CD-привод DTL-H2010.
+Also included in the devkit was the DTL-H2010 external CD drive.
 
 DTL-H2080 (Controller & Memory Card Adaptor)
 
@@ -110,7 +110,7 @@ DTL-H2080 (Controller & Memory Card Adaptor)
 
 ## DTL-H2500
 
-Вместо двух устаревших ISA используется одна плата PCI.
+Instead of two obsolete ISA cards, one PCI card is used.
 
 http://www.lingjr.com/images/sony_ps/ps_dtlh2500_boxed_1.JPG
 
@@ -121,100 +121,100 @@ It seems the last version of PlayStation development board for IBM/ATs, because 
 
 http://www.lingjr.com/images/sony_ps/ps_dtlh2700b.JPG
 
-Ссылки в мануалах также подтверждают, что это была последняя версия "железного" девкита для PlayStation.
+The references in the manuals also confirm that this was the last version of the "hardware" devkit for the PlayStation.
 
-## Контроллер для DTL-H2000, DTL-H2500, DTL-H2700
+## Controller for DTL-H2000, DTL-H2500, DTL-H2700
 
-Оборудован обычным COM-портом.
+It is equipped with a conventional COM port.
 
 ![DTLH2000_controller](/wiki/imgstore/DTLH2000_controller.jpg)
 
-Также существует специальный адаптер-переходник DTL-H2080, который позволяет подключать обычные контроллеры и карты памяти к девкиту.
+There is also a special DTL-H2080 adapter, which allows you to connect conventional controllers and memory cards to the devkit.
 
 ## CD Emulator
 
 http://www.lingjr.com/images/sony_ps/ps_dtls2020_boxed_1.JPG
 
-DTL-S2020 - специальная плата и набор утилит для имитации реального привода. Данные хранятся на SCSI HDD.
+The DTL-S2020 is a special board and a set of utilities for simulating a real drive. The data is stored on a SCSI HDD.
 
-## NetYaroze, "яроза"
+## NetYaroze
 
 ![Net-Yaroze-Full-Sdk](/wiki/imgstore/Net-Yaroze-Full-Sdk.jpg)
 
-В комплект входило:
-- Консоль (2MB оперативки)
-- 2 обычных контроллера
-- специальный донгл в виде карты памяти
-- шнурок для SIO
-- печатные мануалы (DTL-S3000)
-- загрузочный диск (DTL-S3030 для JAP, DTL-S3035 для EU)
-- диск с NetYaroze SDK (DTL-S3040 для JAP). Вместо проприетарных компиляторов использовался GNU, а все библиотеки были перелопачены и объединены в одну - LIBPS.
+Included:
+- Console (2MB RAM)
+- 2 regular controllers
+- A special dongle in the form of a memory card
+- SIO cable
+- printed manuals (DTL-S3000)
+- Boot disk (DTL-S3030 for JAP, DTL-S3035 for EU)
+- NetYaroze SDK disk (DTL-S3040 for JAP). GNU was used instead of proprietary compilers, and all libraries were repacked and merged into a single library, LIBPS.
 
-Региональной защиты также не было.
+There was also no regional protection.
 
-Судя по всему яроза была просто перекрашенной "проверочной" версией девкита (ну и с добавленными аксессуарами). По аналогии с кодами дисков, возможно код всего девкита был DTL-H3000.
+Apparently, NetYaroze was just a repainted "test" version of Devkit (well, with accessories added). By analogy with the disk codes, perhaps the code of the whole devkit was DTL-H3000.
 
-## Комплект программ разработчика
+## Developer software kit
 
-Кроме PsyQ toolchain, Sony предлагала разработчикам множество программ для редактирования графических и звуковых данных, CD-эмуляторы и прочее. Рассмотрим все известные программы.
+In addition to the PsyQ toolchain, Sony offered developers many programs for editing graphics and sound data, CD emulators, and more. Let's take a look at all known programs.
 
-Судя по интерфейсу, часть из них разрабатывалась ещё в Windows 3.11. Просто удивительно что они ещё запускаются в Windows 7 :smiley:
+According to the interface, some of them have been developed in Windows 3.11. It is amazing that they still run in Windows 7 :smiley:
 
 ### SN Debugger
 
-SN SYSTEMS предлагала отладчик, который включал в себя STUB для взаимодействия с отладчиком, runtime (LIBSN) для интеграции отладчика в приложение, а также DLL для управления DTL-H2500.
+SN SYSTEMS offered a debugger that included a STUB to interact with the debugger, a runtime (LIBSN) to integrate the debugger into the application, and a DLL to control the DTL-H2500.
 
-Интегрированная среда отладчика:
+Integrated Debugger Environment:
 
 ![SN_Debugger](/wiki/imgstore/SN_Debugger.jpg)
 
 ### Performance Analyzer
 
-Достаточно крутая программа, которая базировалась на возможности семплирования сигналов шин в платах девкита. Предоставляла разработчику разнообразную статистику. Скриншоты:
+Quite a cool program, which was based on the possibility of sampling bus signals in the Devkit boards. Provided the developer with a variety of statistics. Screenshots:
 
 |![PA_000](/wiki/imgstore/PA_000.jpg)|![PA_001](/wiki/imgstore/PA_001.jpg)|
 |---|---|
 
 ### LightWave 3D
 
-Для моделирования 3D-графики предлагалась программа LightWave 3D, версии 4.0
+The LightWave 3D software, version 4.0, was offered for modeling 3D graphics
 
-### Плагин для 3DS
+### Plugin for 3DS
 
-Плагин для 3DS MAX, который мог сохранять модельки в формате RSD.
+A plugin for 3DS MAX that could save models in RSD format.
 
 ### MOVLIB 
 
-Содержит в составе библиотеку и хедер для сжатия битстрима MDEC (MDEC Encoder), который может быть затем распакован с помощью библиотеки libpress.
+Contains a library and a header for MDEC bitstream compression (MDEC Encoder), which can then be decompressed using the libpress library.
 
-То есть разработчику предлагалось самому сжимать исходные графические данные и хранить так, как он хочет.
+That is, the developer was invited to compress the original graphical data himself and store it the way they want.
 
 ### RSDTOOL
 
-Текстурирование моделей RSD.
+Texturing RSD models.
 
-RSD это "исходный" текстовый формат 3D-моделей, которые затем компилируются утилитой RSDLINK в двоичные файлы TMD.
+RSD is the "source" textual format for 3D models, which are then compiled into TMD binaries by the RSDLINK utility.
 
 ### TIMTOOL
 
-TIM - это графические файлы, приспособленные для быстрой загрузки в память GPU. Особенностью TIM является специальный "палитровый" формат, который аппаратно используется GPU (CLUT). При этом индексы палитры и сама палитра (CLUT) хранятся в видеопамяти по отдельности.
+TIM are graphics files adapted for fast loading into GPU memory. The peculiarity of TIM is a special "palette" format, which is hardware used by the GPU (CLUT). In this case, the palette indexes and the palette itself (CLUT) are stored in the video memory separately.
 
-Поэтому есть много утилит для конвертирования BMP в TIM, TIM-редакторы и проч.
+That is why there are many utilities to convert BMP to TIM, TIM-editors, etc.
 
-### Утилиты для работы со звуком
+### Tools for working with sound
 
-Так как SPU использует специальный формат хранения данных (ADPCM), то перед использованием WAV его было необходимо конвертировать.
+Since the SPU uses a special storage format (ADPCM), it was necessary to convert the WAV to this format before using it.
 
-Формат звуковых файлов PSX : VAG. Для конвертирования применялись утилиты WAV2VAG и AIFF2VAG.
+The format of the PSX sound files is: `VAG`. Utilities WAV2VAG and AIFF2VAG were used to do the conversion.
 
-Также ещё были файлы "банков" - VAB, они применялись для создания MIDI-подобных треков, в специальной программе-трекере VABTOOL:
+There were also "bank" files - `VAB`, they were used to create MIDI-like tracks, in a special tracker program VABTOOL:
 
 ![VABTOOL](/wiki/imgstore/VABTOOL.jpg)
 
-Тестировалось все это добро на специальных железках DTL-H700 (для Мака) и DTL-H800 (для PC), соответственно в VABTOOL были драйвера для этих плат.
+All this stuff was tested on special hardware DTL-H700 (for Mac) and DTL-H800 (for PC), respectively there were drivers for these boards in VABTOOL.
 
-Также была библиотека ENCVAG для конвертирования PCM в формат VAG.
+There was also an ENCVAG library to convert PCM to VAG format.
 
-### CDEMU
+### CDEMU.
 
-Вместо реального девайса SN SYSTEMS разработала эмулятор в виде специальной платы. При этом сами данные хранились на жестком диске SCSI, а для управления всей этой лабудой применял
+Instead of real device SN SYSTEMS developed the emulator in the form of a special board. The data itself was stored on a SCSI hard disk.
