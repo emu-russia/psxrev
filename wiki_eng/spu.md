@@ -1,81 +1,81 @@
 # SPU
 
-SPU (Sound Processing Unit) воспроизводит звук. SPU использует специальный формат ADPCM-компресии, для хранения звуковых данных (похожий на формат XA-ADPCM).
+The SPU (Sound Processing Unit) plays back audio. The SPU uses a special ADPCM compression format to store sound data (similar to the XA-ADPCM format).
 
-Звуковая подсистема PSX представляет собой связку микросхем для работы с CD-ROM (в которую входят [CD-декодер](cddec.md), [CD DSP](cddsp.md) и [SUB-CPU](subcpu.md)), непосредственно SPU и выходного ЦАП.
+The PSX sound subsystem is a bundle of chips for CD-ROM operation (which includes [CD decoder](cddec.md), [CD DSP](cddsp.md) and [SUB-CPU](subcpu.md)), the SPU itself and the output DAC.
 
-Аппаратная реализация всех частей звуковой подсистемы менялась в разных версиях материнских плат.
+The hardware implementation of all parts of the sound subsystem changed in different versions of the motherboard.
 
-Тут мы будем рассматривать непосредственно SPU, когда он был реализован в виде отдельной микросхемы `IC308` (CXD2922Q/CXD2925Q).
+Here we will look at the SPU itself, when it was implemented as a separate chip `IC308` (CXD2922Q/CXD2925Q).
 
 |![CXD2922BQ_package](/wiki/imgstore/CXD2922BQ_package.jpg)|![CXD2925Q](/wiki/imgstore/CXD2925Q.jpg)|
 |---|---|
 
-Микрофотография кристалла CXD2925Q (увеличение 4X), с размеченными доменами ячеек и юнитами:
+Microphotograph of the CXD2925Q chip (4X magnification), with labeled cell domains and units:
 
 ![Spu_annotated_regions](/wiki/imgstore/Spu_annotated_regions.jpg)
 
-Технология: 3 слоя металла, стандартные ячейки и кастомные блоки (внутренняя память, регистры).
+Technology: 3 layers of metal, standard cells and custom blocks (internal memory, registers).
 
-2 верхних слоя металла используются для разводки (Channel router). М1 используется для схемотехники стандартных ячеек и внутренних блоков.
+The top 2 layers of metal are used for wiring (Channel router). M1 is used for the circuitry of standard cells and internal units.
 
 ![Spu_metal_layers](/wiki/imgstore/Spu_metal_layers.jpg)
 
-## Функциональные особенности SPU
+## SPU Features
 
-SPU содержит 24 звуковых канала (voice). Источником звука являются данные из памяти SPU (512 KB), в формате ADPCM.
-Есть возможность вместо ADPCM подавать на вход шум (noise) с подстраиваемой частотой.
+The SPU contains 24 audio channels (voice). The sound source is data from the SPU memory (512 KB), in ADPCM format.
+It is possible to input noise with adjustable frequency instead of ADPCM.
 
-Над ADPCM можно делать тональную модуляцию (pitch), над шумом нельзя. Примером эффекта pitch является изменение тональности голоса, после вдыхания гелия :smiley:
+You can do pitch modulation over ADPCM, but not over noise. An example of the pitch effect is the change of tone of the voice after inhaling helium :smiley:
 
-Затем входные данные подаются на генератор ADSR-огибающей и далее на общий микшер.
+The input is then fed to the ADSR envelope generator and then to the general mixer.
 
 ![SPU_overview](/wiki/imgstore/SPU_overview.jpg)
 
-Как видно к звуку 24 каналов дополнительно подмешивается звук с CD-ROM.
+As you can see, the sound from the CD-ROM is additionally mixed to the sound of the 24 channels.
 
-Есть возможность добавить эффекты реверберации (эхо и пр.).
+It is possible to add reverb effects (echo, etc.).
 
-Громкость регулируется для: звуковых каналов (отдельно для L/R), входных данных с CD-ROM, реверберации, а также есть общий регулятор громкости.
+The volume is adjustable for: sound channels (separately for L/R), CD-ROM inputs, reverb, and there is a general volume control.
 
-Обмен данными между памятью SPU и CPU RAM происходит посредством DMA, при этом работа SPU (звучание) не прерывается.
+Data exchange between the SPU and CPU RAM takes place via DMA, and the SPU operation (sound) is not interrupted.
 
-Выходной цифровой звук подается на ЦАП.
+The output digital sound is fed to the DAC.
 
-## Аппаратная реализация
+## Hardware Implementation
 
-Ниже приведена картинка из сервисного мануала с выводами SPU и соединением его с памятью SPU и другими устройствами:
+Below is a picture from the service manual with the SPU pins and its connection to the SPU memory and other devices:
 
 ![SPU_hardware](/wiki/imgstore/SPU_hardware.jpg)
 
-Картинка актуальна только для материнок PU-18 и ниже, так как в более новых поменялась компоновка микросхем.
+The picture is only relevant for PU-18 and below motherboards, as the newer ones have changed the layout of the chips.
 
-Описание терминалов:
-- Слева находятся контакты для подачи потоковых аудио данных с CD-ROM декодера: DTIA, LRIA, BCIA.
-- Выходной цифровой звук (в последовательной форме) через контакты DATO, LRCO, BCKO подается на ЦАП. На ЦАП также подается тактовая частота XCK.
-- Дополнительно на вход SPU может быть подмешано потоковое аудио с параллельного порта (PIO), через контакт DTIB. При этом частота сэмплирования такая же, как и у выходного звука. При этом BCIB почему-то заведен на землю, а LRIB идёт на контакт [CD-DSP](cddsp.md) LRCK.
-- Ниже находятся контакты для работы с памятью SPU: XOE0 (включить обмен), XWE0 (write enable), MA (адресная шина, используется только 9 бит), MD (шина данных, 16 бит), XCAS/XRAS для рефреша DRAM. Заметим, что есть также XWE1 и XOE1, возможно для дополнительной памяти SPU. Особенность памяти SPU в том, что обмен происходит 16-разрядными словами (16-битная память). Поэтому выходной адрес с контактов SPU умножается на 2 (выходной контакт D0 заведён на контакт памяти D1 и так далее) и получается "индекс" ячейки памяти.
-- Главный тактовый сигнал для подсистемы PSX: SYSCK
-- Тестовые сигналы TEST и TES2
-- Сигнал сброса XRST заведен через конденсаторы на VSS, чтобы обеспечить время для сброса после включения питания
-- Интерфейс для взаимодействия с CPU: HD (host data, шина данных, 16 бит), HA (host address, шина адреса, 9 бит), XCS (выбор чипа), XRD/XWR (read/write), DACK/DREQ (DMA acknowledge/request), XIRQ (прерывание SPU). Обмен по внешней шине также происходит 16-разрядными словами, с умножением адреса на 2.
-- Cигнал MUTE (?)
+Terminal description:
+- On the left are the pins for streaming audio data from the CD-ROM decoder: DTIA, LRIA, BCIA.
+- The digital audio output (in serial form) through the DATO, LRCO, BCKO pins is fed to the DAC. The XCK clock frequency is also fed to the DAC.
+- Additionally, streaming audio from the parallel port (PIO) can be fed to the SPU input, via the DTIB pin. In this case the sampling frequency is the same as the output audio. The BCIB is connected to ground for some reason, while LRIB goes to the [CD-DSP](cddsp.md) LRCK pin.
+- Below are the pins for SPU memory: XOE0 (enable exchange), XWE0 (write enable), MA (address bus, only 9 bits are used), MD (data bus, 16 bits), XCAS/XRAS for DRAM refresh. Note that there is also XWE1 and XOE1, possibly for additional SPU memory. A special feature of the SPU memory is that the exchange takes place in 16-bit words (16-bit memory). Therefore, the output address from the SPU pins is multiplied by 2 (output pin D0 is wired to memory pin D1 and so on) to get the "index" of the memory cell.
+- Main clock signal for the PSX subsystem: SYSCK
+- TEST and TES2 test signals
+- The XRST reset signal is wired via capacitors to VSS to allow for reset time after power up
+- Interface to the CPU: HD (host data, 16 bit), HA (host address, 9 bit), XCS (chip select), XRD/XWR (read/write), DACK/DREQ (DMA acknowledge/request), XIRQ (SPU interrupt). The external bus is also exchanged in 16-bit words, with the address multiplied by 2.
+- The MUTE signal (?)
 
-Сокращения: BC,BCK - bit clock, LR,LRC - left/right clock, DAT,DT - data. Что всё это значит? Эти три сигнала представляют собой последовательный интерфейс для передачи стереозвука: bit clock - это тактовая частота, по которой передаются данные (data). LRC - это частота, которая разделяет пачку бит на левый и правый каналы. Когда LRC=1 - на вход подаются биты для левого канала, когда LRC=0 соответственно для правого.
+Abbreviations: BC,BCK - bit clock, LR,LRC - left/right clock, DAT,DT - data. What does it all mean? These three signals are a serial interface for stereo sound: bit clock is the clock frequency at which the data is transmitted. LRC is the frequency that separates the packet of bits into left and right channels. When LRC=1, bits for the left channel are input, when LRC=0 for the right channel respectively.
 
-Сигналы, названия которых начинаются с "X", имеют инверсную логику (active low).
+Signals whose names begin with "X" have inverse logic (active low).
 
-## Память SPU
+## SPU Memory
 
-Как уже говорилось, особенностью памяти SPU является её 16-разрядная "слотовость". Поэтому вместо термина "адрес", тут лучше применять термин "индекс".
+As already mentioned, a feature of SPU memory is its 16-bit "slotting". Therefore, instead of the term "address", the term "index" is better used here.
 
-Объем памяти - 512 KB.
+The memory capacity is 512 KB.
 
-Память SPU используется для хранения ADPCM-семплов для воспроизведения и таблиц для эффектов реверберации.
+The SPU memory is used to store ADPCM samples for playback and tables for reverb effects.
 
-Также SPU складирует в специальные "круговые" буферы некоторые данные, которые он воспроизводит, чтобы центральный процессор мог использовать их в своих целях.
+The SPU also stores in special "circular" buffers some of the data it plays back so that the CPU can use it for its own purposes.
 
-Карта памяти SPU:
+SPU memory map:
 ```
  00000h-003FFh  CD Audio left  (1Kbyte) ;\CD Audio after Volume processing
  00400h-007FFh  CD Audio right (1Kbyte) ;/signed 16bit samples at 44.1kHz
@@ -85,32 +85,32 @@ SPU содержит 24 звуковых канала (voice). Источник�
  xxxxxh-7FFFFh  Reverb work area
 ```
 
-Складируются только входные данные с CD и каналы 1 и 3 (почему именно 1 и 3 - так решили инженеры Sony :smiley:)
+Only the input data from the CD and channels 1 and 3 are stored (why exactly 1 and 3 - Sony engineers decided so :smiley:)
 
-Обмен данными между памятью SPU и памятью CPU происходит через DMA, параллельно воспроизведению звука.
+The data exchange between SPU memory and CPU memory is done via DMA, parallel to audio playback.
 
-## Что изменилось в новых версиях материнок
+## What's different about the new versions of the motherboards
 
-Изменение CD/Audio системы произошло в материнках начиная серии SCPH-7500 (PU-22). Схема из сервисного мануала:
+The CD/Audio system has changed in the SCPH-7500 (PU-22) series. The schematic is from the service manual:
 
 ![SPU_new](/wiki/imgstore/SPU_new.jpg)
 
-SPU теперь стал входить в состав [большой микросхемы](subic.md) с индексом IC732, в виде Audio DSP. Наиболее заметные изменения:
-- Они зачем-то добавили на картинку интерфейс с SUB-CPU, пока непонятно зачем. Возможно более новые версии SUB-CPU содержат новую версию ROM, которая управляет работой Audio DSP. А может чтобы показать, что CD-декодер управляется центральным процессором через Host interface, который передает управление далее по цепочке, в SUB-CPU interface.
-- ЦАП теперь стал входить в состав микросхемы. По этой причине старые версии PSX больше ценятся аудиофилами, из-за больших возможностей моддинга. Во времена когда SPU был в виде отдельной микросхемы выход (в виде последовательных данных) подавался на ЦАП производства Asahi Kasei.
+The SPU has now become part of [big chip](subic.md) with the index IC732, as Audio DSP. The most noticeable change:
+- They added a SUB-CPU interface to the picture for some reason, not sure why yet. Perhaps newer versions of SUB-CPU contain a new version of ROM, which controls the work of Audio DSP. Or maybe to show that the CD decoder is controlled by the CPU through the Host interface, which passes control further down the chain, to the SUB-CPU interface.
+- The DAC has now become part of the chip. For this reason, the older versions of the PSX are more appreciated by audiophiles, because of the greater modding possibilities. In the days when the SPU was a separate chip, the output (as serial data) was fed to a DAC made by Asahi Kasei.
 
-## ЦАП
+## DAC
 
-ЦАП выглядит следующим образом:
+The DAC looks like this:
 
 ![AudioDAC](/wiki/imgstore/AudioDAC.jpg)
 
-Datasheet доступен: [Datasheet](/docs/AK4309.pdf)
+Datasheet available: [Datasheet](/docs/AK4309.pdf)
 
-На вход поступают 1-bit последовательные данные от SPU (LRCK, BICK, SDATA), внутри ЦАП содержится много интерполяторов и прочих непонятных девайсов, в результате на выходе мы получаем перфектный аналоговый стерео-сигнал (AOUTL, AOUTR).
+The input is 1-bit serial data from SPU (LRCK, BICK, SDATA), inside DAC contains a lot of interpolators and other incomprehensible devices, as a result on the output we get perfect analog stereo signal (AOUTL, AOUTR).
 
-Как и у любого ЦАП тут используются 2 цепи питания - цифровая (DVDD,DVSS) и аналоговая (AVDD,AVSS). Напряжения VREFL и VREFH задают соответственно нижнюю и верхнюю границу напряжения аналогового сигнала (обычно VREFH=AVDD, VREFL=AVSS).
+As with any DAC, two power circuits are used here - digital (DVDD,DVSS) and analog (AVDD,AVSS). The voltages VREFL and VREFH set the lower and upper limit of the analog signal voltage, respectively (usually VREFH=AVDD, VREFL=AVSS).
 
-Выходной контакт DZF устанавливается если на входе слишком долго не было никакого звука (SDATA=0), сбрасывается автоматически.
+The DZF output pin is set if there has been no sound on the input for too long (SDATA=0), reset automatically.
 
-Формат сэмплов - 16-бит со знаком.
+The sample format is 16-bit with a sign.
