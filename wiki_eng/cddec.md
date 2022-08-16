@@ -1,72 +1,72 @@
 # CD Decoder
 
-:warning: В разных источниках эта микросхема может называться либо CD-декодер, либо CD-контроллер. Раньше на вики мы использовали термин "CD-контроллер", но затем поменяли на "CD-декодер", в соответствеии с даташитом. Если где-то ещё встретится CD-Controller имейте ввиду что это одно и то же. Официальные сервисные мануалы например используют термин "CD-Controller".
+:warning: In different sources this chip can be called either CD-decoder or CD-controller. We used to use the term "CD-Controller" on the wiki, but then we changed it to "CD-Decoder" according to the datasheet. If you come across CD-Controller somewhere else keep in mind that it is the same thing. Official service manuals, for example, use the term "CD-Controller".
 
-CD-декодер предназначен для распределения данных с диска между центральным процессором ([CPU](cpu.md)) и звуковым процессором ([SPU](spu.md)). Конечным результатом работы являются данные файлов, записанных на секторы диска (для CPU) или потоковое CD-Audio (для SPU). Функционально CD-декодер является своего рода "мостом" подсистемы PSX.
+The CD-Decoder is designed to distribute data from the disk between the central processing unit ([CPU](cpu.md)) and the sound processor ([SPU](spu.md)). The end result is data files written to disk sectors (for CPU) or streaming CD-Audio (for SPU). Functionally, the CD decoder is a kind of "bridge" of the PSX subsystem.
 
-Как и большинство других компонентов CD/Audio системы CD-декодер был впоследствии включен в состав одной [большой микросхемы](subic.md), поэтому рассматривать его мы будем как отдельную микросхему - `IC305` (CXD1815Q).
+Like most other components of the CD/Audio system, the CD decoder was later incorporated into one [large chip](subic.md), so we will consider it as a separate chip - `IC305` (CXD1815Q).
 
 ![CXD1815Q_package](/wiki/imgstore/CXD1815Q_package.jpg)
 
-Спасибо Мартину Корту, он обнаружил что в версии материнок PU-7 использовался CXD1199, на который есть [даташит](/docs/CXD1199.pdf).
+Thanks to Martin Korth, he discovered that the PU-7 version of the motherboards used CXD1199, which has a [datasheet](/docs/CXD1199.pdf).
 
-## Интерфейс программиста
+## Programmer Interface
 
-Программист может управлять CD-декодером через его 4 регистра, обычно они называются просто `CDREG0`-`CDREG3`.
+The programmer can control the CD decoder through its 4 registers, usually called simply `CDREG0`-`CDREG3`.
 
-Управление осуществляется путём посылки специальных команд.
+The control is done by sending special commands.
 
-Также доступно CD DMA, для пересылки данных в память центрального процессора.
+A CD-DMA is also available to send data to the CPU memory.
 
-## Аппаратный интерфейс
+## Hardware Interface
 
 ![IC305_overview](/wiki/imgstore/IC305_overview.jpg)
 
-Схема (правда от CXD1199, но думаю что принципиальных отличий нет):
+Schematic (from CXD1199, but I think that there are no fundamental differences):
 
 ![CXD1199_circuit](/wiki/imgstore/CXD1199_circuit.jpg)
 
-CD-декодер соединяется с центральным процессором, с вспомогательным процессором [SUB-CPU](subcpu.md), а также с памятью CDROM (IC303), поэтому он имеет сразу три набора шин адреса/данных:
+The CD decoder communicates with the CPU, with the [SUB-CPU](subcpu.md) and also with the CDROM memory (IC303), so it has three sets of address/data buses at once:
 
-- HA0-HA1: 2-битная шина адреса (host address), 2 разряда используются потому что CD-декодер содержит в своём составе всего 4 регистра управления.
-- HD0-HD7: 8-битная шина данных (host data). По этим двум шинам CD-декодер обменивается с CPU значениями своих регистров.
-- A0-A4: 5-бит адресная шина с SUB-CPU (адресуется всего-лишь 32 байта - внутренние регистры CD-декодера)
-- D0-D7: 8-бит шина данных с SUB-CPU. SUB-CPU адресуется к декодеру через эти две шины.
-- MA0-MA16: 17-бит шина адреса с CDROM RAM (используется только 15 бит MA0-MA14, адресуя 32 KB RAM)
-- MDB0-MDB7: 8-бит шина данных с CDROM RAM. Декодер адресуется к своей памяти через эти две шины.
-- TD0-TD7: похоже какая-то тестовая шина (test data?), не подсоединена.
+- HA0-HA1: 2-bit host address bus, 2 bits are used because the CD decoder contains only 4 control registers.
+- HD0-HD7: 8-bit host data bus. The CD-decoder communicates with the CPU with the values of its registers on these two buses.
+- A0-A4: 5-bit address bus with SUB-CPU (addressed only 32 bytes - the internal registers of the CD-decoder)
+- D0-D7: 8-bit data bus with SUB-CPU. The SUB-CPU is addressed to the decoder through these two buses.
+- MA0-MA16: 17-bit address bus with CDROM RAM (only 15 bits of MA0-MA14 are used, addressing 32 KB RAM)
+- MDB0-MDB7: 8 bit data bus with CDROM RAM. The decoder addresses its memory via these two buses.
+- TD0-TD7: seems to be some kind of test bus (test data?), not connected.
 
-Управляющие контакты:
+Control pins:
 
-- CPU side: XHWR (write), XHRD (read), HINT (прерывание), XHCS (chip select), XHRS (сброс, не используется)
-- SUB-CPU side: XINT (прерывание), XWR (write), XRD (read), XCS (chip select), XRST (сброс). При этом в данном случае SUB-CPU управляет декодером. Декодер может только отправить прерывание в SUB-CPU.
+- CPU side: XHWR (write), XHRD (read), HINT (interrupt), XHCS (chip select), XHRS (reset, not used)
+- SUB-CPU side: XINT (interrupt), XWR (write), XRD (read), XCS (chip select), XRST (reset). In this case SUB-CPU controls the decoder. The decoder can only send an interrupt to the SUB-CPU.
 - CDROM RAM side: XMOE (chip enable), XMWR (write)
 
-Как обычно, контакты названия которых начинаются с "X", имеют инверсную логику (active low).
+As usual, the pins whose names start with "X" have inverse logic (active low).
 
-Выходной поток CD-данных для SPU: BCKO (bit clock), LRCO (left/right clock), DATO (data out) (последовательный интерфейс)
+CD data output stream for SPU: BCKO (bit clock), LRCO (left/right clock), DATO (data out) (serial interface)
 
-Контакты для соединения с [CD-DSP](cddsp.md): EMP, C2PO, BCLK, DATA, LRCK, RMCK. Назначение уточняется :smiley:
+Contacts for connection to [CD-DSP](cddsp.md): EMP, C2PO, BCLK, DATA, LRCK, RMCK. Purpose to be clarified :smiley:
 
-Другие неиспользуемые контакты: MUTE (не подсоединен), WCKO (word clock, не подсоединен), CKSL (clock select, заземлен), HCLK (не подсоединен), MDBP,HDP (не подсоединен), HDRQ (DMA request, не подсоединен), XHAC (заземлен)
+Other unused pins: MUTE (not connected), WCKO (word clock, not connected), CKSL (clock select, grounded), HCLK (not connected), MDBP,HDP (not connected), HDRQ (DMA request, not connected), XHAC (grounded)
 
-## Как организуется пересылка данных
+## How data transfer is organized
 
-Данное описание по большей части спекулятивное, поскольку точных деталей работы внутренностей CD-декодера пока нет.
+This description is mostly speculative, as there are no exact details about the inner workings of the CD-decoder yet.
 
-Однако на базе логики работы входных и выходных контактов, а также некоторых знаний внутреннего устройства CD-системы, можно сделать некоторые предположения о процессе пересылки данных.
+However, based on the logic of the input and output terminals, as well as some knowledge of the inner workings of the CD system, it is possible to make some assumptions about the data transfer process.
 
-- Во-первых абсолютно точно известно, что прочитанные CD-данные хранятся в памяти CDROM (ещё иногда называемой FIFO). Эти данные предназначены для двух потребителей: для SPU и для центрального процессора.
-- В плане SPU вопросов нет: внутри декодера находится последовательный интерфейс, который выдает потоковое аудио на SPU через контакты BCKO, LRCO и DATO.
-- Загрузка входных данных в память CDROM происходит через последовательный интерфейс с CD-DSP
-- Команды поступаемые на CDREG0-CDREG3 видимо "парсятся" микрокодом SUB-CPU. При этом скорее всего CD-декодер использует прерывание SUB-CPU (сигнал XINT), чтобы просигналить о том, что нужно обработать очередную порцию данных, поступаемых на CDREG0-CDREG3. SUB-CPU также может установить выходные значение регистров. Чтобы сказать точнее необходимо дизассемблировать ROM SUB-CPU.
-- Единственный нерешенный вопрос - это CD DMA. Пока не понятно каким образом центральный процессор ораганизует DMA-пересылку CD-данных. Есть предположение что для этого используется особая комбинация XHWR/XHRD, либо особая работа с регистрами CDREG0-CDREG3. Точно можно сказать, что передаваемые данные могут попасть в CPU только одним путём - через шину HD (SD).
+- Firstly, it is absolutely certain that the read CD data is stored in the CDROM memory (also sometimes called FIFO). This data is intended for two consumers: the SPU and the CPU.
+- In terms of the SPU, there are no questions: inside the decoder is a serial interface that streams audio to the SPU via the BCKO, LRCO and DATO pins.
+- Input data is loaded into the CDROM memory via the serial interface with the CD-DSP
+- Commands received on the CDREG0-CDREG3 is apparently "parsed" by SUB-CPU microcode. This is likely the CD-decoder uses SUB-CPU interrupt (signal XINT), to signal that it needs to handle the next portion of data coming to CDREG0-CDREG3. SUB-CPU can also set register output values. To be more precise it is necessary to disassemble the ROM SUB-CPU.
+- The only unresolved issue is the CD DMA. It is not yet clear how the CPU organizes the DMA transfer of CD data. It is assumed that this uses a special combination of XHWR/XHRD, or special work with registers CDREG0-CDREG3. The only way to be sure is to send the data to the CPU is through the HD (SD) bus.
 
-## Внутренние регистры
+## Internal Registers
 
-Внутри CD-декодера есть место для 32 8-битных регистров. Данные о внутренних регистрах получаются путём исследования микрокода SUB-CPU.
+Inside the CD-decoder there is room for 32 8-bit registers. Data about the internal registers is obtained by examining the SUB-CPU microcode.
 
-|Индекс(HEX)|Название|Описание|
+|Index(HEX)|Name|Description|
 |---|---|---|
 |0x17|CD_RESULT_0|Результат выполнения команды (байт 0)|
 |0x18|CD_RESULT_1|Результат выполнения команды (байт 1)|
