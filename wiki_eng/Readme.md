@@ -2,60 +2,60 @@
 
 ![PSX-Console-wController_small](/wiki/imgstore/PSX-Console-wController_small.png)
 
-PlayStation, PSX - телевизионная приставка, произведенная компанией SONY.
+The PlayStation, PSX, was a TV console produced by SONY.
 
-Это первая в истории вменяемая приставка с хорошими играми на CD-дисках и трёхмерной графикой.
+It is the first ever sane console with good games on CDs and three-dimensional graphics.
 
-Для [разработки игр](sdk.md) стал применяться полноценный комплект разработчика - PsyQ SDK, основанный на модифицированном GCC-toolchain.
+For [game development](sdk.md) a full-fledged development kit, the PsyQ SDK, based on a modified GCC-toolchain, was used.
 
-Вообще появление PSX заложило прочный фундамент для SONY на долгие годы. И дальше на протяжении десятилетий SONY успешно использовала подходы, которые применялись в PS1:
-- Кастомная архитектура чипов
-- Более-менее унифицированный сигнальный интерфейс для обработки прерываний (/INT) и DMA (Ack/Req).
-- Каждой подсистемой управляет свой "умный" чип (процессор или контроллер)
-- Использование заказного тулчейна от стороннего разработчика (SN Systems) и библиотеки собственной разработки в SDK
-- Отдельные девкиты (специальные версии приставок для разработчиков)
-- Операционная система с закосом в сторону C/POSIX, но всё же гибридная
+In general, the appearance of PSX laid a solid foundation for SONY for many years to come. And then over the decades, SONY successfully used the same approaches that had been used in the PS1:
+- Custom chip architecture.
+- A more or less unified signal interface for interrupt handling (/INT) and DMA (Ack/Req).
+- Each subsystem is controlled by its own smart chip (processor or controller)
+- Use of custom toolchain from third-party developer (SN Systems) and in-house developed library in the SDK
+- Standalone devkits (special versions of set-top boxes for developers)
+- Operating system in C/POSIX direction, but hybrid nevertheless
 
-:warning: Информация на вики формализовалась в разное время и иногда спонтанно, поэтому хотя в целом информация более-менее достоверная, кое-где могут быть мелкие неточности, которые при обнаружении общественностью будут исправлены.
+:warning: The information on the wiki was formalized at different times and sometimes spontaneously, so while the overall information is more or less correct, there may be some minor inaccuracies, which will be corrected when found by the public.
 
-## Архитектура
+## Architecture
 
-Схематически PSX делится на две части: Main system и Sub-system. Main-system включает в себя CPU и GPU с видеосистемой. Sub-system включает в себя подсистему CD и SPU (звуковой процессор).
+Schematically, the PSX is divided into two parts: the Main system and the sub-system. The Main-system includes the CPU and GPU with the video system. The sub-system includes the CD subsystem and the SPU (sound processor).
 
-У каждой системы есть своя шина (Main bus, Sub-bus), при этом центральный процессор подключен к обеим шинам.
+Each system has its own bus (Main bus, Sub-bus), with the CPU connected to both buses.
 
-Кроме центрального процессора, в состав PSX входит так-называемый SUB-CPU, который, как не сложно догадаться, управляет подсистемой CD/SPU.
+In addition to the CPU, the PSX includes the so-called SUB-CPU, which, as you can easily guess, controls the CD/SPU subsystem.
 
 ## Main System
 
-Картинка из одного "конвидендуального" мануала, которая хорошо показывает связи:
+A picture from one "condidual" manual that shows the connections well:
 
 ![Psx_main_system](/wiki/imgstore/Psx_main_system.jpg)
 
-Также к main system можно отнести SIO-интерфейс (контроллеры, карты памяти и последовательный порт). Просто доступ к SIO происходит не по шинам, а через регистры CPU.
+The SIO interface (controllers, memory cards, and serial port) can also be referred to the main system. The SIO is simply not accessed through the buses, but through the registers of the CPU.
 
 ## Sub System
 
-Под-система включает в себя:
+The sub-system includes:
 
 - [SPU](spu.md)
 - [SUB-CPU](subcpu.md)
-- [Подсистема CD-ROM](cd.md) (куча чипов)
+- [CD-ROM subsystem](cd.md) (a bunch of chips)
 - PIO
 - [BIOS](bios.md)
 
 ![Subsystem](/wiki/imgstore/Subsystem.jpg)
 
-## Периферия
+## Peripherals
 
-- [Контроллеры](controller.md)
-- Карты памяти
+- [Controllers](controller.md)
+- Memory Cards
 - PlayStation Mouse
-- Параллельный порт (PIO)
-- Последовательный порт (SIO)
+- Parallel port (PIO)
+- Serial port (SIO)
 
-## По поводу аббревиатуры PSX
+## About the PSX
 
-Сейчас не принято использовать сокращение `PSX` для обозначения PlayStation 1 и более распространены сокращения `PS1` или `PSOne`.
+Nowadays it is not usual to use the abbreviation `PSX` for PlayStation 1 and the abbreviations `PS1` or `PSOne` are more common.
 
-Но мы сторонники старой школы, поэтому везде используется старый добрый `PSX`.
+But we are supporters of the old school, so the good old `PSX` is used everywhere.
