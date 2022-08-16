@@ -1,4 +1,4 @@
-SONY PlayStation chips reverse engineering.
+SONY PlayStation PCB/chips reverse engineering.
 
  * Headquarters: http://psxdev.ru
  * [Wiki](/wiki/Readme.md)
