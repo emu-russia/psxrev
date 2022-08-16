@@ -6,19 +6,21 @@ CD RF - микросхема отвечающая за управление ла
 
 Я утащу сюда пару картинок.
 
-[[File:Detectors.gif]] [[File:Laser beam.gif]]
+![Detectors](/wiki/imgstore/Detectors.gif)
+
+![Laser_beam](/wiki/imgstore/Laser_beam.gif)
 
 На старых материнках чип CD-RF был представлен микросхемой IC703, но мы лучше будем опираться на более новую реализацию, на базе `IC723`.
 
 ## IC703
 
-[[File:Cxa1791n sm.jpg]]
+![Cxa1791n_sm](/wiki/imgstore/Cxa1791n_sm.jpg)
 
 Full resolution: https://drive.google.com/open?id=1UqA_r6dA5rLRS88AjS1HgKMCfHwhpUQD
 
 ## Принцип работы CD RF чипа
 
-[[File:IC723 overview.jpg]]
+![IC723_overview](/wiki/imgstore/IC723_overview.jpg)
 
 Слева на картинке находится каретка с матрицей фотодетекторов A-D (EFM), детекторами E и F (боковые лучи), а также выходной контакт на лазерный диод LD и входной сигнал с фотодиода PD для автоматической коррекции мощности излучения лазера.
 
