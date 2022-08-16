@@ -8,10 +8,11 @@ On motherboards, the chip is represented as `IC304`, while it has never been int
 
 Known two versions of the chip "L16" and "G6". L16 (80pin) was used on older motherboards (PU-7 and older PU-8), starting with the new PU-8 the G6 (52pin) revision is used. According to unconfirmed reports the MASK ROM of both revisions of the chip hasn't been changed.
 
-Microphotos of the chip (left L16, right G6):
+Microphotos of the chip:
 
-|![IC304_L16_sm](/wiki/imgstore/IC304_L16_sm.jpg)|![SubCpu_chip](/wiki/imgstore/SubCpu_chip.jpg)|
+|L16|G6|
 |---|---|
+|![IC304_L16_sm](/wiki/imgstore/IC304_L16_sm.jpg)|![SubCpu_chip](/wiki/imgstore/SubCpu_chip.jpg)|
 
 The 6805 processor core used here has a [Datasheet](/docs/MC68HC05L16.pdf) available.
 
