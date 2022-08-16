@@ -1,47 +1,47 @@
 # Controllers
 
-Контроллеры (или "джойстики", хотя JoyStick - "палка удовольствий", это немного другое).
+Controllers (or "joysticks", although JoyStick is a bit different).
 
-Для PSX было сделано множество различных устройств ввода, но самыми распространенными были 2 типа контроллеров: с моторчиками (dualshock) и БЕЗ моторчиков.
+Many different input devices were made for the PSX, but the most common were 2 types of controllers: with motors (DualShock) and WITHOUT motors.
 
-Первая модель контроллера была без моторчиков.
+The first controller model was motorless.
 
-Контроллеры PSX стали иконой эпохи в дизайнерском воплощении: форма в виде бумеранга и 4 кнопки: квадрат, крест, круг и треугольник.
+PSX controllers became an icon of the era in terms of design: boomerang shape and 4 buttons: square, cross, circle and triangle.
 
-Хотя позднее и вибромоторчики с аналоговыми стиками произвели ещё одну - техническую революцию (хотя сам я их почти не использовал, неудобно было управлять, но рокот вертолёта в Metal Gear Solid отпечатался в памяти навсегда).
+Later on, though, the vibromotors with analog sticks made another technical revolution (although I almost never used them myself, it was inconvenient to control, but the roar of the helicopter in Metal Gear Solid was imprinted in my memory forever).
 
 ## SCPH-1080
 
-Снаружи:
+Outside:
 
 |![SCPH-1080-front](/wiki/imgstore/SCPH-1080-front.jpg)|![SCPH-1080-back](/wiki/imgstore/SCPH-1080-back.jpg)|![SCPH-1080-top](/wiki/imgstore/SCPH-1080-top.jpg)|
 |---|---|---|
 
-Внутри:
+Inside:
 
 |![SCPH-1080-internal1](/wiki/imgstore/SCPH-1080-internal1.jpg)|![SCPH-1080-internal2](/wiki/imgstore/SCPH-1080-internal2.jpg)|![SCPH-1080-internal3](/wiki/imgstore/SCPH-1080-internal3.jpg)|![SCPH-1080-internal4](/wiki/imgstore/SCPH-1080-internal4.jpg)|
 |---|---|---|---|
 
 ASIC:
 
-данных нет.
+no data available.
 
 ## SCPH-1150 / SCPH-1180
 
-Dual Analog Controller. Предшественник Dualshock
+Dual Analog Controller. DualShock predecessor.
 
-Снаружи:
+Outside:
 
 ![1024px-PS1DualAnalogController](/wiki/imgstore/1024px-PS1DualAnalogController.jpg)
 
-Внутри:
+Inside:
 
 ASIC:
 
-## SCPH-1200 (Dualshock)
+## SCPH-1200 (DualShock)
 
-Снаружи:
+Outside:
 
-Внутри:
+Inside:
 
 ASIC:
