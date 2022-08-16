@@ -6,9 +6,8 @@ CD RF - микросхема отвечающая за управление ла
 
 Я утащу сюда пару картинок.
 
-![Detectors](/wiki/imgstore/Detectors.gif)
-
-![Laser_beam](/wiki/imgstore/Laser_beam.gif)
+|![Detectors](/wiki/imgstore/Detectors.gif)|![Laser_beam](/wiki/imgstore/Laser_beam.gif)|
+|---|---|
 
 На старых материнках чип CD-RF был представлен микросхемой IC703, но мы лучше будем опираться на более новую реализацию, на базе `IC723`.
 
