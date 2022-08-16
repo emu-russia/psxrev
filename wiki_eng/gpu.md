@@ -4,7 +4,7 @@ GPU (Graphics Processor Unit) draws two-dimensional primitives in the video memo
 
 Additionally, the GPU is engaged in video signal mastering (for example, manages Color Burst), although a separate chip - DAC, based on digital RGB output signals coming from the GPU, performs direct video signal generation.
 
-GPU control from the CPU side is carried out only two IO-ports `GP0 ` and `GP1 `, as well as DMA, for the transfer of display lists (DL).
+GPU control from the CPU side is carried out only two IO-ports `GP0` and `GP1`, as well as DMA, for the transfer of display lists (DL).
 
 The GPU is built using the same technology as the CPU (standard cells + custom blocks):
 
