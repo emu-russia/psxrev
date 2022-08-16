@@ -10,9 +10,9 @@ For [game development](sdk.md) a full-fledged development kit, the PsyQ SDK, bas
 
 In general, the appearance of PSX laid a solid foundation for SONY for many years to come. And then over the decades, SONY successfully used the same approaches that had been used in the PS1:
 - Custom chip architecture.
-- A more or less unified signal interface for interrupt handling (/INT) and DMA (Ack/Req).
+- A more or less unified signal interfaces for interrupt handling (/INT) and DMA (Ack/Req).
 - Each subsystem is controlled by its own smart chip (processor or controller)
-- Use of custom toolchain from third-party developer (SN Systems) and in-house developed library in the SDK
+- Use of custom toolchain from third-party developer (SN Systems) and in-house developed libraries in the SDK
 - Standalone devkits (special versions of set-top boxes for developers)
 - Operating system in C/POSIX direction, but hybrid nevertheless
 
