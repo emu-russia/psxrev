@@ -8,16 +8,43 @@ GPU (Graphics Processor Unit) рисует двухмерные примитив
 
 GPU построен по такой же технологии, что и CPU (standard cells + custom blocks):
 
-|![GPU_chip_lowres](/wiki/imgstore/GPU_chip_lowres.jpg)|![GPU_standard_cells](/wiki/imgstore/GPU_standard_cells.jpg)|
-|---|---|
+[[File:GPU chip lowres.jpg|300px]] [[File:GPU standard cells.jpg|300px]]
 
 - Старые версии материнок (PU-7 и старые PU-8) использовали 2 чипа GPU: 160pin CXD8514Q (IC203) и 64pin CXD2923AR (IC207). Одна из них занималась рисованием примитивов (более крупная 160-контактная), а вторая очевидно выводом картинки из видеопамяти на ТВ (64-контактная). Мануалов у нас нет, поэтому узнать точнее можно только по фотографиям материнской платы (отследить дорожки).
 - Все остальные версии использовали 208pin версии GPU, индекс остался прежним - IC203.
 
-|PCB|PU-7 / older PU-8|newer PU-8|PU-18|PU-20|PU-22|PU-23|PM-41|PM-41(2)|
-|---|---|---|---|---|---|---|---|---|
-|IC203|![PU7_gpu_package](/wiki/imgstore/PU7_gpu_package.jpg)|![NewPU8_gpu_package](/wiki/imgstore/NewPU8_gpu_package.jpg)|![PU18_gpu_package](/wiki/imgstore/PU18_gpu_package.jpg)|???|![PU22_gpu_package](/wiki/imgstore/PU22_gpu_package.jpg)|![PU23_gpu_package](/wiki/imgstore/PU23_gpu_package.jpg)|![PM41_gpu_package](/wiki/imgstore/PM41_gpu_package.jpg)|![PM412_gpu_package](/wiki/imgstore/PM412_gpu_package.jpg)|
-|CXD|8514Q/2923AR|8561Q|8561BQ|???|8561CQ|8561CQ|8561CQ|???|
+{| cellspacing="0" border="1"
+|-
+! style="background:rgb(204,204,204)" align="center" |PCB
+! style="background:rgb(204,204,204)" align="center" |[[PU-7]] / older [[PU-8]]
+! style="background:rgb(204,204,204)" align="center" |newer [[PU-8]]
+! style="background:rgb(204,204,204)" align="center" |[[PU-18]]
+! style="background:rgb(204,204,204)" align="center" |[[PU-20]]
+! style="background:rgb(204,204,204)" align="center" |[[PU-22]]
+! style="background:rgb(204,204,204)" align="center" |[[PU-23]]
+! style="background:rgb(204,204,204)" align="center" |[[PM-41]]
+! style="background:rgb(204,204,204)" align="center" |[[PM-41(2)]]
+|-
+|IC203
+|[[File:PU7 gpu package.jpg|100px]]
+|[[File:NewPU8 gpu package.jpg|100px]]
+|[[File:PU18 gpu package.jpg|100px]]
+|???
+|[[File:PU22 gpu package.jpg|100px]]
+|[[File:PU23 gpu package.jpg|100px]]
+|[[File:PM41 gpu package.jpg|100px]]
+|[[File:PM412 gpu package.jpg|100px]]
+|-
+|CXD
+|8514Q/2923AR
+|8561Q
+|8561BQ
+|???
+|8561CQ
+|8561CQ
+|8561CQ
+|???
+|}
 
 ## Аппаратный интерфейс (старый GPU 160-pin)
 

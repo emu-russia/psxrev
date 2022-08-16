@@ -1,6 +1,6 @@
 # Controllers
 
-Контроллеры (или "джойстики", хотя JoyStick - "палка удовольствий", это немного другое).
+Контроллеры (или "джойстики", хотя JoyStick - "палка удовольствий", это немного другое))).
 
 Для PSX было сделано множество различных устройств ввода, но самыми распространенными были 2 типа контроллеров: с моторчиками (dualshock) и БЕЗ моторчиков.
 
@@ -10,38 +10,38 @@
 
 Хотя позднее и вибромоторчики с аналоговыми стиками произвели ещё одну - техническую революцию (хотя сам я их почти не использовал, неудобно было управлять, но рокот вертолёта в Metal Gear Solid отпечатался в памяти навсегда).
 
-## SCPH-1080
+== SCPH-1080 ==
 
-Снаружи:
+=== Снаружи ===
 
-|![SCPH-1080-front](/wiki/imgstore/SCPH-1080-front.jpg)|![SCPH-1080-back](/wiki/imgstore/SCPH-1080-back.jpg)|![SCPH-1080-top](/wiki/imgstore/SCPH-1080-top.jpg)|
-|---|---|---|
+[[File:SCPH-1080-front.jpg|300px]] [[File:SCPH-1080-back.jpg|300px]] [[File:SCPH-1080-top.jpg|300px]]
 
-Внутри:
+=== Внутри ===
 
-|![SCPH-1080-internal1](/wiki/imgstore/SCPH-1080-internal1.jpg)|![SCPH-1080-internal2](/wiki/imgstore/SCPH-1080-internal2.jpg)|![SCPH-1080-internal3](/wiki/imgstore/SCPH-1080-internal3.jpg)|![SCPH-1080-internal4](/wiki/imgstore/SCPH-1080-internal4.jpg)|
-|---|---|---|---|
+[[File:SCPH-1080-internal1.jpg|300px]] [[File:SCPH-1080-internal2.jpg|300px]] [[File:SCPH-1080-internal3.jpg|300px]]
 
-ASIC:
+[[File:SCPH-1080-internal4.jpg|300px]]
+
+=== ASIC ===
 
 данных нет.
 
-## SCPH-1150 / SCPH-1180
+== SCPH-1150 / SCPH-1180 ==
 
 Dual Analog Controller. Предшественник Dualshock
 
-Снаружи:
+=== Снаружи ===
 
-![1024px-PS1DualAnalogController](/wiki/imgstore/1024px-PS1DualAnalogController.jpg)
+[[File:1024px-PS1DualAnalogController.jpg|300px]]
 
-Внутри:
+=== Внутри ===
 
-ASIC:
+=== ASIC ===
 
-## SCPH-1200 (Dualshock)
+== SCPH-1200 (Dualshock) ==
 
-Снаружи:
+=== Снаружи ===
 
-Внутри:
+=== Внутри ===
 
-ASIC:
+=== ASIC ===
