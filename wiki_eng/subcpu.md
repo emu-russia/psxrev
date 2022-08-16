@@ -1,6 +1,6 @@
 # SUB-CPU
 
-The SUB-CPU is used for the software control of [CD RF] (cdrf.md), [CD DRIVER] (cddriver.md) and [CD-DSP] (cddsp.md). SUB-CPU sends commands to the CD-DSP control via a serial interface, and also controls the turn-on laser, detect the opening of the cover, set the speed of the drive 1X/2X, etc. In other words, SUB-CPU prepares the CD system for data reading as well as monitors its correct operation and reacts to external factors. In addition, SUB-CPU parses the commands received by the CD-decoder and manages its internal registers.
+The SUB-CPU is used for the software control of [CD RF](cdrf.md), [CD DRIVER](cddriver.md) and [CD-DSP](cddsp.md). SUB-CPU sends commands to the CD-DSP control via a serial interface, and also controls the turn-on laser, detect the opening of the cover, set the speed of the drive 1X/2X, etc. In other words, SUB-CPU prepares the CD system for data reading as well as monitors its correct operation and reacts to external factors. In addition, SUB-CPU parses the commands received by the CD-decoder and manages its internal registers.
 
 CD-data are transferred in serial form directly to the [CD-decoder](cddec.md).
 
