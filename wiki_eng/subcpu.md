@@ -18,10 +18,9 @@ The 6805 processor core used here has a [Datasheet](/docs/MC68HC05L16.pdf) avail
 
 ## Hardware interface
 
-The picture on the left is from the PU-18 service manual, and the picture on the right is from the PU-22 service manual:
-
-|![IC304_PU18](/wiki/imgstore/IC304_PU18.jpg)|![IC304_pinout](/wiki/imgstore/IC304_pinout.jpg)|
+|Service manual for PU-18|Service manual for PU-22|
 |---|---|
+|![IC304_PU18](/wiki/imgstore/IC304_PU18.jpg)|![IC304_pinout](/wiki/imgstore/IC304_pinout.jpg)|
 
 PORT A and PORT E connect to [CD decoder](cddec.md), via the MCD and MCA buses respectively. At the same host address bus MCA is exactly SUB-CPU, that is, it addresses the CD-decoder, and not vice versa. The direction of the MCD data bus is set by MRD/MWR signals, and the "chip selection" of the CD-decoder is carried out by the MCS signal. Obviously this is necessary to access the internal registers of the CD-decoder. The SUB-CPU input from the decoder side receives only the MINT interrupt signal.
 
