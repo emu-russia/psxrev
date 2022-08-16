@@ -1,3 +1,5 @@
+![playstation-logo](playstation-logo.png)
+
 SONY PlayStation PCB/chips reverse engineering.
 
  * Headquarters: http://psxdev.ru
