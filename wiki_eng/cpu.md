@@ -36,8 +36,6 @@ As you can see most of the chip is taken up by the "mess" of synthesized HDL log
 - In consoles since SCPH-5500 (PU-18) the 90082 revision of the chips were added. These chips were present in all latest PSX models, also in the first version of PSOne motherboards (PM-41).
 - The latest versions of PSOne with PM-41(2) motherboards contained 90182 revision of the chip.
 
-On this site we are examining the `90048` revision (which was in SCPH-1001). It is likely that the new revisions differ significantly in M1/M2 wiring as the new revision chip is "reassembled" from Verilog/VHDL. So, to trace other revisions means to re-trace the whole processor %)
-
 You can find out the revision of the chip from the marking on the cover, removing unnecessary letters (e.g. L9A0048 means revision 90048). There must be some sense in the letters, but most likely it is related to the improvement of the technological process.
 
 There is also a tattoo on the lower right corner of the chip. The revision of the chip is indicated in the first line:
@@ -59,3 +57,62 @@ We will be guided by the picture from the PU-22 (SCPH-7500) service manual when 
 Starting with PU-23 (SCPH-9000) the parallel port (PIO) was taken away from it, and in PM-41 (PSOne) the serial port (SIO) was also taken away.
 
 ![CPU_Block](/wiki/imgstore/CPU_Block.jpg)
+
+Прежде чем изучать управляющие сигналы, нужно отметить, что CPU работает с двумя шинами, которыми управляет bus unit (B/U):
+- Main bus: проходит внутри процессора, а также соединяется с [DRAM](dram.md) и [GPU](gpu.md)
+- Sub bus: на этой шине располагаются все устройства подсистемы (ROM BIOS, [SPU](spu.md), [CD-ROM](cd.md)) и параллельный порт (который на самом деле тоже является своего рода внешним устройством)
+- /SWR0, /SWR1: Sub bus write enable. SWR0 предназначен как для внутренних девайсов Sub bus, так и для PIO, а вот SWR1 подается почему-то эксклюзивно только на PIO.
+- /SRD: Sub bus read enable.
+
+PIO:
+- /CS0: Выбрать PIO на Sub bus. Одновременно на шину может быть подключен только один девайс, во избежание конфликта шин. Этим управляют контакты группы "CS" (chip select).
+- DACK5 / DREQ5: PIO DMA
+- /INTIN10: контакт совмещен с контроллерами/картами памяти и PIO (общий сигнал прерывания).
+
+SIO:
+- RXD1, TXD1, /DSR1, /DTR1, /CTS1, /RTS1: классический последовательный интерфейс
+
+Контроллеры/карты памяти: представляют собой вариацию SIO
+- /SCK0: тайминг для контроллеров (строб?)
+- RXD0, TXD0, /DSR0, /DTR0A, /DTR0B: последовательный интерфейс. DTR имеет два контакта, поскольку у нас два порта для контроллеров/карт памяти (Port A и Port B)
+
+![Front_jack](/wiki/imgstore/Front_jack.jpg)
+
+DRAM: в более новых материнках оперативная память представляет собой один чип (IC106), но раньше их было больше (4). Мы будем ориентироваться на более новый вариант, потому что это удобно.
+- DD : шина данных 32-бит
+- DA : адресная шина 10-бит
+- /DWE : write enable
+- /DRAS0, /DCAS0, /DCAS1, /DCAS2, /DCAS3 : рефреш
+
+ROM BIOS: ROM подсоединен к Sub bus.
+- /CS2: Подключить ROM к шине Sub bus. Непосредственно обмен данным (OE) включается, если активен сигнал read enable (/SRD). Ну это понятно, ROM можно только читать :smiley:
+
+GPU:
+- VD: шина данных 32-бит, подключена к Main bus
+- VA2: адресная шина, 1-бит :smiley: Дело в том, что у GPU всего-лишь два 32-разрядных регистра (GP0/GP1), поэтому для их адресации достаточно одной адресной линии.
+- /VRD, /VWR: read/write enable
+- /CS7: Выбрать GPU
+- DREQ2, DACK2: GPU DMA. Когда для передачи данных используется контроллер прямого доступа к памяти, графический 
+процессор посылает сигнал запроса на захват шины, устанавливая низкий логический уровень на контакте GPUDREQ. Получив такой запрос, процессор освобождает шины, извещая об этом установкой низкого логического уровня на выходе GPUDACK.
+- /INTIN0: сигнал прерывания GPU VBLANK
+- TCLK0: выходит с контакта GPU PCK (pixel clock), может использоваться в качестве Root Counter 0 (счетчик точек)
+- TCLK1: выходит с контакта GPU HBLANK, может использоваться в качестве Root Counter 1 (счетчик горизонтальных линий)
+- /INTIN1: общее прерывание GPU (может быть вызвано отправкой специальной команды в GPU, но насколько мне известно в играх не используется)
+
+CD-ROM: 
+- /CS5: выбрать CD-контроллер
+- /INTIN2: прерывание от CD-контроллера
+
+SPU:
+- /CS4: выбрать SPU
+- /INTIN9: прерывание от SPU
+- DACK4, /DREQ4: SPU DMA
+
+Тайминг и сброс CPU:
+- CRYSTALP: входной CLK, 67.73 MHz
+- SYSCLK0: CLK на вход GPU (33.3 MHz)
+- SYSCLK1: CLK на девайсы Sub bus (33.3 MHz)
+- DSYSCLK: CLK * 2 на вход GPU (66.67 MHz NTSC, 64.5 MHz PAL)
+- /EXT RESET: сброс (приходит с общего сигнала RES3.3 от блока питания)
+
+![CPU_clk](/wiki/imgstore/CPU_clk.jpg)
