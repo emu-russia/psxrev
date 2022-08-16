@@ -68,14 +68,14 @@ Inside the CD-decoder there is room for 32 8-bit registers. Data about the inter
 
 |Index(HEX)|Name|Description|
 |---|---|---|
-|0x17|CD_RESULT_0|Результат выполнения команды (байт 0)|
-|0x18|CD_RESULT_1|Результат выполнения команды (байт 1)|
-|0x19|CD_RESULT_2|Результат выполнения команды (байт 2)|
-|0x1A|CD_RESULT_3|Результат выполнения команды (байт 3)|
-|0x1B|CD_RESULT_4|Результат выполнения команды (байт 4)|
-|0x1C|CD_RESULT_5|Результат выполнения команды (байт 5)|
-|0x1D|CD_RESULT_6|Результат выполнения команды (байт 6)|
-|0x1E|CD_RESULT_7|Результат выполнения команды (байт 7)|
+|0x17|CD_RESULT_0|Command result (byte 0)|
+|0x18|CD_RESULT_1|Command result (byte 1)|
+|0x19|CD_RESULT_2|Command result (byte 2)|
+|0x1A|CD_RESULT_3|Command result (byte 3)|
+|0x1B|CD_RESULT_4|Command result (byte 4)|
+|0x1C|CD_RESULT_5|Command result (byte 5)|
+|0x1D|CD_RESULT_6|Command result (byte 6)|
+|0x1E|CD_RESULT_7|Command result (byte 7)|
 |0x1F|||
 
 ![fixme](/wiki/imgstore/fixme.gif)
