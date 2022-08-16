@@ -1,12 +1,12 @@
 # SUB-IC
 
-Начиная с SCPH-7500 (PU-22), в результате объединения нескольких чипов, материнские платы получили новый чип `IC732`, в состав которого были включены:
+Starting with the SCPH-7500 (PU-22), the merging of several chips resulted in a new `IC732` chip for the motherboards, which included:
 
-- [CD-декодер](cddec.md)
+- [CD-decoder](cddec.md)
 - [CD-DSP](cddsp.md)
-- [Звуковой процессор (SPU)](spu.md)
-- Память CD-декодера (32 KB)
+- [Sound processor (SPU)](spu.md)
+- CD-Decoder memory (32 KByte)
 
-Благодаря этому размер материнской платы значительно уменьшился и весь чипсет теперь стал располагаться только на стороне-A.
+This significantly reduced the size of the motherboard and the entire chipset is now located only on the side-A.
 
-Какого-либо названия к IC732 нет, поэтому договоримся называть её просто: `SUB-IC`.
+There is no name for the IC732, so let's agree to call it simply: `SUB-IC`.

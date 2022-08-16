@@ -1,6 +1,6 @@
 # PCB Revisions
 
-![fixme](/wiki/imgstore/fixme.gif) Раздел требует заполнения.
+![fixme](/wiki/imgstore/fixme.gif) The section needs to be filled out.
 
 It seems that IC's 702+704+706 was later replaced by IC722 (DRIVER) and IC's 703+708 was replaced by IC723 (RF), but IC602(RIPPLE) was added on SCPH-7500 series.
 
@@ -15,7 +15,7 @@ The chipset is quite different: GPU is split into two chips with 160+64pins (ins
 
 (с) Martin Korth.
 
-Эта материнка использовалась в очень редкой самой первой версии PSX SCPH-1000, выпущенной только в Японии.
+This motherboard was used in a very rare very first version of the PSX SCPH-1000, released only in Japan.
 
 ## PU-8
 
