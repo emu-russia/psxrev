@@ -30,7 +30,7 @@ PlayStation, PSX - телевизионная приставка, произве
 
 - [SPU](spu.md)
 - [SUB-CPU](subcpu.md)
-- [CD-ROM декодер](cd.md) (куча чипов)
+- [Подсистема CD-ROM](cd.md) (куча чипов)
 - PIO
 - [BIOS](bios.md)
 
