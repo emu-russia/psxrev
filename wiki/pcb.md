@@ -61,7 +61,7 @@ Motherboard that has been seen in SCPH-5000 and SCPH-5500 series consoles.
 - ports: Parallel I/O, Serial I/O, AV Multiout
 - bios: ???
 
-### List of parts
+List of parts:
 
 ![PU-18a_blocks](/wiki/imgstore/PU-18a_blocks.jpg)
 ![PU-18b_blocks](/wiki/imgstore/PU-18b_blocks.jpg)
@@ -118,7 +118,7 @@ Motherboards from SCPH-9000 series consoles.
 - ports: Serial I/O, AV Multiout
 - bios: ???
 
-### List of parts
+List of parts:
 
 ![PU-23a_blocks](/wiki/imgstore/PU-23a_blocks.jpg)
 
