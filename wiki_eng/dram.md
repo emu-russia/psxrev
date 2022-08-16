@@ -1,8 +1,8 @@
 # DRAM
 
-В отношении памяти CPU наблюдается некоторый бардачок.. Раньше чипов было 4, потом 2(?), потом 1, потом память стала на кристалле.
-Короче надо разобраться.
+As far as CPU memory is concerned, there is a bit of a mess. There used to be 4 chips, then 2(?), then 1, then the memory became on chip.
+In short, we have to figure it out.
 
-## Тайминги
+## Timings
 
 TBD.
