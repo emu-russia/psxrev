@@ -32,7 +32,7 @@ The documentation was delivered on special CDs, or via email. Also, there were c
 
 Several versions of the documentation disks are known, codenamed `DTL-S2003`.
 
-### Utilities
+### Tools
 
 Aside from the documentation, there were also separate disks with a set of programs (for graphics, sound, etc.).
 
