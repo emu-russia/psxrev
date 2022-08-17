@@ -57,7 +57,7 @@ Optical device revisions:
 |KSM-440 AAM (short cable)|![Aam_f1](/wiki/imgstore/Aam_f1.jpg) ![Aam_b1](/wiki/imgstore/Aam_b1.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PU-7|SCPH-1000|
 |KSM-440 ACM (short cable)|![Acm_f1](/wiki/imgstore/Acm_f1.jpg) ![Acm_b1](/wiki/imgstore/Acm_b1.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PU-8|SCPH-1001/2, SCPH-300x|
 |KSM-440 ADM (long cable)|![Adm_f1](/wiki/imgstore/Adm_f1.jpg) ![Adm_b1](/wiki/imgstore/Adm_b1.jpg)|![Ps1-p-010-1](/wiki/imgstore/Ps1-p-010-1.jpg)|PU-18, PU-20|SCPH-500x, SCPH-700x|
-|KSM-440 AEM (medium cable)|![Aem_f1](/wiki/imgstore/Aem_f1.jpg) ![Aem_b1](/wiki/imgstore/Aem_b1.jpg)|![Ps1-p-010](/wiki/imgstore/Ps1-p-010.jpg)|PU-22, PU-23|SCPH-750x, SCPH-900x|
+|KSM-440 AEM (medium cable)|![Aem_f1](/wiki/imgstore/Aem_f1.jpg) ![Aem_b](/wiki/imgstore/Aem_b.jpg)|![Ps1-p-010](/wiki/imgstore/Ps1-p-010.jpg)|PU-22, PU-23|SCPH-750x, SCPH-900x|
 |KSM-440 BAM (short cable)|![Bam_f1](/wiki/imgstore/Bam_f1.jpg) ![Bam_b](/wiki/imgstore/Bam_b.jpg)|![Ps1-p-009](/wiki/imgstore/Ps1-p-009.jpg)|PM-41, PM-41(2)|SCPH-10x (PSOne)|
 
 At the hardware level (signal level) almost all drives are compatible with each other, differing only by the size and length of the cable. In rare cases, there may be incompatibilities: for some versions of PSone (KSM-440 BAM) and first PS1 models (KSM-440 ACM).
