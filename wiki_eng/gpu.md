@@ -26,3 +26,5 @@ The old GPU consisting of two chips (CXD 8514Q/2923AR) works as follows:
 - The interface between the GPU and the CPU has not changed in subsequent versions.
 - The larger CXD 8514Q chip (160 pins) draws primitives into dedicated dual-port DRAM. Accordingly it also contains DRAM Refresh logic. The situation is a bit more complicated by the fact that the VRAM is divided into two banks (2 chips).
 - The small CXD 2923AR chip (64 pins) is sampling pixels from the VRAM and is an RGB DAC
+
+![old_gpu1](/wiki/imgstore/old_gpu1.png)
