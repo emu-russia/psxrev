@@ -1,0 +1,9 @@
+/*
+ * GPU timeout is issued in cases where four seconds (240VSync) have elapsed,
+ * but the GPU nonblocking function has not yet terminated.
+*/
+void clearTimeout (void)
+{
+    timeoutAmt = VSync(-1) + 240;
+    timeoutFlag = 0;
+}

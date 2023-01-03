@@ -1,0 +1,4 @@
+u_long drawOffsetCode (u_short ofsx, u_short ofsy)
+{
+    return (0xE5000000 | ((ofsY & 0x7FF) << 11) | (ofsX & 0x7FF));
+}

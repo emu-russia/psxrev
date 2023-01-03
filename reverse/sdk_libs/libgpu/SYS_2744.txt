@@ -1,0 +1,145 @@
+/*
+ * Wait for all drawing to terminate.
+ * Return number of positions in the execution queue.
+*/
+static int drawSync(int mode)
+{
+    int quelen;
+
+    if (mode == 0)
+    {
+    // ------------------------------------------------------------------------
+    // Wait for termination of all non-blocking functions registered in the queue
+    // ------------------------------------------------------------------------
+
+        clearTimeout ();
+
+        // Execute queue entries.
+        do
+        {
+            updateQueue ();
+            if (checkTimeout ()) return -1;     // Timeout expired.
+        } while (_qin != _qout);
+
+        // Sync DMA and GPU.
+        do
+        {
+            if (checkTimeout ()) return -1;     // Timeout expired.
+        } while ( ((*gp1 & 0x04000000) == 0) && (*gpu_dma_chcr & 0x01000000) );                
+    }
+    else
+    {
+    // ------------------------------------------------------------------------
+    // Return the number of positions in the current queue
+    // ------------------------------------------------------------------------
+
+        quelen = (_qin - _qout) & 0x3F;
+        
+        if ( quelen ) updateQueue ();
+
+        if ( *gpu_dma_chcr & 0x01000000 || ((*gp1 & 0x04000000) == 0)) return (quelen ? quelen : 1);
+        else return quelen;
+    }
+}
+
+text_2744:
+    addiu   sp,sp,-24
+    sw  ra,20(sp)
+    bnez    a0,text_27F8
+
+; --------------------------------------------------------------------------
+; Wait for termination of all non-blocking functions registered in the queue
+; --------------------------------------------------------------------------
+
+    sw  s0,16(sp)
+    jal text_2880                   clearTimeout ();
+    nop
+    j   text_277C
+    nop
+
+text_2764:
+    jal text_23A8                   updateQueue ();
+    nop
+    jal text_28B4                   checkTimeout ();
+    nop
+    bnez    v0,text_2870
+    li  v0,-1
+text_277C:
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)            v1 = _qin
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)           v0 = _qout
+    nop
+    beq v1,v0,text_27B0             } while (_qin != _qout);
+    nop
+    j   text_2764
+    nop
+
+text_27A0:
+    jal text_28B4                   checkTimeout ();
+    nop
+    bnez    v0,text_2870
+    li  v0,-1
+text_27B0:
+    lui v0,_hi(data_164)                gpu_dma_chcr
+    lw  v0,_lo(data_164)(v0)
+    nop
+    lw  v0,0(v0)
+    lui v1,$0100
+    and v0,v0,v1
+    bnez    v0,text_27A0                (*gpu_dma_chcr & 0x01000000)
+    nop
+    lui v0,_hi(data_158)                gp1
+    lw  v0,_lo(data_158)(v0)
+    nop
+    lw  v0,0(v0)
+    lui v1,$0400
+    and v0,v0,v1
+    beqz    v0,text_27A0                ((*gp1 & 0x04000000) == 0)
+    move    v0,zero
+    j   text_2870
+    nop
+
+; --------------------------------------------------------------------------
+; Return the number of positions in the current queue
+; --------------------------------------------------------------------------
+
+text_27F8:
+    lui v0,_hi(_qin)
+    lw  v0,_lo(_qin)(v0)
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)
+    nop
+    subu    v0,v0,v1
+    andi    s0,v0,$003F
+    beqz    s0,text_2824                if ( (_qin - _qout) & 0x3F )
+    nop
+    jal text_23A8                       updateQueue ();
+    nop
+text_2824:
+    lui v0,_hi(data_164)                gpu_dma_chcr
+    lw  v0,_lo(data_164)(v0)
+    nop
+    lw  v0,0(v0)
+    lui v1,$0100
+    and v0,v0,v1
+    bnez    v0,text_2864                if ( *gpu_dma_chcr & 0x01000000 ) goto 2864;
+    nop
+    lui v0,_hi(data_158)                gp1
+    lw  v0,_lo(data_158)(v0)
+    nop
+    lw  v0,0(v0)
+    lui v1,$0400
+    and v0,v0,v1
+    bnez    v0,text_2870                if ( *gp1 & 0x04000000 ) return quelen;
+    move    v0,s0
+text_2864:
+    bnez    s0,text_2870                return (quelen ? quelen : 1);
+    move    v0,s0
+    li  v0,1
+
+text_2870:
+    lw  ra,20(sp)
+    lw  s0,16(sp)
+    jr  ra
+    addiu   sp,sp,24

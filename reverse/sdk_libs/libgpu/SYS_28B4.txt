@@ -1,0 +1,111 @@
+/*
+ * Return 0 if no timeout expired, -1 otherwise.
+*/
+int checkTimeout (void)
+{
+    if (VSync (-1) >= timeoutAmt)
+    {
+        // Timeout expired.
+        if (timeoutFlag++ <= 0xF0000) return 0;
+    }
+
+    // Inform user about timeout and clear queue.
+    printf ( "GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x\n",
+             _qin - _qout, *gp1, *gpu_dma_chcr, *gpu_dma_madr ); 
+
+    oldmask = SetIntrMask (0);
+    _qin = _qout = 0;
+    *gpu_dma_chcr = 0x0401;
+    *dma_pcr |= 0x0800;
+    *gp1 = 0x02000000;
+    *gp1 = 0x01000000;
+    SetIntrMask (oldmask);
+    return -1;
+}
+
+text_28B4:
+    addiu   sp,sp,-32
+    sw  ra,24(sp)
+    jal VSync                           v0 = VSync (-1);
+    li  a0,-1
+    lui v1,_hi(data_18C)
+    lw  v1,_lo(data_18C)(v1)            v1 = timeoutAmt
+    nop
+    slt v1,v1,v0                        v1 = v1 < v0
+    bnez    v1,text_2908                if (v1 < v0) goto 2908
+    nop
+    lui v1,_hi(data_190)
+    addiu   v1,v1,_lo(data_190)         v0 = timeoutFlag
+    lw  v0,0(v1)
+    nop
+    move    a0,v0                       a0 = timeoutFlag
+    addiu   v0,v0,1                     v0 ++
+    sw  v0,0(v1)                        timeoutFlag += 1
+    lui v0,$000F                        v0 = 0x000F0000
+    slt v0,v0,a0                        v0 = v0 < a0
+    beqz    v0,text_29E4                if (v0 >= a0
+    nop
+text_2908:
+    lui a2,_hi(data_158)                   gp1
+    lw  a2,_lo(data_158)(a2)               
+    lui a0,_hi(rdata_1E0)
+    addiu   a0,a0,_lo(rdata_1E0)           "GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x\n"
+    lw  v0,0(a2)                           v0 = *gp1
+    lui a1,_hi(_qin)
+    lw  a1,_lo(_qin)(a1)                   a1 = _qin
+    lui v0,_hi(data_15C)                   gpu_dma_madr
+    lw  v0,_lo(data_15C)(v0)               
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)                  v1 = _qout
+    lw  v0,0(v0)                           v0 = *gpu_dma_madr
+    subu    a1,a1,v1                       a1 = _qin - _qout
+    sw  v0,16(sp)                          sp + 16 = *gpu_dma_madr
+    lui v0,_hi(data_164)                   gpu_dma_chcr
+    lw  v0,_lo(data_164)(v0)               
+    lw  a2,0(a2)                           a2 = *gp1
+    lw  a3,0(v0)                           a3 = *gpu_dma_chcr
+    jal printf
+    andi    a1,a1,$003F
+
+    jal SetIntrMask
+    move    a0,zero
+    lui at,_hi(_qout)
+    sw  zero,_lo(_qout)(at)                _qout = 0;
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)
+    lui at,_hi(data_188)                   oldmask = SetIntrMask (0);
+    sw  v0,_lo(data_188)(at)
+    lui at,_hi(_qin)
+    sw  v1,_lo(_qin)(at)                   _qin = _qout
+    lui v1,_hi(data_164)                   gpu_dma_chcr
+    lw  v1,_lo(data_164)(v1)
+    li  v0,1025                            0x401
+    sw  v0,0(v1)                           *gpu_dma_chcr = 0x0401
+    lui v1,_hi(data_174)                   dma_pcr
+    lw  v1,_lo(data_174)(v1)
+    nop
+    lw  v0,0(v1)
+    nop
+    ori v0,v0,$0800
+    sw  v0,0(v1)                           *dma_pcr |= 0x0800;
+    lui v1,_hi(data_158)                   gp1
+    lw  v1,_lo(data_158)(v1)
+    lui v0,$0200
+    sw  v0,0(v1)                           *gp1 = 0x02000000;
+    lui v1,_hi(data_158)                   gp1
+    lw  v1,_lo(data_158)(v1)
+    lui v0,$0100
+    sw  v0,0(v1)                           *gp1 = 0x01000000;
+    lui a0,_hi(data_188)                   oldmask
+    lw  a0,_lo(data_188)(a0)
+    jal SetIntrMask                        SetIntrMask (oldmask);
+    nop                                    return -1;
+    j   text_29E8
+    li  v0,-1
+text_29E4:
+    move    v0,zero
+text_29E8:
+    lw  ra,24(sp)
+    addiu   sp,sp,32
+    jr  ra
+    nop

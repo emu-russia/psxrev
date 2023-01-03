@@ -1,0 +1,77 @@
+int resetGPU (int mode)
+
+text_2608:
+    addiu   sp,sp,-24
+    sw  s0,16(sp)
+    move    s0,a0                   s0 = mode
+    sw  ra,20(sp)
+    jal SetIntrMask                 oldmask2 = SetIntrMask (0);
+    move    a0,zero
+    lui at,_hi(_qout)
+    sw  zero,_lo(_qout)(at)         _qin = _qout = 0;
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)
+    lui at,_hi(data_188)
+    sw  v0,_lo(data_188)(at)
+    li  v0,1
+    lui at,_hi(_qin)
+    sw  v1,_lo(_qin)(at)
+    andi    v1,s0,$0007             v1 = mode & 7
+
+
+    beq v1,v0,text_26C4             if (v1 == 1) goto 26C4
+    slti    v0,v1,2
+    beqz    v0,text_2668            if (v1 >= 2) goto 2668
+    li  v0,3
+    beqz    v1,text_2678            if (v1 == 0) goto 2678
+    nop
+    j   text_2710                   goto 2710
+    nop
+
+>= 2:
+text_2668:
+    beq v1,v0,text_26C4             if (mode == 3) goto 26C4
+    li  v0,5
+    bne v1,v0,text_2710             
+    nop
+
+== 0:
+== 3:
+== 5:
+text_2678:
+    lui v1,_hi(data_164)
+    lw  v1,_lo(data_164)(v1)
+    li  v0,1025
+    sw  v0,0(v1)
+    lui v1,_hi(data_174)
+    lw  v1,_lo(data_174)(v1)
+    lui a0,_hi(_que)
+    addiu   a0,a0,_lo(_que)
+    lw  v0,0(v1)
+    move    a1,zero
+    ori v0,v0,$0800
+    sw  v0,0(v1)
+    lui v0,_hi(data_158)
+    lw  v0,_lo(data_158)(v0)
+    li  a2,6144
+    jal text_2ED8
+    sw  zero,0(v0)
+    j   text_2710
+    nop
+
+== 1:
+text_26C4:
+    *gpu_dma_chcr= 0x0401
+    *dma_pcr |= 0x0800
+    *gp1 = 0x02000000;
+    *gp1 = 0x01000000;
+
+break;
+text_2710:
+    lui a0,_hi(data_188)
+    lw  a0,_lo(data_188)(a0)
+    jal SetIntrMask                 SetIntrMask (oldmask2)
+    nop
+
+    if ( (mode & 7) == 0 ) return text_29F8 (mode);
+    else return 0;
