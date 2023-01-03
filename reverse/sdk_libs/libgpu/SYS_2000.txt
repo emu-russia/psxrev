@@ -1,0 +1,2 @@
+
+    void    (writeGP1)(u_long val);

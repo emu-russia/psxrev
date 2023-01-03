@@ -1,0 +1,201 @@
+int insertQue (void (*func)(), void *p, int size, u32 rgb);
+{
+    clearTimeout ();
+
+    while ( ((_qin + 1) & 0x3F) == _qout )
+    {
+        if (checkTimeout ()) return -1;
+        updateQue ();
+    }
+    
+}
+
+text_20F8:
+    addiu   sp,sp,-40
+    sw  s3,28(sp)
+    move    s3,a0                   s3 = func
+    sw  s0,16(sp)
+    move    s0,a1                   s0 = p
+    sw  s1,20(sp)
+    move    s1,a2                   s1 = size
+    sw  s2,24(sp)
+    sw  ra,32(sp)
+    jal text_2880                   clearTimeout
+    move    s2,a3                   s2 = rgb
+
+    j   text_2144
+    nop
+text_212C:
+    jal text_28B4                   checkTimeout ()
+    nop
+    bnez    v0,text_238C
+    li  v0,-1                       return -1
+    jal text_23A8                   updateQueue
+    nop
+text_2144:
+    lui v0,_hi(_qin)
+    lw  v0,_lo(_qin)(v0)            v0 = _qin
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)           v1 = _qout
+    addiu   v0,v0,1                 v0 = (_qin + 1) & 0x3F
+    andi    v0,v0,$003F
+    beq v0,v1,text_212C             if (v0 == v1) continue;
+    nop
+
+    jal SetIntrMask                 intmask[0] = SetIntrMask (0);
+    move    a0,zero
+    lui a0,_hi(GEnv)
+    addiu   a0,a0,_lo(GEnv)         a0 = GEnv
+    lui at,_hi(data_180)
+    sw  v0,_lo(data_180)(at)
+    lbu v1,1(a0)                    v1 = genv.que
+    li  v0,1
+    beqz    v1,text_21D8            if (genv.que == 0) goto 21D8.
+    sw  v0,8(a0)
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)
+    nop
+    bne v1,v0,text_221C          
+    nop
+    lui v0,_hi(data_164)
+    lw  v0,_lo(data_164)(v0)
+    nop
+    lw  v0,0(v0)
+    lui v1,$0100
+    and v0,v0,v1
+    bnez    v0,text_221C
+    nop
+    lw  v0,12(a0)
+    nop
+    bnez    v0,text_221C
+    nop
+
+text_21D8:
+    lui v1,_hi(data_158)
+    lw  v1,_lo(data_158)(v1)
+    lui a0,$0400
+text_21E4:
+    lw  v0,0(v1)
+    nop
+    and v0,v0,a0
+    beqz    v0,text_21E4
+    nop
+    move    a0,s0
+    jalr    ra,s3
+    move    a1,s2
+    lui a0,_hi(data_180)
+    lw  a0,_lo(data_180)(a0)
+    jal SetIntrMask
+    nop
+    j   text_238C
+    move    v0,zero
+
+text_221C:
+    lui a1,_hi(text_23A8)
+    addiu   a1,a1,_lo(text_23A8)        updateQueue
+    jal DMACallback
+    li  a0,2
+    beqz    s1,text_22D8
+    move    a2,zero
+    lui t0,_hi(_que+$C)
+    addiu   t0,t0,_lo(_que+$C)
+    move    a3,s0
+    move    v0,s1
+text_2244:
+    bgez    v0,text_2250
+    nop
+    addiu   v0,v0,3
+text_2250:
+    sra v0,v0,2
+    slt v0,a2,v0
+    beqz    v0,text_2294
+    sll a0,a2,2
+    lw  a1,0(a3)
+    addiu   a3,a3,4
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    addiu   a2,a2,1
+    sll v0,v1,1
+    addu    v0,v0,v1
+    sll v0,v0,5
+    addu    v0,v0,t0
+    addu    a0,a0,v0
+    sw  a1,0(a0)
+    j   text_2244
+    move    v0,s1
+text_2294:
+    lui v0,_hi(_qin)
+    lw  v0,_lo(_qin)(v0)
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    sll a0,v0,1
+    addu    a0,a0,v0
+    sll a0,a0,5
+    sll v0,v1,1
+    addu    v0,v0,v1
+    sll v0,v0,5
+    lui v1,_hi(_que+$C)
+    addiu   v1,v1,_lo(_que+$C)
+    addu    v0,v0,v1
+    lui at,_hi(_que+$4)
+    addu    at,at,a0
+    j   text_22FC
+    sw  v0,_lo(_que+$4)(at)
+text_22D8:
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    nop
+    sll v0,v1,1
+    addu    v0,v0,v1
+    sll v0,v0,5
+    lui at,_hi(_que+$4)
+    addu    at,at,v0
+    sw  s0,_lo(_que+$4)(at)
+text_22FC:
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    nop
+    sll v0,v1,1
+    addu    v0,v0,v1
+    sll v0,v0,5
+    lui at,_hi(_que+$8)
+    addu    at,at,v0
+    sw  s2,_lo(_que+$8)(at)
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    nop
+    sll v0,v1,1
+    addu    v0,v0,v1
+    sll v0,v0,5
+    lui at,_hi(_que)
+    addu    at,at,v0
+    sw  s3,_lo(_que)(at)
+    lui v0,_hi(_qin)
+    lw  v0,_lo(_qin)(v0)
+    lui a0,_hi(data_180)
+    lw  a0,_lo(data_180)(a0)
+    addiu   v0,v0,1
+    andi    v0,v0,$003F
+    lui at,_hi(_qin)
+    jal SetIntrMask
+    sw  v0,_lo(_qin)(at)
+    jal text_23A8                   updateQueue
+    nop
+    lui v0,_hi(_qin)
+    lw  v0,_lo(_qin)(v0)
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)
+    nop
+    subu    v0,v0,v1
+    andi    v0,v0,$003F
+
+text_238C:
+    lw  ra,32(sp)
+    lw  s3,28(sp)
+    lw  s2,24(sp)
+    lw  s1,20(sp)
+    lw  s0,16(sp)
+    jr  ra
+    addiu   sp,sp,40

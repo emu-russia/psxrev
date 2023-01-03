@@ -1,0 +1,179 @@
+int dmablabla (void);
+
+text_23A8:
+    lui v0,_hi(data_164)
+    lw  v0,_lo(data_164)(v0)            v0 = *gpu_dma_chcr
+    addiu   sp,sp,-32
+    sw  ra,24(sp)
+    sw  s1,20(sp)
+    sw  s0,16(sp)
+    lw  v0,0(v0)
+    lui s0,$0100
+    and v0,v0,s0                        if (*gpu_dma_chcr & 0x01000000)
+    bnez    v0,text_25F4
+    li  v0,1
+
+    // Return 1 immediately, if DMA transfer is still busy.
+    if (*gpu_dma_chcr & 0x01000000) return 1;
+
+    jal SetIntrMask                     SetIntrMask (0);
+    move    a0,zero
+
+    genv.oldmask = SetIntrMask (0); 
+
+    lui a0,_hi(_qin)
+    lw  a0,_lo(_qin)(a0)                a0 = _qin
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)               v1 = _qout
+    lui at,_hi(data_184)
+    beq a0,v1,text_2558                 if (_qin == _qout) goto 2558
+    sw  v0,_lo(data_184)(at)
+
+    lui v0,_hi(data_164)
+    lw  v0,_lo(data_164)(v0)
+    nop
+    lw  v0,0(v0)
+    nop
+    and v0,v0,s0                        v0 = *gpu_dma_chcr
+    bnez    v0,text_2558                if (*gpu_dma_chcr & 0x01000000) goto 2558
+    nop
+    lui s1,$0400                        s1 = 0x04000000
+    lui s0,$0100                        s0 = 0x01000000
+
+text_2420:
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)               v0 = _qout
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)                v1 = _qin
+    addiu   v0,v0,1                     v0 ++
+    andi    v0,v0,$003F                 v0 &= 0x3F
+    bne v0,v1,text_245C                 if (v0 != _qin) goto 245C
+    nop
+    lui v0,_hi(data_5C)
+    lw  v0,_lo(data_5C)(v0)             
+    nop
+    bnez    v0,text_245C                if (*data_5C) goto 245C
+    li  a0,2
+    jal DMACallback                     DMACallback (2, NULL);
+    move    a1,zero
+
+text_245C:
+    lui v1,_hi(data_158)
+    lw  v1,_lo(data_158)(v1)            
+    nop
+    lw  v0,0(v1)                        v0 = *gp1
+    nop
+    and v0,v0,s1
+    bnez    v0,text_2490                if (*gp1 & 0x04000000) goto 2490
+    lui a0,$0400
+text_247C:
+    lw  v0,0(v1)                        v0 = *gp1
+    nop
+    and v0,v0,a0
+    beqz    v0,text_247C                if ( (*gp1 & 0x04000000) == 0) goto 247C
+    nop
+
+text_2490:
+    lui a1,_hi(_qout)
+    lw  a1,_lo(_qout)(a1)               a1 = _qout
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)               v1 = _qout
+    nop
+    sll v0,v1,1                         
+    addu    v0,v0,v1                    
+    sll v0,v0,5                         v0 = 32 * (3 * _qout)
+    sll v1,a1,1                         
+    addu    v1,v1,a1                    v1 = 3 * _qout
+    lui a0,_hi(_que+$4)
+    addu    a0,a0,v0
+    lw  a0,_lo(_que+$4)(a0)             a0 = [_que+4 + 96 * _qout]
+    lui a1,_hi(_qout)
+    lw  a1,_lo(_qout)(a1)               a1 = _qout
+    sll v1,v1,5                         v1 = 32 * (3 * _qout)
+    sll v0,a1,1                         v0 = _qout * 2
+    addu    v0,v0,a1                    v0 = 3 * _qout
+    sll v0,v0,5
+    lui a1,_hi(_que+$8)
+    addu    a1,a1,v0                    a1 = [_que+8 + 96 * _qout]
+    lw  a1,_lo(_que+$8)(a1)
+    lui v0,_hi(_que)
+    addu    v0,v0,v1
+    lw  v0,_lo(_que)(v0)                v0 = [_que + 96 * _qout]
+    nop
+    jalr    ra,v0                       call v0
+    nop
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)
+    nop
+    addiu   v0,v0,1
+    andi    v0,v0,$003F
+    lui at,_hi(_qout)
+    sw  v0,_lo(_qout)(at)               _qout = (_qout + 1) & 0x3F;
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)
+    nop
+    beq v1,v0,text_2558                 if (_qin == _qout) goto 2558
+    nop
+    lui v0,_hi(data_164)
+    lw  v0,_lo(data_164)(v0)
+    nop
+    lw  v0,0(v0)
+    nop
+    and v0,v0,s0
+    beqz    v0,text_2420                if ( *gpu_dma_chcr & 0x01000000) goto 2558
+    nop
+
+-------------------------------------------------------------------------
+
+text_2558:
+    lui a0,_hi(data_184)
+    lw  a0,_lo(data_184)(a0)
+    jal SetIntrMask                     SetIntrMask (genv.oldmask);
+    nop
+
+    lui v1,_hi(_qin)
+    lw  v1,_lo(_qin)(v1)
+    lui v0,_hi(_qout)
+    lw  v0,_lo(_qout)(v0)
+    nop
+    bne v1,v0,text_25D8                 if (_qout != _qin) {
+    nop
+    lui v0,_hi(data_164)
+    lw  v0,_lo(data_164)(v0)            
+    nop
+    lw  v0,0(v0)                        v0 = *gpu_dma_chcr
+    lui v1,$0100
+    and v0,v0,v1
+    bnez    v0,text_25D8                if ( !(*gpu_dma_chcr & 0x01000000) ) {
+    nop
+    lui v1,_hi(data_58)
+    addiu   v1,v1,_lo(data_58)
+    lw  v0,0(v1)
+    nop
+    beqz    v0,text_25D8                        if (data_58) {
+    nop
+    lw  a0,4(v1)
+    nop
+    beqz    a0,text_25D8                             if (data_5C) {
+    addiu   v0,v1,-8                                 
+    sw  zero,8(v0)                                          data_58 = 0
+    jalr    ra,a0                                           data_5C ()
+    nop
+
+text_25D8:
+    lui v0,_hi(_qin)                    
+    lw  v0,_lo(_qin)(v0)                v0 = _qin
+    lui v1,_hi(_qout)
+    lw  v1,_lo(_qout)(v1)               v1 = _qout
+    nop
+    subu    v0,v0,v1                    return (_qin - _qout) & 0x3F
+    andi    v0,v0,$003F
+
+text_25F4:
+    lw  ra,24(sp)
+    lw  s1,20(sp)
+    lw  s0,16(sp)
+    jr  ra
+    addiu   sp,sp,32

@@ -1,0 +1,124 @@
+int ResetGraph(int mode)
+
+ResetGraph:
+    addiu   sp,sp,-32
+    sw  s1,20(sp)
+    move    s1,a0                   s1 = mode
+    andi    v1,s1,$0007             v1 = mode & 7
+    li  v0,3                        v0 = 3
+    sw  ra,24(sp)
+    beq v1,v0,text_4C               if (v1 == 3) goto 4C
+    sw  s0,16(sp)
+    slti    v0,v1,4                 v0 = v1 < 4
+    beqz    v0,text_3C              if (v1 >= 4) goto 3C, v0 = 5
+    li  v0,5
+    beqz    v1,text_4C              if (v1 == 0) goto 4C
+    nop
+    j   text_110                    goto 110
+    nop
+
+>= 4.
+text_3C:
+    beq v1,v0,text_68               if (v1 == 5) goto 68
+    nop
+    j   text_110                    goto 110
+    nop
+
+== 0, 3
+text_4C:
+    lui a0,_hi(rdata_38)
+    addiu   a0,a0,_lo(rdata_38)     "ResetGraph:jtb=%08x,env=%08x\n"
+    lui a1,_hi(data_8)
+    addiu   a1,a1,_lo(data_8)
+    lui a2,_hi(GEnv)
+    jal printf
+    addiu   a2,a2,_lo(GEnv)
+
+= 5
+text_68:
+    lui s0,_hi(GEnv)
+    addiu   s0,s0,_lo(GEnv)
+    move    a0,s0
+    move    a1,zero
+    jal text_2ED8                   memset (&genv, 0, sizeof(GEnv));
+    li  a2,128
+
+    jal ResetCallback               ResetCallback ();
+    nop
+
+    lui v0,$00FF
+    lui a0,_hi(data_48)
+    lw  a0,_lo(data_48)(a0)
+    ori v0,v0,$FFFF                 v0 = 0x00FFFFFF;
+    jal GPU_cw                      GPU_cw (&gpuCB & 0x00FFFFFF);        // ???
+    and a0,a0,v0
+
+    jal text_2608                   resetGPU (mode)
+    move    a0,s1
+
+    addiu   a0,s0,16                a0 = genv + 16
+    sb  v0,0(s0)                    genv[0] = resetGPU (mode);
+    lbu v0,0(s0)                    v0 = genv[0]
+    li  v1,1                        v1 = 1
+    sb  v1,1(s0)                    genv[1] = 1
+    sll v0,v0,2
+    lui v1,_hi(data_D0)
+    addu    v1,v1,v0
+    lhu v1,_lo(data_D0)(v1)         v1 = (u_short *)data_D0[v0]
+
+    lbu v0,0(s0)
+    li  a1,-1
+    sll v0,v0,2
+    sh  v1,4(s0)                    (u_short *)genv[4] = v1;
+    lui at,_hi(data_DC)
+    addu    at,at,v0
+    lhu v0,_lo(data_DC)(at)         v0 = (u_short *)data_DC[v0]
+    li  a2,92                       (u_short *)genv[6] = v0;
+    jal text_2ED8                   memset (genv + 16, -1, 92);
+    sh  v0,6(s0)
+    addiu   a0,s0,108
+    li  a1,-1
+    jal text_2ED8                   memset  (genv + 92 + 16, -1, 20);
+    li  a2,20
+    lbu v0,0(s0)
+    j   text_160                    return genv[0];
+    nop
+
+= 1, 2,
+text_110:
+    lui v0,_hi(data_52)
+    lbu v0,_lo(data_52)(v0)         genv.debugLevel
+    nop
+    sltiu   v0,v0,2                 v0 = v0 < 2
+    bnez    v0,text_144             if (v0 >= 2) ...
+    nop
+    lui a0,_hi(rdata_58)
+    addiu   a0,a0,_lo(rdata_58)     "ResetGraph(%d)...\n"
+    lui v0,_hi(GPU_printf)
+    lw  v0,_lo(GPU_printf)(v0)
+    nop
+    jalr    ra,v0
+    move    a1,s1
+
+    if (genv.debugLevel >= 2)
+    {
+        GPU_printf ("ResetGraph(%d)...\n", mode);
+    }
+
+text_144:
+    lui v0,_hi(data_48)
+    lw  v0,_lo(data_48)(v0)
+    nop
+    lw  v0,52(v0)
+    nop
+    jalr    ra,v0
+    li  a0,1
+
+    return gpuCB->resetGPU (1);
+
+text_160:
+    lw  ra,24(sp)
+    lw  s1,20(sp)
+    lw  s0,16(sp)
+    jr  ra
+    addiu   sp,sp,32
