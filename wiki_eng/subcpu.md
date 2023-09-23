@@ -1,12 +1,14 @@
 # SUB-CPU
 
+In some service manuals this chip is called `Mechanism Controller` (MechaCon), and in some `SUB CPU`. We will use the name SUB-CPU.
+
 The SUB-CPU is used for the software control of [CD RF](cdrf.md), [CD DRIVER](cddriver.md) and [CD-DSP](cddsp.md). SUB-CPU sends commands to the CD-DSP control via a serial interface, and also controls the turn-on laser, detect the opening of the cover, set the speed of the drive 1X/2X, etc. In other words, SUB-CPU prepares the CD system for data reading as well as monitors its correct operation and reacts to external factors. In addition, SUB-CPU parses the commands received by the CD-decoder and manages its internal registers.
 
 CD-data are transferred in serial form directly to the [CD-decoder](cddec.md).
 
 On motherboards, the chip is represented as `IC304`, while it has never been integrated into larger chips and is present on all revisions. 
 
-Known two versions of the chip "L16" and "G6". L16 (80pin) was used on older motherboards (PU-7 and older PU-8), starting with the new PU-8 the G6 (52pin) revision is used. According to unconfirmed reports the MASK ROM of both revisions of the chip hasn't been changed.
+There are many versions of the chip, let's consider "L16" and "G6". L16 (80pin) was used on older motherboards (PU-7 and older PU-8), starting from new PU-8 the G6 revision (52pin) is used.
 
 Microphotos of the chip:
 
