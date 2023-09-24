@@ -32,7 +32,7 @@ A picture from one "condidual" manual that shows the connections well:
 
 ![Psx_main_system](/wiki/imgstore/Psx_main_system.jpg)
 
-The SIO interface (controllers, memory cards, and serial port) can also be referred to the main system. The SIO is simply not accessed through the buses, but through the registers of the CPU.
+The [SIO interface](sio.md) (controllers, memory cards, and serial port) can also be referred to the main system. The SIO is simply not accessed through the buses, but through the registers of the CPU.
 
 ## Sub System
 
@@ -41,7 +41,7 @@ The sub-system includes:
 - [SPU](spu.md)
 - [SUB-CPU](subcpu.md)
 - [CD-ROM subsystem](cd.md) (a bunch of chips)
-- PIO
+- [PIO](pio.md)
 - [BIOS](bios.md)
 
 ![Subsystem](/wiki/imgstore/Subsystem.jpg)
@@ -51,8 +51,8 @@ The sub-system includes:
 - [Controllers](controller.md)
 - Memory Cards
 - PlayStation Mouse
-- Parallel port (PIO)
-- Serial port (SIO)
+- Parallel port ([PIO](pio.md))
+- Serial port ([SIO](sio.md))
 
 ## About the PSX
 

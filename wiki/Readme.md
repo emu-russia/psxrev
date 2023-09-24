@@ -32,7 +32,7 @@ PlayStation, PSX - телевизионная приставка, произве
 
 ![Psx_main_system](/wiki/imgstore/Psx_main_system.jpg)
 
-Также к main system можно отнести SIO-интерфейс (контроллеры, карты памяти и последовательный порт). Просто доступ к SIO происходит не по шинам, а через регистры CPU.
+Также к main system можно отнести [SIO-интерфейс](sio.md) (контроллеры, карты памяти и последовательный порт). Просто доступ к SIO происходит не по шинам, а через регистры CPU.
 
 ## Sub System
 
@@ -41,7 +41,7 @@ PlayStation, PSX - телевизионная приставка, произве
 - [SPU](spu.md)
 - [SUB-CPU](subcpu.md)
 - [Подсистема CD-ROM](cd.md) (куча чипов)
-- PIO
+- [PIO](pio.md)
 - [BIOS](bios.md)
 
 ![Subsystem](/wiki/imgstore/Subsystem.jpg)
@@ -51,8 +51,8 @@ PlayStation, PSX - телевизионная приставка, произве
 - [Контроллеры](controller.md)
 - Карты памяти
 - PlayStation Mouse
-- Параллельный порт (PIO)
-- Последовательный порт (SIO)
+- Параллельный порт ([PIO](pio.md))
+- Последовательный порт ([SIO](sio.md))
 
 ## По поводу аббревиатуры PSX
 
