@@ -12,19 +12,29 @@ The developer kits are quite a mess :smiley:
 
 The main development tool was PsyQ from SN SYSTEMS. PsyQ contained a C compiler (CCPSX), an assembler (ASPSX), a linker (PSYLINK), and a library manager (PSYLIBD).
 
-In addition to the utilities for building programs it also included libraries written by Sony to interact with the PlayStation hardware, as well as header files (INCLUDE) for these libraries. There were several versions of PsyQ and they differed with minor changes (bug fixes in the libraries).
+In addition to the utilities for building programs it also included libraries written by SONY to interact with the PlayStation hardware, as well as header files (INCLUDE) for these libraries. There were several versions of PsyQ and they differed with minor changes (bug fixes in the libraries).
 
 PsyQ also included the basic documentation: Library Overview (LIBOVR) and Library Reference (LIBREF).
 
-Versions of PsyQ:
+Known versions of PsyQ (the list will be extended with information about the release date and, if possible, a list of important fixes):
+- 2.6
+- 3.0
 - 3.3
+- 3.4
+- 3.5
+- 3.6.0
+- 3.6.1
+- 3.7
 - 4.0
+- 4.1
 - 4.2
 - 4.3
 - 4.3.1
 - 4.4
 - 4.6: 27/JUL/1999
 - 4.7: 02/FEB/2000
+
+There is a great repository for reverse-engineering programs written with PsyQ SDK: https://github.com/lab313ru/ghidra_psx_ldr
 
 ### Documentation
 
@@ -137,7 +147,7 @@ http://www.lingjr.com/images/sony_ps/ps_dtls2020_boxed_1.JPG
 
 The DTL-S2020 is a special board and a set of utilities for simulating a real drive. The data is stored on a SCSI HDD.
 
-## NetYaroze
+## NetYaroze (DTL-H3000)
 
 ![Net-Yaroze-Full-Sdk](/wiki/imgstore/Net-Yaroze-Full-Sdk.jpg)
 
@@ -152,7 +162,7 @@ Included:
 
 There was also no regional protection.
 
-Apparently, NetYaroze was just a repainted "test" version of Devkit (well, with accessories added). By analogy with the disk codes, perhaps the code of the whole devkit was DTL-H3000.
+Apparently, NetYaroze was just a repainted "test" version of Devkit (well, with accessories added).
 
 ## Developer software kit
 
@@ -215,6 +225,8 @@ All this stuff was tested on special hardware DTL-H700 (for Mac) and DTL-H800 (f
 
 There was also an ENCVAG library to convert PCM to VAG format.
 
-### CDEMU.
+### CDEMU
 
 Instead of real device SN SYSTEMS developed the emulator in the form of a special board. The data itself was stored on a SCSI hard disk.
+
+TBD.
