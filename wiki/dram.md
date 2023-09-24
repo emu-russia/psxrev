@@ -13,7 +13,7 @@
 |DQ0-31|Подключается к шине данных CPU|
 |/RAS|Row Address Strobe|
 |/CAS0, /CAS1, /CAS2, /CAS3|Column Address Strobe. 4 сигнала используются для каждого байта 32-разрядных данных DQ0-31 (/CAS0 = lsb)|
-|/OE|Data Output Enable|
+|/OE|Data Output Enable. :warning: /OE не используется, так как процессор не умеет. Сигнал /OE DRAM соединен с GND.|
 |/WE|Read/Write Input|
 
 Ну а дальше лучше посмотреть даташит, т.к. комбинация RAS/CAS/OE/WE сигналов определяет множество разнообразных режимов работы.

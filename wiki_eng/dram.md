@@ -13,7 +13,7 @@ Let's consider only the scenario with 1 chip, on the example of Samsung K4Q15321
 |DQ0-31|Connects to the CPU data bus|
 |/RAS|Row Address Strobe|
 |/CAS0, /CAS1, /CAS2, /CAS3|Column Address Strobe. 4 signals are used for each byte of 32-bit data DQ0-31 (/CAS0 = lsb)|
-|/OE|Data Output Enable|
+|/OE|Data Output Enable. :warning: /OE is not used because the processor does not know how. The /OE DRAM signal is connected to GND.|
 |/WE|Read/Write Input|
 
 And further it is better to look at the datasheet, because the combination of RAS/CAS/OE/WE signals defines many different modes of operation.
