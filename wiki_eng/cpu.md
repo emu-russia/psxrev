@@ -10,7 +10,8 @@ The CPU on all revisions of the motherboard is represented by one large chip wit
 
 The CPU consists of the following components:
 
-- Slightly modified LSI LR33300 core
+- The chip is based on the CoreWare chip development framework
+- Slightly modified LSI Logic CW33300 core
 - System coprocessor 2 (GTE)
 - MDEC (JPEG-like video decoder)
 - DMA controller (DMAC) (7 channels)
@@ -20,7 +21,8 @@ The CPU consists of the following components:
 - SIO controller (RS-232-like serial interface), for two ports (SIO0 and SIO1)
 - PIO controller (expansion port for additional devices)
 - Root counters (3 hardware counters)
-- Built-in instruction cache and data cache (data cache with direct access capability)
+- Built-in instruction cache
+- ScratchPad is used instead of the data cache
 - Dedicated "mini-caches" (R-buffer and W-buffer)
 
 Microphotograph of a chip:
@@ -82,7 +84,7 @@ DRAM: in newer motherboards the RAM is a single chip (IC106), but previously the
 - DD: A 32-bit data bus.
 - DA: a 10 bit address bus
 - /DWE: write enable
-- /DRAS0, /DCAS0, /DCAS1, /DCAS2, /DCAS3: refresh
+- /DRAS0, /DCAS0, /DCAS1, /DCAS2, /DCAS3: to set Row/Column
 
 ROM BIOS: ROM is connected to the sub bus.
 - /CS2: Connect the ROM to the sub bus. Direct data exchange (OE) is enabled if the read enable signal (/SRD) is active. Well that's understandable, the ROM can only be read :smiley:
