@@ -60,7 +60,7 @@ However, based on the logic of the input and output terminals, as well as some k
 - In terms of the SPU, there are no questions: inside the decoder is a serial interface that streams audio to the SPU via the BCKO, LRCO and DATO pins.
 - Input data is loaded into the CDROM memory via the serial interface with the CD-DSP
 - Commands received on the CDREG0-CDREG3 is apparently "parsed" by SUB-CPU microcode. This is likely the CD-decoder uses SUB-CPU interrupt (signal XINT), to signal that it needs to handle the next portion of data coming to CDREG0-CDREG3. SUB-CPU can also set register output values. To be more precise it is necessary to disassemble the ROM SUB-CPU.
-- The only unresolved issue is the CD DMA. It is not yet clear how the CPU organizes the DMA transfer of CD data. It is assumed that this uses a special combination of XHWR/XHRD, or special work with registers CDREG0-CDREG3. The only way to be sure is to send the data to the CPU is through the HD (SD) bus.
+- DMA happens in a special way: First, using the sector read command, the CD decoder is put into DMA mode. Then the processor using the Sub bus sequentially reads data from the internal DMA buffer of the decoder.
 
 ## Internal Registers
 
