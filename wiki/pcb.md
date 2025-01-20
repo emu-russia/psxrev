@@ -1,5 +1,7 @@
 # PCB Revisions
 
+See also: https://www.psdevwiki.com/ps1/Motherboards
+
 ![fixme](/wiki/imgstore/fixme.gif) Раздел требует заполнения.
 
 It seems that IC's 702+704+706 was later replaced by IC722 (DRIVER) and IC's 703+708 was replaced by IC723 (RF), but IC602(RIPPLE) was added on SCPH-7500 series.
