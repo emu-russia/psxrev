@@ -54,7 +54,7 @@ Difference between PU-7 and early PU-8:
 ![PU-18a](/wiki/imgstore/PU-18a.jpg)
 ![PU-18b](/wiki/imgstore/PU-18b.jpg)
 
-Motherboard that has been seen in SCPH-5000 and SCPH-5500 series consoles.
+Motherboard that has been seen in SCPH-550X, SCPH-5552, early SCPH-700X, early SCPH-750X series consoles (Source: https://www.psdevwiki.com/ps1/Motherboards)
 
 - revision: -11/-21, -31/-41, -52/-62, -72/-82
 - serial: 1-664-537-62
